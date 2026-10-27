@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory & Multi-Warehouse | GearUp Gadgets ERP</title>    
+    <!-- Favicon & Device Web Icons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/images/favicon-64x64.png">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/fonts/font-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <style>
+        body { background-color: var(--gug-bg-color, #07090d) !important; background-image: var(--gug-bg-image) !important; background-attachment: var(--gug-bg-attachment, fixed) !important; background-size: var(--gug-bg-size, cover, cover, 28px 49px) !important; background-position: var(--gug-bg-position, center top) !important; background-repeat: var(--gug-bg-repeat, no-repeat, no-repeat, repeat) !important; min-height: 100vh; color: #ffffff !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .admin-sidebar { width: 260px; background: rgba(10, 10, 15, 0.6) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; height: 100vh; position: fixed; left: 0; top: 0; padding: 20px 15px; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; overflow-y: auto; z-index: 1000; }
+        .admin-main { margin-left: 260px; padding: 25px 30px; min-height: 100vh; background-color: transparent !important; color: #ffffff !important; }
+        .admin-nav-link { display: flex; align-items: center; padding: 9px 13px; color: #94a3b8; text-decoration: none; border-radius: 8px; margin-bottom: 3px; font-size: 13px; font-weight: 500; transition: all 0.2s ease; }
+        .admin-nav-link:hover { background-color: rgba(219, 39, 36, 0.15); color: #fff; }
+        .admin-nav-link.active { background-color: var(--accent-red); color: #fff !important; font-weight: 600; box-shadow: 0 4px 12px rgba(219, 39, 36, 0.3); }
+        .sidebar-section-heading { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #64748b; margin-top: 15px; margin-bottom: 6px; padding-left: 10px; }
+        
+        .admin-card { background: rgba(10, 10, 15, 0.45) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 16px !important; padding: 20px; margin-bottom: 20px; color: #ffffff !important; box-shadow: 0 16px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important; }
+        .table { color: #ffffff !important; background-color: transparent !important; vertical-align: middle; }
+        .table th { background-color: rgba(255, 255, 255, 0.06) !important; border-bottom: 2px solid rgba(255, 255, 255, 0.15) !important; color: #ffffff !important; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .table td { border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important; font-size: 13.5px; color: #ffffff !important; }
+        
+        .nav-tabs-erp { border-bottom: 2px solid #e2e8f0; gap: 8px; }
+        .nav-tabs-erp .nav-link { color: #64748b; border: none; border-bottom: 2px solid transparent; padding: 10px 18px; font-weight: 600; font-size: 13.5px; background: transparent; transition: all 0.2s; }
+        .nav-tabs-erp .nav-link:hover { color: #ffffff; }
+        .nav-tabs-erp .nav-link.active { color: var(--accent-red); border-bottom-color: var(--accent-red); background: transparent; }
+    </style>
+</head>
+<body>
+        <!-- Enterprise Sidebar Navigation -->
+    <div class="admin-sidebar">
+        <div class="d-flex align-items-center mb-3 px-2">
+            <i class="fas fa-shield-alt text-danger fs-4 me-2"></i>
+            <div>
+                <h6 class="text-white m-0 fw-bold">GearUp ERP</h6>
+                <small class="text-secondary" style="font-size: 11px;">Enterprise Operating System</small>
+            </div>
+        </div>
+
+        <a href="dashboard.html" class="admin-nav-link" id="nav-dashboard"><i class="fas fa-chart-pie me-2"></i> Executive Dashboard</a>
+        
+        <!-- Accordion 1: Catalog & E-Commerce -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-catalog">
+                <span><i class="fas fa-shopping-bag text-danger me-2"></i> Catalog & E-Commerce</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-catalog">
+                <a href="products.html" class="admin-nav-link" id="nav-products"><i class="fas fa-boxes-stacked me-2"></i> Products & Catalog</a>
+                <a href="admin-crm.html" class="admin-nav-link" id="nav-crm"><i class="fas fa-users-viewfinder me-2"></i> Customers (CRM)</a>
+                <a href="admin-marketing.html" class="admin-nav-link" id="nav-marketing"><i class="fas fa-tags me-2"></i> Coupons & Marketing</a>
+            </div>
+        </div>
+
+        <!-- Accordion 2: Supply Chain & Operations -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-supply">
+                <span><i class="fas fa-truck-ramp-box text-primary me-2"></i> Supply Chain & Operations</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-supply">
+                <a href="admin-inventory.html" class="admin-nav-link" id="nav-inventory"><i class="fas fa-warehouse me-2"></i> Multi-Warehouse Stock</a>
+                <a href="admin-purchasing.html" class="admin-nav-link" id="nav-purchasing"><i class="fas fa-dolly me-2"></i> Purchasing & Suppliers</a>
+                <a href="orders.html" class="admin-nav-link" id="nav-orders"><i class="fas fa-cart-shopping me-2"></i> Sales Orders Pipeline</a>
+                <a href="admin-logistics.html" class="admin-nav-link" id="nav-logistics"><i class="fas fa-truck-fast me-2"></i> Logistics & Courier COD</a>
+                <a href="admin-returns.html" class="admin-nav-link" id="nav-returns"><i class="fas fa-rotate-left me-2"></i> Returns & Warranty (RMA)</a>
+            </div>
+        </div>
+
+        <!-- Accordion 3: Finance & B2B Wholesale -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-finance">
+                <span><i class="fas fa-coins text-warning me-2"></i> Finance & B2B Wholesale</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-finance">
+                <a href="admin-dealers.html" class="admin-nav-link" id="nav-dealers"><i class="fas fa-handshake me-2"></i> B2B Dealers & Ledger</a>
+                <a href="admin-finance.html" class="admin-nav-link" id="nav-finance"><i class="fas fa-file-invoice-dollar me-2"></i> Finance & P&L Ledger</a>
+                <a href="admin-staff.html" class="admin-nav-link" id="nav-staff"><i class="fas fa-user-tie me-2"></i> HR & Employee Payroll</a>
+                <a href="admin-tasks.html" class="admin-nav-link" id="nav-tasks"><i class="fas fa-list-check me-2"></i> Task Kanban & Workflow</a>
+                <a href="admin-reports.html" class="admin-nav-link" id="nav-reports"><i class="fas fa-chart-column me-2"></i> Business Reports</a>
+                <a href="admin-audit.html" class="admin-nav-link" id="nav-audit"><i class="fas fa-fingerprint me-2"></i> Security & Audit Logs</a>
+            </div>
+        </div>
+
+        <!-- Standalone Section: System Settings & Store Customization -->
+        <div class="mt-3 pt-3 border-top border-secondary border-opacity-25">
+            <div class="px-3 text-secondary text-uppercase fw-bold mb-2" style="font-size: 11px; letter-spacing: 0.6px;">System & Settings</div>
+            <a href="admin-settings.html" class="admin-nav-link" id="nav-settings"><i class="fas fa-sliders text-danger me-2"></i> System Settings & APIs</a>
+            <a href="admin-sales.html" class="admin-nav-link" id="nav-sales"><i class="fas fa-palette text-warning me-2"></i> Banner & Theme</a>
+        </div>
+        
+        <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
+            <a href="dealer-portal.html" target="_blank" class="admin-nav-link text-warning"><i class="fas fa-store-alt me-2"></i> Dealer Portal View</a>
+            <a href="employee-portal.html" class="admin-nav-link text-info"><i class="fas fa-id-badge me-2"></i> Employee Workspace</a>
+            <a href="index.html" target="_blank" class="admin-nav-link text-success"><i class="fas fa-store me-2"></i> Customer Storefront</a>
+            <a href="#" class="admin-nav-link text-danger mt-2" onclick="localStorage.removeItem('admin_logged_in'); localStorage.removeItem('admin_role'); localStorage.removeItem('admin_username'); window.location.href = 'admin.html'; return false;"><i class="fas fa-sign-out-alt me-2"></i> Sign Out</a>
+        </div>
+    </div>
+    <script>try{var _s=sessionStorage.getItem('gug_admin_sidebar_scroll');if(_s!==null){var _sb=document.querySelector('.admin-sidebar');if(_sb)_sb.scrollTop=parseFloat(_s);}}catch(e){}</script>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Global Header -->
+        <div id="gug-global-header-container"></div>
+
+        <!-- Beginner Help Banner -->
+        <div id="gug-beginner-help-container"></div>
+
+        <!-- Metric KPI Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="admin-card p-3 mb-0">
+                    <span class="text-secondary small fw-bold text-uppercase">Total Inventory Valuation</span>
+                    <h3 class="fw-bold text-dark mt-1 mb-0" id="stat-total-valuation">Rs.  0</h3>
+                    <small class="text-success" style="font-size: 11.5px;"><i class="fas fa-arrow-up me-1"></i> Live Asset Value</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="admin-card p-3 mb-0">
+                    <span class="text-secondary small fw-bold text-uppercase">Total Units in Stock</span>
+                    <h3 class="fw-bold text-primary mt-1 mb-0" id="stat-total-units">0</h3>
+                    <small class="text-secondary" style="font-size: 11.5px;">Across 3 Active Hubs</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="admin-card p-3 mb-0">
+                    <span class="text-secondary small fw-bold text-uppercase">Low Stock Warnings</span>
+                    <h3 class="fw-bold text-danger mt-1 mb-0" id="stat-low-stock">0</h3>
+                    <small class="text-danger" style="font-size: 11.5px;">Below reorder threshold</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="admin-card p-3 mb-0">
+                    <span class="text-secondary small fw-bold text-uppercase">Active Warehouses</span>
+                    <h3 class="fw-bold text-success mt-1 mb-0">3 Hubs</h3>
+                    <small class="text-secondary" style="font-size: 11.5px;">Karachi, Lahore, Islamabad</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs nav-tabs-erp mb-4" id="inventoryTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" id="all-stock-tab" data-bs-toggle="tab" data-bs-target="#tab-all-stock" type="button"><i class="fas fa-cubes me-2"></i> All Products & Multi-Hub Stock</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="warehouses-tab" data-bs-toggle="tab" data-bs-target="#tab-warehouses" type="button"><i class="fas fa-city me-2"></i> Warehouse Locations</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="transfers-tab" data-bs-toggle="tab" data-bs-target="#tab-transfers" type="button"><i class="fas fa-truck-moving me-2"></i> Stock Transfer Logs</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="inventoryTabsContent">
+            <!-- TAB 1: ALL STOCK -->
+            <div class="tab-pane fade show active" id="tab-all-stock" role="tabpanel">
+                <div class="erp-card">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                        <div class="d-flex gap-2" style="max-width: 400px; flex: 1;">
+                            <input type="text" id="search-inventory" class="form-control" placeholder="Search SKU, barcode, product name..." oninput="renderStockTable()">
+                        </div>
+                        <div class="d-flex gap-2">
+                            <select id="filter-hub" class="form-select form-select-sm" style="width: 180px;" onchange="renderStockTable()">
+                                <option value="all">All Warehouses</option>
+                                <option value="WH-01">Main Central Hub (KHI)</option>
+                                <option value="WH-02">North Hub (LHR)</option>
+                                <option value="WH-03">Capital Hub (ISB)</option>
+                            </select>
+                            <select id="filter-status" class="form-select form-select-sm" style="width: 160px;" onchange="renderStockTable()">
+                                <option value="all">All Stock Status</option>
+                                <option value="low">Low Stock Only</option>
+                                <option value="out">Out of Stock Only</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Item & SKU</th>
+                                    <th>Category</th>
+                                    <th>Cost Price</th>
+                                    <th>Sale Price</th>
+                                    <th>Main Hub (KHI)</th>
+                                    <th>North Hub (LHR)</th>
+                                    <th>Capital (ISB)</th>
+                                    <th>Total Stock</th>
+                                    <th>Health</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stock-table-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: WAREHOUSES -->
+            <div class="tab-pane fade" id="tab-warehouses" role="tabpanel">
+                <div class="row g-3" id="warehouse-cards-container">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- TAB 3: TRANSFERS -->
+            <div class="tab-pane fade" id="tab-transfers" role="tabpanel">
+                <div class="erp-card">
+                    <h5 class="text-white fw-bold mb-3"><i class="fas fa-history text-danger me-2"></i> Recent Inter-Warehouse Transfers</h5>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Transfer ID</th>
+                                    <th>Date</th>
+                                    <th>Item</th>
+                                    <th>From Hub</th>
+                                    <th>To Hub</th>
+                                    <th>Qty</th>
+                                    <th>Status</th>
+                                    <th>Approved By</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transfers-table-body">
+                                <tr>
+                                    <td><code>TRF-9021</code></td>
+                                    <td>2026-08-18</td>
+                                    <td><strong>GearUp Ultra Smartwatch Pro Max</strong></td>
+                                    <td><span class="badge bg-secondary">Main Central (KHI)</span></td>
+                                    <td><span class="badge bg-info">North Hub (LHR)</span></td>
+                                    <td><strong>15 units</strong></td>
+                                    <td><span class="badge bg-success">Received & Verified</span></td>
+                                    <td>Khan Super Admin</td>
+                                </tr>
+                                <tr>
+                                    <td><code>TRF-9020</code></td>
+                                    <td>2026-08-14</td>
+                                    <td><strong>PulseANC Wireless Studio Headphones</strong></td>
+                                    <td><span class="badge bg-secondary">Main Central (KHI)</span></td>
+                                    <td><span class="badge bg-primary">Capital Hub (ISB)</span></td>
+                                    <td><strong>10 units</strong></td>
+                                    <td><span class="badge bg-success">Completed</span></td>
+                                    <td>Zeeshan Qureshi</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transfer Stock Modal -->
+    <div class="modal fade" id="transferModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-white"><i class="fas fa-exchange-alt text-danger me-2"></i> Inter-Warehouse Stock Transfer</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="transferForm" onsubmit="executeStockTransfer(event)">
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small">Select Product</label>
+                            <select id="transfer-product" class="form-select" required></select>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label text-secondary small">Source Hub (From)</label>
+                                <select id="transfer-from" class="form-select" required>
+                                    <option value="WH-01">Main Central Hub (KHI)</option>
+                                    <option value="WH-02">North Hub (LHR)</option>
+                                    <option value="WH-03">Capital Hub (ISB)</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label text-secondary small">Destination Hub (To)</label>
+                                <select id="transfer-to" class="form-select" required>
+                                    <option value="WH-02">North Hub (LHR)</option>
+                                    <option value="WH-01">Main Central Hub (KHI)</option>
+                                    <option value="WH-03">Capital Hub (ISB)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small">Transfer Quantity</label>
+                            <input type="number" id="transfer-qty" class="form-control" min="1" value="5" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small">Transfer Notes / Reason</label>
+                            <input type="text" id="transfer-notes" class="form-control" placeholder="e.g., Balancing regional demand spikes" required>
+                        </div>
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-check me-1"></i> Dispatch Transfer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/products-data.js"></script>
+    <script src="assets/js/gug-erp-core.js"></script>
+    <!-- Firebase Compat SDKs & Cloud Sync -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/firebase-sync.js"></script>
+    <script src="assets/js/admin.js"></script>
+    <script>
+        function renderStockTable() {
+            const products = GUG_DB.getProducts();
+            const metrics = GUG_DB.calculateExecutiveMetrics();
+            
+            document.getElementById('stat-total-valuation').innerText = 'Rs ' + metrics.inventoryValuation.toLocaleString();
+            
+            let totalUnits = 0;
+            products.forEach(p => {
+                if (p.stock && typeof p.stock === 'object') {
+                    Object.values(p.stock).forEach(q => totalUnits += Number(q || 0));
+                } else {
+                    totalUnits += Number(p.stock || 0);
+                }
+            });
+            document.getElementById('stat-total-units').innerText = totalUnits.toLocaleString() + ' Units';
+            document.getElementById('stat-low-stock').innerText = metrics.lowStockCount;
+
+            const search = (document.getElementById('search-inventory').value || '').toLowerCase();
+            const filterHub = document.getElementById('filter-hub').value;
+            const filterStatus = document.getElementById('filter-status').value;
+
+            const tbody = document.getElementById('stock-table-body');
+            tbody.innerHTML = '';
+
+            products.forEach(p => {
+                const normStock = GUG_DB.normalizeProductStock ? GUG_DB.normalizeProductStock(p.stock) : (p.stock || {});
+                let total = 0;
+                let cityBadges = [];
+                if (typeof normStock === 'object') {
+                    Object.entries(normStock).forEach(([city, qty]) => {
+                        const q = Number(qty || 0);
+                        total += q;
+                        cityBadges.push(`<span class="badge ${q <= 3 ? 'bg-danger' : 'bg-secondary'} me-1 mb-1" style="font-size: 11px;">${city}: ${q}</span>`);
+                    });
+                } else {
+                    total = Number(normStock || 0);
+                    cityBadges.push(`<span class="badge bg-secondary me-1 mb-1">Karachi: ${total}</span>`);
+                }
+
+                const threshold = Number(p.lowStockThreshold !== undefined ? p.lowStockThreshold : 10);
+
+                // Filters
+                if (search && !p.title.toLowerCase().includes(search) && !(p.sku || '').toLowerCase().includes(search)) return;
+                if (filterStatus === 'low' && (total > threshold || total === 0)) return;
+                if (filterStatus === 'out' && total > 0) return;
+
+                let healthBadge = '<span class="badge bg-success">Optimal</span>';
+                if (total === 0) healthBadge = '<span class="badge bg-danger">Out of Stock</span>';
+                else if (total <= threshold) healthBadge = `<span class="badge bg-warning text-dark"><i class="fas fa-exclamation-triangle me-1"></i>Low Stock (&le; ${threshold})</span>`;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <div class="fw-bold text-dark">${p.title}</div>
+                        <small class="text-secondary">SKU: ${p.sku || 'N/A'} | Barcode: ${p.barcode || 'N/A'}</small>
+                    </td>
+                    <td><span class="badge bg-light text-dark border border-secondary">${p.category || 'General'}</span></td>
+                    <td class="text-dark">Rs ${(p.costPrice || p.purchasePrice || 0).toLocaleString()}</td>
+                    <td class="text-success fw-bold">Rs ${(p.sellingPrice || 0).toLocaleString()}</td>
+                    <td colspan="3">
+                        <div class="d-flex flex-wrap align-items-center">
+                            ${cityBadges.join('')}
+                        </div>
+                    </td>
+                    <td><strong class="text-dark">${total} Units</strong></td>
+                    <td>${healthBadge}</td>
+                    <td>
+                        <button class="btn btn-outline-danger btn-sm py-1 px-2" onclick="quickStockAdjust('${p.id}')" title="Quick Adjust Stock"><i class="fas fa-edit"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Populate warehouse tab
+            const whContainer = document.getElementById('warehouse-cards-container');
+            const warehouses = GUG_DB.getWarehouses();
+            whContainer.innerHTML = '';
+            warehouses.forEach(wh => {
+                whContainer.innerHTML += `
+                    <div class="col-md-4">
+                        <div class="erp-card h-100">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-danger">${wh.id}</span>
+                                ${wh.isDefault ? '<span class="badge bg-success">Default Fulfillment</span>' : ''}
+                            </div>
+                            <h5 class="text-dark fw-bold mt-2">${wh.name}</h5>
+                            <p class="text-secondary small mb-3"><i class="fas fa-map-marker-alt me-1 text-danger"></i> ${wh.city} - ${wh.address}</p>
+                            <div class="border-top border-secondary border-opacity-25 pt-2 small text-secondary">
+                                <div><strong class="text-dark">Manager:</strong> ${wh.manager}</div>
+                                <div><strong class="text-dark">Storage Capacity:</strong> ${wh.capacity}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function openTransferModal() {
+            const products = GUG_DB.getProducts();
+            const select = document.getElementById('transfer-product');
+            select.innerHTML = '';
+            products.forEach(p => {
+                select.innerHTML += `<option value="${p.id}">${p.title} (SKU: ${p.sku})</option>`;
+            });
+            new bootstrap.Modal(document.getElementById('transferModal')).show();
+        }
+
+        function executeStockTransfer(e) {
+            e.preventDefault();
+            const prodId = document.getElementById('transfer-product').value;
+            const fromWh = document.getElementById('transfer-from').value;
+            const toWh = document.getElementById('transfer-to').value;
+            const qty = Number(document.getElementById('transfer-qty').value);
+            const notes = document.getElementById('transfer-notes').value;
+
+            if (fromWh === toWh) {
+                window.GUG_DB.showToast('Source and destination warehouses cannot be the same!', 'warning', 'Invalid Transfer');
+                return;
+            }
+
+            const products = GUG_DB.getProducts();
+            const prod = products.find(p => p.id === prodId);
+            if (!prod) return;
+
+            if (!prod.stock) prod.stock = { 'WH-01': 0, 'WH-02': 0, 'WH-03': 0 };
+            const currentSource = prod.stock[fromWh] || 0;
+            if (currentSource < qty) {
+                window.GUG_DB.showToast(`Insufficient stock in source hub! Available: ${currentSource} units.`, 'error', 'Insufficient Stock');
+                return;
+            }
+
+            prod.stock[fromWh] -= qty;
+            prod.stock[toWh] = (prod.stock[toWh] || 0) + qty;
+            GUG_DB.saveProduct(prod);
+
+            GUG_DB.logAudit({
+                action: 'INTER_WAREHOUSE_TRANSFER',
+                entity: 'INVENTORY',
+                entityId: prod.id,
+                previousValue: `${fromWh}: ${currentSource} units`,
+                newValue: `Transferred ${qty} units from ${fromWh} to ${toWh}`,
+                reason: notes
+            });
+
+            bootstrap.Modal.getInstance(document.getElementById('transferModal')).hide();
+            window.GUG_DB.showToast(`Stock transfer of ${qty} units completed successfully!`, 'success', 'Transfer Completed');
+            renderStockTable();
+        }
+
+        function quickStockAdjust(prodId) {
+            const products = GUG_DB.getProducts();
+            const prod = products.find(p => p.id === prodId);
+            if (!prod) return;
+
+            const normStock = GUG_DB.normalizeProductStock ? GUG_DB.normalizeProductStock(prod.stock) : (prod.stock || { 'Karachi': 0 });
+            const cityNames = Object.keys(normStock);
+            const defaultCity = cityNames[0] || 'Karachi';
+            const targetCity = prompt(`Enter City to adjust stock for "${prod.title}" (Available: ${cityNames.join(', ')}):`, defaultCity);
+            if (!targetCity) return;
+            const cleanCity = targetCity.trim();
+
+            const currentQty = normStock[cleanCity] || 0;
+            const newQtyStr = prompt(`Enter new stock quantity for "${prod.title}" in ${cleanCity}:`, currentQty);
+            if (newQtyStr !== null && !isNaN(newQtyStr)) {
+                const newQty = Math.max(0, Number(newQtyStr));
+                normStock[cleanCity] = newQty;
+                prod.stock = normStock;
+                GUG_DB.saveProduct(prod);
+
+                GUG_DB.logAudit({
+                    action: 'STOCK_ADJUSTMENT',
+                    entity: 'PRODUCT',
+                    entityId: prod.id,
+                    previousValue: `${cleanCity}: ${currentQty}`,
+                    newValue: `${cleanCity}: ${newQty}`,
+                    reason: `Manual stock count adjustment for ${cleanCity} via ERP Inventory`
+                });
+                window.GUG_DB.showToast(`Updated stock in ${cleanCity} to ${newQty} units.`, 'success', 'Stock Adjusted');
+                renderStockTable();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            GUG_DB.renderGlobalHeader('gug-global-header-container', 'Multi-Warehouse Inventory Control');
+            GUG_DB.renderBeginnerHelpBanner('gug-beginner-help-container', {
+                whereAmI: 'Multi-Hub Inventory & Valuation Manager',
+                whatCanIDo: 'View live stock levels across Karachi (WH-01), Lahore (WH-02), and Islamabad (WH-03), perform inter-hub transfers, and adjust stock counts.',
+                whatNext: 'Click "Transfer Stock" to move products between hubs or click the edit icon on any item to perform an inventory count adjustment.'
+            });
+            renderStockTable();
+            window.addEventListener('gugCatalogUpdated', () => renderStockTable());
+            window.addEventListener('productsReady', () => renderStockTable());
+        });
+    </script>
+</body>
+</html>
+
+
+

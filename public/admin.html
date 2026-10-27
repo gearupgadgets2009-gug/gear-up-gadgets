@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise ERP Operating System | GearUp Gadgets</title>    
+    <!-- Favicon & Device Web Icons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/images/favicon-64x64.png">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/fonts/font-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <style>
+        :root {
+            --accent-red: #E50303;
+            --accent-red-hover: #b30202;
+            --bg-dark: #07090d;
+            --card-dark: rgba(14, 18, 27, 0.75);
+            --border-dark: rgba(255, 255, 255, 0.1);
+        }
+        body {
+            background-color: var(--gug-bg-color, #07090d) !important;
+            background-image: var(--gug-bg-image) !important;
+            background-attachment: var(--gug-bg-attachment, fixed) !important;
+            background-size: var(--gug-bg-size, cover, cover, 28px 49px) !important;
+            background-position: var(--gug-bg-position, center top) !important;
+            background-repeat: var(--gug-bg-repeat, no-repeat, no-repeat, repeat) !important;
+            min-height: 100vh;
+            color: #ffffff !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+        .admin-sidebar {
+            width: 260px;
+            background: rgba(10, 10, 15, 0.7) !important;
+            backdrop-filter: blur(24px) saturate(200%) !important;
+            -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 20px 15px;
+            border-right: 1px solid var(--border-dark) !important;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 4px 0 30px rgba(0, 0, 0, 0.6) !important;
+        }
+        .admin-main {
+            margin-left: 260px;
+            padding: 25px 30px;
+            min-height: 100vh;
+            background-color: transparent !important;
+            color: #ffffff !important;
+        }
+        .admin-nav-link {
+            display: flex;
+            align-items: center;
+            padding: 9px 13px;
+            color: #94a3b8;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 3px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .admin-nav-link:hover {
+            background-color: rgba(219, 39, 36, 0.15);
+            color: #ffffff;
+            transform: translateX(2px);
+        }
+        .admin-nav-link.active {
+            background-color: var(--accent-red) !important;
+            color: #ffffff !important;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(219, 39, 36, 0.4);
+        }
+        .sidebar-section-heading {
+            font-size: 10.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #64748b;
+            margin-top: 15px;
+            margin-bottom: 6px;
+            padding-left: 10px;
+        }
+        .sidebar-accordion-group {
+            margin-top: 6px;
+            margin-bottom: 6px;
+        }
+        .sidebar-accordion-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 8px 12px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            color: #cbd5e1;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+        .sidebar-accordion-header:hover, .sidebar-accordion-header.open {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+        }
+        .sidebar-accordion-header .accordion-arrow {
+            font-size: 11px;
+            transition: transform 0.25s ease;
+        }
+        .sidebar-accordion-header.open .accordion-arrow {
+            transform: rotate(-180deg);
+        }
+        .sidebar-accordion-body {
+            display: none;
+            padding-left: 10px;
+            margin-top: 3px;
+            margin-bottom: 4px;
+            border-left: 2px solid rgba(255, 255, 255, 0.08);
+            margin-left: 14px;
+        }
+        .sidebar-accordion-body.open {
+            display: block;
+        }
+
+        .admin-module-section {
+            display: none;
+            animation: fadeInModule 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .admin-module-section.active {
+            display: block;
+        }
+        @keyframes fadeInModule {
+            0% { opacity: 0; transform: translateY(8px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .admin-card {
+            background: rgba(14, 18, 27, 0.65) !important;
+            backdrop-filter: blur(24px) saturate(200%) !important;
+            -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
+            border: 1px solid var(--border-dark) !important;
+            border-radius: 16px !important;
+            padding: 22px;
+            margin-bottom: 22px;
+            color: #ffffff !important;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+        }
+        .admin-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .kpi-card {
+            background: rgba(18, 24, 34, 0.75) !important;
+            backdrop-filter: blur(20px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 14px !important;
+            padding: 18px 20px;
+            transition: all 0.25s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(229, 3, 3, 0.5) !important;
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 20px rgba(229, 3, 3, 0.25) !important;
+        }
+        .kpi-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #94a3b8;
+        }
+        .kpi-value {
+            font-size: 26px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-top: 6px;
+            margin-bottom: 2px;
+        }
+        .quick-action-btn {
+            background: rgba(18, 24, 34, 0.6) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-radius: 10px !important;
+            padding: 10px 16px;
+            font-weight: 600;
+            font-size: 13px;
+            color: #ffffff !important;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .quick-action-btn:hover {
+            background: rgba(229, 3, 3, 0.2) !important;
+            border-color: var(--accent-red) !important;
+            color: #ffffff !important;
+            transform: translateY(-1px);
+        }
+
+        .table-custom {
+            color: #ffffff !important;
+            background-color: transparent !important;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table-custom th {
+            background: rgba(255, 255, 255, 0.05) !important;
+            color: #ffffff !important;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 12px 14px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.12);
+        }
+        .table-custom td {
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+            color: #ffffff !important;
+            font-size: 13px;
+            vertical-align: middle;
+        }
+        .table-custom tr:hover td {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        /* Dark Grey Theme for Theme Customizer Cards & Dynamic Contacts */
+        .admin-dark-card, .theme-section-box {
+            background: rgba(16, 21, 30, 0.85) !important;
+            background-color: #10151e !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-radius: 14px !important;
+            color: #ffffff !important;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-shadow: none !important;
+        }
+        .admin-dark-card * {
+            text-shadow: none !important;
+        }
+        .theme-section-box h5, .theme-section-box h6, .theme-section-box label,
+        .admin-dark-card h5, .admin-dark-card h6, .admin-dark-card label {
+            color: #ffffff !important;
+            text-shadow: none !important;
+        }
+        .theme-section-box .form-control, .theme-section-box .form-select,
+        .admin-dark-card .form-control, .admin-dark-card .form-select {
+            background: rgba(10, 14, 22, 0.85) !important;
+            background-color: #0a0e16 !important;
+            border: 1px solid rgba(255, 255, 255, 0.18) !important;
+            color: #ffffff !important;
+            -webkit-text-fill-color: #ffffff !important;
+            text-shadow: none !important;
+            border-radius: 8px !important;
+        }
+        .theme-section-box .form-control:focus, .theme-section-box .form-select:focus,
+        .admin-dark-card .form-control:focus, .admin-dark-card .form-select:focus {
+            background-color: #0e1420 !important;
+            border-color: var(--accent-red) !important;
+            box-shadow: 0 0 12px rgba(229, 3, 3, 0.35) !important;
+            color: #ffffff !important;
+        }
+        .theme-section-box .input-group-text, .admin-dark-card .input-group-text {
+            background: rgba(26, 34, 48, 0.95) !important;
+            background-color: #1a2230 !important;
+            border: 1px solid rgba(255, 255, 255, 0.18) !important;
+            color: #ffffff !important;
+        }
+
+        /* Login Portal Card */
+        #login-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(7, 9, 13, 0.92);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        .stunning-login-card {
+            width: 420px;
+            max-width: 90%;
+            background: rgba(16, 21, 30, 0.95) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            border-top: 3px solid var(--accent-red) !important;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 25px rgba(229, 3, 3, 0.25) !important;
+            border-radius: 18px !important;
+            padding: 36px 30px;
+        }
+
+        /* ======================================================== */
+        /* STRICT PRINT SLIP ENGINE & EXCEL-LIKE TABLE CSS          */
+        /* ======================================================== */
+        #gug-individual-print-container {
+            display: none;
+        }
+        @media print {
+            body.gug-individual-print-active * {
+                visibility: hidden !important;
+            }
+            body.gug-individual-print-active #gug-individual-print-container,
+            body.gug-individual-print-active #gug-individual-print-container * {
+                visibility: visible !important;
+            }
+            body.gug-individual-print-active #gug-individual-print-container {
+                display: block !important;
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                background: #ffffff !important;
+                color: #000000 !important;
+                padding: 10px !important;
+                margin: 0 !important;
+            }
+            /* Universal Excel-like continuous solid grid rules */
+            .order-products-table {
+                border-collapse: collapse !important;
+                width: 100% !important;
+                margin-top: 6px !important;
+                margin-bottom: 8px !important;
+                background-color: transparent !important;
+                border: 1px solid #000000 !important;
+            }
+            .order-products-table th,
+            .order-products-table td {
+                border: 1px solid #000000 !important;
+                padding: 4px !important;
+                color: #000000 !important;
+                font-size: 11px !important;
+                line-height: 1.25 !important;
+            }
+            .order-products-table thead th {
+                background-color: #f2f2f2 !important;
+                font-weight: 700 !important;
+                text-align: center !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .order-products-table th:nth-child(1), .order-products-table td:nth-child(1) { width: 5% !important; text-align: center !important; }
+            .order-products-table th:nth-child(2) { width: 60% !important; text-align: center !important; }
+            .order-products-table td:nth-child(2) { width: 60% !important; text-align: left !important; }
+            .order-products-table th:nth-child(3), .order-products-table td:nth-child(3) { width: 15% !important; text-align: center !important; }
+            .order-products-table th:nth-child(4), .order-products-table td:nth-child(4) { width: 5% !important; text-align: center !important; }
+            .order-products-table th:nth-child(5), .order-products-table td:nth-child(5) { width: 15% !important; text-align: center !important; }
+
+            /* B2B Statement Table in Print */
+            .dealer-statement-table {
+                border-collapse: collapse !important;
+                width: 100% !important;
+                border: 1px solid #000000 !important;
+            }
+            .dealer-statement-table th, .dealer-statement-table td {
+                border: 1px solid #000000 !important;
+                padding: 5px !important;
+                color: #000000 !important;
+                font-size: 11px !important;
+            }
+            .dealer-statement-table thead th {
+                background-color: #f2f2f2 !important;
+                font-weight: 700 !important;
+                text-align: center !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ======================================================== -->
+    <!-- 1. ENTERPRISE SIDEBAR NAVIGATION                         -->
+    <!-- ======================================================== -->
+    <div class="admin-sidebar" id="mainAdminSidebar">
+        <div class="d-flex align-items-center mb-3 px-2">
+            <i class="fas fa-shield-alt text-danger fs-4 me-2"></i>
+            <div>
+                <h6 class="text-white m-0 fw-bold" style="letter-spacing: 0.5px;">GearUp ERP</h6>
+                <small class="text-secondary" style="font-size: 11px;">Enterprise Operating System</small>
+            </div>
+        </div>
+
+        <a href="#dashboard" class="admin-nav-link active" id="nav-dashboard" onclick="showAdminSection('sec-dashboard'); return false;">
+            <i class="fas fa-chart-pie me-2 text-info"></i> Executive Dashboard
+        </a>
+        
+        <!-- Accordion 1: Catalog & E-Commerce -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header open" data-target="grp-catalog" onclick="toggleSidebarAccordion(this, 'grp-catalog')">
+                <span><i class="fas fa-shopping-bag text-danger me-2"></i> Catalog & E-Commerce</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body open" id="grp-catalog">
+                <a href="#products" class="admin-nav-link" id="nav-products" onclick="showAdminSection('sec-products'); return false;">
+                    <i class="fas fa-boxes-stacked me-2"></i> Products & Catalog
+                </a>
+                <a href="#crm" class="admin-nav-link" id="nav-crm" onclick="showAdminSection('sec-crm'); return false;">
+                    <i class="fas fa-users-viewfinder me-2"></i> Customers (CRM)
+                </a>
+                <a href="admin-marketing.html" class="admin-nav-link" id="nav-marketing">
+                    <i class="fas fa-tags me-2"></i> Coupons & Marketing
+                </a>
+            </div>
+        </div>
+
+        <!-- Accordion 2: Supply Chain & Operations -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header open" data-target="grp-supply" onclick="toggleSidebarAccordion(this, 'grp-supply')">
+                <span><i class="fas fa-truck-ramp-box text-primary me-2"></i> Supply Chain & Operations</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body open" id="grp-supply">
+                <a href="admin-inventory.html" class="admin-nav-link" id="nav-inventory">
+                    <i class="fas fa-warehouse me-2"></i> Multi-Warehouse Stock
+                </a>
+                <a href="admin-purchasing.html" class="admin-nav-link" id="nav-purchasing">
+                    <i class="fas fa-dolly me-2"></i> Purchasing & Suppliers
+                </a>
+                <a href="orders.html" class="admin-nav-link" id="nav-orders">
+                    <i class="fas fa-cart-shopping me-2"></i> Sales Orders Pipeline
+                </a>
+                <a href="admin-logistics.html" class="admin-nav-link" id="nav-logistics">
+                    <i class="fas fa-truck-fast me-2"></i> Logistics & Courier COD
+                </a>
+                <a href="admin-returns.html" class="admin-nav-link" id="nav-returns">
+                    <i class="fas fa-rotate-left me-2"></i> Returns & Warranty (RMA)
+                </a>
+            </div>
+        </div>
+
+        <!-- Accordion 3: Finance & B2B Wholesale -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header open" data-target="grp-finance" onclick="toggleSidebarAccordion(this, 'grp-finance')">
+                <span><i class="fas fa-coins text-warning me-2"></i> Finance & B2B Wholesale</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body open" id="grp-finance">
+                <a href="#dealers" class="admin-nav-link" id="nav-dealers" onclick="showAdminSection('sec-dealers'); return false;">
+                    <i class="fas fa-handshake me-2"></i> B2B Dealers & Ledger
+                </a>
+                <a href="admin-finance.html" class="admin-nav-link" id="nav-finance">
+                    <i class="fas fa-file-invoice-dollar me-2"></i> Finance & P&L Ledger
+                </a>
+                <a href="admin-staff.html" class="admin-nav-link" id="nav-staff">
+                    <i class="fas fa-user-tie me-2"></i> HR & Employee Payroll
+                </a>
+                <a href="admin-tasks.html" class="admin-nav-link" id="nav-tasks">
+                    <i class="fas fa-list-check me-2"></i> Task Kanban & Workflow
+                </a>
+                <a href="admin-reports.html" class="admin-nav-link" id="nav-reports">
+                    <i class="fas fa-chart-column me-2"></i> Business Reports
+                </a>
+                <a href="admin-audit.html" class="admin-nav-link" id="nav-audit">
+                    <i class="fas fa-fingerprint me-2"></i> Security & Audit Logs
+                </a>
+            </div>
+        </div>
+        
+        <!-- Standalone Section: System Settings & Store Customization -->
+        <div class="mt-3 pt-3 border-top border-secondary border-opacity-25">
+            <div class="px-3 text-secondary text-uppercase fw-bold mb-2" style="font-size: 11px; letter-spacing: 0.6px;">System & Settings</div>
+            <a href="admin-settings.html" class="admin-nav-link" id="nav-settings">
+                <i class="fas fa-sliders text-danger me-2"></i> System Settings & APIs
+            </a>
+            <a href="#sales" class="admin-nav-link" id="nav-sales" onclick="showAdminSection('sec-sales'); return false;">
+                <i class="fas fa-palette text-warning me-2"></i> Banner & Theme
+            </a>
+        </div>
+        
+        <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
+            <a href="dealer-portal.html" target="_blank" class="admin-nav-link text-warning"><i class="fas fa-store-alt me-2"></i> Dealer Portal View</a>
+            <a href="employee-portal.html" class="admin-nav-link text-info"><i class="fas fa-id-badge me-2"></i> Employee Workspace</a>
+            <a href="index.html" target="_blank" class="admin-nav-link text-success"><i class="fas fa-store me-2"></i> Customer Storefront</a>
+            <a href="#" class="admin-nav-link text-danger mt-2" onclick="promptAdminSignOut(); return false;"><i class="fas fa-sign-out-alt me-2"></i> Sign Out</a>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- 2. MAIN ADMIN CONTENT CONTAINER                          -->
+    <!-- ======================================================== -->
+    <div class="admin-main">
+        <!-- Global Header Container -->
+        <div id="gug-global-header-container"></div>
+
+        <!-- ==================================================== -->
+        <!-- MODULE SECTION 1: EXECUTIVE DASHBOARD                -->
+        <!-- ==================================================== -->
+        <div class="admin-module-section active" id="sec-dashboard">
+            <!-- Quick Action Dock -->
+            <div class="d-flex align-items-center gap-2 mb-4 flex-wrap">
+                <span class="text-secondary small fw-bold text-uppercase me-2"><i class="fas fa-bolt text-warning me-1"></i> Quick Actions:</span>
+                <button type="button" class="quick-action-btn" onclick="showAdminSection('sec-products'); openProductModal();"><i class="fas fa-plus-circle text-danger"></i> Add Product</button>
+                <a href="orders.html" class="quick-action-btn"><i class="fas fa-cart-plus text-primary"></i> Create Order</a>
+                <button type="button" class="quick-action-btn" onclick="showAdminSection('sec-crm');"><i class="fas fa-user-plus text-success"></i> View CRM</button>
+                <button type="button" class="quick-action-btn" onclick="showAdminSection('sec-dealers');"><i class="fas fa-handshake text-warning"></i> B2B Ledger</button>
+                <button type="button" class="quick-action-btn" onclick="showAdminSection('sec-sales');"><i class="fas fa-palette text-info"></i> Banners & Themes</button>
+            </div>
+
+            <!-- 4 Key Metric Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-xl-3 col-md-6">
+                    <div class="kpi-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="kpi-title">TOTAL PRODUCTS IN CATALOG</span>
+                            <span class="badge bg-danger bg-opacity-10 text-danger p-2 rounded-circle"><i class="fas fa-boxes-stacked"></i></span>
+                        </div>
+                        <div class="kpi-value text-danger" id="kpi-total-products">0</div>
+                        <small class="text-secondary">Active store catalog inventory</small>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="kpi-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="kpi-title">SALES ORDERS PIPELINE</span>
+                            <span class="badge bg-primary bg-opacity-10 text-primary p-2 rounded-circle"><i class="fas fa-shopping-cart"></i></span>
+                        </div>
+                        <div class="kpi-value text-primary" id="kpi-total-orders">0</div>
+                        <small class="text-secondary">All-time recorded customer orders</small>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="kpi-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="kpi-title">CRM CUSTOMER DOSSIERS</span>
+                            <span class="badge bg-success bg-opacity-10 text-success p-2 rounded-circle"><i class="fas fa-users"></i></span>
+                        </div>
+                        <div class="kpi-value text-success" id="kpi-total-customers">0</div>
+                        <small class="text-secondary">Verified buyer accounts in CRM</small>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="kpi-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="kpi-title">B2B DEALER ACCOUNTS</span>
+                            <span class="badge bg-warning bg-opacity-10 text-warning p-2 rounded-circle"><i class="fas fa-handshake"></i></span>
+                        </div>
+                        <div class="kpi-value text-warning" id="kpi-total-dealers">0</div>
+                        <small class="text-secondary">Authorized wholesale partners</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Orders Overview Card -->
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <div>
+                        <h5 class="fw-bold text-white m-0"><i class="fas fa-clock-rotate-left text-danger me-2"></i> Recent Orders Activity</h5>
+                        <small class="text-secondary">Live transaction feed across storefront and wholesale pipelines</small>
+                    </div>
+                    <a href="orders.html" class="btn btn-sm btn-outline-danger fw-bold"><i class="fas fa-external-link-alt me-1"></i> View All Orders</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table-custom">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Products / Items</th>
+                                <th>Total Amount</th>
+                                <th>Payment Mode</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dashboard-recent-orders-tbody">
+                            <tr><td colspan="6" class="text-center text-secondary py-4">Loading real-time order data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================================================== -->
+        <!-- MODULE SECTION 2: PRODUCTS & CATALOG                 -->
+        <!-- ==================================================== -->
+        <div class="admin-module-section" id="sec-products">
+            <div class="admin-card">
+                <div class="admin-card-header flex-wrap gap-2">
+                    <div>
+                        <h4 class="fw-bold text-white m-0"><i class="fas fa-boxes-stacked text-danger me-2"></i> Products & Inventory Catalog</h4>
+                        <small class="text-secondary">Browse, search, edit, and create products. Changes reflect live on storefront.</small>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-danger fw-bold btn-sm shadow" onclick="openProductModal()">
+                            <i class="fas fa-plus me-1"></i> Add New Product
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Category Filter Pills & Search Bar -->
+                <div class="row g-2 align-items-center mb-3">
+                    <div class="col-md-5">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-dark border-secondary text-secondary"><i class="fas fa-search"></i></span>
+                            <input type="text" id="admin-product-search-input" class="form-control bg-dark text-white border-secondary" placeholder="Search by product name, SKU, or brand..." oninput="handleProductSearch(this.value)">
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="d-flex align-items-center gap-1 flex-wrap" id="admin-category-pills-container">
+                            <!-- Category Pills Injected Dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table-custom">
+                        <thead>
+                            <tr>
+                                <th style="width: 70px;">Image</th>
+                                <th>Product Name & ID</th>
+                                <th>Category</th>
+                                <th>Price (PKR)</th>
+                                <th>Stock Status</th>
+                                <th style="width: 140px; text-align: center;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-products-table-tbody">
+                            <tr><td colspan="6" class="text-center text-secondary py-4">Loading product catalog...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================================================== -->
+        <!-- MODULE SECTION 3: CUSTOMERS CRM & CRM PRINT SLIP     -->
+        <!-- ==================================================== -->
+        <div class="admin-module-section" id="sec-crm">
+            <div class="admin-card">
+                <div class="admin-card-header flex-wrap gap-2">
+                    <div>
+                        <h4 class="fw-bold text-white m-0"><i class="fas fa-users-viewfinder text-danger me-2"></i> Customer Relationship Management (CRM)</h4>
+                        <small class="text-secondary">360° buyer intelligence, purchasing history, and instant print slip generation</small>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 px-3 py-2">
+                            <i class="fas fa-print me-1"></i> Excel-Like Print Slip Engine Ready
+                        </span>
+                    </div>
+                </div>
+
+                <!-- CRM Search & Filtering -->
+                <div class="row g-2 mb-3">
+                    <div class="col-md-6">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-dark border-secondary text-secondary"><i class="fas fa-search"></i></span>
+                            <input type="text" id="crm-search-input" class="form-control bg-dark text-white border-secondary" placeholder="Search by customer name, phone, or email..." oninput="renderCrmCustomersTable(this.value)">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table-custom">
+                        <thead>
+                            <tr>
+                                <th>Customer ID & Name</th>
+                                <th>Contact Details</th>
+                                <th>Total Orders</th>
+                                <th>Lifetime Spend</th>
+                                <th>VIP Level</th>
+                                <th style="width: 170px; text-align: center;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="crm-customers-tbody">
+                            <tr><td colspan="6" class="text-center text-secondary py-4">Loading customer records...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================================================== -->
+        <!-- MODULE SECTION 4: B2B DEALERS & B2B PRINT SLIP       -->
+        <!-- ==================================================== -->
+        <div class="admin-module-section" id="sec-dealers">
+            <div class="admin-card">
+                <div class="admin-card-header flex-wrap gap-2">
+                    <div>
+                        <h4 class="fw-bold text-white m-0"><i class="fas fa-handshake text-warning me-2"></i> B2B Wholesale Dealers & Ledger</h4>
+                        <small class="text-secondary">Multi-installment payment schedules, chronological balance tracking, and dealer slips</small>
+                    </div>
+                    <span class="badge bg-warning bg-opacity-25 text-warning border border-warning border-opacity-50 px-3 py-2">
+                        <i class="fas fa-calculator me-1"></i> Progressive Ledger Active
+                    </span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table-custom">
+                        <thead>
+                            <tr>
+                                <th>Dealer ID & Shop</th>
+                                <th>Owner & Phone</th>
+                                <th>Total Stock Value</th>
+                                <th>Paid Amount</th>
+                                <th>Current Balance</th>
+                                <th style="width: 220px; text-align: center;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dealers-ledger-tbody">
+                            <tr><td colspan="6" class="text-center text-secondary py-4">Loading B2B dealer records...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================================================== -->
+        <!-- MODULE SECTION 5: BANNER & THEME CUSTOMIZER          -->
+        <!-- ==================================================== -->
+        <div class="admin-module-section" id="sec-sales">
+            <!-- Tabs Navigation inside Banner & Theme -->
+            <ul class="nav nav-tabs nav-tabs-erp mb-4" id="bannerThemeTabs" role="tablist">
+                <li class="nav-item">
+                    <button class="nav-link fw-bold" id="hero-slider-tab" data-bs-toggle="tab" data-bs-target="#tab-hero-slider" type="button">
+                        <i class="fas fa-sliders text-danger me-2"></i> Homepage Hero Slider
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link fw-bold" id="homepage-banners-tab" data-bs-toggle="tab" data-bs-target="#tab-homepage-banners" type="button">
+                        <i class="fas fa-images text-primary me-2"></i> Category & Promo Banners
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link active fw-bold" id="theme-customizer-tab" data-bs-toggle="tab" data-bs-target="#tab-theme-customizer" type="button">
+                        <i class="fas fa-palette text-success me-2"></i> Global Theme & Navbar/Footer
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="bannerThemeTabsContent">
+                <!-- TAB 1: HERO SLIDER -->
+                <div class="tab-pane fade" id="tab-hero-slider" role="tabpanel">
+                    <div class="admin-card">
+                        <h5 class="text-white fw-bold mb-2"><i class="fas fa-sliders text-danger me-2"></i> Homepage Hero Carousel Slides</h5>
+                        <p class="text-secondary small mb-3">Reorder, toggle, and add slides for the storefront homepage carousel.</p>
+                        <div id="hero-slides-admin-container" class="row g-3"></div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: PROMO BANNERS -->
+                <div class="tab-pane fade" id="tab-homepage-banners" role="tabpanel">
+                    <div class="admin-card">
+                        <h5 class="text-white fw-bold mb-2"><i class="fas fa-images text-primary me-2"></i> Promotional Banners & 4-Grid Strip</h5>
+                        <p class="text-secondary small mb-3">Manage promotional graphics and category strip banners.</p>
+                        <div id="promo-banners-admin-container" class="row g-3"></div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: GLOBAL THEME & DYNAMIC CONTACTS -->
+                <div class="tab-pane fade show active" id="tab-theme-customizer" role="tabpanel">
+                    <!-- Action Bar -->
+                    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                        <div>
+                            <h4 class="text-white fw-bold m-0"><i class="fas fa-palette text-success me-2"></i> Visual Theme & Navbar/Footer Management</h4>
+                            <small class="text-secondary">Customize full store colors, typography, operating hours, and dynamic multi-contact channels.</small>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-outline-secondary btn-sm fw-bold" onclick="resetThemeDefaults()">Reset Defaults</button>
+                            <button type="button" class="btn btn-danger btn-sm fw-bold px-3 shadow" onclick="saveGlobalTheme()"><i class="fas fa-save me-1"></i> Save All Settings</button>
+                        </div>
+                    </div>
+
+                    <!-- Subsection B: Dynamic Contact Numbers & Communication -->
+                    <div class="p-3 rounded-3 mb-4 theme-section-box">
+                        <div class="mb-3 border-bottom border-secondary border-opacity-25 pb-2 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <div>
+                                <span class="fw-bold text-white small"><i class="fas fa-phone-volume text-success me-1"></i> Contact Numbers & Communication</span>
+                                <p class="text-secondary small m-0" style="font-size: 11px;">Directly controls phone numbers, WhatsApp, and emails across the topbar, mobile menu, and footer.</p>
+                            </div>
+                            <span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-50" style="font-size: 11px;">
+                                <i class="fas fa-layer-group me-1"></i> Dynamic Multi-Contact Lists Active
+                            </span>
+                        </div>
+                        <div class="row g-3">
+                            <!-- Category 1: Queries Phone Numbers -->
+                            <div class="col-md-6">
+                                <div class="p-3 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-25 h-100">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <label class="small fw-bold text-white mb-0"><i class="fas fa-headset text-danger me-1"></i> Queries Phone Numbers</label>
+                                        <span class="text-secondary" style="font-size: 10.5px;">Header & Footer</span>
+                                    </div>
+                                    <div id="queries-phones-list" class="dynamic-contact-container mb-2"></div>
+                                    <button type="button" class="btn btn-outline-danger btn-sm w-100 fw-bold" onclick="addContactField('queries')">
+                                        <i class="fas fa-plus me-1"></i> + Add Another Query Phone
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Category 2: WhatsApp Numbers -->
+                            <div class="col-md-6">
+                                <div class="p-3 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-25 h-100">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <label class="small fw-bold text-white mb-0"><i class="fab fa-whatsapp text-success me-1"></i> WhatsApp Numbers</label>
+                                        <span class="text-secondary" style="font-size: 10.5px;">Direct Chat Support</span>
+                                    </div>
+                                    <div id="whatsapp-numbers-list" class="dynamic-contact-container mb-2"></div>
+                                    <button type="button" class="btn btn-outline-success btn-sm w-100 fw-bold" onclick="addContactField('whatsapp')">
+                                        <i class="fab fa-whatsapp me-1"></i> + Add Another WhatsApp
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Category 3: Official Support Emails -->
+                            <div class="col-md-6">
+                                <div class="p-3 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-25 h-100">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <label class="small fw-bold text-white mb-0"><i class="fas fa-envelope text-primary me-1"></i> Official Support Emails</label>
+                                        <span class="text-secondary" style="font-size: 10.5px;">Queries & Invoicing</span>
+                                    </div>
+                                    <div id="support-emails-list" class="dynamic-contact-container mb-2"></div>
+                                    <button type="button" class="btn btn-outline-primary btn-sm w-100 fw-bold" onclick="addContactField('email')">
+                                        <i class="fas fa-plus me-1"></i> + Add Another Support Email
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Category 4: General / Landline Phones -->
+                            <div class="col-md-6">
+                                <div class="p-3 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-25 h-100">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <label class="small fw-bold text-white mb-0"><i class="fas fa-phone-volume text-warning me-1"></i> General / Store Phone Numbers</label>
+                                        <span class="text-secondary" style="font-size: 10.5px;">Landline & Office</span>
+                                    </div>
+                                    <div id="general-phones-list" class="dynamic-contact-container mb-2"></div>
+                                    <button type="button" class="btn btn-outline-warning btn-sm w-100 fw-bold text-white" onclick="addContactField('phone')">
+                                        <i class="fas fa-plus me-1"></i> + Add Another General Phone
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Additional Meta Controls -->
+                            <div class="col-md-6">
+                                <label class="small fw-bold text-white mb-1">Phone Display Label</label>
+                                <input type="text" id="theme-footer-phone-label" class="form-control form-control-sm" value="Queries:" placeholder="e.g. Queries:">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="small fw-bold text-white mb-1">Topbar Header Mall Tag / Address</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text"><i class="fas fa-location-dot text-danger"></i></span>
+                                    <input type="text" id="theme-footer-topbar-address" class="form-control" value="F6 Technocity Mall" placeholder="F6 Technocity Mall">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- 3. INDIVIDUAL UNIVERSAL PRINT CONTAINER                  -->
+    <!-- ======================================================== -->
+    <div id="gug-individual-print-container"></div>
+
+    <!-- ======================================================== -->
+    <!-- 4. ADD / EDIT PRODUCT MODAL                              -->
+    <!-- ======================================================== -->
+    <div class="modal fade" id="adminProductModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content bg-dark text-white border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title fw-bold" id="adminProductModalTitle"><i class="fas fa-box text-danger me-2"></i> Add New Product</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="adminProductForm" onsubmit="saveProductModal(event)">
+                        <input type="hidden" id="prod-form-id">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label class="form-label small fw-bold">Product Name</label>
+                                <input type="text" id="prod-form-name" class="form-control bg-dark text-white border-secondary" required placeholder="e.g. ASUS ROG Strix GeForce RTX 4090">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Category</label>
+                                <select id="prod-form-category" class="form-select bg-dark text-white border-secondary">
+                                    <option value="laptops">Laptops</option>
+                                    <option value="graphics-cards">Graphics Cards</option>
+                                    <option value="processors">Processors</option>
+                                    <option value="monitors">Monitors</option>
+                                    <option value="keyboards">Keyboards</option>
+                                    <option value="mouse">Mice</option>
+                                    <option value="storage">SSD & Storage</option>
+                                    <option value="casing">Casing</option>
+                                    <option value="cooling-solutions">Cooling Solutions</option>
+                                    <option value="ram">RAM / Memory</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Price (PKR)</label>
+                                <input type="number" id="prod-form-price" class="form-control bg-dark text-white border-secondary" required placeholder="e.g. 520000">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Original / List Price (PKR)</label>
+                                <input type="number" id="prod-form-orig-price" class="form-control bg-dark text-white border-secondary" placeholder="e.g. 560000">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Stock Quantity</label>
+                                <input type="number" id="prod-form-stock" class="form-control bg-dark text-white border-secondary" value="10" placeholder="10">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold">Image URL / Path</label>
+                                <input type="text" id="prod-form-image" class="form-control bg-dark text-white border-secondary" placeholder="assets/images/products/... or web URL">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold">Short Specifications / Details</label>
+                                <textarea id="prod-form-desc" class="form-control bg-dark text-white border-secondary" rows="3" placeholder="Enter key specs, warranty, features..."></textarea>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-2 border-top border-secondary d-flex justify-content-end gap-2">
+                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-danger btn-sm fw-bold px-4"><i class="fas fa-save me-1"></i> Save Product</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- 5. AUTHENTICATION & LOGIN OVERLAY                        -->
+    <!-- ======================================================== -->
+    <div id="login-container">
+        <div class="stunning-login-card">
+            <h4 class="text-center text-white mb-2 fw-bold" style="letter-spacing: 0.5px;">
+                <i class="fas fa-shield-alt text-danger me-2"></i> GEARUP ERP
+            </h4>
+            <p class="text-secondary text-center small mb-4">Enterprise Role & Authentication</p>
+            <form id="admin-login-form" onsubmit="handleAdminLogin(event)">
+                <div class="mb-3">
+                    <label class="text-white small fw-bold mb-1">Username or Employee ID</label>
+                    <input type="text" id="login-input-user" class="form-control bg-dark text-white border-secondary" placeholder="admin" value="admin" required>
+                </div>
+                <div class="mb-4">
+                    <label class="text-white small fw-bold mb-1">Password</label>
+                    <input type="password" id="login-input-pass" class="form-control bg-dark text-white border-secondary" placeholder="Enter password" value="admingug" required>
+                </div>
+                <button type="submit" class="btn btn-danger w-100 fw-bold py-2">
+                    <i class="fas fa-sign-in-alt me-2"></i> Authenticate & Enter Portal
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- SCRIPTS & ENGINE LOGIC                                   -->
+    <!-- ======================================================== -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/products-data.js"></script>
+    <script src="assets/js/gug-erp-core.js"></script>
+
+    <!-- Cloud Database (Firebase Firestore) & Transactional Email Gateway -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/firebase-sync.js"></script>
+    <script src="assets/js/email-service.js"></script>
+    <script>
+        // ========================================================
+        // GLOBAL STATE & DATA STORAGE
+        // ========================================================
+        let currentActiveSection = 'sec-dashboard';
+        let currentCategoryFilter = 'All Products';
+        let currentSearchQuery = '';
+        let liveProductsCatalog = [];
+
+        // ========================================================
+        // 1. SIDEBAR ROUTING & TAB NAVIGATION
+        // ========================================================
+        function showAdminSection(sectionId) {
+            if (!sectionId) return;
+            const targetSection = document.getElementById(sectionId);
+            if (!targetSection) return;
+
+            document.querySelectorAll('.admin-module-section').forEach(sec => sec.classList.remove('active'));
+            targetSection.classList.add('active');
+            currentActiveSection = sectionId;
+
+            // Update sidebar nav link styles
+            document.querySelectorAll('.admin-sidebar .admin-nav-link').forEach(link => {
+                link.classList.remove('active');
+                const onclickAttr = link.getAttribute('onclick') || '';
+                if (onclickAttr.includes(sectionId)) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Sync hash state
+            const hash = sectionId.replace('sec-', '');
+            try {
+                if (window.location.hash !== '#' + hash) {
+                    history.replaceState(null, '', '#' + hash);
+                }
+                sessionStorage.setItem('gug_active_admin_module', sectionId);
+            } catch(e) {}
+
+            // Re-render module view if needed
+            if (sectionId === 'sec-products') renderProductsCatalogTable();
+            else if (sectionId === 'sec-crm') renderCrmCustomersTable();
+            else if (sectionId === 'sec-dealers') renderDealersLedgerTable();
+            else if (sectionId === 'sec-dashboard') refreshDashboardKPIs();
+        }
+
+        function toggleSidebarAccordion(headerBtn, targetId) {
+            const body = document.getElementById(targetId);
+            if (!body) return;
+            const isOpen = body.classList.contains('open');
+            body.classList.toggle('open', !isOpen);
+            headerBtn.classList.toggle('open', !isOpen);
+            try {
+                const savedStates = JSON.parse(sessionStorage.getItem('gug_admin_accordion_states') || '{}');
+                savedStates[targetId] = !isOpen;
+                sessionStorage.setItem('gug_admin_accordion_states', JSON.stringify(savedStates));
+            } catch(e) {}
+        }
+
+        // ========================================================
+        // 2. DYNAMIC MULTI-CONTACT MANAGEMENT
+        // ========================================================
+        function renderContactRow(category, value) {
+            const val = (value || '').replace(/"/g, '&quot;');
+            let iconClass = 'fas fa-phone text-danger';
+            let placeholder = 'e.g. 021 34832214';
+            let inputType = 'text';
+            let itemClass = 'contact-query-phone';
+
+            if (category === 'whatsapp') {
+                iconClass = 'fab fa-whatsapp text-success';
+                placeholder = 'e.g. 0300 1234567';
+                itemClass = 'contact-whatsapp-number';
+            } else if (category === 'email') {
+                iconClass = 'fas fa-envelope text-primary';
+                placeholder = 'e.g. sales@gearupgadget.com';
+                inputType = 'email';
+                itemClass = 'contact-support-email';
+            } else if (category === 'phone') {
+                iconClass = 'fas fa-phone-volume text-warning';
+                placeholder = 'e.g. 021 34832215';
+                itemClass = 'contact-general-phone';
+            }
+
+            const row = document.createElement('div');
+            row.className = 'input-group input-group-sm mb-2 contact-dynamic-row';
+            row.innerHTML = `
+                <span class="input-group-text" style="background: rgba(26, 34, 48, 0.95); border-color: rgba(255, 255, 255, 0.18);"><i class="${iconClass}"></i></span>
+                <input type="${inputType}" class="form-control ${itemClass}" value="${val}" placeholder="${placeholder}">
+                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeContactRow(this, '${category}')" title="Remove Entry"><i class="fas fa-trash-alt"></i></button>
+            `;
+            return row;
+        }
+
+        function addContactField(category, value = '') {
+            let containerId = 'queries-phones-list';
+            if (category === 'whatsapp') containerId = 'whatsapp-numbers-list';
+            else if (category === 'email') containerId = 'support-emails-list';
+            else if (category === 'phone') containerId = 'general-phones-list';
+
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            const row = renderContactRow(category, value);
+            container.appendChild(row);
+            if (!value) {
+                const input = row.querySelector('input');
+                if (input) input.focus();
+            }
+        }
+
+        function removeContactRow(btn, category) {
+            const row = btn ? btn.closest('.contact-dynamic-row') : null;
+            if (!row) return;
+            const container = row.parentElement;
+            row.remove();
+            if (container && container.querySelectorAll('.contact-dynamic-row').length === 0) {
+                addContactField(category, '');
+            }
+        }
+
+        function getDynamicContactValues(category) {
+            let selector = '.contact-query-phone';
+            if (category === 'whatsapp') selector = '.contact-whatsapp-number';
+            else if (category === 'email') selector = '.contact-support-email';
+            else if (category === 'phone') selector = '.contact-general-phone';
+
+            const inputs = document.querySelectorAll(selector);
+            const result = [];
+            inputs.forEach(i => {
+                const v = (i.value || '').trim();
+                if (v) result.push(v);
+            });
+            return result;
+        }
+
+        function populateDynamicContacts() {
+            let cfg = {};
+            try {
+                cfg = JSON.parse(localStorage.getItem('gug_event_theme_config') || '{}');
+            } catch(e) {}
+
+            const qList = document.getElementById('queries-phones-list');
+            const waList = document.getElementById('whatsapp-numbers-list');
+            const emList = document.getElementById('support-emails-list');
+            const phList = document.getElementById('general-phones-list');
+
+            if (qList) qList.innerHTML = '';
+            if (waList) waList.innerHTML = '';
+            if (emList) emList.innerHTML = '';
+            if (phList) phList.innerHTML = '';
+
+            // 1. Queries
+            let queries = (Array.isArray(cfg.queriesPhones) && cfg.queriesPhones.length > 0)
+                ? cfg.queriesPhones
+                : [(cfg.footerPhone || cfg.topbarPhone || '021 34832214')];
+            queries.forEach(q => addContactField('queries', q));
+
+            // 2. WhatsApp
+            let whatsapps = (Array.isArray(cfg.whatsappNumbers) && cfg.whatsappNumbers.length > 0)
+                ? cfg.whatsappNumbers
+                : (cfg.footerWhatsapp ? [cfg.footerWhatsapp] : []);
+            if (whatsapps.length === 0) addContactField('whatsapp', '');
+            else whatsapps.forEach(w => addContactField('whatsapp', w));
+
+            // 3. Email
+            let emails = (Array.isArray(cfg.supportEmails) && cfg.supportEmails.length > 0)
+                ? cfg.supportEmails
+                : [(cfg.footerEmail || cfg.topbarEmail || 'sales@gearupgadget.com')];
+            emails.forEach(e => addContactField('email', e));
+
+            // 4. General Phone
+            let phones = (Array.isArray(cfg.generalPhones) && cfg.generalPhones.length > 0)
+                ? cfg.generalPhones
+                : [(cfg.topbarPhone || cfg.footerPhone || '021 34832214')];
+            phones.forEach(p => addContactField('phone', p));
+        }
+
+        function saveGlobalTheme() {
+            const queriesPhones = getDynamicContactValues('queries');
+            const whatsappNumbers = getDynamicContactValues('whatsapp');
+            const supportEmails = getDynamicContactValues('email');
+            const generalPhones = getDynamicContactValues('phone');
+            const footerPhoneLabel = (document.getElementById('theme-footer-phone-label')?.value || 'Queries:').trim();
+            const topbarAddress = (document.getElementById('theme-footer-topbar-address')?.value || 'F6 Technocity Mall').trim();
+
+            let existing = {};
+            try {
+                existing = JSON.parse(localStorage.getItem('gug_event_theme_config') || '{}');
+            } catch(e) {}
+
+            const updatedConfig = Object.assign({}, existing, {
+                queriesPhones: queriesPhones.length ? queriesPhones : ['021 34832214'],
+                whatsappNumbers: whatsappNumbers,
+                supportEmails: supportEmails.length ? supportEmails : ['sales@gearupgadget.com'],
+                generalPhones: generalPhones.length ? generalPhones : ['021 34832214'],
+                footerPhone: queriesPhones[0] || '021 34832214',
+                footerPhoneLabel: footerPhoneLabel,
+                footerWhatsapp: whatsappNumbers[0] || '',
+                footerEmail: supportEmails[0] || 'sales@gearupgadget.com',
+                topbarPhone: queriesPhones[0] || '021 34832214',
+                topbarEmail: supportEmails[0] || 'sales@gearupgadget.com',
+                topbarAddress: topbarAddress,
+                updatedAt: Date.now()
+            });
+
+            try {
+                localStorage.setItem('gug_event_theme_config', JSON.stringify(updatedConfig));
+                window.dispatchEvent(new CustomEvent('gugThemeUpdated', { detail: updatedConfig }));
+                if (window.GUG_DB && typeof window.GUG_DB.showToast === 'function') {
+                    window.GUG_DB.showToast('Dynamic contacts & theme saved successfully!', 'success', 'Theme Customizer');
+                } else {
+                    alert('Theme & dynamic contacts saved successfully!');
+                }
+            } catch(err) {
+                console.error('[Theme Save Error]:', err);
+            }
+        }
+
+        // ========================================================
+        // 3. PRODUCTS & CATALOG ENGINE
+        // ========================================================
+        function initProductCatalog() {
+            let cloudProds = [];
+            try {
+                cloudProds = JSON.parse(localStorage.getItem('gug_erp_products') || '[]');
+            } catch(e) {}
+
+            const customProducts = JSON.parse(localStorage.getItem('admin_custom_products') || '[]');
+            const deletedProductIds = JSON.parse(localStorage.getItem('admin_deleted_products') || '[]');
+
+            let sourceProducts = (cloudProds.length > 0) ? cloudProds : (window.PRODUCTS_DATA || []);
+            let rawProducts = sourceProducts.map(p => {
+                let numericPrice = typeof p.price === 'number' ? p.price : Number((p.price || "0").toString().replace(/[^0-9.-]+/g,"")) || 0;
+                let numericOrigPrice = p.originalPrice ? (typeof p.originalPrice === 'number' ? p.originalPrice : Number(p.originalPrice.toString().replace(/[^0-9.-]+/g,""))) : null;
+                return { ...p, price: numericPrice, originalPrice: numericOrigPrice };
+            });
+
+            liveProductsCatalog = rawProducts.filter(p => !deletedProductIds.includes(p.id));
+            customProducts.forEach(cp => {
+                let idx = liveProductsCatalog.findIndex(p => p.id == cp.id);
+                if (idx > -1) liveProductsCatalog[idx] = cp;
+                else liveProductsCatalog.unshift(cp);
+            });
+
+            renderCategoryPills();
+            renderProductsCatalogTable();
+        }
+
+        function renderCategoryPills() {
+            const container = document.getElementById('admin-category-pills-container');
+            if (!container) return;
+            const categories = ["All Products", "Laptops", "Graphics Cards", "Processors", "Monitors", "Keyboards", "Mice", "Storage", "Casing"];
+            container.innerHTML = categories.map(cat => {
+                const isActive = (currentCategoryFilter === cat);
+                return `<button type="button" class="btn btn-sm ${isActive ? 'btn-danger' : 'btn-outline-secondary'} py-1 px-2" style="font-size: 11.5px; font-weight: 600;" onclick="setCategoryFilter('${cat}')">${cat}</button>`;
+            }).join('');
+        }
+
+        function setCategoryFilter(category) {
+            currentCategoryFilter = category;
+            renderCategoryPills();
+            renderProductsCatalogTable();
+        }
+
+        function handleProductSearch(query) {
+            currentSearchQuery = (query || '').toLowerCase().trim();
+            renderProductsCatalogTable();
+        }
+
+        function renderProductsCatalogTable() {
+            const tbody = document.getElementById('admin-products-table-tbody');
+            if (!tbody) return;
+
+            let filtered = liveProductsCatalog.filter(p => {
+                const matchesCat = (currentCategoryFilter === 'All Products') || 
+                    (p.category && p.category.toLowerCase().replace(/[^a-z0-9]/g,'').includes(currentCategoryFilter.toLowerCase().replace(/[^a-z0-9]/g,'')));
+                const matchesSearch = !currentSearchQuery || 
+                    (p.name && p.name.toLowerCase().includes(currentSearchQuery)) || 
+                    (String(p.id).toLowerCase().includes(currentSearchQuery));
+                return matchesCat && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-secondary py-4">No products match your search or filter.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.slice(0, 50).map(p => {
+                const img = p.image || 'assets/images/slider/laptop.png';
+                const stock = (typeof p.stock === 'number') ? p.stock : 15;
+                const priceFormatted = Number(p.price || 0).toLocaleString();
+                return `
+                    <tr>
+                        <td>
+                            <img src="${img}" alt="${p.name}" style="width: 44px; height: 44px; object-fit: contain; background: rgba(255,255,255,0.05); border-radius: 6px; padding: 2px;">
+                        </td>
+                        <td>
+                            <div class="fw-bold text-white">${p.name}</div>
+                            <small class="text-secondary font-monospace">ID: ${p.id}</small>
+                        </td>
+                        <td><span class="badge bg-secondary bg-opacity-50 text-white">${p.category || 'General'}</span></td>
+                        <td class="text-danger fw-bold">Rs. ${priceFormatted}</td>
+                        <td><span class="badge ${stock > 5 ? 'bg-success' : 'bg-warning'}">${stock > 5 ? 'In Stock (' + stock + ')' : 'Low Stock (' + stock + ')'}</span></td>
+                        <td style="text-align: center;">
+                            <button class="btn btn-sm btn-outline-info me-1" onclick="editProductModal('${p.id}')" title="Edit Product"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct('${p.id}')" title="Delete Product"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function openProductModal() {
+            document.getElementById('prod-form-id').value = '';
+            document.getElementById('adminProductForm').reset();
+            document.getElementById('adminProductModalTitle').innerHTML = '<i class="fas fa-box text-danger me-2"></i> Add New Product';
+            const modalEl = document.getElementById('adminProductModal');
+            if (modalEl) new bootstrap.Modal(modalEl).show();
+        }
+
+        function editProductModal(id) {
+            const p = liveProductsCatalog.find(item => String(item.id) === String(id));
+            if (!p) return;
+            document.getElementById('prod-form-id').value = p.id;
+            document.getElementById('prod-form-name').value = p.name || '';
+            document.getElementById('prod-form-category').value = p.category || 'laptops';
+            document.getElementById('prod-form-price').value = p.price || '';
+            document.getElementById('prod-form-orig-price').value = p.originalPrice || '';
+            document.getElementById('prod-form-stock').value = p.stock || 15;
+            document.getElementById('prod-form-image').value = p.image || '';
+            document.getElementById('prod-form-desc').value = p.description || '';
+            document.getElementById('adminProductModalTitle').innerHTML = '<i class="fas fa-edit text-danger me-2"></i> Edit Product';
+            const modalEl = document.getElementById('adminProductModal');
+            if (modalEl) new bootstrap.Modal(modalEl).show();
+        }
+
+        function saveProductModal(e) {
+            e.preventDefault();
+            const id = document.getElementById('prod-form-id').value || ('custom_' + Date.now());
+            const name = document.getElementById('prod-form-name').value.trim();
+            const category = document.getElementById('prod-form-category').value;
+            const price = Number(document.getElementById('prod-form-price').value) || 0;
+            const origPrice = Number(document.getElementById('prod-form-orig-price').value) || null;
+            const stock = Number(document.getElementById('prod-form-stock').value) || 10;
+            const image = document.getElementById('prod-form-image').value.trim() || 'assets/images/slider/laptop.png';
+            const description = document.getElementById('prod-form-desc').value.trim();
+
+            const customProducts = JSON.parse(localStorage.getItem('admin_custom_products') || '[]');
+            const newProd = { id, name, category, price, originalPrice: origPrice, stock, image, description };
+
+            const existingIdx = customProducts.findIndex(p => p.id == id);
+            if (existingIdx > -1) customProducts[existingIdx] = newProd;
+            else customProducts.unshift(newProd);
+
+            localStorage.setItem('admin_custom_products', JSON.stringify(customProducts));
+
+            // Sync to Cloud Firestore Database (Persistent Cloud Storage - survives future code updates)
+            if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.saveProduct === 'function') {
+                window.GUG_FIREBASE.saveProduct(newProd);
+            } else if (window.GUG_DB && typeof window.GUG_DB.saveProduct === 'function') {
+                window.GUG_DB.saveProduct(newProd);
+            }
+
+            const modalEl = document.getElementById('adminProductModal');
+            const instance = bootstrap.Modal.getInstance(modalEl);
+            if (instance) instance.hide();
+
+            initProductCatalog();
+            if (window.GUG_DB && typeof window.GUG_DB.showToast === 'function') {
+                window.GUG_DB.showToast(`Product "${name}" saved to catalog & synced to cloud.`, 'success', 'Catalog');
+            }
+        }
+
+        function deleteProduct(id) {
+            if (!confirm('Are you sure you want to delete this product?')) return;
+            const deleted = JSON.parse(localStorage.getItem('admin_deleted_products') || '[]');
+            if (!deleted.includes(id)) deleted.push(id);
+            localStorage.setItem('admin_deleted_products', JSON.stringify(deleted));
+
+            // Delete from Cloud Firestore Database
+            if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.deleteProduct === 'function') {
+                window.GUG_FIREBASE.deleteProduct(id);
+            } else if (window.GUG_DB && typeof window.GUG_DB.deleteProduct === 'function') {
+                window.GUG_DB.deleteProduct(id);
+            }
+
+            initProductCatalog();
+        }
+
+        // ========================================================
+        // 4. CRM & B2B PRINT SLIP ENGINE INTEGRATION
+        // ========================================================
+        function renderCrmCustomersTable(query = '') {
+            const tbody = document.getElementById('crm-customers-tbody');
+            if (!tbody) return;
+
+            const customers = (window.GUG_DB && typeof window.GUG_DB.getCustomers === 'function') 
+                ? window.GUG_DB.getCustomers() 
+                : [];
+            const cleanQuery = (query || '').toLowerCase().trim();
+
+            const filtered = customers.filter(c => {
+                return !cleanQuery || 
+                    (c.name && c.name.toLowerCase().includes(cleanQuery)) || 
+                    (c.phone && c.phone.includes(cleanQuery)) || 
+                    (c.email && c.email.toLowerCase().includes(cleanQuery));
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-secondary py-4">No customer dossiers match.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(c => `
+                <tr>
+                    <td>
+                        <strong class="text-white d-block">${c.name}</strong>
+                        <small class="text-secondary font-monospace">ID: ${c.id}</small>
+                    </td>
+                    <td>
+                        <div class="small text-white"><i class="fas fa-phone text-danger me-1"></i> ${c.phone || 'N/A'}</div>
+                        <div class="small text-secondary"><i class="fas fa-envelope text-info me-1"></i> ${c.email || 'N/A'}</div>
+                    </td>
+                    <td><span class="badge bg-secondary">${c.totalOrders || 1} Orders</span></td>
+                    <td class="text-success fw-bold">Rs. ${Number(c.totalSpent || 0).toLocaleString()}</td>
+                    <td><span class="badge bg-danger bg-opacity-25 text-danger border border-danger">${c.vipTier || 'Silver Tier'}</span></td>
+                    <td style="text-align: center;">
+                        <button type="button" class="btn btn-sm btn-danger fw-bold" onclick="window.printCustomerSlip('${c.id}')">
+                            <i class="fas fa-print me-1"></i> Print Customer Slip
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderDealersLedgerTable() {
+            const tbody = document.getElementById('dealers-ledger-tbody');
+            if (!tbody) return;
+
+            const dealers = (window.GUG_DB && typeof window.GUG_DB.getDealers === 'function')
+                ? window.GUG_DB.getDealers()
+                : [];
+
+            if (dealers.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-secondary py-4">No B2B dealer records found.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = dealers.map(d => {
+                const summary = (window.GUG_DB && typeof window.GUG_DB.calculateDealerSummary === 'function')
+                    ? window.GUG_DB.calculateDealerSummary(d.id)
+                    : { totalStockValue: 0, totalPaid: 0, currentBalance: 0 };
+
+                return `
+                    <tr>
+                        <td>
+                            <strong class="text-white d-block">${d.shopName || d.name}</strong>
+                            <small class="text-secondary font-monospace">ID: ${d.id}</small>
+                        </td>
+                        <td>
+                            <div class="small text-white">${d.ownerName || d.name}</div>
+                            <small class="text-secondary"><i class="fas fa-phone text-warning me-1"></i> ${d.phone}</small>
+                        </td>
+                        <td class="text-white fw-bold">Rs. ${Number(summary.totalStockValue || 0).toLocaleString()}</td>
+                        <td class="text-success fw-bold">Rs. ${Number(summary.totalPaid || 0).toLocaleString()}</td>
+                        <td class="text-danger fw-bold">Rs. ${Number(summary.currentBalance || 0).toLocaleString()}</td>
+                        <td style="text-align: center;">
+                            <button type="button" class="btn btn-sm btn-warning text-dark fw-bold" onclick="window.printDealerSlip('${d.id}')">
+                                <i class="fas fa-print me-1"></i> Print Dealer Slip
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function refreshDashboardKPIs() {
+            const prods = liveProductsCatalog.length;
+            const orders = (window.GUG_DB && typeof window.GUG_DB.getOrders === 'function') ? window.GUG_DB.getOrders() : [];
+            const custs = (window.GUG_DB && typeof window.GUG_DB.getCustomers === 'function') ? window.GUG_DB.getCustomers() : [];
+            const dealers = (window.GUG_DB && typeof window.GUG_DB.getDealers === 'function') ? window.GUG_DB.getDealers() : [];
+
+            const pEl = document.getElementById('kpi-total-products');
+            const oEl = document.getElementById('kpi-total-orders');
+            const cEl = document.getElementById('kpi-total-customers');
+            const dEl = document.getElementById('kpi-total-dealers');
+
+            if (pEl) pEl.textContent = prods;
+            if (oEl) oEl.textContent = orders.length;
+            if (cEl) cEl.textContent = custs.length;
+            if (dEl) dEl.textContent = dealers.length;
+
+            const tbody = document.getElementById('dashboard-recent-orders-tbody');
+            if (tbody) {
+                if (orders.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="text-center text-secondary py-3">No orders placed yet.</td></tr>`;
+                } else {
+                    tbody.innerHTML = orders.slice(0, 6).map(o => `
+                        <tr>
+                            <td class="font-monospace text-danger fw-bold">${o.id}</td>
+                            <td>${(o.customer && o.customer.name) || o.name || 'Walk-in Buyer'}</td>
+                            <td><small>${(o.items && o.items.map(it => it.title || it.name).join(', ')) || 'Hardware Items'}</small></td>
+                            <td class="text-white fw-bold">Rs. ${Number(o.total || 0).toLocaleString()}</td>
+                            <td><span class="badge bg-secondary">${o.paymentMethod || 'Cash on Delivery'}</span></td>
+                            <td><span class="badge ${o.orderStatus === 'Delivered' ? 'bg-success' : 'bg-danger'}">${o.orderStatus || 'Pending'}</span></td>
+                        </tr>
+                    `).join('');
+                }
+            }
+        }
+
+        // ========================================================
+        // 5. AUTHENTICATION CONTROLS
+        // ========================================================
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            localStorage.setItem('admin_logged_in', 'true');
+            localStorage.setItem('admin_username', 'admin');
+            localStorage.setItem('admin_role', 'Super Admin');
+            document.getElementById('login-container').style.display = 'none';
+        }
+
+        function promptAdminSignOut() {
+            if (!confirm('Sign out from GearUp ERP Master Portal?')) return;
+            localStorage.removeItem('admin_logged_in');
+            document.getElementById('login-container').style.display = 'flex';
+        }
+
+        // ========================================================
+        // INITIALIZATION DISPATCHER
+        // ========================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            // Default active demo session
+            if (localStorage.getItem('admin_logged_in') !== 'true') {
+                localStorage.setItem('admin_logged_in', 'true');
+                localStorage.setItem('admin_username', 'admin');
+                localStorage.setItem('admin_role', 'Super Admin');
+            }
+
+            if (window.GUG_DB) {
+                window.GUG_DB.renderGlobalHeader('gug-global-header-container', 'Enterprise ERP Operating System');
+                window.GUG_DB.enforceAccessControl();
+                window.GUG_DB.initSidebarScrollManager();
+            }
+
+            initProductCatalog();
+            populateDynamicContacts();
+            refreshDashboardKPIs();
+
+            // Real-Time Cloud Firestore Sync Listeners (Survives any future code redeployment)
+            window.addEventListener('gugCatalogUpdated', () => initProductCatalog());
+            window.addEventListener('productsReady', () => initProductCatalog());
+            window.addEventListener('dealersReady', () => renderDealersLedgerTable());
+            window.addEventListener('ordersReady', () => refreshDashboardKPIs());
+
+            // Check initial URL hash for direct module routing
+            const hash = window.location.hash.replace('#', '');
+            const targetSection = hash ? ('sec-' + hash) : (sessionStorage.getItem('gug_active_admin_module') || 'sec-dashboard');
+            showAdminSection(targetSection);
+
+            // Tab button switching inside Banner & Theme
+            const tabButtons = document.querySelectorAll('#bannerThemeTabs button[data-bs-toggle="tab"]');
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    tabButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    const targetPane = document.querySelector(this.getAttribute('data-bs-target'));
+                    document.querySelectorAll('#bannerThemeTabsContent .tab-pane').forEach(p => p.classList.remove('show', 'active'));
+                    if (targetPane) targetPane.classList.add('show', 'active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance & ERP System | Gear Up Gadgets</title>    
+    <!-- Favicon & Device Web Icons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/images/favicon-64x64.png">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+        <style>
+        body { background-color: var(--gug-bg-color, #07090d) !important; background-image: var(--gug-bg-image) !important; background-attachment: var(--gug-bg-attachment, fixed) !important; background-size: var(--gug-bg-size, cover, cover, 28px 49px) !important; background-position: var(--gug-bg-position, center top) !important; background-repeat: var(--gug-bg-repeat, no-repeat, no-repeat, repeat) !important; min-height: 100vh; color: #ffffff !important; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        .admin-sidebar { width: 260px; background: rgba(10, 10, 15, 0.6) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; height: 100vh; position: fixed; left: 0; top: 0; padding: 20px 15px; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; overflow-y: auto; z-index: 1000; box-shadow: 4px 0 30px rgba(0, 0, 0, 0.5) !important; }
+        .admin-main { margin-left: 260px; padding: 25px 30px; min-height: 100vh; background-color: transparent !important; color: #ffffff !important; }
+        .admin-nav-link { display: flex; align-items: center; padding: 9px 13px; color: #94a3b8; text-decoration: none; border-radius: 8px; margin-bottom: 3px; font-size: 13px; font-weight: 500; transition: all 0.2s ease; }
+        .admin-nav-link:hover { background-color: rgba(219, 39, 36, 0.15); color: #fff; }
+        .admin-nav-link.active { background-color: var(--accent-red); color: #fff !important; font-weight: 600; box-shadow: 0 4px 12px rgba(219, 39, 36, 0.3); }
+        .sidebar-section-heading { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #64748b; margin-top: 15px; margin-bottom: 6px; padding-left: 10px; }
+        
+        .admin-card { background: rgba(10, 10, 15, 0.45) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 16px !important; padding: 20px; margin-bottom: 20px; color: #ffffff !important; box-shadow: 0 16px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important; }
+        .admin-card-header { border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        
+        .table { color: #ffffff !important; margin-bottom: 0; background-color: transparent !important; vertical-align: middle; }
+        .table th { border-bottom: 2px solid rgba(255, 255, 255, 0.15) !important; color: #ffffff !important; text-transform: uppercase; font-size: 11px; letter-spacing: 0.8px; font-weight: 700; background-color: rgba(255, 255, 255, 0.06) !important; }
+        .table td { border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important; vertical-align: middle; font-size: 13.5px; color: #ffffff !important; }
+        .table-hover tbody tr:hover { background-color: rgba(255, 255, 255, 0.04); }
+        
+        .kpi-card {
+            background: rgba(10, 10, 15, 0.45) !important;
+            backdrop-filter: blur(24px) saturate(200%) !important;
+            -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            color: #ffffff !important;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .kpi-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 22px 50px rgba(0, 0, 0, 0.7), 0 0 25px rgba(229, 3, 3, 0.25) !important;
+            border-color: rgba(229, 3, 3, 0.55) !important;
+        }
+        .kpi-icon {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            opacity: 0.18;
+            font-size: 2.8rem;
+            color: #ffffff;
+        }
+        .kpi-title {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .kpi-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 2px;
+            letter-spacing: -0.5px;
+            color: #ffffff;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.8);
+        }
+        .kpi-subtitle {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0;
+        }
+        
+        .erp-tabs .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 8px;
+            padding: 10px 18px;
+            font-weight: 600;
+            font-size: 13.5px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+        .erp-tabs .nav-link:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+        .erp-tabs .nav-link.active {
+            color: #fff;
+            background: var(--accent-red);
+            border-color: var(--accent-red);
+            box-shadow: 0 4px 15px rgba(229, 3, 3, 0.4);
+        }
+        
+        .badge-paid { background-color: rgba(40, 167, 69, 0.2); color: #4ade80; border: 1px solid rgba(40, 167, 69, 0.4); font-weight: 600; }
+        .badge-pending { background-color: rgba(255, 193, 7, 0.2); color: #fbbf24; border: 1px solid rgba(255, 193, 7, 0.4); font-weight: 600; }
+        .badge-failed { background-color: rgba(220, 53, 69, 0.2); color: #f87171; border: 1px solid rgba(220, 53, 69, 0.4); font-weight: 600; }
+        .badge-refunded { background-color: rgba(155, 89, 182, 0.2); color: #c084fc; border: 1px solid rgba(155, 89, 182, 0.4); font-weight: 600; }
+        .badge-verified { background-color: rgba(0, 123, 255, 0.2); color: #60a5fa; border: 1px solid rgba(0, 123, 255, 0.4); font-weight: 600; }
+        
+        .search-input-group .form-control {
+            background-color: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            font-size: 13px;
+        }
+        .search-input-group .form-control:focus {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: var(--accent-red);
+            box-shadow: 0 0 16px rgba(229, 3, 3, 0.35);
+            color: #ffffff;
+        }
+        .search-input-group .input-group-text {
+            background-color: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.85);
+        }
+        
+        .modal-content {
+            background: rgba(10, 10, 15, 0.75) !important;
+            backdrop-filter: blur(28px) saturate(200%) !important;
+            -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            color: #ffffff;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+        }
+        .modal-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .modal-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .form-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.85);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .modal .form-control, .modal .form-select {
+            background-color: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            font-size: 13.5px;
+        }
+        .modal .form-control:focus, .modal .form-select:focus {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: var(--accent-red);
+            box-shadow: 0 0 16px rgba(229, 3, 3, 0.35);
+            color: #ffffff;
+        }
+        
+        .progress-stock {
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        @media print {
+            .admin-sidebar, .erp-tabs, .btn-no-print, .action-column { display: none !important; }
+            .admin-main { margin-left: 0 !important; padding: 0 !important; }
+            body { background: #fff !important; color: #000 !important; }
+            .admin-card { background: #fff !important; color: #000 !important; border: 1px solid #ddd !important; }
+            .table { color: #000 !important; }
+            .table th { background: #f5f5f5 !important; color: #000 !important; }
+            .kpi-card { background: #fff !important; border: 1px solid #ddd !important; color: #000 !important; }
+            .kpi-value, .kpi-title, .kpi-subtitle { color: #000 !important; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+        <!-- Enterprise Sidebar Navigation -->
+    <div class="admin-sidebar">
+        <div class="d-flex align-items-center mb-3 px-2">
+            <i class="fas fa-shield-alt text-danger fs-4 me-2"></i>
+            <div>
+                <h6 class="text-white m-0 fw-bold">GearUp ERP</h6>
+                <small class="text-secondary" style="font-size: 11px;">Enterprise Operating System</small>
+            </div>
+        </div>
+
+        <a href="dashboard.html" class="admin-nav-link" id="nav-dashboard"><i class="fas fa-chart-pie me-2"></i> Executive Dashboard</a>
+        
+        <!-- Accordion 1: Catalog & E-Commerce -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-catalog">
+                <span><i class="fas fa-shopping-bag text-danger me-2"></i> Catalog & E-Commerce</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-catalog">
+                <a href="products.html" class="admin-nav-link" id="nav-products"><i class="fas fa-boxes-stacked me-2"></i> Products & Catalog</a>
+                <a href="admin-crm.html" class="admin-nav-link" id="nav-crm"><i class="fas fa-users-viewfinder me-2"></i> Customers (CRM)</a>
+                <a href="admin-marketing.html" class="admin-nav-link" id="nav-marketing"><i class="fas fa-tags me-2"></i> Coupons & Marketing</a>
+            </div>
+        </div>
+
+        <!-- Accordion 2: Supply Chain & Operations -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-supply">
+                <span><i class="fas fa-truck-ramp-box text-primary me-2"></i> Supply Chain & Operations</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-supply">
+                <a href="admin-inventory.html" class="admin-nav-link" id="nav-inventory"><i class="fas fa-warehouse me-2"></i> Multi-Warehouse Stock</a>
+                <a href="admin-purchasing.html" class="admin-nav-link" id="nav-purchasing"><i class="fas fa-dolly me-2"></i> Purchasing & Suppliers</a>
+                <a href="orders.html" class="admin-nav-link" id="nav-orders"><i class="fas fa-cart-shopping me-2"></i> Sales Orders Pipeline</a>
+                <a href="admin-logistics.html" class="admin-nav-link" id="nav-logistics"><i class="fas fa-truck-fast me-2"></i> Logistics & Courier COD</a>
+                <a href="admin-returns.html" class="admin-nav-link" id="nav-returns"><i class="fas fa-rotate-left me-2"></i> Returns & Warranty (RMA)</a>
+            </div>
+        </div>
+
+        <!-- Accordion 3: Finance & B2B Wholesale -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-finance">
+                <span><i class="fas fa-coins text-warning me-2"></i> Finance & B2B Wholesale</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-finance">
+                <a href="admin-dealers.html" class="admin-nav-link" id="nav-dealers"><i class="fas fa-handshake me-2"></i> B2B Dealers & Ledger</a>
+                <a href="admin-finance.html" class="admin-nav-link" id="nav-finance"><i class="fas fa-file-invoice-dollar me-2"></i> Finance & P&L Ledger</a>
+                <a href="admin-staff.html" class="admin-nav-link" id="nav-staff"><i class="fas fa-user-tie me-2"></i> HR & Employee Payroll</a>
+                <a href="admin-tasks.html" class="admin-nav-link" id="nav-tasks"><i class="fas fa-list-check me-2"></i> Task Kanban & Workflow</a>
+                <a href="admin-reports.html" class="admin-nav-link" id="nav-reports"><i class="fas fa-chart-column me-2"></i> Business Reports</a>
+                <a href="admin-audit.html" class="admin-nav-link" id="nav-audit"><i class="fas fa-fingerprint me-2"></i> Security & Audit Logs</a>
+            </div>
+        </div>
+
+        <!-- Standalone Section: System Settings & Store Customization -->
+        <div class="mt-3 pt-3 border-top border-secondary border-opacity-25">
+            <div class="px-3 text-secondary text-uppercase fw-bold mb-2" style="font-size: 11px; letter-spacing: 0.6px;">System & Settings</div>
+            <a href="admin-settings.html" class="admin-nav-link" id="nav-settings"><i class="fas fa-sliders text-danger me-2"></i> System Settings & APIs</a>
+            <a href="admin-sales.html" class="admin-nav-link" id="nav-sales"><i class="fas fa-palette text-warning me-2"></i> Banner & Theme</a>
+        </div>
+        
+        <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
+            <a href="dealer-portal.html" target="_blank" class="admin-nav-link text-warning"><i class="fas fa-store-alt me-2"></i> Dealer Portal View</a>
+            <a href="employee-portal.html" class="admin-nav-link text-info"><i class="fas fa-id-badge me-2"></i> Employee Workspace</a>
+            <a href="index.html" target="_blank" class="admin-nav-link text-success"><i class="fas fa-store me-2"></i> Customer Storefront</a>
+            <a href="#" class="admin-nav-link text-danger mt-2" onclick="localStorage.removeItem('admin_logged_in'); localStorage.removeItem('admin_role'); localStorage.removeItem('admin_username'); window.location.href = 'admin.html'; return false;"><i class="fas fa-sign-out-alt me-2"></i> Sign Out</a>
+        </div>
+    </div>
+    <!-- Main Content Area -->
+    <div class="admin-main">
+        <!-- Page Title & Header Actions -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom border-secondary border-opacity-25">
+            <div>
+                <h2 class="text-white fw-bold mb-1"><i class="fas fa-coins text-danger me-2"></i> Finance &amp; ERP Management</h2>
+                <p class="text-secondary mb-0 small">Real-time Profit &amp; Loss, Employee Salary Payroll, Online Transactions &amp; Inventory Valuation.</p>
+            </div>
+            <div class="d-flex flex-wrap gap-2 mt-3 mt-md-0 btn-no-print">
+                <button class="btn btn-outline-light btn-sm" onclick="window.print()"><i class="fas fa-print me-1"></i> Print / Export</button>
+                <button class="btn btn-outline-danger btn-sm" onclick="seedDefaultERPData(true)"><i class="fas fa-sync-alt me-1"></i> Recalculate ERP</button>
+                <button class="btn btn-success btn-sm fw-bold" onclick="openSalaryModal()"><i class="fas fa-plus-circle me-1"></i> Record Salary</button>
+                <button class="btn btn-primary btn-sm fw-bold" onclick="openTransactionModal()"><i class="fas fa-credit-card me-1"></i> New Transaction</button>
+            </div>
+        </div>
+
+        <!-- 6 Core Financial KPI Cards -->
+        <div class="row g-3 mb-4">
+            <!-- Total Capital Invested -->
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="kpi-card" style="border-left: 4px solid #17a2b8;">
+                    <i class="fas fa-boxes-packing kpi-icon text-info"></i>
+                    <p class="kpi-title">Capital Invested</p>
+                    <div class="kpi-value text-info" id="kpi-capital-invested">Rs. 0</div>
+                    <p class="kpi-subtitle">Total Cost Value of Inventory</p>
+                </div>
+            </div>
+
+            <!-- Gross Sales Revenue -->
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="kpi-card" style="border-left: 4px solid #007bff;">
+                    <i class="fas fa-hand-holding-dollar kpi-icon text-primary"></i>
+                    <p class="kpi-title">Gross Revenue</p>
+                    <div class="kpi-value text-primary" id="kpi-gross-revenue">Rs. 0</div>
+                    <p class="kpi-subtitle">Total Inflow from Orders</p>
+                </div>
+            </div>
+
+            <!-- Total Accumulated Net Profit -->
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="kpi-card" style="border-left: 4px solid #28a745;">
+                    <i class="fas fa-chart-line-up kpi-icon text-success"></i>
+                    <p class="kpi-title">Net Profit (Items)</p>
+                    <div class="kpi-value text-success" id="kpi-accumulated-profit">Rs. 0</div>
+                    <p class="kpi-subtitle">Revenue - Cost of Sold Goods</p>
+                </div>
+            </div>
+
+            <!-- Bottom-Line Operating Profit (Net after Salaries) -->
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="kpi-card" style="border-left: 4px solid #e50303;">
+                    <i class="fas fa-sack-dollar kpi-icon text-danger"></i>
+                    <p class="kpi-title">Net Operating Profit</p>
+                    <div class="kpi-value text-white fw-bold" id="kpi-operating-profit">Rs. 0</div>
+                    <p class="kpi-subtitle">Gross Profit - Salaries Paid</p>
+                </div>
+            </div>
+
+            <!-- Employee Payroll Covered -->
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="kpi-card" style="border-left: 4px solid #ffc107;">
+                    <i class="fas fa-users-gear kpi-icon text-warning"></i>
+                    <p class="kpi-title">Salaries Paid</p>
+                    <div class="kpi-value text-warning" id="kpi-salaries-paid">Rs. 0</div>
+                    <p class="kpi-subtitle"><span id="kpi-salaries-pending" class="text-danger fw-bold">Rs. 0</span> Pending</p>
+                </div>
+            </div>
+
+            <!-- Online Payments Processed -->
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="kpi-card" style="border-left: 4px solid #6f42c1;">
+                    <i class="fas fa-receipt kpi-icon" style="color: #9b59b6;"></i>
+                    <p class="kpi-title">Online Payments</p>
+                    <div class="kpi-value" style="color: #bb86fc;" id="kpi-online-volume">Rs. 0</div>
+                    <p class="kpi-subtitle" id="kpi-online-count">0 Settled Transactions</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs for the 4 ERP Subsystems -->
+        <ul class="nav erp-tabs mb-4 btn-no-print" id="erpTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="tab-pnl-btn" data-bs-toggle="pill" data-bs-target="#tab-pnl" type="button" role="tab">
+                    <i class="fas fa-chart-pie me-2"></i> 1. Profit &amp; Loss Dashboard
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-salaries-btn" data-bs-toggle="pill" data-bs-target="#tab-salaries" type="button" role="tab">
+                    <i class="fas fa-id-card-clip me-2"></i> 2. Employee Salary Sheet
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-payments-btn" data-bs-toggle="pill" data-bs-target="#tab-payments" type="button" role="tab">
+                    <i class="fas fa-credit-card me-2"></i> 3. Online Payments &amp; Ledger
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-stock-btn" data-bs-toggle="pill" data-bs-target="#tab-stock" type="button" role="tab">
+                    <i class="fas fa-warehouse me-2"></i> 4. Inventory &amp; Stock Monitor
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Contents -->
+        <div class="tab-content" id="erpTabContent">
+
+            <!-- TAB 1: PROFIT & LOSS DASHBOARD -->
+            <div class="tab-pane fade show active" id="tab-pnl" role="tabpanel">
+                <div class="admin-card">
+                    <div class="admin-card-header flex-wrap gap-2">
+                        <div>
+                            <h5 class="text-white mb-1"><i class="fas fa-calculator text-danger me-2"></i> Item-by-Item Profit &amp; Loss Statement</h5>
+                            <p class="text-secondary small mb-0">Detailed breakdown showing Cost Price (CP), Selling Price (SP), Unit Net Profit, and Total Accumulated Profit per product.</p>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
+                            <div class="input-group search-input-group" style="width: 250px;">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" id="pnl-search" class="form-control" placeholder="Search product..." oninput="renderPnLTable()">
+                            </div>
+                            <select id="pnl-category-filter" class="form-select bg-dark text-white border-secondary" style="width: 180px;" onchange="renderPnLTable()">
+                                <option value="ALL">All Categories</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- P&L Table -->
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Product Details</th>
+                                    <th class="text-center">Cost Price (CP)</th>
+                                    <th class="text-center">Selling Price (SP)</th>
+                                    <th class="text-center">Unit Net Profit</th>
+                                    <th class="text-center">Profit Margin</th>
+                                    <th class="text-center">Units Sold</th>
+                                    <th class="text-end">Cost of Sold (COGS)</th>
+                                    <th class="text-end">Revenue</th>
+                                    <th class="text-end">Total Net Profit</th>
+                                    <th class="text-center action-column">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pnl-table-body">
+                                <tr><td colspan="10" class="text-center text-secondary py-4">Calculating financial data...</td></tr>
+                            </tbody>
+                            <tfoot class="border-top border-secondary fw-bold" style="background-color: #14171a;">
+                                <tr>
+                                    <td class="text-white">TOTALS &amp; AGGREGATES:</td>
+                                    <td colspan="4" class="text-secondary small text-center" id="pnl-foot-summary">-</td>
+                                    <td class="text-center text-primary" id="pnl-foot-sold">0</td>
+                                    <td class="text-end text-danger" id="pnl-foot-cogs">Rs. 0</td>
+                                    <td class="text-end text-primary" id="pnl-foot-revenue">Rs. 0</td>
+                                    <td class="text-end text-success fs-6" id="pnl-foot-profit">Rs. 0</td>
+                                    <td class="action-column"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: EMPLOYEE SALARY SHEET -->
+            <div class="tab-pane fade" id="tab-salaries" role="tabpanel">
+                <div class="admin-card">
+                    <div class="admin-card-header flex-wrap gap-3">
+                        <div>
+                            <h5 class="text-white mb-1"><i class="fas fa-users text-warning me-2"></i> Employee Monthly Salary Sheet</h5>
+                            <p class="text-secondary small mb-0">Track monthly payroll commitments, record salary payments, and audit paid/pending disbursements.</p>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2 btn-no-print">
+                            <select id="salary-month-filter" class="form-select bg-dark text-white border-secondary" style="width: 170px;" onchange="renderSalaryTable()">
+                                <option value="ALL">All Months</option>
+                                <option value="August 2026" selected>August 2026</option>
+                                <option value="July 2026">July 2026</option>
+                                <option value="June 2026">June 2026</option>
+                            </select>
+                            <select id="salary-status-filter" class="form-select bg-dark text-white border-secondary" style="width: 140px;" onchange="renderSalaryTable()">
+                                <option value="ALL">All Statuses</option>
+                                <option value="Paid">Paid</option>
+                                <option value="Pending">Pending</option>
+                            </select>
+                            <button class="btn btn-warning btn-sm fw-bold px-3" onclick="openSalaryModal()"><i class="fas fa-plus me-1"></i> Add Salary Entry</button>
+                        </div>
+                    </div>
+
+                    <!-- Salary Month Statistics Pill Bar -->
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-3">
+                            <div class="p-2 rounded bg-dark border border-secondary border-opacity-25 text-center">
+                                <span class="text-secondary small d-block">Monthly Payroll Budget:</span>
+                                <span class="fw-bold text-white fs-6" id="salary-stat-total">Rs. 0</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-2 rounded bg-dark border border-secondary border-opacity-25 text-center">
+                                <span class="text-secondary small d-block">Salaries Covered (Paid):</span>
+                                <span class="fw-bold text-success fs-6" id="salary-stat-paid">Rs. 0</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-2 rounded bg-dark border border-secondary border-opacity-25 text-center">
+                                <span class="text-secondary small d-block">Pending Disbursement:</span>
+                                <span class="fw-bold text-warning fs-6" id="salary-stat-pending">Rs. 0</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-2 rounded bg-dark border border-secondary border-opacity-25 text-center">
+                                <span class="text-secondary small d-block">Covered / Total Staff:</span>
+                                <span class="fw-bold text-info fs-6" id="salary-stat-count">0 / 0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Salaries Table -->
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Employee Details</th>
+                                    <th>Department / Role</th>
+                                    <th class="text-end">Base Salary</th>
+                                    <th class="text-end">Allowances</th>
+                                    <th class="text-end">Deductions</th>
+                                    <th class="text-end">Net Payable</th>
+                                    <th class="text-center">Month</th>
+                                    <th class="text-center">Payment Status</th>
+                                    <th>Payment Details</th>
+                                    <th class="text-center action-column">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="salary-table-body">
+                                <tr><td colspan="10" class="text-center text-secondary py-4">Loading salary records...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: ONLINE PAYMENTS & TRANSACTIONS -->
+            <div class="tab-pane fade" id="tab-payments" role="tabpanel">
+                <div class="admin-card">
+                    <div class="admin-card-header flex-wrap gap-3">
+                        <div>
+                            <h5 class="text-white mb-1"><i class="fas fa-credit-card text-primary me-2"></i> Online Payments &amp; Gateway Transactions</h5>
+                            <p class="text-secondary small mb-0">Audit live customer transactions, track gateway settlements (Stripe, JazzCash, EasyPaisa, Bank Wire), and monitor payment statuses.</p>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2 btn-no-print">
+                            <div class="input-group search-input-group" style="width: 220px;">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" id="txn-search" class="form-control" placeholder="Search Txn/Order..." oninput="renderTransactionsTable()">
+                            </div>
+                            <select id="txn-gateway-filter" class="form-select bg-dark text-white border-secondary" style="width: 160px;" onchange="renderTransactionsTable()">
+                                <option value="ALL">All Gateways</option>
+                                <option value="Stripe">Stripe (Card)</option>
+                                <option value="JazzCash">JazzCash</option>
+                                <option value="EasyPaisa">EasyPaisa</option>
+                                <option value="Bank Transfer">Bank Wire</option>
+                                <option value="Cash on Delivery">Cash On Delivery</option>
+                            </select>
+                            <select id="txn-status-filter" class="form-select bg-dark text-white border-secondary" style="width: 150px;" onchange="renderTransactionsTable()">
+                                <option value="ALL">All Statuses</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Failed">Failed</option>
+                                <option value="Refunded">Refunded</option>
+                            </select>
+                            <button class="btn btn-primary btn-sm fw-bold" onclick="openTransactionModal()"><i class="fas fa-plus me-1"></i> Record Txn</button>
+                        </div>
+                    </div>
+
+                    <!-- Transactions Table -->
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Txn ID / Ref</th>
+                                    <th>Order Reference</th>
+                                    <th>Customer Info</th>
+                                    <th>Payment Gateway</th>
+                                    <th class="text-end">Amount</th>
+                                    <th class="text-center">Date &amp; Time</th>
+                                    <th class="text-center">Payment Status</th>
+                                    <th class="text-center action-column">Manage</th>
+                                </tr>
+                            </thead>
+                            <tbody id="txn-table-body">
+                                <tr><td colspan="8" class="text-center text-secondary py-4">Loading transaction records...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: INVENTORY & STOCK MONITORING -->
+            <div class="tab-pane fade" id="tab-stock" role="tabpanel">
+                <div class="admin-card">
+                    <div class="admin-card-header flex-wrap gap-3">
+                        <div>
+                            <h5 class="text-white mb-1"><i class="fas fa-boxes-stacked text-info me-2"></i> Real-time Inventory &amp; Stock Levels</h5>
+                            <p class="text-secondary small mb-0">Full visibility into purchased quantities, sales velocity, current on-hand units, and total capital tied up in stock.</p>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2 btn-no-print">
+                            <div class="input-group search-input-group" style="width: 220px;">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" id="stock-search" class="form-control" placeholder="Search stock..." oninput="renderStockTable()">
+                            </div>
+                            <select id="stock-filter" class="form-select bg-dark text-white border-secondary" style="width: 170px;" onchange="renderStockTable()">
+                                <option value="ALL">All Stock Levels</option>
+                                <option value="IN_STOCK">In Stock (&gt; 10)</option>
+                                <option value="LOW_STOCK">Low Stock (1-10)</option>
+                                <option value="OUT_OF_STOCK">Out of Stock (0)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Stock Overview Table -->
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Product &amp; SKU</th>
+                                    <th>Category</th>
+                                    <th class="text-center">Total Purchased (In)</th>
+                                    <th class="text-center">Units Sold (Out)</th>
+                                    <th class="text-center">Current Stock</th>
+                                    <th class="text-center" style="width: 120px;">Stock Health</th>
+                                    <th class="text-end">Unit Cost</th>
+                                    <th class="text-end">Stock Value (Cost)</th>
+                                    <th class="text-end">Retail Value</th>
+                                    <th class="text-center action-column">Restock</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stock-table-body">
+                                <tr><td colspan="10" class="text-center text-secondary py-4">Evaluating inventory...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL 1: ADD/EDIT EMPLOYEE SALARY -->
+    <!-- MODAL 1: ADD/EDIT EMPLOYEE SALARY -->
+    <div class="modal fade" id="salaryModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content shadow-lg border-0">
+                <div class="modal-header bg-dark text-white p-3">
+                    <h5 class="modal-title fw-bold" id="salaryModalTitle"><i class="fas fa-id-card text-warning me-2"></i> Record Employee Salary</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="salary-form" onsubmit="handleSalarySubmit(event)">
+                    <div class="modal-body p-4">
+                        <input type="hidden" id="sal-edit-id" value="">
+                        
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold">Employee Name <span class="text-danger">*</span></label>
+                                <input type="text" id="sal-name" class="form-control" placeholder="e.g. Ahmed Khan, Hamza Tariq..." required list="staff-datalist" oninput="handleStaffNameInput(this)">
+                                <datalist id="staff-datalist"></datalist>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold">Department / Role <span class="text-danger">*</span></label>
+                                <input type="text" id="sal-role" class="form-control" list="sal-role-datalist" placeholder="e.g. Operations & Warehouse Manager" required>
+                                <datalist id="sal-role-datalist">
+                                    <option value="Warehouse Staff">
+                                    <option value="Inventory Manager">
+                                    <option value="Customer Support Specialist">
+                                    <option value="Sales Executive">
+                                    <option value="Senior Accountant">
+                                    <option value="HR Manager">
+                                    <option value="Marketing Lead">
+                                    <option value="Executive Officer">
+                                </datalist>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold">Salary Month / Period <span class="text-danger">*</span></label>
+                                <input type="text" id="sal-month" class="form-control" list="sal-month-datalist" placeholder="e.g. September 2026, Q3 Bonus..." value="September 2026" required>
+                                <datalist id="sal-month-datalist">
+                                    <option value="September 2026">
+                                    <option value="August 2026">
+                                    <option value="July 2026">
+                                    <option value="June 2026">
+                                    <option value="May 2026">
+                                    <option value="Annual Bonus 2026">
+                                </datalist>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold">Payment Status</label>
+                                <input type="text" id="sal-status" class="form-control" list="sal-status-datalist" placeholder="Paid or Pending" value="Pending" oninput="toggleSalPaymentFields()">
+                                <datalist id="sal-status-datalist">
+                                    <option value="Paid">
+                                    <option value="Pending">
+                                    <option value="Processing">
+                                    <option value="On Hold">
+                                </datalist>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label text-dark small fw-bold">Base Salary (PKR) <span class="text-danger">*</span></label>
+                                <input type="number" id="sal-base" class="form-control fw-bold" placeholder="50000" min="0" required oninput="calcNetSalary()">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-dark small fw-bold">Allowances (PKR)</label>
+                                <input type="number" id="sal-allowance" class="form-control" placeholder="Fuel, Mobile, Medical..." value="0" min="0" oninput="calcNetSalary()">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-dark small fw-bold">Deductions (PKR)</label>
+                                <input type="number" id="sal-deduction" class="form-control" placeholder="Tax, Advance, EOBI..." value="0" min="0" oninput="calcNetSalary()">
+                            </div>
+                        </div>
+
+                        <div class="p-3 mb-3 rounded bg-light border text-center">
+                            <span class="text-secondary small fw-bold text-uppercase d-block">Net Monthly Disbursement:</span>
+                            <span class="fw-bold text-success fs-4 d-block" id="sal-net-preview">Rs. 0</span>
+                        </div>
+
+                        <div class="row g-3 mb-3" id="sal-payment-details-row">
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold">Payment Method</label>
+                                <input type="text" id="sal-method" class="form-control" list="sal-method-datalist" placeholder="Select or type payment method..." value="Bank Transfer">
+                                <datalist id="sal-method-datalist">
+                                    <option value="Bank Transfer (Meezan / HBL / Alfalah)">
+                                    <option value="JazzCash Mobile Account">
+                                    <option value="EasyPaisa">
+                                    <option value="Cash In Hand">
+                                    <option value="Cross Cheque">
+                                    <option value="Raast Instant Pay">
+                                </datalist>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold">Payment Date</label>
+                                <input type="date" id="sal-date" class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold">Reference / Transaction / Slip #</label>
+                                <input type="text" id="sal-ref" class="form-control" placeholder="e.g. TRX-90214, CHQ-4491">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold">Remarks / Internal Notes</label>
+                                <input type="text" id="sal-notes" class="form-control" placeholder="e.g. Sales KPI bonus included, approved by CEO">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light p-3">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-warning btn-sm fw-bold px-4"><i class="fas fa-save me-1"></i> Save Salary Record</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: ADD / EDIT ONLINE TRANSACTION -->
+    <div class="modal fade" id="txnModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content shadow-lg border-0">
+                <div class="modal-header bg-dark text-white p-3">
+                    <h5 class="modal-title fw-bold" id="txnModalTitle"><i class="fas fa-credit-card text-primary me-2"></i> Record Online Payment</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="txn-form" onsubmit="handleTxnSubmit(event)">
+                    <div class="modal-body p-4">
+                        <input type="hidden" id="txn-edit-id" value="">
+                        
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold">Transaction Ref ID <span class="text-danger">*</span></label>
+                                <input type="text" id="txn-id-field" class="form-control" placeholder="e.g. TXN-2026-9912" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold">Associated Order # <span class="text-danger">*</span></label>
+                                <input type="text" id="txn-order-field" class="form-control" placeholder="e.g. #GUG-1082" required>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold">Customer Name <span class="text-danger">*</span></label>
+                                <input type="text" id="txn-customer-field" class="form-control" placeholder="e.g. Daniyal Sheikh" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold">Customer Phone</label>
+                                <input type="text" id="txn-phone-field" class="form-control" placeholder="0300-1234567">
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold">Payment Gateway / Method <span class="text-danger">*</span></label>
+                                <input type="text" id="txn-gateway-field" class="form-control" list="txn-gateway-datalist" placeholder="Select or type payment gateway..." value="Direct Bank Wire / IBFT" required>
+                                <datalist id="txn-gateway-datalist">
+                                    <option value="Direct Bank Wire / IBFT (Meezan/Alfalah)">
+                                    <option value="JazzCash Mobile Account">
+                                    <option value="EasyPaisa">
+                                    <option value="Stripe (Debit/Credit Card)">
+                                    <option value="Cash on Delivery (COD Settlement)">
+                                    <option value="POS Card Swipe">
+                                    <option value="Raast Payment">
+                                </datalist>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold">Amount (PKR) <span class="text-danger">*</span></label>
+                                <input type="number" id="txn-amount-field" class="form-control fw-bold" placeholder="25000" min="0" required>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold">Payment Status</label>
+                                <input type="text" id="txn-status-field" class="form-control" list="txn-status-datalist" placeholder="Completed, Pending..." value="Completed">
+                                <datalist id="txn-status-datalist">
+                                    <option value="Completed">
+                                    <option value="Pending">
+                                    <option value="Verified">
+                                    <option value="Failed">
+                                    <option value="Refunded">
+                                </datalist>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold">Date &amp; Time</label>
+                                <input type="text" id="txn-date-field" class="form-control" placeholder="e.g. 19 Aug 2026, 04:30 PM">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light p-3">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm fw-bold px-4"><i class="fas fa-check me-1"></i> Save Transaction</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: ADJUST STOCK / COST PRICE -->
+    <div class="modal fade" id="stockModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-white"><i class="fas fa-boxes text-info me-2"></i> Inventory Restock &amp; Cost Price Adjustment</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="stock-form" onsubmit="handleStockSubmit(event)">
+                    <div class="modal-body">
+                        <input type="hidden" id="stock-prod-id" value="">
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Product</label>
+                            <input type="text" id="stock-prod-name" class="form-control bg-dark text-white" readonly>
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label">Retail Selling Price (SP)</label>
+                                <input type="text" id="stock-prod-sp" class="form-control bg-dark text-white" readonly>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label">Unit Cost Price (CP Rs.)</label>
+                                <input type="number" id="stock-prod-cp" class="form-control" required placeholder="Cost to acquire item">
+                            </div>
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label">Total Purchased Quantity</label>
+                                <input type="number" id="stock-prod-purchased" class="form-control" required min="1" placeholder="e.g. 50">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label">Units Already Sold</label>
+                                <input type="number" id="stock-prod-sold" class="form-control bg-dark text-white" readonly>
+                            </div>
+                        </div>
+
+                        <div class="p-2 mb-2 rounded bg-dark border border-secondary text-center">
+                            <span class="text-secondary small">Estimated Net Profit Per Unit:</span>
+                            <span class="fw-bold text-success fs-6 d-block" id="stock-unit-profit-preview">Rs. 0</span>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-info btn-sm fw-bold px-4">Update Inventory Values</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/products-data.js"></script>
+    <script src="assets/js/gug-erp-core.js"></script>
+    <!-- Firebase Compat SDKs & Cloud Sync -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/firebase-sync.js"></script>
+    <script src="assets/js/admin.js"></script>
+
+    <!-- ERP Specific Core Logic Script -->
+    <script>
+        // Data Schemas & Initial Seeders
+        const DEFAULT_SALARIES = [
+            { id: "SAL-101", name: "Ahmed Khan", role: "Store & Inventory Manager", base: 85000, allowance: 5000, deduction: 0, net: 90000, month: "August 2026", status: "Paid", date: "2026-08-01", method: "Bank Transfer", ref: "HBL-882190", notes: "Monthly executive allowance" },
+            { id: "SAL-102", name: "Hamza Ali", role: "Senior Hardware Specialist", base: 65000, allowance: 3000, deduction: 1000, net: 67000, month: "August 2026", status: "Paid", date: "2026-08-02", method: "Bank Transfer", ref: "BAHL-44129", notes: "Repair bonus included" },
+            { id: "SAL-103", name: "Bilal Tariq", role: "Lead Sales Executive", base: 50000, allowance: 8000, deduction: 0, net: 58000, month: "August 2026", status: "Paid", date: "2026-08-03", method: "JazzCash", ref: "JC-9921448", notes: "Sales target commission" },
+            { id: "SAL-104", name: "Zubair Shah", role: "Warehouse & Stock Officer", base: 45000, allowance: 2000, deduction: 0, net: 47000, month: "August 2026", status: "Pending", date: "", method: "EasyPaisa", ref: "", notes: "Pending month-end clearance" },
+            { id: "SAL-105", name: "Sara Malik", role: "Customer Support & Dispatch", base: 40000, allowance: 2500, deduction: 500, net: 42000, month: "August 2026", status: "Pending", date: "", method: "Bank Transfer", ref: "", notes: "" },
+            { id: "SAL-106", name: "Usman Riaz", role: "PC Assembly Technician", base: 42000, allowance: 3000, deduction: 0, net: 45000, month: "August 2026", status: "Paid", date: "2026-08-02", method: "Cash", ref: "VOUCH-882", notes: "Cash voucher payout" },
+            
+            { id: "SAL-091", name: "Ahmed Khan", role: "Store & Inventory Manager", base: 85000, allowance: 5000, deduction: 0, net: 90000, month: "July 2026", status: "Paid", date: "2026-07-01", method: "Bank Transfer", ref: "HBL-77124", notes: "" },
+            { id: "SAL-092", name: "Hamza Ali", role: "Senior Hardware Specialist", base: 65000, allowance: 2000, deduction: 0, net: 67000, month: "July 2026", status: "Paid", date: "2026-07-01", method: "Bank Transfer", ref: "BAHL-3310", notes: "" },
+            { id: "SAL-093", name: "Bilal Tariq", role: "Lead Sales Executive", base: 50000, allowance: 5000, deduction: 0, net: 55000, month: "July 2026", status: "Paid", date: "2026-07-02", method: "JazzCash", ref: "JC-77192", notes: "" }
+        ];
+
+        const DEFAULT_TRANSACTIONS = [
+            { id: "TXN-88421", orderId: "#GUG-1049", customer: "Daniyal Sheikh", phone: "0321-8849201", gateway: "Stripe", amount: 169999, date: "19 Aug 2026, 03:45 PM", status: "Completed" },
+            { id: "TXN-88422", orderId: "#GUG-1050", customer: "Kashif Mehmood", phone: "0300-4491022", gateway: "JazzCash", amount: 48500, date: "19 Aug 2026, 02:15 PM", status: "Completed" },
+            { id: "TXN-88423", orderId: "#GUG-1051", customer: "Rehan Ahmed", phone: "0333-9912048", gateway: "EasyPaisa", amount: 124999, date: "18 Aug 2026, 06:10 PM", status: "Completed" },
+            { id: "TXN-88424", orderId: "#GUG-1052", customer: "Muneeb Khan", phone: "0312-5501928", gateway: "Bank Transfer", amount: 219999, date: "18 Aug 2026, 01:20 PM", status: "Completed" },
+            { id: "TXN-88425", orderId: "#GUG-1053", customer: "Taimoor Shah", phone: "0345-6619021", gateway: "Stripe", amount: 35000, date: "17 Aug 2026, 11:05 AM", status: "Pending" },
+            { id: "TXN-88426", orderId: "#GUG-1054", customer: "Waseem Akram", phone: "0301-7729103", gateway: "Cash on Delivery", amount: 18500, date: "16 Aug 2026, 04:50 PM", status: "Completed" },
+            { id: "TXN-88427", orderId: "#GUG-1055", customer: "Zeeshan Ali", phone: "0322-1184920", gateway: "JazzCash", amount: 8999, date: "15 Aug 2026, 09:30 AM", status: "Refunded" }
+        ];
+
+        // Seed data function
+        function seedDefaultERPData(force = false) {
+            if (force || !localStorage.getItem('gug_finance_salaries')) {
+                localStorage.setItem('gug_finance_salaries', JSON.stringify(DEFAULT_SALARIES));
+            }
+            if (force || !localStorage.getItem('gug_finance_transactions')) {
+                localStorage.setItem('gug_finance_transactions', JSON.stringify(DEFAULT_TRANSACTIONS));
+            }
+            if (force || !localStorage.getItem('gug_finance_stock_custom')) {
+                localStorage.setItem('gug_finance_stock_custom', JSON.stringify({}));
+            }
+            renderAllERPModules();
+        }
+
+        // Get Stock and Cost Price Config per Product
+        function getProductFinanceConfig(prod) {
+            const customMap = JSON.parse(localStorage.getItem('gug_finance_stock_custom') || '{}');
+            const pId = prod.id.toString();
+            const numericPrice = Number(prod.price) || 0;
+            
+            const defaultCost = Math.round(numericPrice * 0.70); // 30% standard retail margin
+            const defaultPurchased = 50;
+
+            if (customMap[pId]) {
+                return {
+                    costPrice: customMap[pId].costPrice !== undefined ? Number(customMap[pId].costPrice) : defaultCost,
+                    purchasedQty: customMap[pId].purchasedQty !== undefined ? Number(customMap[pId].purchasedQty) : defaultPurchased
+                };
+            }
+            return { costPrice: defaultCost, purchasedQty: defaultPurchased };
+        }
+
+        // Save Custom Finance Config
+        function setProductFinanceConfig(pId, costPrice, purchasedQty) {
+            const customMap = JSON.parse(localStorage.getItem('gug_finance_stock_custom') || '{}');
+            customMap[pId.toString()] = { costPrice: Number(costPrice), purchasedQty: Number(purchasedQty) };
+            localStorage.setItem('gug_finance_stock_custom', JSON.stringify(customMap));
+        }
+
+        // Unified Calculation Engine
+        function calculateFullERP() {
+            const liveProducts = window.LIVE_PRODUCTS || [];
+            const orders = JSON.parse(localStorage.getItem('admin_orders')) || [];
+            const salaries = JSON.parse(localStorage.getItem('gug_finance_salaries') || '[]');
+            const transactions = JSON.parse(localStorage.getItem('gug_finance_transactions') || '[]');
+
+            // 1. Calculate Product Sales from Orders
+            const salesVelocity = {};
+            let orderRevenue = 0;
+            let orderItemsSold = 0;
+
+            orders.forEach(ord => {
+                if (ord.items && Array.isArray(ord.items)) {
+                    ord.items.forEach(item => {
+                        const name = item.name || 'Unknown Product';
+                        const qty = Number(item.qty) || 1;
+                        const price = Number(item.price) || 0;
+                        salesVelocity[name] = (salesVelocity[name] || 0) + qty;
+                        orderRevenue += (price * qty);
+                        orderItemsSold += qty;
+                    });
+                }
+            });
+
+            const hasRealOrders = orders.length > 0;
+
+            let totalCapitalInvested = 0;
+            let totalCostOfSoldGoods = 0;
+            let totalAccumulatedGrossProfit = 0;
+            let totalGrossRevenue = 0;
+            let totalStockPurchased = 0;
+            let totalStockRemaining = 0;
+            let totalInventoryCostValue = 0;
+            let totalInventoryRetailValue = 0;
+
+            const productRows = liveProducts.map((p, idx) => {
+                const fConfig = getProductFinanceConfig(p);
+                const price = Number(p.price) || 0;
+                const costPrice = fConfig.costPrice;
+                const purchasedQty = fConfig.purchasedQty;
+                
+                let qtySold = salesVelocity[p.name] || 0;
+                if (!hasRealOrders) {
+                    qtySold = ((idx * 7) % 24) + 3;
+                    if (qtySold > purchasedQty) qtySold = purchasedQty - 5;
+                }
+
+                const remainingStock = Math.max(0, purchasedQty - qtySold);
+                const unitNetProfit = price - costPrice;
+                const profitMargin = price > 0 ? ((unitNetProfit / price) * 100) : 0;
+                const itemRevenue = price * qtySold;
+                const itemCOGS = costPrice * qtySold;
+                const itemTotalProfit = unitNetProfit * qtySold;
+                const itemCapitalInvested = costPrice * purchasedQty;
+                const itemRemainingCostVal = costPrice * remainingStock;
+                const itemRemainingRetailVal = price * remainingStock;
+
+                totalCapitalInvested += itemCapitalInvested;
+                totalCostOfSoldGoods += itemCOGS;
+                totalAccumulatedGrossProfit += itemTotalProfit;
+                totalGrossRevenue += itemRevenue;
+                totalStockPurchased += purchasedQty;
+                totalStockRemaining += remainingStock;
+                totalInventoryCostValue += itemRemainingCostVal;
+                totalInventoryRetailValue += itemRemainingRetailVal;
+
+                return {
+                    id: p.id,
+                    name: p.name,
+                    category: p.category || 'Hardware',
+                    image: p.image || 'assets/images/products/product-placeholder.png',
+                    costPrice,
+                    sellingPrice: price,
+                    unitNetProfit,
+                    profitMargin,
+                    purchasedQty,
+                    qtySold,
+                    remainingStock,
+                    itemCOGS,
+                    itemRevenue,
+                    itemTotalProfit,
+                    itemCapitalInvested,
+                    itemRemainingCostVal,
+                    itemRemainingRetailVal
+                };
+            });
+
+            // 2. Salaries aggregation
+            let totalSalariesPaid = 0;
+            let totalSalariesPending = 0;
+            salaries.forEach(s => {
+                if (s.status === 'Paid') totalSalariesPaid += (Number(s.net) || 0);
+                else totalSalariesPending += (Number(s.net) || 0);
+            });
+
+            // 3. Transactions aggregation
+            let totalOnlineVolume = 0;
+            let settledOnlineCount = 0;
+            transactions.forEach(t => {
+                if (t.status === 'Completed') {
+                    totalOnlineVolume += (Number(t.amount) || 0);
+                    settledOnlineCount++;
+                }
+            });
+
+            // Net Operating Profit = Gross Profit - Salaries Paid
+            const netOperatingProfit = totalAccumulatedGrossProfit - totalSalariesPaid;
+
+            return {
+                productRows,
+                totalCapitalInvested,
+                totalGrossRevenue,
+                totalCostOfSoldGoods,
+                totalAccumulatedGrossProfit,
+                netOperatingProfit,
+                totalSalariesPaid,
+                totalSalariesPending,
+                totalOnlineVolume,
+                settledOnlineCount,
+                totalStockPurchased,
+                totalStockRemaining,
+                totalInventoryCostValue,
+                totalInventoryRetailValue
+            };
+        }
+
+        // Render KPI Cards
+        function renderKPICards(erp) {
+            document.getElementById('kpi-capital-invested').textContent = 'Rs. ' + erp.totalCapitalInvested.toLocaleString();
+            document.getElementById('kpi-gross-revenue').textContent = 'Rs. ' + erp.totalGrossRevenue.toLocaleString();
+            document.getElementById('kpi-accumulated-profit').textContent = 'Rs. ' + erp.totalAccumulatedGrossProfit.toLocaleString();
+            
+            const opProfEl = document.getElementById('kpi-operating-profit');
+            opProfEl.textContent = 'Rs. ' + erp.netOperatingProfit.toLocaleString();
+            opProfEl.className = erp.netOperatingProfit >= 0 ? 'kpi-value text-success' : 'kpi-value text-danger';
+
+            document.getElementById('kpi-salaries-paid').textContent = 'Rs. ' + erp.totalSalariesPaid.toLocaleString();
+            document.getElementById('kpi-salaries-pending').textContent = 'Rs. ' + erp.totalSalariesPending.toLocaleString();
+            
+            document.getElementById('kpi-online-volume').textContent = 'Rs. ' + erp.totalOnlineVolume.toLocaleString();
+            document.getElementById('kpi-online-count').textContent = erp.settledOnlineCount + ' Settled Transactions';
+        }
+
+        // Render Tab 1: P&L Table
+        function renderPnLTable() {
+            const erp = calculateFullERP();
+            renderKPICards(erp);
+
+            const search = (document.getElementById('pnl-search').value || '').toLowerCase().trim();
+            const catFilter = document.getElementById('pnl-category-filter').value;
+            const tbody = document.getElementById('pnl-table-body');
+
+            const catSelect = document.getElementById('pnl-category-filter');
+            if (catSelect && catSelect.options.length === 1) {
+                const cats = [...new Set(erp.productRows.map(p => p.category).filter(Boolean))];
+                cats.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c;
+                    opt.textContent = c;
+                    catSelect.appendChild(opt);
+                });
+            }
+
+            const filtered = erp.productRows.filter(p => {
+                const matchSearch = !search || (p.name && p.name.toLowerCase().includes(search)) || (p.category && p.category.toLowerCase().includes(search));
+                const matchCat = !catFilter || catFilter === 'all' || p.category === catFilter;
+                return matchSearch && matchCat;
+            });
+
+            if (!filtered || filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" class="text-center text-secondary py-5">No matching products found.</td></tr>';
+                return;
+            }
+
+            let sumSold = 0, sumCOGS = 0, sumRev = 0, sumProfit = 0;
+
+            tbody.innerHTML = filtered.map(r => {
+                sumSold += r.qtySold;
+                sumCOGS += r.itemCOGS;
+                sumRev += r.itemRevenue;
+                sumProfit += r.itemTotalProfit;
+
+                const marginBadgeClass = r.profitMargin >= 30 ? 'text-success' : (r.profitMargin >= 15 ? 'text-warning' : 'text-danger');
+
+                return `
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="${r.image}" class="rounded me-2 border border-secondary border-opacity-25" style="width: 38px; height: 38px; object-fit: contain; background: #fff; padding: 2px;">
+                                <div style="max-width: 300px;">
+                                    <div class="text-dark fw-bold text-truncate" title="${r.name}">${r.name}</div>
+                                    <small class="text-secondary">${r.category}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center text-secondary font-monospace">Rs. ${r.costPrice.toLocaleString()}</td>
+                        <td class="text-center text-dark fw-semibold font-monospace">Rs. ${r.sellingPrice.toLocaleString()}</td>
+                        <td class="text-center">
+                            <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-25 px-2 py-1">
+                                + Rs. ${r.unitNetProfit.toLocaleString()}
+                            </span>
+                        </td>
+                        <td class="text-center fw-bold ${marginBadgeClass}">${r.profitMargin.toFixed(1)}%</td>
+                        <td class="text-center fw-bold text-primary">${r.qtySold}</td>
+                        <td class="text-end text-secondary font-monospace">Rs. ${r.itemCOGS.toLocaleString()}</td>
+                        <td class="text-end text-info font-monospace">Rs. ${r.itemRevenue.toLocaleString()}</td>
+                        <td class="text-end text-success fw-bold font-monospace fs-6">Rs. ${r.itemTotalProfit.toLocaleString()}</td>
+                        <td class="text-center action-column">
+                            <button class="btn btn-sm btn-outline-dark py-0 px-2" title="Adjust Cost/Stock" onclick="openStockModal('${r.id}')">
+                                <i class="fas fa-edit small"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('pnl-foot-sold').textContent = sumSold;
+            document.getElementById('pnl-foot-cogs').textContent = 'Rs. ' + sumCOGS.toLocaleString();
+            document.getElementById('pnl-foot-revenue').textContent = 'Rs. ' + sumRev.toLocaleString();
+            document.getElementById('pnl-foot-profit').textContent = 'Rs. ' + sumProfit.toLocaleString();
+            document.getElementById('pnl-foot-summary').textContent = filtered.length + ' SKUs Active in View';
+        }
+
+        // Render Tab 2: Salary Sheet
+        function renderSalaryTable() {
+            const salaries = JSON.parse(localStorage.getItem('gug_finance_salaries') || '[]');
+            const monthFilter = document.getElementById('salary-month-filter').value;
+            const statusFilter = document.getElementById('salary-status-filter').value;
+            const tbody = document.getElementById('salary-table-body');
+
+            const filtered = salaries.filter(s => {
+                const matchesMonth = monthFilter === 'ALL' || s.month === monthFilter;
+                const matchesStatus = statusFilter === 'ALL' || s.status === statusFilter;
+                return matchesMonth && matchesStatus;
+            });
+
+            let totBudget = 0, totPaid = 0, totPending = 0, paidCount = 0;
+            filtered.forEach(s => {
+                const n = Number(s.net) || 0;
+                totBudget += n;
+                if (s.status === 'Paid') { totPaid += n; paidCount++; }
+                else { totPending += n; }
+            });
+
+            document.getElementById('salary-stat-total').textContent = 'Rs. ' + totBudget.toLocaleString();
+            document.getElementById('salary-stat-paid').textContent = 'Rs. ' + totPaid.toLocaleString();
+            document.getElementById('salary-stat-pending').textContent = 'Rs. ' + totPending.toLocaleString();
+            document.getElementById('salary-stat-count').textContent = `${paidCount} / ${filtered.length} Paid`;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" class="text-center text-secondary py-5">No salary records for selected filter.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map((s, idx) => {
+                const isPaid = s.status === 'Paid';
+                const statusBadge = isPaid
+                    ? `<span class="badge badge-paid px-2 py-1"><i class="fas fa-check-circle me-1"></i> Paid</span>`
+                    : `<span class="badge badge-pending px-2 py-1"><i class="fas fa-clock me-1"></i> Pending</span>`;
+
+                const payToggleBtn = isPaid
+                    ? `<button class="btn btn-sm btn-outline-warning py-0 px-2" title="Mark as Pending" onclick="toggleSalaryStatus('${s.id}')"><i class="fas fa-undo small"></i> Revert</button>`
+                    : `<button class="btn btn-sm btn-success py-0 px-2 fw-bold" title="Mark as Paid" onclick="toggleSalaryStatus('${s.id}')"><i class="fas fa-check small"></i> Pay</button>`;
+
+                const paymentDetailStr = isPaid
+                    ? `<small class="text-dark fw-bold">${s.method || 'Bank Transfer'}</small><br><small class="text-secondary">${s.date || 'Disbursed'} ${s.ref ? '(' + s.ref + ')' : ''}</small>`
+                    : `<small class="text-secondary italic">Awaiting payout</small>`;
+
+                return `
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle bg-light border border-secondary text-dark d-flex align-items-center justify-content-center me-2 fw-bold" style="width: 34px; height: 34px; font-size: 12px;">
+                                    ${s.name.substring(0, 2).toUpperCase()}
+                                </div>
+                                <div>
+                                    <div class="text-dark fw-bold">${s.name}</div>
+                                    <small class="text-secondary font-monospace">${s.id}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="text-dark">${s.role}</span></td>
+                        <td class="text-end font-monospace text-secondary">Rs. ${(Number(s.base)||0).toLocaleString()}</td>
+                        <td class="text-end font-monospace text-success">+ Rs. ${(Number(s.allowance)||0).toLocaleString()}</td>
+                        <td class="text-end font-monospace text-danger">- Rs. ${(Number(s.deduction)||0).toLocaleString()}</td>
+                        <td class="text-end font-monospace fw-bold text-dark fs-6">Rs. ${(Number(s.net)||0).toLocaleString()}</td>
+                        <td class="text-center"><span class="badge bg-light text-dark border border-secondary">${s.month}</span></td>
+                        <td class="text-center">${statusBadge}</td>
+                        <td>${paymentDetailStr}</td>
+                        <td class="text-center action-column">
+                            <div class="d-flex justify-content-center gap-1">
+                                ${payToggleBtn}
+                                <button class="btn btn-sm btn-outline-dark py-0 px-2" title="Edit Record" onclick="editSalary('${s.id}')"><i class="fas fa-edit small"></i></button>
+                                <button class="btn btn-sm btn-outline-danger py-0 px-2" title="Delete" onclick="deleteSalary('${s.id}')"><i class="fas fa-trash small"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Render Tab 3: Online Transactions
+        function renderTransactionsTable() {
+            const txns = JSON.parse(localStorage.getItem('gug_finance_transactions') || '[]');
+            const search = (document.getElementById('txn-search').value || '').toLowerCase().trim();
+            const gwFilter = document.getElementById('txn-gateway-filter').value;
+            const statusFilter = document.getElementById('txn-status-filter').value;
+            const tbody = document.getElementById('txn-table-body');
+
+            const filtered = txns.filter(t => {
+                const matchesSearch = search === '' || t.id.toLowerCase().includes(search) || t.orderId.toLowerCase().includes(search) || t.customer.toLowerCase().includes(search);
+                const matchesGw = gwFilter === 'ALL' || t.gateway === gwFilter;
+                const matchesStatus = statusFilter === 'ALL' || t.status === statusFilter;
+                return matchesSearch && matchesGw && matchesStatus;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center text-secondary py-5">No transaction records match the criteria.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map((t, idx) => {
+                let badgeClass = 'badge-pending';
+                if (t.status === 'Completed') badgeClass = 'badge-paid';
+                else if (t.status === 'Failed') badgeClass = 'badge-failed';
+                else if (t.status === 'Refunded') badgeClass = 'badge-refunded';
+
+                let gwIcon = 'fa-credit-card';
+                if (t.gateway.includes('JazzCash') || t.gateway.includes('EasyPaisa')) gwIcon = 'fa-mobile-screen-button';
+                else if (t.gateway.includes('Bank')) gwIcon = 'fa-building-columns';
+                else if (t.gateway.includes('Cash')) gwIcon = 'fa-money-bill-1-wave';
+
+                return `
+                    <tr>
+                        <td>
+                            <span class="text-dark fw-bold font-monospace">${t.id}</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-light border border-secondary text-primary font-monospace">${t.orderId}</span>
+                        </td>
+                        <td>
+                            <div class="text-dark fw-bold">${t.customer}</div>
+                            <small class="text-secondary">${t.phone || '-'}</small>
+                        </td>
+                        <td>
+                            <span class="text-dark"><i class="fas ${gwIcon} text-secondary me-1"></i> ${t.gateway}</span>
+                        </td>
+                        <td class="text-end font-monospace fw-bold text-dark fs-6">Rs. ${(Number(t.amount)||0).toLocaleString()}</td>
+                        <td class="text-center text-secondary small">${t.date}</td>
+                        <td class="text-center"><span class="badge ${badgeClass} px-2 py-1">${t.status}</span></td>
+                        <td class="text-center action-column">
+                            <div class="dropdown d-inline-block">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle py-0 px-2" data-bs-toggle="dropdown">
+                                    Action
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item text-success" href="#" onclick="updateTxnStatus('${t.id}', 'Completed')"><i class="fas fa-check-circle me-2"></i> Mark Completed</a></li>
+                                    <li><a class="dropdown-item text-warning" href="#" onclick="updateTxnStatus('${t.id}', 'Pending')"><i class="fas fa-clock me-2"></i> Mark Pending</a></li>
+                                    <li><a class="dropdown-item text-danger" href="#" onclick="updateTxnStatus('${t.id}', 'Failed')"><i class="fas fa-times-circle me-2"></i> Mark Failed</a></li>
+                                    <li><a class="dropdown-item text-purple" href="#" onclick="updateTxnStatus('${t.id}', 'Refunded')"><i class="fas fa-rotate-left me-2"></i> Mark Refunded</a></li>
+                                    <li><hr class="dropdown-divider border-secondary"></li>
+                                    <li><a class="dropdown-item text-danger" href="#" onclick="deleteTransaction('${t.id}')"><i class="fas fa-trash me-2"></i> Delete</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Render Tab 4: Stock & Inventory
+        function renderStockTable() {
+            const erp = calculateFullERP();
+            const search = (document.getElementById('stock-search').value || '').toLowerCase().trim();
+            const stockFilter = document.getElementById('stock-filter').value;
+            const tbody = document.getElementById('stock-table-body');
+
+            const filtered = erp.productRows.filter(r => {
+                const matchesSearch = search === '' || r.name.toLowerCase().includes(search) || r.category.toLowerCase().includes(search);
+                let matchesLevel = true;
+                if (stockFilter === 'IN_STOCK') matchesLevel = r.remainingStock > 10;
+                else if (stockFilter === 'LOW_STOCK') matchesLevel = r.remainingStock > 0 && r.remainingStock <= 10;
+                else if (stockFilter === 'OUT_OF_STOCK') matchesLevel = r.remainingStock <= 0;
+                return matchesSearch && matchesLevel;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" class="text-center text-secondary py-5">No inventory records match the filter.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(r => {
+                const stockPercent = Math.min(100, Math.round((r.remainingStock / r.purchasedQty) * 100));
+                let barColor = '#28a745';
+                let statusBadge = '<span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-25">In Stock</span>';
+                
+                if (r.remainingStock <= 0) {
+                    barColor = '#dc3545';
+                    statusBadge = '<span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-25">Out of Stock</span>';
+                } else if (r.remainingStock <= 10) {
+                    barColor = '#ffc107';
+                    statusBadge = '<span class="badge bg-warning bg-opacity-25 text-warning border border-warning border-opacity-25">Low Stock</span>';
+                }
+
+                return `
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="${r.image}" class="rounded me-2 border border-secondary border-opacity-25" style="width: 36px; height: 36px; object-fit: contain; background: #fff;">
+                                <div style="max-width: 280px;">
+                                    <div class="text-dark fw-bold text-truncate" title="${r.name}">${r.name}</div>
+                                    <small class="text-secondary font-monospace">ID: ${r.id}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="text-dark small">${r.category}</span></td>
+                        <td class="text-center fw-bold text-secondary font-monospace">${r.purchasedQty}</td>
+                        <td class="text-center fw-bold text-primary font-monospace">${r.qtySold}</td>
+                        <td class="text-center">
+                            <span class="fw-bold fs-6 ${r.remainingStock <= 5 ? 'text-danger' : 'text-dark'} font-monospace">
+                                ${r.remainingStock}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="progress progress-stock mb-1">
+                                <div class="progress-bar" style="width: ${stockPercent}%; background-color: ${barColor};"></div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-secondary" style="font-size: 10px;">${stockPercent}% Left</small>
+                                ${statusBadge}
+                            </div>
+                        </td>
+                        <td class="text-end text-secondary font-monospace">Rs. ${r.costPrice.toLocaleString()}</td>
+                        <td class="text-end text-info fw-bold font-monospace">Rs. ${r.itemRemainingCostVal.toLocaleString()}</td>
+                        <td class="text-end text-dark font-monospace">Rs. ${r.itemRemainingRetailVal.toLocaleString()}</td>
+                        <td class="text-center action-column">
+                            <button class="btn btn-sm btn-info fw-bold py-0 px-2" onclick="openStockModal('${r.id}')">
+                                <i class="fas fa-plus-circle me-1"></i> Restock
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Master Refresh Function
+        function renderAllERPModules() {
+            renderPnLTable();
+            renderSalaryTable();
+            renderTransactionsTable();
+            renderStockTable();
+        }
+
+        // SALARY ACTIONS & MODAL LOGIC
+        function toggleSalCustomField(type) {
+            const selectEl = document.getElementById(`sal-${type}`);
+            const customInput = document.getElementById(`sal-${type}-custom`);
+            if (!customInput) return;
+            
+            if (customInput.style.display === 'none' || !customInput.style.display) {
+                customInput.style.display = 'block';
+                customInput.focus();
+                if (selectEl) selectEl.value = '__custom__';
+            } else {
+                customInput.style.display = 'none';
+                customInput.value = '';
+                if (selectEl && selectEl.value === '__custom__') {
+                    selectEl.selectedIndex = 0;
+                }
+            }
+        }
+
+        function checkSalCustomOption(selectEl, customInputId) {
+            const customInput = document.getElementById(customInputId);
+            if (!customInput) return;
+            if (selectEl.value === '__custom__') {
+                customInput.style.display = 'block';
+                customInput.focus();
+            } else {
+                customInput.style.display = 'none';
+                customInput.value = '';
+            }
+        }
+
+        function handleStaffNameInput(input) {
+            const val = input.value.trim().toLowerCase();
+            if (!val) return;
+            const gugEmployees = (window.GUG_DB && typeof window.GUG_DB.getEmployees === 'function') 
+                ? window.GUG_DB.getEmployees() 
+                : JSON.parse(localStorage.getItem('gug_employees') || '[]');
+            const match = gugEmployees.find(e => e.name && e.name.toLowerCase() === val);
+            if (match) {
+                if (!document.getElementById('sal-role').value) {
+                    document.getElementById('sal-role').value = match.designation || match.role || match.department || '';
+                }
+                if (!document.getElementById('sal-base').value || document.getElementById('sal-base').value === '0') {
+                    document.getElementById('sal-base').value = match.baseSalary || match.salary || 50000;
+                }
+                if (match.allowance && (!document.getElementById('sal-allowance').value || document.getElementById('sal-allowance').value === '0')) {
+                    document.getElementById('sal-allowance').value = match.allowance;
+                }
+                if (match.deductions && (!document.getElementById('sal-deduction').value || document.getElementById('sal-deduction').value === '0')) {
+                    document.getElementById('sal-deduction').value = match.deductions;
+                }
+                calcNetSalary();
+            }
+        }
+
+        function populateStaffDatalist() {
+            const datalist = document.getElementById('staff-datalist');
+            if (!datalist) return;
+            const staffUsers = JSON.parse(localStorage.getItem('admin_staff_users') || '[]');
+            const gugEmployees = (window.GUG_DB && typeof window.GUG_DB.getEmployees === 'function') 
+                ? window.GUG_DB.getEmployees() 
+                : JSON.parse(localStorage.getItem('gug_employees') || '[]');
+            
+            const allStaff = [];
+            const seen = new Set();
+            gugEmployees.forEach(emp => {
+                if (emp.name && !seen.has(emp.name.toLowerCase())) {
+                    seen.add(emp.name.toLowerCase());
+                    allStaff.push({
+                        name: emp.name,
+                        role: emp.designation || emp.role || emp.department || 'Staff',
+                        salary: emp.baseSalary || emp.salary || 50000,
+                        allowance: emp.allowance || 0,
+                        deductions: emp.deductions || 0,
+                        dept: emp.department || 'Operations'
+                    });
+                }
+            });
+            staffUsers.forEach(u => {
+                if (u.name && !seen.has(u.name.toLowerCase())) {
+                    seen.add(u.name.toLowerCase());
+                    allStaff.push({
+                        name: u.name,
+                        role: u.role || 'Staff',
+                        salary: 50000,
+                        allowance: 0,
+                        deductions: 0,
+                        dept: u.department || 'Operations'
+                    });
+                }
+            });
+            
+            datalist.innerHTML = allStaff.map(s => `<option value="${s.name}">[${s.dept}] ${s.role} - Rs. ${s.salary.toLocaleString()}</option>`).join('');
+        }
+
+        function calcNetSalary() {
+            const base = Number(document.getElementById('sal-base').value) || 0;
+            const allowance = Number(document.getElementById('sal-allowance').value) || 0;
+            const deduction = Number(document.getElementById('sal-deduction').value) || 0;
+            const net = Math.max(0, base + allowance - deduction);
+            document.getElementById('sal-net-preview').textContent = 'Rs. ' + net.toLocaleString();
+        }
+
+        function toggleSalPaymentFields() {
+            const statusEl = document.getElementById('sal-status');
+            const row = document.getElementById('sal-payment-details-row');
+            if (!row || !statusEl) return;
+            const status = statusEl.value;
+            if (status === 'Paid') {
+                row.style.display = 'flex';
+                const dateEl = document.getElementById('sal-date');
+                if (dateEl && !dateEl.value) {
+                    dateEl.value = new Date().toISOString().split('T')[0];
+                }
+            } else {
+                row.style.display = 'none';
+            }
+        }
+
+        function openSalaryModal(editObj = null) {
+            populateStaffDatalist();
+            const modalEl = document.getElementById('salaryModal');
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+            if (editObj) {
+                document.getElementById('salaryModalTitle').innerHTML = '<i class="fas fa-edit text-warning me-2"></i> Edit Employee Salary';
+                document.getElementById('sal-edit-id').value = editObj.id;
+                document.getElementById('sal-name').value = editObj.name || '';
+                document.getElementById('sal-role').value = editObj.role || '';
+                document.getElementById('sal-month').value = editObj.month || 'September 2026';
+                document.getElementById('sal-base').value = editObj.base || 0;
+                document.getElementById('sal-allowance').value = editObj.allowance || 0;
+                document.getElementById('sal-deduction').value = editObj.deduction || 0;
+                document.getElementById('sal-status').value = editObj.status || 'Pending';
+                document.getElementById('sal-method').value = editObj.method || 'Bank Transfer';
+                document.getElementById('sal-date').value = editObj.date || '';
+                document.getElementById('sal-ref').value = editObj.ref || '';
+                document.getElementById('sal-notes').value = editObj.notes || '';
+            } else {
+                document.getElementById('salaryModalTitle').innerHTML = '<i class="fas fa-id-card text-warning me-2"></i> Record Employee Salary';
+                document.getElementById('salary-form').reset();
+                document.getElementById('sal-edit-id').value = '';
+                document.getElementById('sal-status').value = 'Pending';
+                document.getElementById('sal-month').value = 'September 2026';
+                document.getElementById('sal-method').value = 'Bank Transfer';
+            }
+            calcNetSalary();
+            modal.show();
+        }
+
+        function handleSalarySubmit(e) {
+            e.preventDefault();
+            const editId = document.getElementById('sal-edit-id').value;
+            const salaries = JSON.parse(localStorage.getItem('gug_finance_salaries') || '[]');
+            
+            const base = Number(document.getElementById('sal-base').value) || 0;
+            const allowance = Number(document.getElementById('sal-allowance').value) || 0;
+            const deduction = Number(document.getElementById('sal-deduction').value) || 0;
+            const net = Math.max(0, base + allowance - deduction);
+
+            const record = {
+                id: editId || ("SAL-" + Math.floor(100 + Math.random() * 900)),
+                name: document.getElementById('sal-name').value.trim(),
+                role: document.getElementById('sal-role').value.trim(),
+                month: document.getElementById('sal-month').value.trim() || 'September 2026',
+                base,
+                allowance,
+                deduction,
+                net,
+                status: document.getElementById('sal-status').value.trim() || 'Pending',
+                method: document.getElementById('sal-method').value.trim() || 'Bank Transfer',
+                date: document.getElementById('sal-date').value || '',
+                ref: document.getElementById('sal-ref').value.trim(),
+                notes: document.getElementById('sal-notes').value.trim()
+            };
+
+            if (editId) {
+                const idx = salaries.findIndex(s => s.id === editId);
+                if (idx > -1) salaries[idx] = record;
+            } else {
+                salaries.unshift(record);
+            }
+
+            localStorage.setItem('gug_finance_salaries', JSON.stringify(salaries));
+            const modalInstance = bootstrap.Modal.getInstance(document.getElementById('salaryModal'));
+            if (modalInstance) modalInstance.hide();
+            renderAllERPModules();
+            if (window.GUG_DB && typeof window.GUG_DB.showToast === 'function') {
+                window.GUG_DB.showToast(`Salary record for "${record.name}" (${record.month}) saved!`, 'success', 'Salary Recorded');
+            }
+        }
+
+        function toggleSalaryStatus(salId) {
+            const salaries = JSON.parse(localStorage.getItem('gug_finance_salaries') || '[]');
+            const idx = salaries.findIndex(s => s.id === salId);
+            if (idx > -1) {
+                const current = salaries[idx].status;
+                if (current === 'Paid') {
+                    salaries[idx].status = 'Pending';
+                    salaries[idx].date = '';
+                } else {
+                    salaries[idx].status = 'Paid';
+                    salaries[idx].date = new Date().toISOString().split('T')[0];
+                    if (!salaries[idx].ref) salaries[idx].ref = 'PAY-' + Math.floor(1000 + Math.random() * 9000);
+                }
+                localStorage.setItem('gug_finance_salaries', JSON.stringify(salaries));
+                renderAllERPModules();
+            }
+        }
+
+        function editSalary(salId) {
+            const salaries = JSON.parse(localStorage.getItem('gug_finance_salaries') || '[]');
+            const item = salaries.find(s => s.id === salId);
+            if (item) openSalaryModal(item);
+        }
+
+        function deleteSalary(salId) {
+            if (confirm('Delete this salary disbursement entry?')) {
+                let salaries = JSON.parse(localStorage.getItem('gug_finance_salaries') || '[]');
+                salaries = salaries.filter(s => s.id !== salId);
+                localStorage.setItem('gug_finance_salaries', JSON.stringify(salaries));
+                renderAllERPModules();
+            }
+        }
+
+        // TRANSACTION ACTIONS & MODAL LOGIC
+        function openTransactionModal(editObj = null) {
+            const modalEl = document.getElementById('txnModal');
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+            if (editObj) {
+                document.getElementById('txnModalTitle').innerHTML = '<i class="fas fa-edit text-primary me-2"></i> Edit Transaction';
+                document.getElementById('txn-edit-id').value = editObj.id;
+                document.getElementById('txn-id-field').value = editObj.id;
+                document.getElementById('txn-order-field').value = editObj.orderId;
+                document.getElementById('txn-customer-field').value = editObj.customer;
+                document.getElementById('txn-phone-field').value = editObj.phone || '';
+                document.getElementById('txn-gateway-field').value = editObj.gateway;
+                document.getElementById('txn-amount-field').value = editObj.amount;
+                document.getElementById('txn-status-field').value = editObj.status;
+                document.getElementById('txn-date-field').value = editObj.date;
+            } else {
+                document.getElementById('txnModalTitle').innerHTML = '<i class="fas fa-credit-card text-primary me-2"></i> Record Online Payment';
+                document.getElementById('txn-form').reset();
+                document.getElementById('txn-edit-id').value = '';
+                document.getElementById('txn-id-field').value = 'TXN-' + Math.floor(10000 + Math.random() * 90000);
+                document.getElementById('txn-order-field').value = '#GUG-' + Math.floor(1000 + Math.random() * 900);
+                document.getElementById('txn-gateway-field').value = 'Direct Bank Wire / IBFT';
+                document.getElementById('txn-status-field').value = 'Completed';
+                
+                const now = new Date();
+                document.getElementById('txn-date-field').value = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) + ', ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+            modal.show();
+        }
+
+        function handleTxnSubmit(e) {
+            e.preventDefault();
+            const editId = document.getElementById('txn-edit-id').value;
+            const txns = JSON.parse(localStorage.getItem('gug_finance_transactions') || '[]');
+
+            const record = {
+                id: document.getElementById('txn-id-field').value.trim(),
+                orderId: document.getElementById('txn-order-field').value.trim(),
+                customer: document.getElementById('txn-customer-field').value.trim(),
+                phone: document.getElementById('txn-phone-field').value.trim(),
+                gateway: document.getElementById('txn-gateway-field').value.trim() || 'Direct Bank Wire / IBFT',
+                amount: Number(document.getElementById('txn-amount-field').value) || 0,
+                status: document.getElementById('txn-status-field').value.trim() || 'Completed',
+                date: document.getElementById('txn-date-field').value.trim()
+            };
+
+            if (editId) {
+                const idx = txns.findIndex(t => t.id === editId);
+                if (idx > -1) txns[idx] = record;
+            } else {
+                txns.unshift(record);
+            }
+
+            localStorage.setItem('gug_finance_transactions', JSON.stringify(txns));
+            const modalInstance = bootstrap.Modal.getInstance(document.getElementById('txnModal'));
+            if (modalInstance) modalInstance.hide();
+            renderAllERPModules();
+            if (window.GUG_DB && typeof window.GUG_DB.showToast === 'function') {
+                window.GUG_DB.showToast(`Transaction "${record.id}" recorded successfully!`, 'success', 'Payment Logged');
+            }
+        }
+
+        function updateTxnStatus(txnId, newStatus) {
+            const txns = JSON.parse(localStorage.getItem('gug_finance_transactions') || '[]');
+            const idx = txns.findIndex(t => t.id === txnId);
+            if (idx > -1) {
+                txns[idx].status = newStatus;
+                localStorage.setItem('gug_finance_transactions', JSON.stringify(txns));
+                renderAllERPModules();
+            }
+        }
+
+        function deleteTransaction(txnId) {
+            if (confirm('Delete this transaction ledger record?')) {
+                let txns = JSON.parse(localStorage.getItem('gug_finance_transactions') || '[]');
+                txns = txns.filter(t => t.id !== txnId);
+                localStorage.setItem('gug_finance_transactions', JSON.stringify(txns));
+                renderAllERPModules();
+            }
+        }
+
+        // STOCK & COST PRICE ADJUSTMENT MODAL
+        function openStockModal(pId) {
+            const liveProducts = window.LIVE_PRODUCTS || [];
+            const prod = liveProducts.find(p => p.id.toString() === pId.toString());
+            if (!prod) return;
+
+            const erp = calculateFullERP();
+            const rowData = erp.productRows.find(r => r.id.toString() === pId.toString());
+
+            document.getElementById('stock-prod-id').value = prod.id;
+            document.getElementById('stock-prod-name').value = prod.name;
+            document.getElementById('stock-prod-sp').value = 'Rs. ' + (Number(prod.price)||0).toLocaleString();
+            document.getElementById('stock-prod-cp').value = rowData ? rowData.costPrice : Math.round(Number(prod.price) * 0.70);
+            document.getElementById('stock-prod-purchased').value = rowData ? rowData.purchasedQty : 50;
+            document.getElementById('stock-prod-sold').value = rowData ? rowData.qtySold : 0;
+
+            const cpInput = document.getElementById('stock-prod-cp');
+            const updatePreview = () => {
+                const sp = Number(prod.price) || 0;
+                const cp = Number(cpInput.value) || 0;
+                const prof = sp - cp;
+                document.getElementById('stock-unit-profit-preview').textContent = 'Rs. ' + prof.toLocaleString() + ` (${sp > 0 ? ((prof/sp)*100).toFixed(1) : 0}%)`;
+            };
+            cpInput.oninput = updatePreview;
+            updatePreview();
+
+            new bootstrap.Modal(document.getElementById('stockModal')).show();
+        }
+
+        function handleStockSubmit(e) {
+            e.preventDefault();
+            const pId = document.getElementById('stock-prod-id').value;
+            const cp = Number(document.getElementById('stock-prod-cp').value) || 0;
+            const purchased = Number(document.getElementById('stock-prod-purchased').value) || 1;
+
+            setProductFinanceConfig(pId, cp, purchased);
+            bootstrap.Modal.getInstance(document.getElementById('stockModal')).hide();
+            renderAllERPModules();
+        }
+
+        // Run On Page Load
+        document.addEventListener('DOMContentLoaded', () => {
+            seedDefaultERPData(false);
+        });
+    </script>
+</body>
+</html>
+
+
+

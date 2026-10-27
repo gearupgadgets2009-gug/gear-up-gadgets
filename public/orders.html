@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Immediate Zero-Delay Embedded View Detection (Prevents Duplicate Sidebar & Layout Snap) -->
+    <script>if(window.self!==window.top||(typeof location!=='undefined'&&location.search.indexOf('staff_view=1')!==-1)){document.documentElement.classList.add('is-embedded');}</script>
+    <style>
+        html.is-embedded .admin-sidebar, html.is-embedded aside.admin-sidebar, body.is-embedded .admin-sidebar { display: none !important; visibility: hidden !important; width: 0 !important; height: 0 !important; position: absolute !important; left: -9999px !important; opacity: 0 !important; pointer-events: none !important; animation: none !important; -webkit-animation: none !important; transition: none !important; transform: none !important; }
+        html.is-embedded .admin-main, body.is-embedded .admin-main { margin-left: 0 !important; width: 100% !important; padding: 15px 20px !important; animation: none !important; transition: none !important; }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Orders Pipeline | GearUp Gadgets ERP</title>    
+    <!-- Favicon & Device Web Icons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/images/favicon-64x64.png">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/fonts/font-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <style>
+        body { background-color: var(--gug-bg-color, #07090d) !important; background-image: var(--gug-bg-image) !important; background-attachment: var(--gug-bg-attachment, fixed) !important; background-size: var(--gug-bg-size, cover, cover, 28px 49px) !important; background-position: var(--gug-bg-position, center top) !important; background-repeat: var(--gug-bg-repeat, no-repeat, no-repeat, repeat) !important; min-height: 100vh; color: #ffffff !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .admin-sidebar { width: 260px; background: rgba(10, 10, 15, 0.6) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; height: 100vh; position: fixed; left: 0; top: 0; padding: 20px 15px; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; overflow-y: auto; z-index: 1000; }
+        .admin-main { margin-left: 260px; padding: 25px 30px; min-height: 100vh; background-color: transparent !important; color: #ffffff !important; }
+        .admin-nav-link { display: flex; align-items: center; padding: 9px 13px; color: #94a3b8; text-decoration: none; border-radius: 8px; margin-bottom: 3px; font-size: 13px; font-weight: 500; transition: all 0.2s ease; }
+        .admin-nav-link:hover { background-color: rgba(219, 39, 36, 0.15); color: #fff; }
+        .admin-nav-link.active { background-color: var(--accent-red); color: #fff !important; font-weight: 600; box-shadow: 0 4px 12px rgba(219, 39, 36, 0.3); }
+        .sidebar-section-heading { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #64748b; margin-top: 15px; margin-bottom: 6px; padding-left: 10px; }
+        
+        .admin-card { background: rgba(10, 10, 15, 0.45) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 16px !important; padding: 20px; margin-bottom: 20px; color: #ffffff !important; box-shadow: 0 16px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important; }
+        .table { color: #ffffff !important; background-color: transparent !important; vertical-align: middle; }
+        .table th { background-color: rgba(255, 255, 255, 0.06) !important; border-bottom: 2px solid rgba(255, 255, 255, 0.15) !important; color: #ffffff !important; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .table td { border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important; font-size: 13.5px; color: #ffffff !important; }
+    </style>
+</head>
+<body>
+        <!-- Enterprise Sidebar Navigation -->
+    <div class="admin-sidebar">
+        <div class="d-flex align-items-center mb-3 px-2">
+            <i class="fas fa-shield-alt text-danger fs-4 me-2"></i>
+            <div>
+                <h6 class="text-white m-0 fw-bold">GearUp ERP</h6>
+                <small class="text-secondary" style="font-size: 11px;">Enterprise Operating System</small>
+            </div>
+        </div>
+
+        <a href="dashboard.html" class="admin-nav-link" id="nav-dashboard"><i class="fas fa-chart-pie me-2"></i> Executive Dashboard</a>
+        
+        <!-- Accordion 1: Catalog & E-Commerce -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-catalog">
+                <span><i class="fas fa-shopping-bag text-danger me-2"></i> Catalog & E-Commerce</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-catalog">
+                <a href="products.html" class="admin-nav-link" id="nav-products"><i class="fas fa-boxes-stacked me-2"></i> Products & Catalog</a>
+                <a href="admin-crm.html" class="admin-nav-link" id="nav-crm"><i class="fas fa-users-viewfinder me-2"></i> Customers (CRM)</a>
+                <a href="admin-marketing.html" class="admin-nav-link" id="nav-marketing"><i class="fas fa-tags me-2"></i> Coupons & Marketing</a>
+            </div>
+        </div>
+
+        <!-- Accordion 2: Supply Chain & Operations -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-supply">
+                <span><i class="fas fa-truck-ramp-box text-primary me-2"></i> Supply Chain & Operations</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-supply">
+                <a href="admin-inventory.html" class="admin-nav-link" id="nav-inventory"><i class="fas fa-warehouse me-2"></i> Multi-Warehouse Stock</a>
+                <a href="admin-purchasing.html" class="admin-nav-link" id="nav-purchasing"><i class="fas fa-dolly me-2"></i> Purchasing & Suppliers</a>
+                <a href="orders.html" class="admin-nav-link" id="nav-orders"><i class="fas fa-cart-shopping me-2"></i> Sales Orders Pipeline</a>
+                <a href="admin-logistics.html" class="admin-nav-link" id="nav-logistics"><i class="fas fa-truck-fast me-2"></i> Logistics & Courier COD</a>
+                <a href="admin-returns.html" class="admin-nav-link" id="nav-returns"><i class="fas fa-rotate-left me-2"></i> Returns & Warranty (RMA)</a>
+            </div>
+        </div>
+
+        <!-- Accordion 3: Finance & B2B Wholesale -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-finance">
+                <span><i class="fas fa-coins text-warning me-2"></i> Finance & B2B Wholesale</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-finance">
+                <a href="admin-dealers.html" class="admin-nav-link" id="nav-dealers"><i class="fas fa-handshake me-2"></i> B2B Dealers & Ledger</a>
+                <a href="admin-finance.html" class="admin-nav-link" id="nav-finance"><i class="fas fa-file-invoice-dollar me-2"></i> Finance & P&L Ledger</a>
+                <a href="admin-staff.html" class="admin-nav-link" id="nav-staff"><i class="fas fa-user-tie me-2"></i> HR & Employee Payroll</a>
+                <a href="admin-tasks.html" class="admin-nav-link" id="nav-tasks"><i class="fas fa-list-check me-2"></i> Task Kanban & Workflow</a>
+                <a href="admin-reports.html" class="admin-nav-link" id="nav-reports"><i class="fas fa-chart-column me-2"></i> Business Reports</a>
+                <a href="admin-audit.html" class="admin-nav-link" id="nav-audit"><i class="fas fa-fingerprint me-2"></i> Security & Audit Logs</a>
+            </div>
+        </div>
+
+        <!-- Standalone Section: System Settings & Store Customization -->
+        <div class="mt-3 pt-3 border-top border-secondary border-opacity-25">
+            <div class="px-3 text-secondary text-uppercase fw-bold mb-2" style="font-size: 11px; letter-spacing: 0.6px;">System & Settings</div>
+            <a href="admin-settings.html" class="admin-nav-link" id="nav-settings"><i class="fas fa-sliders text-danger me-2"></i> System Settings & APIs</a>
+            <a href="admin-sales.html" class="admin-nav-link" id="nav-sales"><i class="fas fa-palette text-warning me-2"></i> Banner & Theme</a>
+        </div>
+        
+        <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
+            <a href="dealer-portal.html" target="_blank" class="admin-nav-link text-warning"><i class="fas fa-store-alt me-2"></i> Dealer Portal View</a>
+            <a href="employee-portal.html" class="admin-nav-link text-info"><i class="fas fa-id-badge me-2"></i> Employee Workspace</a>
+            <a href="index.html" target="_blank" class="admin-nav-link text-success"><i class="fas fa-store me-2"></i> Customer Storefront</a>
+            <a href="#" class="admin-nav-link text-danger mt-2" onclick="localStorage.removeItem('admin_logged_in'); localStorage.removeItem('admin_role'); localStorage.removeItem('admin_username'); window.location.href = 'admin.html'; return false;"><i class="fas fa-sign-out-alt me-2"></i> Sign Out</a>
+        </div>
+    </div>
+    <script>try{var _s=sessionStorage.getItem('gug_admin_sidebar_scroll');if(_s!==null){var _sb=document.querySelector('.admin-sidebar');if(_sb)_sb.scrollTop=parseFloat(_s);}}catch(e){}</script>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Global Header -->
+        <div id="gug-global-header-container"></div>
+
+        <!-- Beginner Help Banner -->
+        <div id="gug-beginner-help-container"></div>
+
+        <!-- Metric KPI Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="admin-card p-3 mb-0">
+                    <span class="text-secondary small fw-bold text-uppercase">Total Orders Logged</span>
+                    <h3 class="fw-bold text-dark mb-0 mt-1" id="stat-orders-total">0</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="admin-card p-3 mb-0">
+                    <span class="text-secondary small fw-bold text-uppercase">Pending Processing</span>
+                    <h3 class="fw-bold text-warning mb-0 mt-1" id="stat-orders-pending">0</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="admin-card p-3 mb-0">
+                    <span class="text-secondary small fw-bold text-uppercase">Out for Courier Delivery</span>
+                    <h3 class="fw-bold text-primary mb-0 mt-1" id="stat-orders-dispatched">0</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="admin-card p-3 mb-0">
+                    <span class="text-secondary small fw-bold text-uppercase">Total Gross Sales</span>
+                    <h3 class="fw-bold text-success mb-0 mt-1" id="stat-orders-revenue">Rs.  0</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="admin-card mb-4">
+            <div class="row g-3 align-items-center">
+                <div class="col-lg-5 col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-danger border-end-0"><i class="fas fa-search"></i></span>
+                        <input type="text" id="order-search" class="form-control border-start-0" placeholder="Search by Order ID, Customer Name, Phone, City..." oninput="filterOrders()">
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <select id="order-status-filter" class="form-select" onchange="filterOrders()">
+                        <option value="">All Fulfillment Statuses</option>
+                        <option value="Pending">Pending Approval</option>
+                        <option value="Processing">Processing / Packing</option>
+                        <option value="Dispatched">Dispatched (In Transit)</option>
+                        <option value="Delivered">Delivered (Completed)</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <div class="col-lg-4 col-md-12 d-flex justify-content-end gap-2">
+                    <button class="btn btn-outline-danger fw-bold no-print" onclick="window.GUG_DB.printModuleSlip('Sales Order Pipeline Slip')"><i class="fas fa-print me-1"></i> Print Slip</button>
+                    <button class="btn btn-danger" onclick="openCreateOrderModal()"><i class="fas fa-plus-circle me-1"></i> Create Manual Order</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="admin-card p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">Order # & Date</th>
+                            <th>Customer & Shipping</th>
+                            <th>Items Count</th>
+                            <th>Payment Method</th>
+                            <th>Fulfillment Status</th>
+                            <th>Total Amount</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-table-body">
+                        <!-- Populated via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Detail & Inspection Modal -->
+    <div class="modal fade" id="orderDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content shadow-lg border-0">
+                <div class="modal-header border-bottom p-3">
+                    <h5 class="modal-title fw-bold text-dark"><i class="fas fa-receipt text-danger me-2"></i> Order Inspection & Tracking Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4" id="order-detail-content">
+                    <!-- Populated dynamically -->
+                </div>
+                <div class="modal-footer border-top p-3 bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Manual Order Modal -->
+    <div class="modal fade" id="createOrderModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content shadow-lg border-0">
+                <div class="modal-header border-bottom p-3">
+                    <h5 class="modal-title fw-bold text-dark"><i class="fas fa-cart-plus text-danger me-2"></i> Create Manual Sales Order</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="createOrderForm" onsubmit="event.preventDefault(); submitManualOrder();">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Customer Name <span class="text-danger">*</span></label>
+                                <input type="text" id="mo-name" class="form-control" placeholder="e.g. Asad Malik" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone Number <span class="text-danger">*</span></label>
+                                <input type="text" id="mo-phone" class="form-control" placeholder="+92 321 9876543" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email Address</label>
+                                <input type="email" id="mo-email" class="form-control" placeholder="customer@gmail.com">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">City</label>
+                                <input type="text" id="mo-city" class="form-control" list="mo-city-datalist" placeholder="e.g. Karachi, Lahore, Islamabad, Quetta...">
+                                <datalist id="mo-city-datalist">
+                                    <option value="Karachi">
+                                    <option value="Lahore">
+                                    <option value="Islamabad">
+                                    <option value="Rawalpindi">
+                                    <option value="Faisalabad">
+                                    <option value="Peshawar">
+                                    <option value="Multan">
+                                    <option value="Quetta">
+                                    <option value="Sialkot">
+                                    <option value="Hyderabad">
+                                    <option value="Gujranwala">
+                                </datalist>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Delivery Address <span class="text-danger">*</span></label>
+                                <input type="text" id="mo-address" class="form-control" placeholder="Full house/office address, street, sector..." required>
+                            </div>
+                            <div class="col-md-7">
+                                <label class="form-label">Product Name / Item <span class="text-danger">*</span></label>
+                                <input type="text" id="mo-product-input" class="form-control" list="mo-product-datalist" placeholder="Type custom product or select from catalog..." required oninput="handleManualProductSelect()">
+                                <datalist id="mo-product-datalist"></datalist>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Unit Price (PKR) <span class="text-danger">*</span></label>
+                                <input type="number" id="mo-price" class="form-control" placeholder="e.g. 15000" min="0" required oninput="recalcManualOrderTotal()">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Quantity <span class="text-danger">*</span></label>
+                                <input type="number" id="mo-qty" class="form-control" value="1" min="1" required oninput="recalcManualOrderTotal()">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Payment Method</label>
+                                <input type="text" id="mo-payment" class="form-control" list="mo-payment-datalist" placeholder="Select or type payment method..." value="Cash on Delivery (COD)">
+                                <datalist id="mo-payment-datalist">
+                                    <option value="Cash on Delivery (COD)">
+                                    <option value="Bank Transfer (Prepaid)">
+                                    <option value="JazzCash">
+                                    <option value="EasyPaisa">
+                                    <option value="Debit / Credit Card">
+                                    <option value="Direct Cash / POS">
+                                </datalist>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Fulfillment Hub / Warehouse</label>
+                                <input type="text" id="mo-hub" class="form-control" list="mo-hub-datalist" placeholder="Select or type fulfillment hub..." value="Main Central Hub (Karachi)">
+                                <datalist id="mo-hub-datalist">
+                                    <option value="Main Central Hub (Karachi)">
+                                    <option value="North Hub (Lahore)">
+                                    <option value="Capital Hub (Islamabad)">
+                                    <option value="South Hub (Hyderabad)">
+                                    <option value="Direct Supplier Dispatch">
+                                </datalist>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Order Pipeline Status</label>
+                                <input type="text" id="mo-status" class="form-control" list="mo-status-datalist" placeholder="Select or type status..." value="Processing">
+                                <datalist id="mo-status-datalist">
+                                    <option value="Pending">
+                                    <option value="Processing">
+                                    <option value="Dispatched">
+                                    <option value="Delivered">
+                                </datalist>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Estimated Line Total</label>
+                                <div class="p-2 bg-light border rounded text-end fw-bold text-success fs-5" id="mo-total-preview">Rs. 0</div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Order Notes / Instructions</label>
+                                <textarea id="mo-notes" class="form-control" rows="2" placeholder="e.g. Call before delivery, urgent dispatch, fragile gaming monitor..."></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-top p-3 bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger px-4" onclick="submitManualOrder()"><i class="fas fa-check me-1"></i> Place Order</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/products-data.js"></script>
+    <script src="assets/js/gug-erp-core.js"></script>
+    <!-- Firebase Compat SDKs & Cloud Sync -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/firebase-sync.js"></script>
+    <script src="assets/js/admin.js"></script>
+    <script>
+        let orderModalInstance = null;
+        let createModalInstance = null;
+
+        function initOrdersPage() {
+            GUG_DB.renderGlobalHeader('gug-global-header-container', 'Sales Orders Pipeline & Processing');
+            GUG_DB.renderBeginnerHelpBanner('gug-beginner-help-container', {
+                whereAmI: 'Sales Order Processing & Fulfillment Hub',
+                whatCanIDo: 'Review storefront checkouts, update shipment statuses (Processing, Dispatched, Delivered), and generate customer invoices.',
+                whatNext: 'Click "Manage Order" on any row to assign a courier tracking code or click "Create Manual Order" for phone/WhatsApp inquiries.'
+            });
+
+            renderOrdersTable();
+            updateOrderStats();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('action') === 'add') {
+                openCreateOrderModal();
+            }
+            if (urlParams.get('id')) {
+                viewOrder(urlParams.get('id'));
+            }
+            if (urlParams.get('search')) {
+                document.getElementById('order-search').value = urlParams.get('search');
+                filterOrders();
+            }
+        }
+
+        function updateOrderStats() {
+            const orders = GUG_DB.getOrders();
+            document.getElementById('stat-orders-total').innerText = orders.length;
+            
+            const pending = orders.filter(o => o.orderStatus === 'Pending' || o.orderStatus === 'Processing').length;
+            document.getElementById('stat-orders-pending').innerText = pending;
+
+            const dispatched = orders.filter(o => o.orderStatus === 'Dispatched').length;
+            document.getElementById('stat-orders-dispatched').innerText = dispatched;
+
+            let totalRev = 0;
+            orders.forEach(o => totalRev += Number(o.total || 0));
+            document.getElementById('stat-orders-revenue').innerText = 'Rs.  ' + totalRev.toLocaleString();
+        }
+
+        function renderOrdersTable(items = null) {
+            const orders = items || GUG_DB.getOrders();
+            const tbody = document.getElementById('orders-table-body');
+            tbody.innerHTML = '';
+
+            if (orders.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <i class="fas fa-cart-arrow-down fs-1 mb-3 text-secondary d-block"></i>
+                            <h6 class="fw-bold text-dark">No Orders Found</h6>
+                            <p class="small text-secondary mb-3">No orders matched your search criteria.</p>
+                            <button class="btn btn-sm btn-danger" onclick="openCreateOrderModal()"><i class="fas fa-plus me-1"></i> Create Manual Order</button>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            orders.forEach(o => {
+                const custName = o.customer ? o.customer.name : (o.name || 'Walk-in Buyer');
+                const custPhone = o.customer ? o.customer.phone : (o.phone || 'N/A');
+                const custCity = o.customer ? (o.customer.city || 'Pakistan') : (o.city || 'Pakistan');
+                const itemCount = o.items ? o.items.length : 1;
+
+                let statusBadge = '<span class="badge bg-warning text-dark">Processing</span>';
+                if (o.orderStatus === 'Dispatched') statusBadge = '<span class="badge bg-primary">Dispatched</span>';
+                else if (o.orderStatus === 'Delivered') statusBadge = '<span class="badge bg-success">Delivered</span>';
+                else if (o.orderStatus === 'Cancelled') statusBadge = '<span class="badge bg-danger">Cancelled</span>';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="ps-4">
+                        <strong class="text-dark d-block"><code>${o.id}</code></strong>
+                        <small class="text-secondary">${(o.date || '').split('T')[0] || 'Recent'}</small>
+                    </td>
+                    <td>
+                        <strong class="text-dark d-block">${custName}</strong>
+                        <small class="text-secondary"><i class="fas fa-phone small me-1"></i> ${custPhone} &bull; <i class="fas fa-map-marker-alt small text-danger me-1"></i> ${custCity}</small>
+                    </td>
+                    <td>
+                        <span class="badge bg-light text-dark border">${itemCount} item(s)</span>
+                    </td>
+                    <td>
+                        <small class="badge bg-light text-dark border">${o.paymentMethod || 'COD'}</small>
+                    </td>
+                    <td>
+                        ${statusBadge}
+                    </td>
+                    <td>
+                        <strong class="text-success fs-6">Rs.  ${(o.total || 0).toLocaleString()}</strong>
+                    </td>
+                    <td class="text-end pe-4">
+                        <button class="btn btn-sm btn-outline-dark me-1" onclick="viewOrder('${o.id}')"><i class="fas fa-eye me-1"></i> Manage</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterOrders() {
+            const q = document.getElementById('order-search').value.toLowerCase().trim();
+            const stat = document.getElementById('order-status-filter').value;
+            const orders = GUG_DB.getOrders();
+
+            const filtered = orders.filter(o => {
+                const custName = o.customer ? o.customer.name.toLowerCase() : (o.name ? o.name.toLowerCase() : '');
+                const phone = o.customer ? o.customer.phone : (o.phone || '');
+                const matchQ = !q || o.id.toLowerCase().includes(q) || custName.includes(q) || phone.includes(q);
+                const matchStat = !stat || o.orderStatus === stat;
+                return matchQ && matchStat;
+            });
+
+            renderOrdersTable(filtered);
+        }
+
+        function viewOrder(id) {
+            const orders = GUG_DB.getOrders();
+            const o = orders.find(item => item.id === id);
+            if (!o) return;
+
+            const custName = o.customer ? o.customer.name : (o.name || 'Customer');
+            const custPhone = o.customer ? o.customer.phone : (o.phone || 'N/A');
+            const custEmail = o.customer ? o.customer.email : (o.email || 'N/A');
+            const custAddress = o.customer ? (o.customer.address || o.customer.city) : (o.address || 'Karachi');
+
+            const container = document.getElementById('order-detail-content');
+            container.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center pb-3 border-bottom mb-3">
+                    <div>
+                        <h4 class="fw-bold text-dark mb-0">Order <code>${o.id}</code></h4>
+                        <small class="text-secondary">Placed on: ${o.date || 'Recent'}</small>
+                    </div>
+                    <div>
+                        <span class="badge bg-success fs-6">Rs.  ${(o.total || 0).toLocaleString()}</span>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded border">
+                            <strong class="text-dark d-block mb-1"><i class="fas fa-user text-danger me-1"></i> Customer Information</strong>
+                            <div class="small text-dark">${custName}</div>
+                            <div class="small text-secondary">${custPhone} &bull; ${custEmail}</div>
+                            <div class="small text-secondary mt-1"><i class="fas fa-map-marker-alt text-danger me-1"></i> ${custAddress}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded border">
+                            <strong class="text-dark d-block mb-1"><i class="fas fa-truck text-danger me-1"></i> Fulfillment & Status</strong>
+                            <div class="d-flex gap-2 align-items-center mt-2">
+                                <select id="update-order-status" class="form-select form-select-sm" style="width: 170px;">
+                                    <option value="Pending" ${o.orderStatus === 'Pending' ? 'selected' : ''}>Pending</option>
+                                    <option value="Processing" ${o.orderStatus === 'Processing' ? 'selected' : ''}>Processing</option>
+                                    <option value="Dispatched" ${o.orderStatus === 'Dispatched' ? 'selected' : ''}>Dispatched</option>
+                                    <option value="Delivered" ${o.orderStatus === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                                    <option value="Cancelled" ${o.orderStatus === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                                </select>
+                                <button class="btn btn-sm btn-danger" onclick="updateOrderStatus('${o.id}')"><i class="fas fa-check"></i> Update</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h6 class="fw-bold text-dark mb-2"><i class="fas fa-boxes-stacked text-danger me-2"></i> Line Items</h6>
+                <div class="table-responsive border rounded mb-3">
+                    <table class="table table-sm align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Product</th>
+                                <th>Qty</th>
+                                <th>Unit Price</th>
+                                <th class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${o.items && o.items.length ? o.items.map(item => `
+                                <tr>
+                                    <td><strong>${item.name || item.title || 'Product'}</strong></td>
+                                    <td>${item.quantity || item.qty || 1}</td>
+                                    <td>Rs.  ${(item.price || item.unitPrice || 0).toLocaleString()}</td>
+                                    <td class="text-end fw-bold">Rs.  ${((item.quantity || 1) * (item.price || 0)).toLocaleString()}</td>
+                                </tr>
+                            `).join('') : `
+                                <tr>
+                                    <td><strong>${o.product || 'Gadget Hardware Package'}</strong></td>
+                                    <td>1</td>
+                                    <td>Rs.  ${(o.total || 0).toLocaleString()}</td>
+                                    <td class="text-end fw-bold">Rs.  ${(o.total || 0).toLocaleString()}</td>
+                                </tr>
+                            `}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            orderModalInstance = new bootstrap.Modal(document.getElementById('orderDetailModal'));
+            orderModalInstance.show();
+        }
+
+        function updateOrderStatus(id) {
+            const newStat = document.getElementById('update-order-status').value;
+            const orders = GUG_DB.getOrders();
+            const o = orders.find(item => item.id === id);
+            if (!o) return;
+
+            o.orderStatus = newStat;
+            if (newStat === 'Delivered') o.paymentStatus = 'Paid';
+            localStorage.setItem(GUG_DB.KEYS.ORDERS, JSON.stringify(orders));
+
+            if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.updateOrderStatus === 'function') {
+                window.GUG_FIREBASE.updateOrderStatus(o.id, newStat, o.paymentStatus);
+            }
+
+            GUG_DB.logAudit({
+                action: 'ORDER_STATUS_UPDATE',
+                entity: 'ORDER',
+                entityId: o.id,
+                previousValue: 'Previous Status',
+                newValue: newStat,
+                reason: 'Status updated via ERP Order Pipeline'
+            });
+
+            if (orderModalInstance) orderModalInstance.hide();
+            renderOrdersTable();
+            updateOrderStats();
+            window.GUG_DB.showToast(`Order ${o.id} status updated to "${newStat}".`, 'success', 'Order Updated');
+        }
+
+        function openCreateOrderModal() {
+            const form = document.getElementById('createOrderForm');
+            if (form) form.reset();
+
+            const products = (window.GUG_DB && window.GUG_DB.getProducts) ? window.GUG_DB.getProducts() : [];
+            const dl = document.getElementById('mo-product-datalist');
+            if (dl) {
+                dl.innerHTML = '';
+                products.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.title;
+                    opt.setAttribute('data-price', p.sellingPrice || 0);
+                    opt.setAttribute('data-id', p.id);
+                    dl.appendChild(opt);
+                });
+            }
+
+            document.getElementById('mo-city').value = 'Karachi';
+            document.getElementById('mo-payment').value = 'Cash on Delivery (COD)';
+            document.getElementById('mo-hub').value = 'Main Central Hub (Karachi)';
+            document.getElementById('mo-status').value = 'Processing';
+            document.getElementById('mo-qty').value = '1';
+            document.getElementById('mo-price').value = '';
+            document.getElementById('mo-total-preview').innerText = 'Rs. 0';
+
+            const modalEl = document.getElementById('createOrderModal');
+            if (modalEl) {
+                createModalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+                createModalInstance.show();
+            }
+        }
+
+        function handleManualProductSelect() {
+            const inputVal = document.getElementById('mo-product-input').value.trim();
+            const products = (window.GUG_DB && window.GUG_DB.getProducts) ? window.GUG_DB.getProducts() : [];
+            const matched = products.find(p => p.title.toLowerCase() === inputVal.toLowerCase());
+            if (matched) {
+                document.getElementById('mo-price').value = matched.sellingPrice || 0;
+            }
+            recalcManualOrderTotal();
+        }
+
+        function recalcManualOrderTotal() {
+            const price = parseFloat(document.getElementById('mo-price').value) || 0;
+            const qty = parseInt(document.getElementById('mo-qty').value) || 1;
+            const total = price * qty;
+            const preview = document.getElementById('mo-total-preview');
+            if (preview) {
+                preview.innerText = 'Rs. ' + total.toLocaleString();
+            }
+        }
+
+        function submitManualOrder() {
+            const name = document.getElementById('mo-name').value.trim();
+            const phone = document.getElementById('mo-phone').value.trim();
+            const email = document.getElementById('mo-email').value.trim();
+            const city = document.getElementById('mo-city').value.trim() || 'Karachi';
+            const addr = document.getElementById('mo-address').value.trim();
+            const prodTitle = document.getElementById('mo-product-input').value.trim();
+            const unitPrice = parseFloat(document.getElementById('mo-price').value) || 0;
+            const qty = parseInt(document.getElementById('mo-qty').value) || 1;
+            const payment = document.getElementById('mo-payment').value.trim() || 'Cash on Delivery (COD)';
+            const hub = document.getElementById('mo-hub').value.trim() || 'Main Central Hub (Karachi)';
+            const status = document.getElementById('mo-status').value.trim() || 'Processing';
+            const notes = document.getElementById('mo-notes') ? document.getElementById('mo-notes').value.trim() : '';
+
+            if (!name || !phone || !addr || !prodTitle) {
+                if (window.GUG_DB && window.GUG_DB.showToast) {
+                    window.GUG_DB.showToast('Please fill in Customer Name, Phone, Delivery Address, and Product Name.', 'warning', 'Missing Details');
+                } else {
+                    alert('Please fill in Customer Name, Phone, Delivery Address, and Product Name.');
+                }
+                return;
+            }
+
+            const products = (window.GUG_DB && window.GUG_DB.getProducts) ? window.GUG_DB.getProducts() : [];
+            const matched = products.find(p => p.title.toLowerCase() === prodTitle.toLowerCase());
+            const prodId = matched ? matched.id : ('CUSTOM-' + Date.now());
+
+            const total = unitPrice * qty;
+            const newOrder = {
+                id: 'GUG-' + Math.floor(100000 + Math.random() * 900000),
+                date: new Date().toISOString(),
+                customer: {
+                    name: name,
+                    phone: phone,
+                    email: email,
+                    city: city,
+                    address: addr
+                },
+                items: [{
+                    id: prodId,
+                    name: prodTitle,
+                    price: unitPrice,
+                    quantity: qty
+                }],
+                subtotal: total,
+                total: total,
+                paymentMethod: payment,
+                paymentStatus: (payment.includes('Prepaid') || payment.includes('Online') || payment.includes('Card') || payment.includes('POS') || payment.includes('Jazz') || payment.includes('Paisa')) ? 'Paid' : 'Pending',
+                orderStatus: status,
+                hub: hub,
+                notes: notes || 'Manual order placed via Admin Pipeline'
+            };
+
+            if (window.GUG_DB && window.GUG_DB.processStorefrontOrder) {
+                window.GUG_DB.processStorefrontOrder(newOrder);
+                // Ensure orderStatus and paymentStatus override defaults
+                const orders = window.GUG_DB.getOrders();
+                const saved = orders.find(o => o.id === newOrder.id);
+                if (saved) {
+                    saved.orderStatus = status;
+                    saved.paymentStatus = newOrder.paymentStatus;
+                    saved.hub = hub;
+                    localStorage.setItem((window.GUG_DB.KEYS && window.GUG_DB.KEYS.ORDERS) || 'admin_orders', JSON.stringify(orders));
+                }
+            } else {
+                const orders = JSON.parse(localStorage.getItem('admin_orders') || '[]');
+                orders.unshift(newOrder);
+                localStorage.setItem('admin_orders', JSON.stringify(orders));
+            }
+
+            const modalEl = document.getElementById('createOrderModal');
+            if (modalEl) {
+                const modal = bootstrap.Modal.getInstance(modalEl) || createModalInstance;
+                if (modal) modal.hide();
+            }
+
+            renderOrdersTable();
+            updateOrderStats();
+            if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.saveOrder === 'function') {
+                window.GUG_FIREBASE.saveOrder(newOrder);
+            }
+            if (window.GUG_DB && window.GUG_DB.showToast) {
+                window.GUG_DB.showToast(`Sales Order ${newOrder.id} for Rs. ${total.toLocaleString()} placed successfully!`, 'success', 'Order Created');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initOrdersPage();
+            window.addEventListener('gugOrdersUpdated', () => {
+                renderOrdersTable();
+                updateOrderStats();
+            });
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'admin_orders' || e.key === 'gug_erp_orders') {
+                    renderOrdersTable();
+                    updateOrderStats();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+

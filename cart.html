@@ -1,0 +1,116 @@
+﻿<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="utf-8">
+    <title>Shopping Cart - Gear Up Gadgets</title>    
+    <!-- Favicon & Device Web Icons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/images/favicon-64x64.png">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <!-- CSS libraries from template -->
+    <link rel="stylesheet" href="assets/fonts/fonts.css">
+    <link rel="stylesheet" href="assets/icon/icomoon/style.css">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <!-- Custom styling overriding everything -->
+    <link rel="stylesheet" href="assets/css/custom.css">
+</head>
+
+<body class="counter-scroll" style="background-color: var(--bg-main);">
+
+    <div id="wrapper">
+        <!-- Header placeholder -->
+        <div id="header-placeholder"></div>
+
+        <!-- Banner breadcrumbs -->
+        <div class="py-4" style="background: rgba(10, 10, 15, 0.45); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+            <div class="container d-flex justify-content-between align-items-center flex-wrap">
+                <h1 class="h3 text-white fw-bold m-0">SHOPPING CART</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb m-0" style="background: none; padding: 0;">
+                        <li class="breadcrumb-item"><a href="index.html" class="text-secondary">Home</a></li>
+                        <li class="breadcrumb-item text-white active" aria-current="page">Cart</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Shopping Cart Grid Section -->
+        <div class="py-5">
+            <div class="container">
+                <!-- Cart main dynamic row -->
+                <div class="row g-4" id="cart-main-row">
+                    <!-- Left: Items list -->
+                    <div class="col-lg-8 col-md-12">
+                        <div class="table-responsive rounded-3 transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-2xl" style="background-color: var(--bg-card); border: 1px solid var(--border-color);">
+                            <table class="table cart-table text-white mb-0" style="vertical-align: middle;">
+                                <thead>
+                                    <tr>
+                                        <th style="border-bottom: 1px solid var(--border-color);">Product</th>
+                                        <th style="border-bottom: 1px solid var(--border-color);">Price</th>
+                                        <th style="border-bottom: 1px solid var(--border-color);">Quantity</th>
+                                        <th style="border-bottom: 1px solid var(--border-color);">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cart-table-body">
+                                    <!-- Dynamic rows loaded by cart.js -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Coupon bar -->
+                        <div class="coupon-section mt-4 d-flex justify-content-between align-items-center flex-wrap gap-15">
+                            <div class="d-flex align-items-center gap-10 flex-wrap">
+                                <input type="text" class="form-control form-control-sm text-white" id="coupon-code-input" placeholder="Promo code (e.g. GEARUP10)" style="background-color: var(--bg-main); border-color: var(--border-color); width: 220px; padding: 8px 12px;">
+                                <button class="btn btn-danger btn-sm px-3 py-2 fw-bold" style="background-color: var(--accent-red); border: none;" onclick="handleApplyCoupon()">APPLY COUPON</button>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <button class="btn btn-outline-secondary btn-sm px-3 py-2" onclick="handleRemoveCoupon()">Remove Coupon</button>
+                                <button class="btn btn-outline-danger btn-sm px-3 py-2" onclick="clearCart()">Clear Cart</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Summary box -->
+                    <div class="col-lg-4 col-md-12" id="cart-summary-container">
+                        <!-- Dynamic totals rendering -->
+                    </div>
+                </div>
+
+                <!-- Empty Cart Message -->
+                <div class="text-center py-5" id="cart-empty-message" style="display: none;">
+                    <div style="font-size: 64px; color: var(--text-secondary); margin-bottom: 20px;"><i class="icon icon-shopping-cart-solid"></i></div>
+                    <h2 class="text-white fw-bold mb-3">Your Cart is Currently Empty</h2>
+                    <p class="text-secondary mb-4 mx-auto" style="max-width: 400px;">Before you check out, you must add some tech hardware components to your shopping cart. You will find lots of interesting items on our shop page.</p>
+                    <a href="shop.html" class="btn btn-danger px-4 py-3 fw-bold" style="background-color: var(--accent-red); border: none; border-radius: 6px;">RETURN TO SHOP</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer placeholder -->
+        <div id="footer-placeholder"></div>
+    </div>
+
+    <!-- Core Scripts -->
+    <script src="assets/js/products-data.js"></script>
+    <!-- Firebase Compat SDKs & Cloud Sync -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/firebase-sync.js"></script>
+    <script src="assets/js/gug-erp-core.js"></script>
+    <script src="assets/js/common.js"></script>
+    <script src="assets/js/cart.js"></script>
+</body>
+</html>
+
+
+
+
+

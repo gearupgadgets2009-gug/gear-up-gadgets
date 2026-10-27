@@ -1,0 +1,781 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Immediate Zero-Delay Embedded View Detection (Prevents Duplicate Sidebar & Layout Snap) -->
+    <script>if(window.self!==window.top||(typeof location!=='undefined'&&location.search.indexOf('staff_view=1')!==-1)){document.documentElement.classList.add('is-embedded');}</script>
+    <style>
+        html.is-embedded .admin-sidebar, html.is-embedded aside.admin-sidebar, body.is-embedded .admin-sidebar { display: none !important; visibility: hidden !important; width: 0 !important; height: 0 !important; position: absolute !important; left: -9999px !important; opacity: 0 !important; pointer-events: none !important; animation: none !important; -webkit-animation: none !important; transition: none !important; transform: none !important; }
+        html.is-embedded .admin-main, body.is-embedded .admin-main { margin-left: 0 !important; width: 100% !important; padding: 15px 20px !important; animation: none !important; transition: none !important; }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executive Business Reports & Analytics | GearUp Gadgets ERP</title>    
+    <!-- Favicon & Device Web Icons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/images/favicon-64x64.png">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/fonts/font-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <style>
+        body { background-color: var(--gug-bg-color, #07090d) !important; background-image: var(--gug-bg-image) !important; background-attachment: var(--gug-bg-attachment, fixed) !important; background-size: var(--gug-bg-size, cover, cover, 28px 49px) !important; background-position: var(--gug-bg-position, center top) !important; background-repeat: var(--gug-bg-repeat, no-repeat, no-repeat, repeat) !important; min-height: 100vh; color: #ffffff !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .admin-sidebar { width: 260px; background: rgba(10, 10, 15, 0.6) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; height: 100vh; position: fixed; left: 0; top: 0; padding: 20px 15px; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; overflow-y: auto; z-index: 1000; }
+        .admin-main { margin-left: 260px; padding: 25px 30px; min-height: 100vh; background-color: transparent !important; color: #ffffff !important; }
+        .admin-nav-link { display: flex; align-items: center; padding: 9px 13px; color: #94a3b8; text-decoration: none; border-radius: 8px; margin-bottom: 3px; font-size: 13px; font-weight: 500; transition: all 0.2s ease; }
+        .admin-nav-link:hover { background-color: rgba(219, 39, 36, 0.15); color: #fff; }
+        .admin-nav-link.active { background-color: var(--accent-red); color: #fff !important; font-weight: 600; box-shadow: 0 4px 12px rgba(219, 39, 36, 0.3); }
+        .sidebar-section-heading { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #64748b; margin-top: 15px; margin-bottom: 6px; padding-left: 10px; }
+        
+        .admin-card { background: rgba(10, 10, 15, 0.45) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 16px !important; padding: 20px; margin-bottom: 20px; color: #ffffff !important; box-shadow: 0 16px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important; }
+        .table { color: #ffffff !important; background-color: transparent !important; vertical-align: middle; }
+        .table th { background-color: rgba(255, 255, 255, 0.06) !important; border-bottom: 2px solid rgba(255, 255, 255, 0.15) !important; color: #ffffff !important; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .table td { border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important; font-size: 13.5px; color: #ffffff !important; }
+
+        @media print {
+            .admin-sidebar, #gug-global-header-container, #gug-beginner-help-container, .no-print { display: none !important; }
+            .admin-main { margin-left: 0 !important; padding: 0 !important; }
+            .admin-card { box-shadow: none !important; border: 1px solid #000 !important; }
+        }
+    </style>
+</head>
+<body>
+        <!-- Enterprise Sidebar Navigation -->
+    <div class="admin-sidebar">
+        <div class="d-flex align-items-center mb-3 px-2">
+            <i class="fas fa-shield-alt text-danger fs-4 me-2"></i>
+            <div>
+                <h6 class="text-white m-0 fw-bold">GearUp ERP</h6>
+                <small class="text-secondary" style="font-size: 11px;">Enterprise Operating System</small>
+            </div>
+        </div>
+
+        <a href="dashboard.html" class="admin-nav-link" id="nav-dashboard"><i class="fas fa-chart-pie me-2"></i> Executive Dashboard</a>
+        
+        <!-- Accordion 1: Catalog & E-Commerce -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-catalog">
+                <span><i class="fas fa-shopping-bag text-danger me-2"></i> Catalog & E-Commerce</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-catalog">
+                <a href="products.html" class="admin-nav-link" id="nav-products"><i class="fas fa-boxes-stacked me-2"></i> Products & Catalog</a>
+                <a href="admin-crm.html" class="admin-nav-link" id="nav-crm"><i class="fas fa-users-viewfinder me-2"></i> Customers (CRM)</a>
+                <a href="admin-marketing.html" class="admin-nav-link" id="nav-marketing"><i class="fas fa-tags me-2"></i> Coupons & Marketing</a>
+            </div>
+        </div>
+
+        <!-- Accordion 2: Supply Chain & Operations -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-supply">
+                <span><i class="fas fa-truck-ramp-box text-primary me-2"></i> Supply Chain & Operations</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-supply">
+                <a href="admin-inventory.html" class="admin-nav-link" id="nav-inventory"><i class="fas fa-warehouse me-2"></i> Multi-Warehouse Stock</a>
+                <a href="admin-purchasing.html" class="admin-nav-link" id="nav-purchasing"><i class="fas fa-dolly me-2"></i> Purchasing & Suppliers</a>
+                <a href="orders.html" class="admin-nav-link" id="nav-orders"><i class="fas fa-cart-shopping me-2"></i> Sales Orders Pipeline</a>
+                <a href="admin-logistics.html" class="admin-nav-link" id="nav-logistics"><i class="fas fa-truck-fast me-2"></i> Logistics & Courier COD</a>
+                <a href="admin-returns.html" class="admin-nav-link" id="nav-returns"><i class="fas fa-rotate-left me-2"></i> Returns & Warranty (RMA)</a>
+            </div>
+        </div>
+
+        <!-- Accordion 3: Finance & B2B Wholesale -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-finance">
+                <span><i class="fas fa-coins text-warning me-2"></i> Finance & B2B Wholesale</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-finance">
+                <a href="admin-dealers.html" class="admin-nav-link" id="nav-dealers"><i class="fas fa-handshake me-2"></i> B2B Dealers & Ledger</a>
+                <a href="admin-finance.html" class="admin-nav-link" id="nav-finance"><i class="fas fa-file-invoice-dollar me-2"></i> Finance & P&L Ledger</a>
+                <a href="admin-staff.html" class="admin-nav-link" id="nav-staff"><i class="fas fa-user-tie me-2"></i> HR & Employee Payroll</a>
+                <a href="admin-tasks.html" class="admin-nav-link" id="nav-tasks"><i class="fas fa-list-check me-2"></i> Task Kanban & Workflow</a>
+                <a href="admin-reports.html" class="admin-nav-link" id="nav-reports"><i class="fas fa-chart-column me-2"></i> Business Reports</a>
+                <a href="admin-audit.html" class="admin-nav-link" id="nav-audit"><i class="fas fa-fingerprint me-2"></i> Security & Audit Logs</a>
+            </div>
+        </div>
+
+        <!-- Standalone Section: System Settings & Store Customization -->
+        <div class="mt-3 pt-3 border-top border-secondary border-opacity-25">
+            <div class="px-3 text-secondary text-uppercase fw-bold mb-2" style="font-size: 11px; letter-spacing: 0.6px;">System & Settings</div>
+            <a href="admin-settings.html" class="admin-nav-link" id="nav-settings"><i class="fas fa-sliders text-danger me-2"></i> System Settings & APIs</a>
+            <a href="admin-sales.html" class="admin-nav-link" id="nav-sales"><i class="fas fa-palette text-warning me-2"></i> Banner & Theme</a>
+        </div>
+        
+        <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
+            <a href="dealer-portal.html" target="_blank" class="admin-nav-link text-warning"><i class="fas fa-store-alt me-2"></i> Dealer Portal View</a>
+            <a href="employee-portal.html" class="admin-nav-link text-info"><i class="fas fa-id-badge me-2"></i> Employee Workspace</a>
+            <a href="index.html" target="_blank" class="admin-nav-link text-success"><i class="fas fa-store me-2"></i> Customer Storefront</a>
+            <a href="#" class="admin-nav-link text-danger mt-2" onclick="localStorage.removeItem('admin_logged_in'); localStorage.removeItem('admin_role'); localStorage.removeItem('admin_username'); window.location.href = 'admin.html'; return false;"><i class="fas fa-sign-out-alt me-2"></i> Sign Out</a>
+        </div>
+    </div>
+    <script>try{var _s=sessionStorage.getItem('gug_admin_sidebar_scroll');if(_s!==null){var _sb=document.querySelector('.admin-sidebar');if(_sb)_sb.scrollTop=parseFloat(_s);}}catch(e){}</script>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Global Header -->
+        <div id="gug-global-header-container"></div>
+
+        <!-- Beginner Help Banner -->
+        <div id="gug-beginner-help-container"></div>
+
+        <!-- Report Generation Control Bar -->
+        <div class="admin-card mb-4 no-print">
+            <div class="row g-3 align-items-center">
+                <div class="col-lg-3 col-md-6">
+                    <label class="small text-secondary fw-bold text-uppercase d-block mb-1">Select Report Type</label>
+                    <select id="report-type-select" class="form-select" onchange="generateReport()">
+                        <option value="sales" selected>1. Sales & Revenue Analysis</option>
+                        <option value="inventory">2. Inventory Valuation & Stock Assets</option>
+                        <option value="purchasing">3. Purchasing & Supplier Payables (AP)</option>
+                        <option value="pnl">4. Profit & Loss Statement (P&L)</option>
+                        <option value="payroll">5. HR Payroll & Employee Disbursals</option>
+                        <option value="adjustments">6. Manual Adjustments Ledger</option>
+                    </select>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <label class="small text-secondary fw-bold text-uppercase d-block mb-1">Time Horizon</label>
+                    <select id="report-date-select" class="form-select" onchange="generateReport()">
+                        <option value="all" selected>All-Time Cumulative</option>
+                        <option value="month">This Month (September 2026)</option>
+                        <option value="year">Year to Date (2026)</option>
+                    </select>
+                </div>
+                <div class="col-lg-6 col-md-12 d-flex justify-content-end align-items-end gap-2 flex-wrap">
+                    <button class="btn btn-warning text-dark fw-bold" onclick="openAdjustmentModal()"><i class="fas fa-plus-circle me-1"></i> Record Manual Adjustment</button>
+                    <button class="btn btn-outline-dark" onclick="window.print()"><i class="fas fa-print me-1"></i> Print / PDF</button>
+                    <button class="btn btn-danger fw-bold" onclick="exportReportCSV()"><i class="fas fa-file-csv me-1"></i> Export to CSV</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Report Output Container -->
+        <div class="admin-card p-4" id="report-printable-area">
+            <div class="d-flex justify-content-between align-items-center pb-3 border-bottom mb-4 flex-wrap gap-2">
+                <div>
+                    <h4 class="fw-bold text-dark mb-0" id="report-heading-title">Sales & Revenue Analysis Report</h4>
+                    <small class="text-secondary">Generated on: <span id="report-timestamp">2026-09-22</span> &bull; Entity: GearUp Gadgets (Pvt) Ltd</small>
+                </div>
+                <div class="text-end">
+                    <span class="badge bg-danger fs-6 px-3 py-2" id="report-metric-summary">Net Total: Rs. 0</span>
+                </div>
+            </div>
+
+            <div id="report-content-body">
+                <!-- Dynamically generated table & summary -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: RECORD MANUAL REVENUE / EXPENSE ADJUSTMENT -->
+    <div class="modal fade" id="adjustmentModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content shadow-lg border-0">
+                <div class="modal-header bg-dark text-white p-3">
+                    <h5 class="modal-title fw-bold" id="adjModalTitle"><i class="fas fa-file-circle-plus text-warning me-2"></i> Record Manual Financial Adjustment</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="adjustment-form" onsubmit="handleAdjustmentSubmit(event)">
+                    <div class="modal-body p-4">
+                        <input type="hidden" id="adj-edit-id" value="">
+                        
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-8">
+                                <label class="form-label text-dark small fw-bold">Adjustment Title / Description <span class="text-danger">*</span></label>
+                                <input type="text" id="adj-title" class="form-control" placeholder="e.g. Direct Walk-in POS Sales, Bulk B2B Clearance..." required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-dark small fw-bold">Type <span class="text-danger">*</span></label>
+                                <select id="adj-type" class="form-select" required>
+                                    <option value="Revenue" selected>Revenue / Inflow (+)</option>
+                                    <option value="Expense">Expense / Deduction (-)</option>
+                                    <option value="Sales Adjustment">Sales Adjustment (+)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold">Channel / Category <span class="text-danger">*</span></label>
+                                <input type="text" id="adj-category" class="form-control" list="adj-category-datalist" placeholder="e.g. Storefront POS, Direct B2B Wholesale..." value="Storefront POS" required>
+                                <datalist id="adj-category-datalist">
+                                    <option value="Storefront POS Direct Counter">
+                                    <option value="Direct B2B Wholesale Deal">
+                                    <option value="Offline Cash Sales">
+                                    <option value="Corporate Procurement Inflow">
+                                    <option value="Exhibition Pop-up / Event Sales">
+                                    <option value="Courier COD Reimbursement">
+                                    <option value="Showroom Demo Writeoff">
+                                    <option value="Miscellaneous Operating Inflow">
+                                </datalist>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold">Adjustment Amount (PKR) <span class="text-danger">*</span></label>
+                                <input type="number" id="adj-amount" class="form-control fw-bold" placeholder="50000" min="1" step="100" required>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold">Adjustment Date</label>
+                                <input type="date" id="adj-date" class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold">Reference / Slip #</label>
+                                <input type="text" id="adj-ref" class="form-control" placeholder="e.g. POS-RECEIPT-9902, B2B-OFFLINE-44">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-dark small fw-bold">Internal Notes / Audit Justification</label>
+                            <textarea id="adj-notes" class="form-control" rows="2" placeholder="Explain the rationale for this manual revenue/expense adjustment for executive audit..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light p-3">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-warning btn-sm fw-bold px-4"><i class="fas fa-check me-1"></i> Save Adjustment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/products-data.js"></script>
+    <script src="assets/js/gug-erp-core.js"></script>
+    <!-- Firebase Compat SDKs & Cloud Sync -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/firebase-sync.js"></script>
+    <script src="assets/js/admin.js"></script>
+    <script>
+        function getAdjustments() {
+            return JSON.parse(localStorage.getItem('gug_report_adjustments') || '[]');
+        }
+
+        function saveAdjustments(adjustments) {
+            localStorage.setItem('gug_report_adjustments', JSON.stringify(adjustments));
+        }
+
+        function openAdjustmentModal(editObj = null) {
+            const modalEl = document.getElementById('adjustmentModal');
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+            if (typeof editObj === 'string') {
+                const list = getAdjustments();
+                editObj = list.find(x => x.id === editObj) || null;
+            }
+
+            if (editObj) {
+                document.getElementById('adjModalTitle').innerHTML = '<i class="fas fa-edit text-warning me-2"></i> Edit Manual Adjustment';
+                document.getElementById('adj-edit-id').value = editObj.id;
+                document.getElementById('adj-title').value = editObj.title || '';
+                document.getElementById('adj-type').value = editObj.type || 'Revenue';
+                document.getElementById('adj-category').value = editObj.category || 'Storefront POS';
+                document.getElementById('adj-amount').value = editObj.amount || 0;
+                document.getElementById('adj-date').value = editObj.date || new Date().toISOString().split('T')[0];
+                document.getElementById('adj-ref').value = editObj.ref || '';
+                document.getElementById('adj-notes').value = editObj.notes || '';
+            } else {
+                document.getElementById('adjModalTitle').innerHTML = '<i class="fas fa-file-circle-plus text-warning me-2"></i> Record Manual Financial Adjustment';
+                document.getElementById('adjustment-form').reset();
+                document.getElementById('adj-edit-id').value = '';
+                document.getElementById('adj-date').value = new Date().toISOString().split('T')[0];
+                document.getElementById('adj-category').value = 'Storefront POS Direct Counter';
+                document.getElementById('adj-type').value = 'Revenue';
+            }
+            modal.show();
+        }
+
+        function handleAdjustmentSubmit(e) {
+            e.preventDefault();
+            const editId = document.getElementById('adj-edit-id').value;
+            const adjustments = getAdjustments();
+
+            const record = {
+                id: editId || ('ADJ-' + Math.floor(1000 + Math.random() * 9000)),
+                title: document.getElementById('adj-title').value.trim(),
+                type: document.getElementById('adj-type').value,
+                category: document.getElementById('adj-category').value.trim() || 'General Adjustment',
+                amount: Number(document.getElementById('adj-amount').value) || 0,
+                date: document.getElementById('adj-date').value || new Date().toISOString().split('T')[0],
+                ref: document.getElementById('adj-ref').value.trim(),
+                notes: document.getElementById('adj-notes').value.trim()
+            };
+
+            if (editId) {
+                const idx = adjustments.findIndex(a => a.id === editId);
+                if (idx > -1) adjustments[idx] = record;
+            } else {
+                adjustments.unshift(record);
+            }
+
+            saveAdjustments(adjustments);
+            const modalInstance = bootstrap.Modal.getInstance(document.getElementById('adjustmentModal'));
+            if (modalInstance) modalInstance.hide();
+            generateReport();
+
+            if (window.GUG_DB && typeof window.GUG_DB.showToast === 'function') {
+                window.GUG_DB.showToast(`Adjustment "${record.title}" (Rs. ${record.amount.toLocaleString()}) recorded successfully!`, 'success', 'Adjustment Saved');
+            }
+        }
+
+        function deleteAdjustment(adjId) {
+            if (confirm('Delete this manual adjustment record?')) {
+                let adjustments = getAdjustments();
+                adjustments = adjustments.filter(a => a.id !== adjId);
+                saveAdjustments(adjustments);
+                generateReport();
+            }
+        }
+
+        function initReportsPage() {
+            if (window.GUG_DB && typeof window.GUG_DB.renderGlobalHeader === 'function') {
+                window.GUG_DB.renderGlobalHeader('gug-global-header-container', 'Executive Business Reports & Analytics');
+            }
+            if (window.GUG_DB && typeof window.GUG_DB.renderBeginnerHelpBanner === 'function') {
+                window.GUG_DB.renderBeginnerHelpBanner('gug-beginner-help-container', {
+                    whereAmI: 'Executive Intelligence & Audit Reporting Suite',
+                    whatCanIDo: 'Generate cross-departmental reports covering Sales, Inventory Valuation, Supplier Payables, P&L, and Payroll.',
+                    whatNext: 'Choose a report type above, filter the time horizon, record manual revenue adjustments, or export to CSV/Print for executive review.'
+                });
+            }
+
+            document.getElementById('report-timestamp').innerText = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+            generateReport();
+        }
+
+        function generateReport() {
+            const reportType = document.getElementById('report-type-select').value;
+            const container = document.getElementById('report-content-body');
+            const heading = document.getElementById('report-heading-title');
+            const summaryBadge = document.getElementById('report-metric-summary');
+
+            const adjustments = getAdjustments();
+            const manualRevTotal = adjustments
+                .filter(a => a.type === 'Revenue' || a.type === 'Sales Adjustment')
+                .reduce((sum, a) => sum + (Number(a.amount) || 0), 0);
+            const manualExpTotal = adjustments
+                .filter(a => a.type === 'Expense')
+                .reduce((sum, a) => sum + (Number(a.amount) || 0), 0);
+
+            if (reportType === 'sales') {
+                heading.innerText = 'Sales & Revenue Analysis Report';
+                const orders = (window.GUG_DB && typeof window.GUG_DB.getOrders === 'function')
+                    ? window.GUG_DB.getOrders()
+                    : JSON.parse(localStorage.getItem('gug_orders') || '[]');
+                
+                let orderRev = 0;
+                orders.forEach(o => orderRev += Number(o.total || o.totalAmount || 0));
+                const totalGross = orderRev + manualRevTotal;
+
+                summaryBadge.innerText = 'Gross Revenue: Rs. ' + totalGross.toLocaleString();
+
+                let manualRowsHTML = '';
+                if (adjustments.filter(a => a.type === 'Revenue' || a.type === 'Sales Adjustment').length > 0) {
+                    manualRowsHTML = `
+                        <tr class="table-warning"><td colspan="6" class="fw-bold"><i class="fas fa-hand-holding-dollar me-1"></i> Manual Counter / Offline Revenue Adjustments (Rs. ${manualRevTotal.toLocaleString()})</td></tr>
+                        ${adjustments.filter(a => a.type === 'Revenue' || a.type === 'Sales Adjustment').map(a => `
+                            <tr class="table-light">
+                                <td><code class="text-warning text-dark fw-bold">${a.id}</code></td>
+                                <td>${a.date}</td>
+                                <td><strong>${a.title}</strong> <small class="text-secondary">(${a.category})</small></td>
+                                <td><span class="badge bg-warning text-dark">Manual Inflow</span></td>
+                                <td><span class="badge bg-success">Settled</span></td>
+                                <td class="text-end fw-bold text-success">+ Rs. ${(Number(a.amount)||0).toLocaleString()}</td>
+                            </tr>
+                        `).join('')}
+                    `;
+                }
+
+                container.innerHTML = `
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="p-3 bg-light rounded border text-center">
+                                <small class="text-secondary fw-bold text-uppercase d-block">Online Orders Revenue</small>
+                                <span class="fs-5 fw-bold text-dark">Rs. ${orderRev.toLocaleString()}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 bg-light rounded border text-center">
+                                <small class="text-secondary fw-bold text-uppercase d-block">Manual Adjustments / POS</small>
+                                <span class="fs-5 fw-bold text-success">+ Rs. ${manualRevTotal.toLocaleString()}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 bg-danger bg-opacity-10 rounded border border-danger border-opacity-25 text-center">
+                                <small class="text-danger fw-bold text-uppercase d-block">Total Consolidated Sales</small>
+                                <span class="fs-5 fw-bold text-danger">Rs. ${totalGross.toLocaleString()}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Order / Ref ID</th>
+                                <th>Date</th>
+                                <th>Customer Name / Channel</th>
+                                <th>Payment Method</th>
+                                <th>Status</th>
+                                <th class="text-end">Order Total (PKR)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${orders.map(o => `
+                                <tr>
+                                    <td><code class="text-danger fw-bold">${o.id}</code></td>
+                                    <td>${(o.date || '').split('T')[0] || '2026-09-22'}</td>
+                                    <td><strong>${o.customer ? (o.customer.name || o.customer) : (o.name || 'Direct Buyer')}</strong></td>
+                                    <td><span class="badge bg-light text-dark border">${o.paymentMethod || 'COD'}</span></td>
+                                    <td><span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">${o.orderStatus || o.status || 'Delivered'}</span></td>
+                                    <td class="text-end fw-bold text-dark">Rs. ${(Number(o.total || o.totalAmount || 0)).toLocaleString()}</td>
+                                </tr>
+                            `).join('')}
+                            ${manualRowsHTML}
+                        </tbody>
+                    </table>
+                `;
+            } else if (reportType === 'inventory') {
+                heading.innerText = 'Inventory Asset Valuation Report';
+                const products = (window.GUG_DB && typeof window.GUG_DB.getProducts === 'function')
+                    ? window.GUG_DB.getProducts()
+                    : (window.LIVE_PRODUCTS || []);
+                let totalUnits = 0;
+                let totalAssetVal = 0;
+
+                products.forEach(p => {
+                    let units = 0;
+                    if (p.stock && typeof p.stock === 'object') {
+                        Object.values(p.stock).forEach(q => units += Number(q || 0));
+                    } else {
+                        units = Number(p.stock || 0);
+                    }
+                    totalUnits += units;
+                    const cost = Number(p.costPrice || p.purchasePrice || Math.round(Number(p.price || p.sellingPrice || 0) * 0.7));
+                    totalAssetVal += (units * cost);
+                });
+
+                summaryBadge.innerText = `Total Valuation: Rs. ${totalAssetVal.toLocaleString()} (${totalUnits} Units)`;
+
+                container.innerHTML = `
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>SKU / ID</th>
+                                <th>Product Title</th>
+                                <th>Category</th>
+                                <th>Units In-Stock</th>
+                                <th>Unit Cost</th>
+                                <th class="text-end">Total Asset Value (PKR)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${products.map(p => {
+                                let units = 0;
+                                if (p.stock && typeof p.stock === 'object') {
+                                    Object.values(p.stock).forEach(q => units += Number(q || 0));
+                                } else {
+                                    units = Number(p.stock || 0);
+                                }
+                                const cost = Number(p.costPrice || p.purchasePrice || Math.round(Number(p.price || p.sellingPrice || 0) * 0.7));
+                                const val = units * cost;
+                                return `
+                                    <tr>
+                                        <td><code class="text-danger fw-bold">${p.sku || ('SKU-' + p.id)}</code></td>
+                                        <td><strong>${p.name || p.title}</strong></td>
+                                        <td><span class="badge bg-light text-dark border">${p.category}</span></td>
+                                        <td><span class="badge ${units < 5 ? 'bg-danger' : 'bg-success bg-opacity-10 text-success border'}">${units} Units</span></td>
+                                        <td>Rs. ${cost.toLocaleString()}</td>
+                                        <td class="text-end fw-bold text-dark">Rs. ${val.toLocaleString()}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } else if (reportType === 'purchasing') {
+                heading.innerText = 'Purchasing & Supplier Payables (AP) Report';
+                const pos = (window.GUG_DB && typeof window.GUG_DB.getPurchaseOrders === 'function')
+                    ? window.GUG_DB.getPurchaseOrders()
+                    : JSON.parse(localStorage.getItem('gug_purchase_orders') || '[]');
+                let totalPOVal = 0;
+                pos.forEach(po => totalPOVal += Number(po.totalAmount || po.total || 0));
+                summaryBadge.innerText = 'Total PO Spend: Rs. ' + totalPOVal.toLocaleString();
+
+                container.innerHTML = `
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>PO Number</th>
+                                <th>Supplier Vendor</th>
+                                <th>Issue Date</th>
+                                <th>Receiving Warehouse / City</th>
+                                <th>Payment Status</th>
+                                <th class="text-end">Total Amount (PKR)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${pos.map(po => `
+                                <tr>
+                                    <td><code class="text-danger fw-bold">${po.id}</code></td>
+                                    <td><strong>${po.supplierName || po.supplier || 'Vendor'}</strong></td>
+                                    <td>${po.date || po.issueDate || '2026-09-22'}</td>
+                                    <td><span class="badge bg-light text-dark border">${po.warehouseId || po.city || 'Karachi Central'}</span></td>
+                                    <td><span class="badge ${po.paymentStatus === 'Paid' || po.status === 'Received' ? 'bg-success' : 'bg-warning text-dark'}">${po.paymentStatus || po.status || 'Pending'}</span></td>
+                                    <td class="text-end fw-bold text-dark">Rs. ${(Number(po.totalAmount || po.total || 0)).toLocaleString()}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } else if (reportType === 'pnl') {
+                heading.innerText = 'Financial Profit & Loss Statement (P&L)';
+                
+                const orders = (window.GUG_DB && typeof window.GUG_DB.getOrders === 'function')
+                    ? window.GUG_DB.getOrders()
+                    : JSON.parse(localStorage.getItem('gug_orders') || '[]');
+                let orderRev = 0;
+                orders.forEach(o => orderRev += Number(o.total || o.totalAmount || 0));
+                const totalGross = orderRev + manualRevTotal;
+                const cogs = Math.round(totalGross * 0.68);
+                const grossProfit = totalGross - cogs;
+
+                // Employee Payroll
+                const employees = (window.GUG_DB && typeof window.GUG_DB.getEmployees === 'function')
+                    ? window.GUG_DB.getEmployees()
+                    : JSON.parse(localStorage.getItem('gug_employees') || '[]');
+                let monthlyPayroll = 0;
+                employees.forEach(e => {
+                    const base = Number(e.basicSalary || e.salary || 0);
+                    const allow = Number(e.allowance || 0);
+                    const ded = Number(e.deductions || 0);
+                    monthlyPayroll += Math.max(0, base + allow - ded);
+                });
+                if (monthlyPayroll === 0) monthlyPayroll = 295000;
+
+                const courierExp = 125400;
+                const facilityExp = 85000;
+                const totalOpExp = monthlyPayroll + courierExp + facilityExp + manualExpTotal;
+                const netProfit = grossProfit - totalOpExp;
+
+                summaryBadge.innerText = 'Net Operating Profit: Rs. ' + netProfit.toLocaleString();
+
+                container.innerHTML = `
+                    <div class="row justify-content-center">
+                        <div class="col-lg-9">
+                            <table class="table table-bordered align-middle">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>P&L Financial Line Item</th>
+                                        <th class="text-end">Amount (PKR)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="table-light"><td colspan="2"><strong>1. Operating Revenue & Direct Inflows</strong></td></tr>
+                                    <tr>
+                                        <td class="ps-4">Storefront & E-Commerce Orders Inflow</td>
+                                        <td class="text-end fw-bold text-success">Rs. ${orderRev.toLocaleString()}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="ps-4">Manual Counter / POS Direct Inflow</td>
+                                        <td class="text-end fw-bold text-success">Rs. ${manualRevTotal.toLocaleString()}</td>
+                                    </tr>
+                                    <tr class="table-light"><td colspan="2"><strong>2. Cost of Goods Sold (COGS)</strong></td></tr>
+                                    <tr>
+                                        <td class="ps-4">Product Procurement Landing Cost (~68%)</td>
+                                        <td class="text-end fw-bold text-danger">(Rs. ${cogs.toLocaleString()})</td>
+                                    </tr>
+                                    <tr class="fw-bold table-info">
+                                        <td>Gross Operating Profit Margin</td>
+                                        <td class="text-end text-primary">Rs. ${grossProfit.toLocaleString()}</td>
+                                    </tr>
+                                    <tr class="table-light"><td colspan="2"><strong>3. Operational & Logistics Expenses</strong></td></tr>
+                                    <tr>
+                                        <td class="ps-4">Courier COD Shipping & Fulfillment</td>
+                                        <td class="text-end text-secondary">(Rs. ${courierExp.toLocaleString()})</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="ps-4">Warehouse Facility & Utilities</td>
+                                        <td class="text-end text-secondary">(Rs. ${facilityExp.toLocaleString()})</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="ps-4">Monthly Staff Payroll & Benefits (${employees.length || 6} Staff)</td>
+                                        <td class="text-end text-secondary">(Rs. ${monthlyPayroll.toLocaleString()})</td>
+                                    </tr>
+                                    ${manualExpTotal > 0 ? `
+                                    <tr>
+                                        <td class="ps-4">Manual Expense Adjustments</td>
+                                        <td class="text-end text-secondary">(Rs. ${manualExpTotal.toLocaleString()})</td>
+                                    </tr>
+                                    ` : ''}
+                                    <tr class="${netProfit >= 0 ? 'table-success' : 'table-danger'} fw-bold fs-5">
+                                        <td>Net Operating Profit</td>
+                                        <td class="text-end ${netProfit >= 0 ? 'text-success' : 'text-danger'}">Rs. ${netProfit.toLocaleString()}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            } else if (reportType === 'payroll') {
+                heading.innerText = 'HR Staff Payroll & Compensation Report';
+                const employees = (window.GUG_DB && typeof window.GUG_DB.getEmployees === 'function')
+                    ? window.GUG_DB.getEmployees()
+                    : JSON.parse(localStorage.getItem('gug_employees') || '[]');
+                
+                let totalBase = 0, totalNet = 0;
+                employees.forEach(e => {
+                    const b = Number(e.basicSalary || e.salary || 0);
+                    const a = Number(e.allowance || 0);
+                    const d = Number(e.deductions || 0);
+                    totalBase += b;
+                    totalNet += Math.max(0, b + a - d);
+                });
+
+                summaryBadge.innerText = 'Total Payroll: Rs. ' + totalNet.toLocaleString();
+
+                container.innerHTML = `
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Staff ID</th>
+                                <th>Employee Name</th>
+                                <th>Department</th>
+                                <th>Designation</th>
+                                <th class="text-end">Base Salary</th>
+                                <th class="text-end">Allowances</th>
+                                <th class="text-end">Deductions</th>
+                                <th class="text-end">Net Disbursement (PKR)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${employees.map(s => {
+                                const b = Number(s.basicSalary || s.salary || 0);
+                                const a = Number(s.allowance || 0);
+                                const d = Number(s.deductions || 0);
+                                const net = Math.max(0, b + a - d);
+                                return `
+                                    <tr>
+                                        <td><code class="text-danger fw-bold">${s.id}</code></td>
+                                        <td><strong>${s.name}</strong></td>
+                                        <td><span class="badge bg-light text-dark border">${s.department || 'Operations'}</span></td>
+                                        <td><span class="badge bg-primary bg-opacity-10 text-primary border">${s.designation || s.role || 'Staff'}</span></td>
+                                        <td class="text-end text-secondary">Rs. ${b.toLocaleString()}</td>
+                                        <td class="text-end text-success">+ Rs. ${a.toLocaleString()}</td>
+                                        <td class="text-end text-danger">- Rs. ${d.toLocaleString()}</td>
+                                        <td class="text-end fw-bold text-dark">Rs. ${net.toLocaleString()}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } else if (reportType === 'adjustments') {
+                heading.innerText = 'Manual Revenue & Expense Adjustments Ledger';
+                summaryBadge.innerText = `Inflows: +Rs. ${manualRevTotal.toLocaleString()} | Outflows: -Rs. ${manualExpTotal.toLocaleString()}`;
+
+                if (adjustments.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-5">
+                            <i class="fas fa-file-invoice text-secondary fs-1 mb-3"></i>
+                            <h5 class="text-dark fw-bold">No Manual Adjustments Recorded Yet</h5>
+                            <p class="text-secondary small">Click "Record Manual Adjustment" above to log walk-in counter sales, offline wholesale deals, or custom expense write-offs.</p>
+                            <button class="btn btn-warning text-dark fw-bold btn-sm" onclick="openAdjustmentModal()"><i class="fas fa-plus-circle me-1"></i> Record First Adjustment</button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = `
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Adj ID</th>
+                                <th>Date</th>
+                                <th>Title / Description</th>
+                                <th>Channel / Category</th>
+                                <th>Type</th>
+                                <th>Ref / Notes</th>
+                                <th class="text-end">Amount (PKR)</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${adjustments.map(a => `
+                                <tr>
+                                    <td><code class="text-warning text-dark fw-bold">${a.id}</code></td>
+                                    <td>${a.date}</td>
+                                    <td><strong>${a.title}</strong></td>
+                                    <td><span class="badge bg-light text-dark border">${a.category}</span></td>
+                                    <td><span class="badge ${a.type === 'Expense' ? 'bg-danger' : 'bg-success'}">${a.type}</span></td>
+                                    <td><small class="text-secondary">${a.ref || ''} ${a.notes ? '(' + a.notes + ')' : ''}</small></td>
+                                    <td class="text-end fw-bold ${a.type === 'Expense' ? 'text-danger' : 'text-success'}">${a.type === 'Expense' ? '-' : '+'} Rs. ${(Number(a.amount)||0).toLocaleString()}</td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-outline-dark py-0 px-2 me-1" onclick="openAdjustmentModal('${a.id}')"><i class="fas fa-edit small"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteAdjustment('${a.id}')"><i class="fas fa-trash small"></i></button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            }
+        }
+
+        function exportReportCSV() {
+            const reportType = document.getElementById('report-type-select').value;
+            let csvContent = "data:text/csv;charset=utf-8,";
+
+            if (reportType === 'sales') {
+                csvContent += "Order ID,Date,Customer,Payment Method,Status,Amount\n";
+                const orders = (window.GUG_DB && typeof window.GUG_DB.getOrders === 'function') ? window.GUG_DB.getOrders() : [];
+                orders.forEach(o => {
+                    csvContent += `"${o.id}","${(o.date||'').split('T')[0]}","${o.customer ? (o.customer.name || o.customer) : (o.name || 'Customer')}","${o.paymentMethod||'COD'}","${o.orderStatus||'Delivered'}",${o.total||o.totalAmount||0}\n`;
+                });
+                getAdjustments().forEach(a => {
+                    csvContent += `"${a.id}","${a.date}","${a.title} (${a.category})","Manual","Settled",${a.amount||0}\n`;
+                });
+            } else if (reportType === 'inventory') {
+                csvContent += "SKU,Product Title,Category,Stock Units,Cost Price,Selling Price\n";
+                const prods = (window.GUG_DB && typeof window.GUG_DB.getProducts === 'function') ? window.GUG_DB.getProducts() : [];
+                prods.forEach(p => {
+                    let totalUnits = 0;
+                    if (p.stock && typeof p.stock === 'object') Object.values(p.stock).forEach(q => totalUnits += Number(q||0));
+                    else totalUnits = Number(p.stock||0);
+                    csvContent += `"${p.sku||p.id}","${p.name||p.title}","${p.category}",${totalUnits},${p.costPrice||0},${p.price||p.sellingPrice||0}\n`;
+                });
+            } else if (reportType === 'adjustments') {
+                csvContent += "ID,Date,Title,Category,Type,Ref,Notes,Amount\n";
+                getAdjustments().forEach(a => {
+                    csvContent += `"${a.id}","${a.date}","${a.title}","${a.category}","${a.type}","${a.ref||''}","${a.notes||''}",${a.amount||0}\n`;
+                });
+            } else {
+                csvContent += "Line Item,Amount\nReport Data Exported from GearUp ERP\n";
+            }
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `GearUp_${reportType}_Report_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initReportsPage();
+        });
+    </script>
+</body>
+</html>
+
+

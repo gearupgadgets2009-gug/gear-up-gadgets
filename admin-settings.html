@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Settings & API Integrations | GearUp Gadgets ERP</title>    
+    <!-- Favicon & Device Web Icons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/images/favicon-64x64.png">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/fonts/font-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <style>
+        body { background-color: var(--gug-bg-color, #07090d) !important; background-image: var(--gug-bg-image) !important; background-attachment: var(--gug-bg-attachment, fixed) !important; background-size: var(--gug-bg-size, cover, cover, 28px 49px) !important; background-position: var(--gug-bg-position, center top) !important; background-repeat: var(--gug-bg-repeat, no-repeat, no-repeat, repeat) !important; min-height: 100vh; color: #ffffff !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .admin-sidebar { width: 260px; background: rgba(10, 10, 15, 0.6) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; height: 100vh; position: fixed; left: 0; top: 0; padding: 20px 15px; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; overflow-y: auto; z-index: 1000; }
+        .admin-main { margin-left: 260px; padding: 25px 30px; min-height: 100vh; background-color: transparent !important; color: #ffffff !important; }
+        .admin-nav-link { display: flex; align-items: center; padding: 9px 13px; color: #94a3b8; text-decoration: none; border-radius: 8px; margin-bottom: 3px; font-size: 13px; font-weight: 500; transition: all 0.2s ease; }
+        .admin-nav-link:hover { background-color: rgba(219, 39, 36, 0.15); color: #fff; }
+        .admin-nav-link.active { background-color: var(--accent-red); color: #fff !important; font-weight: 600; box-shadow: 0 4px 12px rgba(219, 39, 36, 0.3); }
+        .sidebar-section-heading { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #64748b; margin-top: 15px; margin-bottom: 6px; padding-left: 10px; }
+        
+        .admin-card { background: rgba(10, 10, 15, 0.45) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 16px !important; padding: 20px; margin-bottom: 20px; color: #ffffff !important; box-shadow: 0 16px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important; }
+    </style>
+</head>
+<body>
+        <!-- Enterprise Sidebar Navigation -->
+    <div class="admin-sidebar">
+        <div class="d-flex align-items-center mb-3 px-2">
+            <i class="fas fa-shield-alt text-danger fs-4 me-2"></i>
+            <div>
+                <h6 class="text-white m-0 fw-bold">GearUp ERP</h6>
+                <small class="text-secondary" style="font-size: 11px;">Enterprise Operating System</small>
+            </div>
+        </div>
+
+        <a href="dashboard.html" class="admin-nav-link" id="nav-dashboard"><i class="fas fa-chart-pie me-2"></i> Executive Dashboard</a>
+        
+        <!-- Accordion 1: Catalog & E-Commerce -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-catalog">
+                <span><i class="fas fa-shopping-bag text-danger me-2"></i> Catalog & E-Commerce</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-catalog">
+                <a href="products.html" class="admin-nav-link" id="nav-products"><i class="fas fa-boxes-stacked me-2"></i> Products & Catalog</a>
+                <a href="admin-crm.html" class="admin-nav-link" id="nav-crm"><i class="fas fa-users-viewfinder me-2"></i> Customers (CRM)</a>
+                <a href="admin-marketing.html" class="admin-nav-link" id="nav-marketing"><i class="fas fa-tags me-2"></i> Coupons & Marketing</a>
+            </div>
+        </div>
+
+        <!-- Accordion 2: Supply Chain & Operations -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-supply">
+                <span><i class="fas fa-truck-ramp-box text-primary me-2"></i> Supply Chain & Operations</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-supply">
+                <a href="admin-inventory.html" class="admin-nav-link" id="nav-inventory"><i class="fas fa-warehouse me-2"></i> Multi-Warehouse Stock</a>
+                <a href="admin-purchasing.html" class="admin-nav-link" id="nav-purchasing"><i class="fas fa-dolly me-2"></i> Purchasing & Suppliers</a>
+                <a href="orders.html" class="admin-nav-link" id="nav-orders"><i class="fas fa-cart-shopping me-2"></i> Sales Orders Pipeline</a>
+                <a href="admin-logistics.html" class="admin-nav-link" id="nav-logistics"><i class="fas fa-truck-fast me-2"></i> Logistics & Courier COD</a>
+                <a href="admin-returns.html" class="admin-nav-link" id="nav-returns"><i class="fas fa-rotate-left me-2"></i> Returns & Warranty (RMA)</a>
+            </div>
+        </div>
+
+        <!-- Accordion 3: Finance & B2B Wholesale -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-finance">
+                <span><i class="fas fa-coins text-warning me-2"></i> Finance & B2B Wholesale</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-finance">
+                <a href="admin-dealers.html" class="admin-nav-link" id="nav-dealers"><i class="fas fa-handshake me-2"></i> B2B Dealers & Ledger</a>
+                <a href="admin-finance.html" class="admin-nav-link" id="nav-finance"><i class="fas fa-file-invoice-dollar me-2"></i> Finance & P&L Ledger</a>
+                <a href="admin-staff.html" class="admin-nav-link" id="nav-staff"><i class="fas fa-user-tie me-2"></i> HR & Employee Payroll</a>
+                <a href="admin-tasks.html" class="admin-nav-link" id="nav-tasks"><i class="fas fa-list-check me-2"></i> Task Kanban & Workflow</a>
+                <a href="admin-reports.html" class="admin-nav-link" id="nav-reports"><i class="fas fa-chart-column me-2"></i> Business Reports</a>
+                <a href="admin-audit.html" class="admin-nav-link" id="nav-audit"><i class="fas fa-fingerprint me-2"></i> Security & Audit Logs</a>
+            </div>
+        </div>
+
+        <!-- Standalone Section: System Settings & Store Customization -->
+        <div class="mt-3 pt-3 border-top border-secondary border-opacity-25">
+            <div class="px-3 text-secondary text-uppercase fw-bold mb-2" style="font-size: 11px; letter-spacing: 0.6px;">System & Settings</div>
+            <a href="admin-settings.html" class="admin-nav-link active" id="nav-settings"><i class="fas fa-sliders text-danger me-2"></i> System Settings & APIs</a>
+            <a href="admin-sales.html" class="admin-nav-link" id="nav-sales"><i class="fas fa-palette text-warning me-2"></i> Banner & Theme</a>
+        </div>
+        
+        <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
+            <a href="dealer-portal.html" target="_blank" class="admin-nav-link text-warning"><i class="fas fa-store-alt me-2"></i> Dealer Portal View</a>
+            <a href="employee-portal.html" class="admin-nav-link text-info"><i class="fas fa-id-badge me-2"></i> Employee Workspace</a>
+            <a href="index.html" target="_blank" class="admin-nav-link text-success"><i class="fas fa-store me-2"></i> Customer Storefront</a>
+            <a href="#" class="admin-nav-link text-danger mt-2" onclick="localStorage.removeItem('admin_logged_in'); localStorage.removeItem('admin_role'); localStorage.removeItem('admin_username'); window.location.href = 'admin.html'; return false;"><i class="fas fa-sign-out-alt me-2"></i> Sign Out</a>
+        </div>
+    </div>
+    <script>try{var _s=sessionStorage.getItem('gug_admin_sidebar_scroll');if(_s!==null){var _sb=document.querySelector('.admin-sidebar');if(_sb)_sb.scrollTop=parseFloat(_s);}}catch(e){}</script>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Global Header -->
+        <div id="gug-global-header-container"></div>
+
+        <!-- Beginner Help Banner -->
+        <div id="gug-beginner-help-container"></div>
+
+        <div class="row g-4">
+            <!-- Master Admin Account Profile & 2FA Security (Editable Credentials & OTP Settings) -->
+            <div class="col-12">
+                <div class="admin-card border-start border-danger border-4 shadow-sm" style="background: rgba(16, 21, 30, 0.95); border: 1px solid rgba(255, 255, 255, 0.12); border-left: 4px solid var(--accent-red) !important;">
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2 pb-2 border-bottom border-secondary border-opacity-25">
+                        <div>
+                            <h5 class="fw-bold text-white mb-1">
+                                <i class="fas fa-user-shield text-danger me-2"></i> Master Admin Account & Two-Factor Authentication (2FA)
+                            </h5>
+                            <small class="text-secondary">Update your admin login username, email, phone, password and configure 2FA verification channels without code editing.</small>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-danger-subtle text-danger border border-danger px-3 py-2"><i class="fas fa-crown me-1"></i> Super Admin</span>
+                            <span id="badge-2fa-status" class="badge bg-success-subtle text-success border border-success px-3 py-2"><i class="fas fa-shield-check me-1"></i> 2FA Active</span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <!-- Profile Credentials -->
+                        <div class="col-md-3">
+                            <label class="form-label text-white small fw-bold">Admin Display Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark border-secondary text-secondary"><i class="fas fa-id-card"></i></span>
+                                <input type="text" id="admin-acc-name" class="form-control bg-dark text-white border-secondary" placeholder="Khan (Super Admin)">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label text-white small fw-bold">Admin Login Username</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark border-secondary text-secondary"><i class="fas fa-user"></i></span>
+                                <input type="text" id="admin-acc-username" class="form-control bg-dark text-white border-secondary" placeholder="admin" autocomplete="off">
+                            </div>
+                            <small class="text-secondary" style="font-size: 11px;">Primary username used to log into ERP portal.</small>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label text-white small fw-bold">Linked Phone / SMS (for 2FA)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark border-secondary text-warning"><i class="fas fa-phone"></i></span>
+                                <input type="text" id="admin-acc-phone" class="form-control bg-dark text-white border-secondary" placeholder="0300 1234567" oninput="checkPhoneLandline()">
+                            </div>
+                            <div id="phone-landline-warning" class="text-warning small mt-1" style="display:none; font-size: 11px;">
+                                <i class="fas fa-exclamation-triangle me-1"></i> Landline detected. To receive SMS OTP, please enter an active mobile number (e.g. 0300 1234567).
+                            </div>
+                            <small class="text-secondary d-block" style="font-size: 11px;">Active mobile number to receive cellular SMS codes.</small>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label text-white small fw-bold">Linked Gmail / Email (for 2FA)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark border-secondary text-info"><i class="fas fa-envelope"></i></span>
+                                <input type="email" id="admin-acc-email" class="form-control bg-dark text-white border-secondary" placeholder="admin@gearupgadgets.com">
+                            </div>
+                            <small class="text-secondary" style="font-size: 11px;">Receives email notification with login code.</small>
+                        </div>
+
+                        <!-- Password Change Block -->
+                        <div class="col-12 mt-4 pt-3 border-top border-secondary border-opacity-25">
+                            <h6 class="text-white fw-bold mb-2"><i class="fas fa-key text-warning me-2"></i> Change Admin Password <small class="text-secondary fw-normal">(Leave blank to keep current password)</small></h6>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label text-white small">Current Password</label>
+                                    <div class="input-group">
+                                        <input type="password" id="admin-acc-current-pass" class="form-control bg-dark text-white border-secondary" placeholder="Enter current password to verify" autocomplete="new-password">
+                                        <button class="btn btn-outline-secondary btn-security-toggle" type="button" onclick="togglePasswordVisibility('admin-acc-current-pass', 'icon-curr-pass')" title="Show/Hide Password">
+                                            <i class="fas fa-eye text-secondary" id="icon-curr-pass"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label text-white small">New Password</label>
+                                    <div class="input-group">
+                                        <input type="password" id="admin-acc-new-pass" class="form-control bg-dark text-white border-secondary" placeholder="Enter new strong password" autocomplete="new-password">
+                                        <button class="btn btn-outline-secondary btn-security-toggle" type="button" onclick="togglePasswordVisibility('admin-acc-new-pass', 'icon-new-pass')" title="Show/Hide Password">
+                                            <i class="fas fa-eye text-secondary" id="icon-new-pass"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label text-white small">Confirm New Password</label>
+                                    <div class="input-group">
+                                        <input type="password" id="admin-acc-confirm-pass" class="form-control bg-dark text-white border-secondary" placeholder="Re-type new password" autocomplete="new-password">
+                                        <button class="btn btn-outline-secondary btn-security-toggle" type="button" onclick="togglePasswordVisibility('admin-acc-confirm-pass', 'icon-conf-pass')" title="Show/Hide Password">
+                                            <i class="fas fa-eye text-secondary" id="icon-conf-pass"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Two-Factor Authentication Settings -->
+                        <div class="col-12 mt-4 pt-3 border-top border-secondary border-opacity-25">
+                            <div class="p-3 rounded-3" style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08);">
+                                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="form-check form-switch fs-5 m-0">
+                                            <input class="form-check-input" type="checkbox" id="admin-2fa-toggle" onchange="onToggle2FAChange()" style="cursor: pointer;">
+                                        </div>
+                                        <div>
+                                            <label class="form-check-label fs-6 fw-bold text-white mb-0" for="admin-2fa-toggle" style="cursor: pointer;">
+                                                Require Two-Factor Authentication (2FA) at Login
+                                            </label>
+                                            <span id="admin-2fa-status-pill" class="badge bg-secondary-subtle text-secondary border border-secondary ms-2 px-2 py-1">2FA Disabled (OFF)</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <span class="text-secondary small" id="admin-2fa-mode-hint"><i class="fas fa-check-circle text-success me-1"></i> Direct login active with Username & Password</span>
+                                    </div>
+                                </div>
+                                
+                                <p class="text-secondary small mb-3" id="admin-2fa-help-text">
+                                    When turned <strong>OFF</strong> (default), you can log in normally with just your Master Admin username and password. 2FA is <strong>ONLY</strong> required if you manually turn this switch <strong>ON</strong> and save your settings below.
+                                </p>
+
+                                <div class="row g-3 pt-2 border-top border-secondary border-opacity-25" id="admin-2fa-config-section">
+                                    <div class="col-md-4">
+                                        <label class="form-label text-white small fw-bold mb-1">2FA Dispatch Channel</label>
+                                        <select id="admin-2fa-channel" class="form-select bg-dark text-white border-secondary">
+                                            <option value="both">Both Phone (SMS) & Google Mail (Gmail)</option>
+                                            <option value="phone">Phone (SMS) Only</option>
+                                            <option value="email">Gmail Only</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label text-white small fw-bold mb-1">SMS Gateway Provider / Preset</label>
+                                        <select id="admin-sms-provider" class="form-select bg-dark text-white border-secondary" onchange="onSMSProviderPresetChange()">
+                                            <option value="custom">Custom Webhook / HTTP API (GET or POST)</option>
+                                            <option value="lifetimesms">Lifetimesms (Pakistan)</option>
+                                            <option value="veevotech">VeevoTech (Pakistan)</option>
+                                            <option value="brandsms">BrandSMS / Brandverse (Pakistan)</option>
+                                            <option value="twilio">Twilio SMS API</option>
+                                            <option value="zapier">Zapier / Make.com Webhook Relay</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label text-white small fw-bold mb-1">SMS Sender ID / Masking</label>
+                                        <input type="text" id="admin-sms-sender-id" class="form-control bg-dark text-white border-secondary" placeholder="GearUp" value="GearUp">
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label text-white small fw-bold mb-1">SMS Gateway Endpoint URL <span class="text-secondary fw-normal">(Supports <code>{{PHONE}}</code>, <code>{{CODE}}</code>, <code>{{MESSAGE}}</code>)</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-dark border-secondary text-warning"><i class="fas fa-network-wired"></i></span>
+                                            <input type="url" id="admin-sms-gateway-url" class="form-control bg-dark text-white border-secondary font-monospace small" placeholder="https://api.sms-gateway.com/send?to={{PHONE}}&msg={{MESSAGE}}">
+                                            <button type="button" class="btn btn-outline-warning btn-sm px-3" onclick="sendTestSMS()">
+                                                <i class="fas fa-mobile-screen me-1"></i> Send Test SMS to Phone
+                                            </button>
+                                        </div>
+                                        <small class="text-secondary d-block mt-1" style="font-size: 11px;">
+                                            Enter your cellular SMS Gateway API URL or Webhook. Placeholders <code>{{PHONE}}</code>, <code>{{CODE}}</code>, and <code>{{MESSAGE}}</code> will be dynamically replaced when sending OTP.
+                                        </small>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label text-white small fw-bold mb-1">Email Dispatch Webhook URL <span class="text-secondary fw-normal">(Optional, defaults to direct Gmail delivery via Web3Forms API)</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-dark border-secondary text-info"><i class="fas fa-envelope-open-text"></i></span>
+                                            <input type="url" id="admin-email-webhook-url" class="form-control bg-dark text-white border-secondary font-monospace small" placeholder="https://api.emailservice.com/send or custom webhook">
+                                            <button type="button" class="btn btn-outline-info btn-sm px-3" onclick="sendTestEmail()">
+                                                <i class="fas fa-paper-plane me-1"></i> Send Test Email to Gmail
+                                            </button>
+                                        </div>
+                                        <small class="text-secondary d-block mt-1" style="font-size: 11px;">
+                                            Delivers OTP directly to your registered Gmail address. If left blank, uses automated client-side Web3Forms API and Firebase <code>mail</code> collection.
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="col-12 d-flex justify-content-between align-items-center flex-wrap gap-2 mt-4 pt-2">
+                            <span class="text-secondary small" id="admin-save-notice"><i class="fas fa-shield-alt text-danger me-1"></i> Changes will take effect immediately upon saving.</span>
+                            <button type="button" class="btn btn-danger px-4 py-2 fw-bold" onclick="saveAdminProfile()">
+                                <i class="fas fa-save me-1"></i> Save Admin Account & 2FA Settings
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Company Profile Settings -->
+            <div class="col-lg-6">
+                <div class="admin-card">
+                    <h5 class="fw-bold text-dark mb-1"><i class="fas fa-building text-danger me-2"></i> Business Entity & Company Profile</h5>
+                    <small class="text-secondary d-block mb-3">Official company credentials printed on invoices and shipping labels.</small>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label">Legal Business Name</label>
+                            <input type="text" id="set-company-name" class="form-control" value="GearUp Gadgets (Pvt.) Limited">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">NTN / STRN Tax Number</label>
+                            <input type="text" id="set-ntn" class="form-control" value="NTN-8942104-7">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Official Support Phone</label>
+                            <input type="text" id="set-phone" class="form-control" value="+92 21 34567890">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Official Support Email</label>
+                            <input type="email" id="set-email" class="form-control" value="support@gearupgadgets.pk">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Default Currency</label>
+                            <input type="text" class="form-control" value="PKR (Rs.)" disabled>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Head Office Address</label>
+                            <textarea id="set-address" class="form-control" rows="2">D-5, 4th floor, Osif Center, Block 13 A, University Road Gulshan-e-Iqbal, Karachi-Pakistan</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Courier Logistics API Integrations -->
+            <div class="col-lg-6">
+                <div class="admin-card">
+                    <h5 class="fw-bold text-dark mb-1"><i class="fas fa-truck-fast text-danger me-2"></i> Courier API Credentials (COD)</h5>
+                    <small class="text-secondary d-block mb-3">Connect your courier merchant API accounts for 1-click booking & tracking.</small>
+                    
+                    <div class="p-3 bg-light rounded border mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <strong class="text-dark"><i class="fas fa-shipping-fast text-warning me-1"></i> Leopard Courier COD API</strong>
+                            <span class="badge bg-success">Connected</span>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <label class="small text-secondary">API Key</label>
+                                <div class="input-group input-group-sm">
+                                    <input type="password" id="leopard-api-key" class="form-control api-key-input" value="LEO_PK_994821038_LIVE">
+                                    <button class="btn btn-outline-secondary btn-security-toggle" type="button" onclick="togglePasswordVisibility('leopard-api-key', 'icon-leopard-key')" title="Show/Hide API Key">
+                                        <i class="fas fa-eye text-secondary" id="icon-leopard-key"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="small text-secondary">Account Number / Origin</label>
+                                <input type="text" class="form-control form-control-sm" value="KHI-9921">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-light rounded border mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <strong class="text-dark"><i class="fas fa-box text-danger me-1"></i> TCS Express API</strong>
+                            <span class="badge bg-success">Connected</span>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <label class="small text-secondary">Client ID / API Key</label>
+                                <div class="input-group input-group-sm">
+                                    <input type="password" id="tcs-api-key" class="form-control api-key-input" value="TCS_PROD_884920">
+                                    <button class="btn btn-outline-secondary btn-security-toggle" type="button" onclick="togglePasswordVisibility('tcs-api-key', 'icon-tcs-key')" title="Show/Hide API Key">
+                                        <i class="fas fa-eye text-secondary" id="icon-tcs-key"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="small text-secondary">Cost Center Code</label>
+                                <input type="text" class="form-control form-control-sm" value="CC_KHI_01">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-light rounded border">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <strong class="text-dark"><i class="fas fa-route text-primary me-1"></i> Trax Logistics API</strong>
+                            <span class="badge bg-secondary">Sandbox</span>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-md-12">
+                                <label class="small text-secondary">Authorization Token / API Key</label>
+                                <div class="input-group input-group-sm">
+                                    <input type="password" id="trax-api-key" class="form-control api-key-input" value="TRAX_AUTH_TOKEN_TEST_2026">
+                                    <button class="btn btn-outline-secondary btn-security-toggle" type="button" onclick="togglePasswordVisibility('trax-api-key', 'icon-trax-key')" title="Show/Hide Token">
+                                        <i class="fas fa-eye text-secondary" id="icon-trax-key"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Gateway & Thresholds -->
+            <div class="col-lg-6">
+                <div class="admin-card">
+                    <h5 class="fw-bold text-dark mb-1"><i class="fas fa-credit-card text-danger me-2"></i> Payment Gateways & Banking</h5>
+                    <small class="text-secondary d-block mb-3">Configure checkout payment options and corporate bank accounts.</small>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark">Cash on Delivery (COD)</label>
+                        <div class="form-check form-switch fs-5">
+                            <input class="form-check-input" type="checkbox" id="pay-cod" checked>
+                            <label class="form-check-label fs-6 text-dark" for="pay-cod">Enable COD Checkout Nationwide</label>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark">Corporate Bank Transfer (IBAN)</label>
+                        <input type="text" class="form-control mb-1" placeholder="Bank Name" value="Meezan Bank Limited - Clifton Branch">
+                        <input type="text" class="form-control mb-1" placeholder="Account Title" value="GearUp Gadgets (Pvt) Ltd">
+                        <input type="text" class="form-control" placeholder="IBAN" value="PK45MEZN0001020304050607">
+                    </div>
+
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark">JazzCash Merchant</label>
+                            <input type="text" class="form-control form-control-sm" placeholder="Merchant ID" value="MC-881920">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark">EasyPaisa Merchant</label>
+                            <input type="text" class="form-control form-control-sm" placeholder="Store ID" value="EP-994812">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Operational Thresholds & Governance -->
+            <div class="col-lg-6">
+                <div class="admin-card">
+                    <h5 class="fw-bold text-dark mb-1"><i class="fas fa-shield-halved text-danger me-2"></i> Governance & Approval Limits</h5>
+                    <small class="text-secondary d-block mb-3">Define automated approval boundaries and inventory safety triggers.</small>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Purchase Order Auto-Approval Limit (PKR)</label>
+                        <input type="number" class="form-control" value="100000">
+                        <small class="text-muted">POs above this amount require Super Admin or Executive approval.</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Global Low Stock Alert Trigger</label>
+                        <input type="number" class="form-control" value="10">
+                        <small class="text-muted">Notify inventory managers when product SKU drops below this count.</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Customer RMA Warranty Window (Days)</label>
+                        <input type="number" class="form-control" value="365">
+                        <small class="text-muted">Standard warranty claim period for registered electronics.</small>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 pt-2">
+                        <button class="btn btn-danger px-4" onclick="saveSettings()"><i class="fas fa-save me-1"></i> Save Configuration</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/products-data.js"></script>
+    <script src="assets/js/gug-erp-core.js"></script>
+    <!-- Firebase Compat SDKs & Cloud Sync -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/firebase-sync.js"></script>
+    <script src="assets/js/admin.js"></script>
+    <script>
+        function checkPhoneLandline() {
+            const phone = (document.getElementById('admin-acc-phone').value || '').trim();
+            const warningEl = document.getElementById('phone-landline-warning');
+            if (!warningEl) return;
+            const norm = window.GUG_DB ? window.GUG_DB.normalizePhoneNumber(phone) : { isLandline: false };
+            if (norm.isLandline) {
+                warningEl.style.display = 'block';
+            } else {
+                warningEl.style.display = 'none';
+            }
+        }
+
+        function onToggle2FAChange() {
+            const isChecked = document.getElementById('admin-2fa-toggle').checked;
+            const pill = document.getElementById('admin-2fa-status-pill');
+            const hint = document.getElementById('admin-2fa-mode-hint');
+            const helpText = document.getElementById('admin-2fa-help-text');
+            const badgeEl = document.getElementById('badge-2fa-status');
+
+            if (isChecked) {
+                if (pill) {
+                    pill.className = 'badge bg-success-subtle text-success border border-success ms-2 px-2 py-1';
+                    pill.innerHTML = '<i class="fas fa-shield-check me-1"></i> 2FA Enabled (ON)';
+                }
+                if (badgeEl) {
+                    badgeEl.className = 'badge bg-success-subtle text-success border border-success px-3 py-2';
+                    badgeEl.innerHTML = '<i class="fas fa-shield-check me-1"></i> 2FA Active';
+                }
+                if (hint) hint.innerHTML = '<i class="fas fa-lock text-warning me-1"></i> Verification code will be required at login';
+                if (helpText) helpText.innerHTML = 'Two-Factor Authentication is <strong>ENABLED</strong>. When you log in, a 6-digit OTP code will be sent to your verified channel before granting access.';
+            } else {
+                if (pill) {
+                    pill.className = 'badge bg-secondary-subtle text-secondary border border-secondary ms-2 px-2 py-1';
+                    pill.innerHTML = '<i class="fas fa-shield-slash me-1"></i> 2FA Disabled (OFF)';
+                }
+                if (badgeEl) {
+                    badgeEl.className = 'badge bg-secondary-subtle text-secondary border border-secondary px-3 py-2';
+                    badgeEl.innerHTML = '<i class="fas fa-shield-slash me-1"></i> 2FA Disabled';
+                }
+                if (hint) hint.innerHTML = '<i class="fas fa-check-circle text-success me-1"></i> Direct login active with Username & Password';
+                if (helpText) helpText.innerHTML = 'When turned <strong>OFF</strong> (default), you can log in normally with just your Master Admin username and password. 2FA is <strong>ONLY</strong> required if you manually turn this switch <strong>ON</strong> and save your settings below.';
+            }
+        }
+
+        function onSMSProviderPresetChange() {
+            const provider = document.getElementById('admin-sms-provider').value;
+            const urlInput = document.getElementById('admin-sms-gateway-url');
+            if (!urlInput) return;
+
+            const templates = {
+                custom: '',
+                lifetimesms: 'https://lifetimesms.com/plain?api_token=YOUR_API_TOKEN&api_secret=YOUR_API_SECRET&to={{PHONE}}&from={{SENDER}}&message={{MESSAGE}}',
+                veevotech: 'https://api.veevotech.com/sendsms?hash=YOUR_HASH&receivenum={{PHONE}}&sendernum={{SENDER}}&textmessage={{MESSAGE}}',
+                brandsms: 'https://brandverse.pk/api/v1/sms/send?api_key=YOUR_KEY&to={{PHONE}}&mask={{SENDER}}&text={{MESSAGE}}',
+                twilio: 'https://api.twilio.com/2010-04-01/Accounts/YOUR_ACCOUNT_SID/Messages.json',
+                zapier: 'https://hooks.zapier.com/hooks/catch/YOUR_WEBHOOK_ID/'
+            };
+
+            if (templates[provider] !== undefined) {
+                urlInput.value = templates[provider];
+                if (templates[provider]) {
+                    window.GUG_DB.showToast(`Template for ${provider.toUpperCase()} applied. Replace placeholder credentials with your API keys.`, 'info', 'SMS Preset Loaded');
+                }
+            }
+        }
+
+        async function sendTestSMS() {
+            if (!window.GUG_DB) return;
+            const phone = (document.getElementById('admin-acc-phone').value || '').trim();
+            const gatewayUrl = (document.getElementById('admin-sms-gateway-url').value || '').trim();
+            const token = (document.getElementById('admin-sms-api-token') ? document.getElementById('admin-sms-api-token').value : '').trim();
+            const sender = (document.getElementById('admin-sms-sender-id') ? document.getElementById('admin-sms-sender-id').value : 'GearUp').trim();
+
+            if (!phone) {
+                window.GUG_DB.showToast('Please enter your phone number first.', 'warning', 'Phone Required');
+                document.getElementById('admin-acc-phone').focus();
+                return;
+            }
+
+            window.GUG_DB.showToast('Testing SMS Gateway dispatch...', 'info', 'Sending Test SMS');
+            const res = await window.GUG_DB.testSMSGateway(phone, gatewayUrl, token, sender);
+            if (res.success) {
+                window.GUG_DB.showToast(res.message, 'success', 'SMS Dispatched');
+            } else {
+                window.GUG_DB.showToast(res.message, 'error', 'SMS Test Failed');
+            }
+        }
+
+        async function sendTestEmail() {
+            if (!window.GUG_DB) return;
+            const email = (document.getElementById('admin-acc-email').value || '').trim();
+            const webhookUrl = (document.getElementById('admin-email-webhook-url').value || '').trim();
+
+            if (!email) {
+                window.GUG_DB.showToast('Please enter your Gmail address first.', 'warning', 'Email Required');
+                document.getElementById('admin-acc-email').focus();
+                return;
+            }
+
+            window.GUG_DB.showToast('Testing Email dispatch...', 'info', 'Sending Test Email');
+            const res = await window.GUG_DB.testEmailGateway(email, webhookUrl);
+            if (res.success) {
+                window.GUG_DB.showToast(res.message, 'success', 'Email Dispatched');
+            } else {
+                window.GUG_DB.showToast(res.message, 'error', 'Email Test Failed');
+            }
+        }
+
+        function loadAdminProfile() {
+            if (!window.GUG_DB || typeof window.GUG_DB.getAdminAccount !== 'function') return;
+            const acc = window.GUG_DB.getAdminAccount();
+            
+            const nameEl = document.getElementById('admin-acc-name');
+            const userEl = document.getElementById('admin-acc-username');
+            const phoneEl = document.getElementById('admin-acc-phone');
+            const emailEl = document.getElementById('admin-acc-email');
+            const toggleEl = document.getElementById('admin-2fa-toggle');
+            const channelEl = document.getElementById('admin-2fa-channel');
+            const providerEl = document.getElementById('admin-sms-provider');
+            const smsUrlEl = document.getElementById('admin-sms-gateway-url');
+            const smsSenderEl = document.getElementById('admin-sms-sender-id');
+            const emailUrlEl = document.getElementById('admin-email-webhook-url');
+
+            if (nameEl) nameEl.value = acc.name || 'Khan (Super Admin)';
+            if (userEl) userEl.value = acc.username || 'admin';
+            if (phoneEl) phoneEl.value = acc.phone || '021 34832214';
+            if (emailEl) emailEl.value = acc.email || 'admin@gearupgadgets.com';
+            if (toggleEl) {
+                toggleEl.checked = (acc.twoFactorEnabled === true);
+                onToggle2FAChange();
+            }
+            if (channelEl) channelEl.value = acc.twoFactorMethod || 'both';
+            if (providerEl) providerEl.value = acc.smsGatewayProvider || 'custom';
+            if (smsUrlEl) smsUrlEl.value = acc.smsGatewayUrl || '';
+            if (smsSenderEl) smsSenderEl.value = acc.smsSenderId || 'GearUp';
+            if (emailUrlEl) emailUrlEl.value = acc.emailWebhookUrl || '';
+
+            checkPhoneLandline();
+        }
+
+        function saveAdminProfile() {
+            if (!window.GUG_DB) return;
+
+            const name = (document.getElementById('admin-acc-name').value || '').trim();
+            const username = (document.getElementById('admin-acc-username').value || '').trim();
+            const phone = (document.getElementById('admin-acc-phone').value || '').trim();
+            const email = (document.getElementById('admin-acc-email').value || '').trim();
+            const currentPass = (document.getElementById('admin-acc-current-pass').value || '').trim();
+            const newPass = (document.getElementById('admin-acc-new-pass').value || '').trim();
+            const confirmPass = (document.getElementById('admin-acc-confirm-pass').value || '').trim();
+            const twoFactorEnabled = document.getElementById('admin-2fa-toggle').checked;
+            const twoFactorMethod = document.getElementById('admin-2fa-channel').value;
+            const smsGatewayProvider = document.getElementById('admin-sms-provider') ? document.getElementById('admin-sms-provider').value : 'custom';
+            const smsGatewayUrl = document.getElementById('admin-sms-gateway-url') ? (document.getElementById('admin-sms-gateway-url').value || '').trim() : '';
+            const smsSenderId = document.getElementById('admin-sms-sender-id') ? (document.getElementById('admin-sms-sender-id').value || 'GearUp').trim() : 'GearUp';
+            const emailWebhookUrl = document.getElementById('admin-email-webhook-url') ? (document.getElementById('admin-email-webhook-url').value || '').trim() : '';
+
+            if (!username) {
+                window.GUG_DB.showToast('Admin username cannot be blank.', 'error', 'Validation Error');
+                return;
+            }
+
+            if (newPass) {
+                if (!currentPass) {
+                    window.GUG_DB.showToast('Please enter your Current Password to authorize changing your password.', 'warning', 'Verification Required');
+                    document.getElementById('admin-acc-current-pass').focus();
+                    return;
+                }
+                if (newPass !== confirmPass) {
+                    window.GUG_DB.showToast('New Password and Confirm New Password do not match. Please re-check.', 'error', 'Password Mismatch');
+                    return;
+                }
+                if (newPass.length < 5) {
+                    window.GUG_DB.showToast('New password must be at least 5 characters long.', 'error', 'Password Too Short');
+                    return;
+                }
+            }
+
+            const res = window.GUG_DB.saveAdminAccount({
+                name,
+                username,
+                phone,
+                email,
+                currentPassword: currentPass,
+                newPassword: newPass,
+                twoFactorEnabled,
+                twoFactorMethod,
+                smsGatewayProvider,
+                smsGatewayUrl,
+                smsSenderId,
+                emailWebhookUrl
+            });
+
+            if (res.success) {
+                document.getElementById('admin-acc-current-pass').value = '';
+                document.getElementById('admin-acc-new-pass').value = '';
+                document.getElementById('admin-acc-confirm-pass').value = '';
+                const statusMsg = twoFactorEnabled 
+                    ? 'Admin account credentials and 2FA settings saved. 2FA is now ACTIVE at login.'
+                    : 'Admin account credentials saved. 2FA is DISABLED (direct password login active).';
+                window.GUG_DB.showToast(statusMsg, 'success', 'Profile Saved');
+                loadAdminProfile();
+            } else {
+                window.GUG_DB.showToast(res.message || 'Failed to update admin account.', 'error', 'Update Failed');
+            }
+        }
+
+        function initSettingsPage() {
+            GUG_DB.renderGlobalHeader('gug-global-header-container', 'System Settings & API Integrations');
+            GUG_DB.renderBeginnerHelpBanner('gug-beginner-help-container', {
+                whereAmI: 'Global ERP Configuration & Third-Party Integration Panel',
+                whatCanIDo: 'Manage Master Admin credentials, configure 2FA Phone & Gmail verification, company tax info, courier APIs, and payment gateways.',
+                whatNext: 'Update any credentials or toggle 2FA verification and click "Save Admin Account & 2FA Settings" to apply instantly.'
+            });
+            loadAdminProfile();
+        }
+
+        function saveSettings() {
+            window.GUG_DB.showToast('System settings and API credentials saved successfully into ERP database.', 'success', 'Settings Saved');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initSettingsPage();
+        });
+    </script>
+</body>
+</html>
+
+

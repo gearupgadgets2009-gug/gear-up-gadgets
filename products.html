@@ -1,0 +1,2772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Immediate Zero-Delay Embedded View Detection (Prevents Duplicate Sidebar & Layout Snap) -->
+    <script>if(window.self!==window.top||(typeof location!=='undefined'&&location.search.indexOf('staff_view=1')!==-1)){document.documentElement.classList.add('is-embedded');}</script>
+    <style>
+        html.is-embedded .admin-sidebar, html.is-embedded aside.admin-sidebar, body.is-embedded .admin-sidebar { display: none !important; visibility: hidden !important; width: 0 !important; height: 0 !important; position: absolute !important; left: -9999px !important; opacity: 0 !important; pointer-events: none !important; animation: none !important; -webkit-animation: none !important; transition: none !important; transform: none !important; }
+        html.is-embedded .admin-main, body.is-embedded .admin-main { margin-left: 0 !important; width: 100% !important; padding: 15px 20px !important; animation: none !important; transition: none !important; }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Catalog & Variant Management | GearUp Gadgets ERP</title>    
+    <!-- Favicon & Device Web Icons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/images/favicon-64x64.png">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/fonts/font-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <style>
+        body { background-color: var(--gug-bg-color, #07090d) !important; background-image: var(--gug-bg-image) !important; background-attachment: var(--gug-bg-attachment, fixed) !important; background-size: var(--gug-bg-size, cover, cover, 28px 49px) !important; background-position: var(--gug-bg-position, center top) !important; background-repeat: var(--gug-bg-repeat, no-repeat, no-repeat, repeat) !important; min-height: 100vh; color: #ffffff !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .admin-sidebar { width: 260px; background: rgba(10, 10, 15, 0.6) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; height: 100vh; position: fixed; left: 0; top: 0; padding: 20px 15px; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; overflow-y: auto; z-index: 1000; }
+        .admin-main { margin-left: 260px; padding: 25px 30px; min-height: 100vh; background-color: transparent !important; color: #ffffff !important; }
+        .admin-nav-link { display: flex; align-items: center; padding: 9px 13px; color: #94a3b8; text-decoration: none; border-radius: 8px; margin-bottom: 3px; font-size: 13px; font-weight: 500; transition: all 0.2s ease; }
+        .admin-nav-link:hover { background-color: rgba(219, 39, 36, 0.15); color: #fff; }
+        .admin-nav-link.active { background-color: var(--accent-red); color: #fff !important; font-weight: 600; box-shadow: 0 4px 12px rgba(219, 39, 36, 0.3); }
+        .sidebar-section-heading { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #64748b; margin-top: 15px; margin-bottom: 6px; padding-left: 10px; }
+        
+        .admin-card { background: rgba(10, 10, 15, 0.45) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 16px !important; padding: 20px; margin-bottom: 20px; color: #ffffff !important; box-shadow: 0 16px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important; }
+        .table { color: #ffffff !important; background-color: transparent !important; vertical-align: middle; }
+        .table th { background-color: rgba(255, 255, 255, 0.06) !important; border-bottom: 2px solid rgba(255, 255, 255, 0.15) !important; color: #ffffff !important; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .table td { border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important; font-size: 13.5px; color: #ffffff !important; }
+        
+        .product-thumb { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.05); }
+        .modal-nav-tabs .nav-link { color: #64748b; font-weight: 600; font-size: 13px; padding: 10px 16px; border: none; border-bottom: 2px solid transparent; }
+        .modal-nav-tabs .nav-link.active { color: var(--accent-red); border-bottom-color: var(--accent-red); background: transparent; }
+
+        /* Dynamic Real-Time Counter & Pulse Widget */
+        #header-catalog-counter-widget {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            user-select: none;
+        }
+        #header-catalog-counter-widget:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(219, 39, 36, 0.2) !important;
+            background-color: rgba(219, 39, 36, 0.14) !important;
+        }
+        .counter-pulse-flash {
+            display: inline-block;
+            animation: gugCountPulse 0.65s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes gugCountPulse {
+            0% { transform: scale(1); }
+            40% { transform: scale(1.28); filter: drop-shadow(0 0 8px rgba(219, 39, 36, 0.7)); }
+            100% { transform: scale(1); }
+        }
+
+        /* Glowing Bright White Edit Action Button */
+        .btn-edit-glowing {
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.14) !important;
+            border: 1px solid rgba(255, 255, 255, 0.75) !important;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 0.25rem 0.55rem !important;
+        }
+        .btn-edit-glowing i {
+            color: #ffffff !important;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.85)) !important;
+        }
+        .btn-edit-glowing:hover,
+        .btn-edit-glowing:focus,
+        .btn-edit-glowing:active {
+            color: #07090d !important;
+            background: #ffffff !important;
+            border-color: #ffffff !important;
+            box-shadow: 0 0 18px rgba(255, 255, 255, 0.95), 0 0 28px rgba(255, 255, 255, 0.65) !important;
+            transform: translateY(-1px) scale(1.06) !important;
+        }
+        .btn-edit-glowing:hover i,
+        .btn-edit-glowing:focus i,
+        .btn-edit-glowing:active i {
+            color: #07090d !important;
+            filter: none !important;
+        }
+
+        /* High-Visibility Catalog Management Tabs */
+        #catalogManagementTabs {
+            border-bottom: 2px solid rgba(255, 255, 255, 0.12) !important;
+            gap: 10px !important;
+            padding-bottom: 6px !important;
+            display: flex !important;
+        }
+        #catalogManagementTabs .nav-item {
+            margin-bottom: 0 !important;
+        }
+        #catalogManagementTabs .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            border-radius: 12px !important;
+            padding: 10px 22px !important;
+            font-size: 14.5px !important;
+            font-weight: 700 !important;
+            transition: all 0.25s ease !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            cursor: pointer !important;
+        }
+        #catalogManagementTabs .nav-link:hover {
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.12) !important;
+            border-color: rgba(220, 38, 38, 0.5) !important;
+            transform: translateY(-1px);
+        }
+        #catalogManagementTabs .nav-link.active {
+            color: #ffffff !important;
+            background: var(--accent-red, #dc2626) !important;
+            border-color: var(--accent-red, #dc2626) !important;
+            box-shadow: 0 4px 18px rgba(220, 38, 38, 0.5) !important;
+            font-weight: 800 !important;
+        }
+
+        /* Fallback for table outline-dark buttons */
+        .admin-main .btn-outline-dark,
+        .table .btn-outline-dark {
+            color: #ffffff !important;
+            border-color: rgba(255, 255, 255, 0.5) !important;
+            background: rgba(255, 255, 255, 0.08) !important;
+        }
+        .admin-main .btn-outline-dark:hover,
+        .table .btn-outline-dark:hover {
+            color: #000000 !important;
+            background: #ffffff !important;
+            border-color: #ffffff !important;
+        }
+
+        /* Solid White Input Text & Dark Glass Theming for Product Modal */
+        #productModal .form-control,
+        #productModal .form-select,
+        #productModal textarea,
+        #quickProductModal .form-control,
+        #quickProductModal .form-select,
+        #quickProductModal textarea,
+        #saleModal .form-control,
+        #saleModal .form-select,
+        #prod-title {
+            color: #ffffff !important;
+            -webkit-text-fill-color: #ffffff !important;
+            caret-color: #ffffff !important;
+            background-color: rgba(20, 24, 33, 0.88) !important;
+            border: 1px solid rgba(255, 255, 255, 0.22) !important;
+            border-radius: 10px !important;
+            font-size: 13.5px !important;
+            font-weight: 500 !important;
+        }
+
+        #productModal .form-control:focus,
+        #productModal .form-select:focus,
+        #productModal textarea:focus,
+        #quickProductModal .form-control:focus,
+        #quickProductModal .form-select:focus,
+        #quickProductModal textarea:focus,
+        #saleModal .form-control:focus,
+        #saleModal .form-select:focus,
+        #prod-title:focus {
+            color: #ffffff !important;
+            -webkit-text-fill-color: #ffffff !important;
+            background-color: rgba(26, 32, 44, 0.95) !important;
+            border-color: rgba(255, 255, 255, 0.6) !important;
+            box-shadow: 0 0 14px rgba(255, 255, 255, 0.35) !important;
+            outline: none !important;
+        }
+
+        #productModal .form-control::placeholder,
+        #productModal textarea::placeholder,
+        #quickProductModal .form-control::placeholder,
+        #quickProductModal textarea::placeholder,
+        #saleModal .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.45) !important;
+            -webkit-text-fill-color: rgba(255, 255, 255, 0.45) !important;
+        }
+
+        #productModal select option,
+        #quickProductModal select option,
+        #saleModal select option {
+            background-color: #11141d !important;
+            color: #ffffff !important;
+        }
+
+        #productModal .form-label,
+        #productModal label,
+        #quickProductModal .form-label,
+        #quickProductModal label,
+        #saleModal .form-label,
+        #saleModal label {
+            color: #ffffff !important;
+            font-weight: 600 !important;
+            font-size: 12.5px !important;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8) !important;
+        }
+
+        #productModal .text-dark,
+        #quickProductModal .text-dark,
+        #saleModal .text-dark {
+            color: #ffffff !important;
+        }
+
+        #productModal .bg-light,
+        #productModal .bg-white,
+        #quickProductModal .bg-light,
+        #quickProductModal .bg-white,
+        #saleModal .bg-light,
+        #saleModal .bg-white {
+            background: rgba(255, 255, 255, 0.05) !important;
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            color: #ffffff !important;
+            border-color: rgba(255, 255, 255, 0.12) !important;
+        }
+
+        #productModal .modal-footer,
+        #quickProductModal .modal-footer,
+        #saleModal .modal-footer {
+            background: rgba(10, 10, 15, 0.7) !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        /* File Upload 'Choose File' Button - Pure White Button with Solid Bold Black Text */
+        #productModal input[type="file"]::file-selector-button,
+        #productModal input[type="file"]::-webkit-file-upload-button,
+        #quickProductModal input[type="file"]::file-selector-button,
+        #quickProductModal input[type="file"]::-webkit-file-upload-button,
+        input[type="file"]::file-selector-button,
+        input[type="file"]::-webkit-file-upload-button,
+        .form-control::file-selector-button,
+        .form-control::-webkit-file-upload-button {
+            background: #ffffff !important;
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            -webkit-text-fill-color: #000000 !important;
+            font-weight: 700 !important;
+            font-size: 13px !important;
+            border: none !important;
+            border-right: 1px solid rgba(0, 0, 0, 0.25) !important;
+            padding: 0.375rem 0.85rem !important;
+            margin-right: 0.75rem !important;
+            border-radius: 6px 0 0 6px !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+        }
+
+        #productModal input[type="file"]:hover::file-selector-button,
+        #productModal input[type="file"]:hover::-webkit-file-upload-button,
+        #quickProductModal input[type="file"]:hover::file-selector-button,
+        #quickProductModal input[type="file"]:hover::-webkit-file-upload-button,
+        input[type="file"]:hover::file-selector-button,
+        input[type="file"]:hover::-webkit-file-upload-button,
+        .form-control:hover::file-selector-button,
+        .form-control:hover::-webkit-file-upload-button {
+            background: #e2e8f0 !important;
+            background-color: #e2e8f0 !important;
+            color: #000000 !important;
+            -webkit-text-fill-color: #000000 !important;
+        }
+
+        /* File Name Display Text (Next to Button) - Solid White */
+        #productModal input[type="file"],
+        #quickProductModal input[type="file"],
+        input[type="file"].form-control {
+            color: #ffffff !important;
+            -webkit-text-fill-color: #ffffff !important;
+            background-color: rgba(20, 24, 33, 0.88) !important;
+            border: 1px solid rgba(255, 255, 255, 0.22) !important;
+        }
+    </style>
+</head>
+<body>
+        <!-- Enterprise Sidebar Navigation -->
+    <div class="admin-sidebar">
+        <div class="d-flex align-items-center mb-3 px-2">
+            <i class="fas fa-shield-alt text-danger fs-4 me-2"></i>
+            <div>
+                <h6 class="text-white m-0 fw-bold">GearUp ERP</h6>
+                <small class="text-secondary" style="font-size: 11px;">Enterprise Operating System</small>
+            </div>
+        </div>
+
+        <a href="dashboard.html" class="admin-nav-link" id="nav-dashboard"><i class="fas fa-chart-pie me-2"></i> Executive Dashboard</a>
+        
+        <!-- Accordion 1: Catalog & E-Commerce -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-catalog">
+                <span><i class="fas fa-shopping-bag text-danger me-2"></i> Catalog & E-Commerce</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-catalog">
+                <a href="products.html" class="admin-nav-link" id="nav-products"><i class="fas fa-boxes-stacked me-2"></i> Products & Catalog</a>
+                <a href="admin-crm.html" class="admin-nav-link" id="nav-crm"><i class="fas fa-users-viewfinder me-2"></i> Customers (CRM)</a>
+                <a href="admin-marketing.html" class="admin-nav-link" id="nav-marketing"><i class="fas fa-tags me-2"></i> Coupons & Marketing</a>
+            </div>
+        </div>
+
+        <!-- Accordion 2: Supply Chain & Operations -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-supply">
+                <span><i class="fas fa-truck-ramp-box text-primary me-2"></i> Supply Chain & Operations</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-supply">
+                <a href="admin-inventory.html" class="admin-nav-link" id="nav-inventory"><i class="fas fa-warehouse me-2"></i> Multi-Warehouse Stock</a>
+                <a href="admin-purchasing.html" class="admin-nav-link" id="nav-purchasing"><i class="fas fa-dolly me-2"></i> Purchasing & Suppliers</a>
+                <a href="orders.html" class="admin-nav-link" id="nav-orders"><i class="fas fa-cart-shopping me-2"></i> Sales Orders Pipeline</a>
+                <a href="admin-logistics.html" class="admin-nav-link" id="nav-logistics"><i class="fas fa-truck-fast me-2"></i> Logistics & Courier COD</a>
+                <a href="admin-returns.html" class="admin-nav-link" id="nav-returns"><i class="fas fa-rotate-left me-2"></i> Returns & Warranty (RMA)</a>
+            </div>
+        </div>
+
+        <!-- Accordion 3: Finance & B2B Wholesale -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-finance">
+                <span><i class="fas fa-coins text-warning me-2"></i> Finance & B2B Wholesale</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-finance">
+                <a href="admin-dealers.html" class="admin-nav-link" id="nav-dealers"><i class="fas fa-handshake me-2"></i> B2B Dealers & Ledger</a>
+                <a href="admin-finance.html" class="admin-nav-link" id="nav-finance"><i class="fas fa-file-invoice-dollar me-2"></i> Finance & P&L Ledger</a>
+                <a href="admin-staff.html" class="admin-nav-link" id="nav-staff"><i class="fas fa-user-tie me-2"></i> HR & Employee Payroll</a>
+                <a href="admin-tasks.html" class="admin-nav-link" id="nav-tasks"><i class="fas fa-list-check me-2"></i> Task Kanban & Workflow</a>
+                <a href="admin-reports.html" class="admin-nav-link" id="nav-reports"><i class="fas fa-chart-column me-2"></i> Business Reports</a>
+                <a href="admin-audit.html" class="admin-nav-link" id="nav-audit"><i class="fas fa-fingerprint me-2"></i> Security & Audit Logs</a>
+            </div>
+        </div>
+        
+        <!-- Standalone Section: System Settings & Store Customization -->
+        <div class="mt-3 pt-3 border-top border-secondary border-opacity-25">
+            <div class="px-3 text-secondary text-uppercase fw-bold mb-2" style="font-size: 11px; letter-spacing: 0.6px;">System & Settings</div>
+            <a href="admin-settings.html" class="admin-nav-link" id="nav-settings"><i class="fas fa-sliders text-danger me-2"></i> System Settings & APIs</a>
+            <a href="admin-sales.html" class="admin-nav-link" id="nav-sales"><i class="fas fa-palette text-warning me-2"></i> Banner & Theme</a>
+        </div>
+
+        <div class="mt-3 pt-3 border-top border-secondary border-opacity-25">
+            <a href="dealer-portal.html" target="_blank" class="admin-nav-link text-warning"><i class="fas fa-store-alt me-2"></i> Dealer Portal View</a>
+            <a href="employee-portal.html" class="admin-nav-link text-info"><i class="fas fa-id-badge me-2"></i> Employee Workspace</a>
+            <a href="index.html" target="_blank" class="admin-nav-link text-success"><i class="fas fa-store me-2"></i> Customer Storefront</a>
+            <a href="#" class="admin-nav-link text-danger mt-2" onclick="localStorage.removeItem('admin_logged_in'); localStorage.removeItem('admin_role'); localStorage.removeItem('admin_username'); window.location.href = 'admin.html'; return false;"><i class="fas fa-sign-out-alt me-2"></i> Sign Out</a>
+        </div>
+    </div>
+    <script>try{var _s=sessionStorage.getItem('gug_admin_sidebar_scroll');if(_s!==null){var _sb=document.querySelector('.admin-sidebar');if(_sb)_sb.scrollTop=parseFloat(_s);}}catch(e){}</script>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Global Header -->
+        <div id="gug-global-header-container"></div>
+
+        <!-- Beginner Help Guide Banner -->
+        <div id="gug-beginner-help-container"></div>
+
+        <!-- Management Tabs (Top Navbar-Style Buttons) -->
+        <ul class="nav nav-tabs nav-tabs-erp mb-4" id="catalogManagementTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active fw-bold" id="products-catalog-tab" data-bs-toggle="tab" data-bs-target="#tab-products-catalog" type="button" role="tab" aria-controls="tab-products-catalog" aria-selected="true">
+                    <i class="fas fa-boxes-stacked text-danger me-2"></i> Products & Catalog
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-bold" id="sales-campaign-tab" data-bs-toggle="tab" data-bs-target="#tab-sales-campaign" type="button" role="tab" aria-controls="tab-sales-campaign" aria-selected="false">
+                    <i class="fas fa-tags text-warning me-2"></i> Sales Campaign & Top Banner
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="catalogManagementTabsContent">
+            <!-- ======================================================== -->
+            <!-- TAB 1: PRODUCTS & CATALOG                                -->
+            <!-- ======================================================== -->
+            <div class="tab-pane fade show active" id="tab-products-catalog" role="tabpanel" aria-labelledby="products-catalog-tab">
+                <!-- Catalog Header Actions & Stats -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3">
+                        <div class="admin-card p-3 mb-0 border-start border-4 border-danger shadow-sm position-relative">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="text-secondary small fw-bold text-uppercase">Total Catalogue Items</span>
+                                <span class="badge bg-success bg-opacity-10 text-success fw-bold d-inline-flex align-items-center" style="font-size: 11px;">
+                                    <span class="spinner-grow spinner-grow-sm text-success me-1" style="width: 7px; height: 7px;"></span> Live Storefront
+                                </span>
+                            </div>
+                            <h3 class="fw-bold text-dark mb-0 mt-1" id="stat-total-products">0</h3>
+                            <div class="small text-muted mt-1" id="stat-catalog-breakdown" style="font-size: 11.5px;">Live Active Products</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="admin-card p-3 mb-0">
+                            <span class="text-secondary small fw-bold text-uppercase">Active Categories</span>
+                            <h3 class="fw-bold text-primary mb-0 mt-1" id="stat-total-categories">9</h3>
+                            <div class="small text-muted mt-1" style="font-size: 11.5px;">Hardware & Peripheral Groups</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="admin-card p-3 mb-0">
+                            <span class="text-secondary small fw-bold text-uppercase">Partner Brands</span>
+                            <h3 class="fw-bold text-success mb-0 mt-1" id="stat-total-brands">5</h3>
+                            <div class="small text-muted mt-1" style="font-size: 11.5px;">Includes A4Tech & Bloody</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="admin-card p-3 mb-0">
+                            <span class="text-secondary small fw-bold text-uppercase">Low Stock Warnings</span>
+                            <h3 class="fw-bold text-danger mb-0 mt-1" id="stat-low-stock">0</h3>
+                            <div class="small text-muted mt-1" style="font-size: 11.5px;">Requires Restock / PO</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter & Search Toolbar -->
+                <div class="admin-card mb-4">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-lg-4 col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-danger border-end-0"><i class="fas fa-search"></i></span>
+                                <input type="text" id="product-search" class="form-control border-start-0" placeholder="Search by Product Name, SKU, Barcode, Brand..." oninput="filterProducts()">
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <select id="category-filter" class="form-select" onchange="filterProducts()">
+                                <option value="">All Categories</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-2 col-md-6">
+                            <select id="brand-filter" class="form-select" onchange="filterProducts()">
+                                <option value="">All Brands</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-3 col-md-6 d-flex justify-content-end gap-2 flex-wrap">
+                            <button class="btn btn-outline-primary d-flex align-items-center gap-1" onclick="if(window.GUG_FIREBASE) window.GUG_FIREBASE.uploadLocalCatalogToFirebase(); else alert('Connecting to Firebase, please try again in a few seconds...');" title="Upload & sync all local products to Firebase Cloud Firestore">
+                                <i class="fas fa-cloud-arrow-up text-primary"></i> <span>Firebase Sync</span>
+                            </button>
+                            <button class="btn btn-outline-warning d-flex align-items-center gap-1" onclick="executeCatalogDeduplication()" title="Consolidate duplicate products & sum inventory stock">
+                                <i class="fas fa-broom"></i> <span>Consolidate</span>
+                            </button>
+                            <button class="btn btn-outline-danger d-flex align-items-center gap-1" onclick="forceSyncMasterCatalog()" title="Re-sync all items from master catalog">
+                                <i class="fas fa-rotate"></i> <span>Re-Sync</span>
+                            </button>
+                            <button class="btn btn-danger d-flex align-items-center gap-2" onclick="openProductModal()">
+                                <i class="fas fa-plus-circle"></i> <span>Add Product</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Table -->
+                <div class="admin-card p-0 shadow-sm border">
+                    <div class="p-3 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2 bg-light bg-opacity-50">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fas fa-boxes-stacked text-danger"></i>
+                            <strong class="text-dark">Database Inventory</strong>
+                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25" id="table-product-count-badge">Live Products</span>
+                        </div>
+                        <div class="small text-muted" id="table-filter-status">
+                            All products active &amp; synced with storefront
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="ps-4">Product Details</th>
+                                    <th>Category & Brand</th>
+                                    <th>Cost / Selling Price</th>
+                                    <th>Profit Margin</th>
+                                    <th>Stock Units</th>
+                                    <th>Status</th>
+                                    <th class="text-end pe-4">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="products-table-body">
+                                <!-- Populated via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- TAB 2: SALES CAMPAIGN & TOP BANNER                       -->
+            <!-- ======================================================== -->
+            <div class="tab-pane fade" id="tab-sales-campaign" role="tabpanel" aria-labelledby="sales-campaign-tab">
+                <div class="admin-card">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25 gap-3">
+                        <div>
+                            <h5 class="text-white fw-bold mb-1"><i class="fas fa-tags text-danger me-2"></i> Storefront Sales Page & Campaign Manager</h5>
+                            <p class="text-secondary small mb-0">Enable or disable the global 'Sales' page on the storefront navbar and manage campaign event names and top promotional hero banners.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Master Campaign Toggle -->
+                    <div class="p-3 theme-section-box rounded-3 mb-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
+                        <div>
+                            <h6 class="text-white fw-bold mb-1"><i class="fas fa-bolt text-danger me-2"></i> Master Storefront Sales Page Activation</h6>
+                            <p class="text-secondary small mb-0">When enabled, a highlighted 'Sales' link appears in the main navbar leading to the discounted catalog page.</p>
+                        </div>
+                        <div class="d-flex align-items-center p-2 px-3 rounded-pill shadow-sm" style="background: rgba(10, 14, 22, 0.85); border: 1px solid rgba(255, 255, 255, 0.18);">
+                            <span class="text-white fw-bold me-3">Storefront Sales:</span>
+                            <div class="form-check form-switch m-0" style="font-size: 1.25rem;">
+                                <input class="form-check-input" type="checkbox" id="master-sale-toggle" style="cursor: pointer;">
+                                <label class="form-check-label text-white ms-2 fw-bold" for="master-sale-toggle" id="master-sale-label">OFF</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Event Name Configuration -->
+                    <div class="mb-4">
+                        <label class="text-white fw-bold mb-2 d-block"><i class="fas fa-tag text-danger me-2"></i> Campaign Event Sale Name <span class="text-secondary fw-normal">(displays in Navbar & page headings)</span></label>
+                        <div class="input-group" style="max-width:520px;">
+                            <input type="text" id="event-sale-name" class="form-control" placeholder="e.g. Independence Day Mega Sale, 11.11 Cyber Week, Eid Gadget Fest...">
+                            <button class="btn btn-primary fw-bold" onclick="saveEventName()"><i class="fas fa-save me-1"></i> Save Name</button>
+                        </div>
+                    </div>
+
+                    <!-- Sales Hero Banners Management -->
+                    <div class="mt-4 pt-4 border-top border-secondary border-opacity-25">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h6 class="text-white fw-bold mb-1"><i class="fas fa-images text-danger me-2"></i> Promotional Sales Page Hero Banners</h6>
+                                <p class="text-secondary small mb-0">Upload visual top-banners (images or videos) to display at the header of the dedicated Sales page.</p>
+                            </div>
+                            <div class="d-flex align-items-center p-1 px-3 rounded-pill" style="background: rgba(10, 14, 22, 0.85); border: 1px solid rgba(255, 255, 255, 0.18);">
+                                <span class="text-white small fw-bold me-2">Banners:</span>
+                                <div class="form-check form-switch m-0">
+                                    <input class="form-check-input" type="checkbox" id="master-sales-banners-toggle" checked style="cursor: pointer;" onchange="toggleSalesBanners(this.checked)">
+                                    <label class="form-check-label small ms-1 text-white" for="master-sales-banners-toggle" id="master-sales-banners-label">ON</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-5">
+                                <label class="text-secondary small fw-bold mb-1 d-block"><i class="fas fa-file-upload me-1"></i> Choose Image or Video File</label>
+                                <input type="file" id="banner-upload-input" class="form-control" accept="image/*,video/*" onchange="previewSelectedBannerFile(this)">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="text-secondary small fw-bold mb-1 d-block"><i class="fas fa-link me-1"></i> Or Enter Media URL / Path</label>
+                                <input type="text" id="banner-upload-url" class="form-control" placeholder="assets/images/banner1.png or URL..." oninput="previewEnteredBannerUrl(this.value)">
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end">
+                                <button type="button" class="btn btn-danger w-100 fw-bold" onclick="uploadSalesBanner()"><i class="fas fa-plus me-2"></i> Add Media Banner</button>
+                            </div>
+                        </div>
+
+                        <!-- Instant Staging Preview Box -->
+                        <div id="banner-instant-preview-box" class="mb-3 p-3 rounded-3" style="display: none; background: rgba(0, 0, 0, 0.6); border: 1px dashed rgba(255, 255, 255, 0.25);">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <small class="text-warning fw-bold"><i class="fas fa-eye me-1"></i> Staging Media Preview (Ready to Save):</small>
+                                <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 text-white" onclick="clearBannerInputs()"><i class="fas fa-times me-1"></i> Cancel</button>
+                            </div>
+                            <div id="banner-instant-preview-media" style="max-height: 180px; overflow: hidden; border-radius: 8px; background: #070a0d;" class="d-flex align-items-center justify-content-center"></div>
+                        </div>
+
+                        <!-- Save Banners Toolbar -->
+                        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 p-2 px-3 rounded-3" style="background: rgba(13, 17, 23, 0.7); border: 1px solid rgba(255, 255, 255, 0.1);">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-danger px-2 py-1 fw-bold" id="banner-count-badge">0 Banners</span>
+                                <span class="text-secondary small" id="banner-save-status"><i class="fas fa-check-circle text-success me-1"></i> All changes saved</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <a href="sales.html" target="_blank" class="btn btn-outline-light btn-sm fw-bold px-3">
+                                    <i class="fas fa-external-link-alt me-1"></i> View Live Sales Page
+                                </a>
+                                <button type="button" class="btn btn-success fw-bold px-4 shadow-sm" id="save-sales-banners-btn" onclick="saveSalesBanners()">
+                                    <i class="fas fa-save me-2"></i> Save Banners
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Banner List -->
+                        <div id="banner-list-container" class="row g-3">
+                            <!-- Banners will be injected here dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Active Campaign Discounted Products & Deals -->
+                    <div class="mt-4 pt-4 border-top border-secondary border-opacity-25">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                            <div>
+                                <h6 class="text-white fw-bold mb-1"><i class="fas fa-percent text-danger me-2"></i> Active Discounted Products & Campaign Deals</h6>
+                                <p class="text-secondary small mb-0">Track and manage all products currently marked on promotional sale with live discount percentages.</p>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-danger px-3 py-2 fw-bold" id="sale-products-count-badge" style="font-size: 12px;">0 Products on Sale</span>
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="switchToCatalogTab()">
+                                    <i class="fas fa-plus me-1"></i> Add More Items to Sale
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Sale Products Search & Filter Toolbar -->
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-6 col-lg-5">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text bg-dark text-danger border-secondary"><i class="fas fa-search"></i></span>
+                                    <input type="text" id="sale-product-search" class="form-control bg-dark text-white border-secondary" placeholder="Filter active sale items by name, brand, SKU..." oninput="filterSaleCampaignProducts()">
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-4">
+                                <select id="sale-product-category-filter" class="form-select form-select-sm bg-dark text-white border-secondary" onchange="filterSaleCampaignProducts()">
+                                    <option value="">All Categories</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Sale Products Table Container -->
+                        <div class="admin-card p-0 shadow-sm border border-secondary border-opacity-25 overflow-hidden" style="background: rgba(13, 17, 23, 0.7) !important;">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0 text-white">
+                                    <thead class="bg-dark bg-opacity-75">
+                                        <tr>
+                                            <th class="ps-3 py-2 text-white">Product Item</th>
+                                            <th class="py-2 text-white">Category / Brand</th>
+                                            <th class="py-2 text-white">Regular Price</th>
+                                            <th class="py-2 text-white">Discount</th>
+                                            <th class="py-2 text-white">Sale Price</th>
+                                            <th class="py-2 text-white">Customer Savings</th>
+                                            <th class="py-2 text-white">Stock</th>
+                                            <th class="text-end pe-3 py-2 text-white">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="sale-campaign-products-tbody">
+                                        <!-- Rendered dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dedicated Product Sale & Discount Modal -->
+    <div class="modal fade" id="saleModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg border-0">
+                <div class="modal-header bg-dark text-white p-3">
+                    <div>
+                        <h5 class="modal-title fw-bold" id="saleModalTitle"><i class="fas fa-percent text-danger me-2"></i> Manage Product Sale & Discount</h5>
+                        <small class="text-secondary">Set promotional discount rate to display on live storefront.</small>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <input type="hidden" id="sale-prod-id">
+                    
+                    <div class="p-3 bg-light rounded-3 mb-3 border">
+                        <div class="d-flex align-items-center gap-3">
+                            <img id="sale-prod-img" src="assets/images/logo.png" class="rounded border" style="width: 50px; height: 50px; object-fit: cover;">
+                            <div>
+                                <h6 class="fw-bold text-dark mb-0" id="sale-prod-title">Product Title</h6>
+                                <div class="text-secondary small">Base Regular Price: <strong class="text-dark" id="sale-base-price">Rs.  0</strong></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-dark">Select Discount Preset (%)</label>
+                        <div class="d-flex gap-2 flex-wrap mb-2">
+                            <button type="button" class="btn btn-outline-danger btn-sm px-3 fw-bold" onclick="selectSalePreset(10)">10% OFF</button>
+                            <button type="button" class="btn btn-outline-danger btn-sm px-3 fw-bold" onclick="selectSalePreset(15)">15% OFF</button>
+                            <button type="button" class="btn btn-outline-danger btn-sm px-3 fw-bold" onclick="selectSalePreset(20)">20% OFF</button>
+                            <button type="button" class="btn btn-outline-danger btn-sm px-3 fw-bold" onclick="selectSalePreset(25)">25% OFF</button>
+                            <button type="button" class="btn btn-outline-danger btn-sm px-3 fw-bold" onclick="selectSalePreset(30)">30% OFF</button>
+                            <button type="button" class="btn btn-outline-danger btn-sm px-3 fw-bold" onclick="selectSalePreset(50)">50% OFF</button>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-dark">Custom Discount Percentage (%)</label>
+                        <div class="input-group">
+                            <input type="number" id="sale-discount-input" class="form-control fw-bold" min="0.1" max="99" step="any" placeholder="e.g. 5, 12.5, 20, 33..." oninput="calculateSalePreview()">
+                            <span class="input-group-text fw-bold">% OFF</span>
+                        </div>
+                        <small class="text-muted">Enter any percentage discount between 0.1% and 99%.</small>
+                    </div>
+
+                    <div class="p-3 rounded-3 border bg-white shadow-sm mb-3">
+                        <div class="text-secondary small fw-bold text-uppercase mb-2">Live Price Calculation Preview</div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted small">Original Regular Price:</span>
+                            <span class="fw-bold text-dark" id="sale-preview-orig">Rs.  0</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-danger small">Discount Savings:</span>
+                            <span class="fw-bold text-danger" id="sale-preview-savings">- Rs.  0</span>
+                        </div>
+                        <div class="d-flex justify-content-between pt-2 border-top">
+                            <span class="text-dark fw-bold">New Live Selling Price:</span>
+                            <span class="fw-bold text-success fs-5" id="sale-preview-new">Rs.  0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light p-3 d-flex justify-content-between">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" id="btn-remove-sale" onclick="removeSaleDiscount()"><i class="fas fa-times me-1"></i> Remove Sale</button>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-danger btn-sm fw-bold px-4" onclick="applySaleDiscount()"><i class="fas fa-check me-1"></i> Save & Put On Sale</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fast Quick-Edit Price, Image & Details Modal -->
+    <div class="modal fade" id="quickProductModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content shadow-lg border-0">
+                <div class="modal-header bg-dark text-white p-3">
+                    <div>
+                        <h5 class="modal-title fw-bold" id="quickProductModalTitle"><i class="fas fa-bolt text-warning me-2"></i> Quick Edit Product & Live Sync</h5>
+                        <small class="text-secondary">Update prices, discounts, stock, physical images, and categories instantly on live storefront.</small>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="quickProductForm" onsubmit="saveQuickProductForm(event)">
+                        <input type="hidden" id="qp-id">
+                        
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-8">
+                                <label class="form-label small fw-bold text-dark">Product Title / Name <span class="text-danger">*</span></label>
+                                <input type="text" id="qp-title" class="form-control fw-bold" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-dark">SKU</label>
+                                <input type="text" id="qp-sku" class="form-control text-uppercase" readonly>
+                            </div>
+                        </div>
+
+                        <!-- Image Section with Physical Upload & Preview -->
+                        <div class="p-3 bg-light rounded-3 border mb-3">
+                            <div class="row g-3 align-items-center">
+                                <div class="col-md-8">
+                                    <label class="form-label small fw-bold text-dark"><i class="fas fa-upload text-danger me-1"></i> Physical Media Upload (From PC)</label>
+                                    <input type="file" id="qp-image-file" class="form-control mb-2" accept="image/*,video/*" onchange="handleProductFileUpload(this, 'qp-image', 'qp-image-preview')">
+                                    <label class="form-label small text-secondary mb-1">Or Manual Image / Video URL or Path</label>
+                                    <div class="input-group">
+                                        <input type="text" id="qp-image" class="form-control" placeholder="assets/images/products/... or video URL" oninput="updateProductMediaPreview('qp-image-preview', this.value)">
+                                        <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('qp-image').value=''; updateProductMediaPreview('qp-image-preview', 'assets/images/logo.png');"><i class="fas fa-times"></i></button>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-center">
+                                    <label class="form-label small fw-bold text-dark d-block">Media Preview</label>
+                                    <div class="d-inline-block rounded border p-1" style="background: #fff; width: 90px; height: 90px; display: inline-flex; align-items: center; justify-content: center; overflow: hidden;">
+                                        <img id="qp-image-preview" src="assets/images/logo.png" style="max-height: 80px; max-width: 80px; object-fit: contain;" onerror="this.src='assets/images/logo.png'">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-dark">Category (Type or Select)</label>
+                                <input type="text" id="qp-category" class="form-control" list="qp-category-datalist" placeholder="e.g. Laptops, Processors, Keyboards..." required>
+                                <datalist id="qp-category-datalist"></datalist>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-dark">Brand (Type or Select)</label>
+                                <input type="text" id="qp-brand" class="form-control" list="qp-brand-datalist" placeholder="e.g. ASUS, Corsair, Razer..." required>
+                                <datalist id="qp-brand-datalist"></datalist>
+                            </div>
+                        </div>
+
+                        <!-- Price & Live Discount Preview Section -->
+                        <div class="p-3 rounded-3 border bg-white shadow-sm mb-3">
+                            <div class="row g-3 align-items-center">
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-dark">Regular Price (PKR) <span class="text-danger">*</span></label>
+                                    <input type="number" id="qp-price" class="form-control fw-bold" placeholder="25000" min="1" required oninput="calculateQPDiscount()">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-dark">Discount (%)</label>
+                                    <div class="input-group">
+                                        <input type="number" id="qp-discount" class="form-control fw-bold" placeholder="0" min="0" max="99" step="any" oninput="calculateQPDiscount()">
+                                        <span class="input-group-text fw-bold">% OFF</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check form-switch pt-4">
+                                        <input class="form-check-input" type="checkbox" id="qp-on-sale" onchange="calculateQPDiscount()">
+                                        <label class="form-check-label fw-bold text-dark ms-1" for="qp-on-sale">Put On Sale</label>
+                                    </div>
+                                </div>
+                                <div class="col-12 mt-2 pt-2 border-top d-flex justify-content-between align-items-center">
+                                    <span class="text-secondary small">Live Selling Price Display:</span>
+                                    <span class="fw-bold text-success fs-5" id="qp-live-price-preview">Rs. 0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Edit Dynamic City Stock & Threshold Section -->
+                        <div class="p-3 rounded-3 border bg-light mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="form-label small fw-bold text-dark mb-0"><i class="fas fa-map-marker-alt text-danger me-1"></i> City Stock Quantities</label>
+                                <button type="button" class="btn btn-xs btn-outline-danger py-0 px-2 small" style="font-size: 11px;" onclick="addQPCityStockRow()">+ Add City</button>
+                            </div>
+                            <div id="qp-city-stock-container" class="d-flex flex-column gap-2 mb-2">
+                                <!-- Dynamic Quick Edit city rows -->
+                            </div>
+                            <div class="row g-2 align-items-center pt-2 border-top">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-dark mb-1"><i class="fas fa-bell text-warning me-1"></i> Low-Stock Reminder Limit</label>
+                                    <input type="number" id="qp-threshold" class="form-control form-control-sm" placeholder="10" min="1" value="10">
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <span class="text-secondary small d-block">Combined Quick Stock:</span>
+                                    <span class="badge bg-primary fs-6" id="qp-total-stock-preview">0 Units</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center pt-2">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="qp-featured">
+                                <label class="form-check-label small fw-bold text-dark ms-1" for="qp-featured"><i class="fas fa-star text-warning me-1"></i> Feature on Homepage</label>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm fw-bold px-4"><i class="fas fa-save me-1"></i> Save Changes &amp; Live Sync</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6-Tab Multi-Step Product Builder Modal -->
+    <div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content shadow-lg border-0">
+                <div class="modal-header border-bottom p-3">
+                    <div>
+                        <h5 class="modal-title fw-bold text-white" id="modalProductTitle"><i class="fas fa-box-open text-danger me-2"></i> Add New Product to Catalog</h5>
+                        <small class="text-secondary">Fill in product details, variants, pricing, and initial warehouse allocation.</small>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body p-4">
+                    <!-- Tab Navigation -->
+                    <ul class="nav nav-tabs modal-nav-tabs mb-4" id="productModalTabs" role="tablist">
+                        <li class="nav-item">
+                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-basic" type="button"><i class="fas fa-info-circle me-1"></i> 1. Basic Info</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-media" type="button"><i class="fas fa-image me-1"></i> 2. Media & Images</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-pricing" type="button"><i class="fas fa-money-bill-wave me-1"></i> 3. Pricing & Profit</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-inventory" type="button"><i class="fas fa-warehouse me-1"></i> 4. Inventory & Hubs</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-variants" type="button"><i class="fas fa-layer-group me-1"></i> 5. Variants</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-seo" type="button"><i class="fas fa-globe me-1"></i> 6. Website & SEO</button>
+                        </li>
+                    </ul>
+
+                    <form id="productForm" onsubmit="event.preventDefault(); saveProductForm();">
+                        <input type="hidden" id="prod-id">
+                        <div class="tab-content" id="productModalTabsContent">
+                            <!-- Tab 1: Basic Information -->
+                            <div class="tab-pane fade show active" id="tab-basic">
+                                <div class="row g-3">
+                                    <div class="col-md-8">
+                                        <label class="form-label">Product Name / Title <span class="text-danger">*</span></label>
+                                        <input type="text" id="prod-title" class="form-control" placeholder="e.g. GearUp Ultra Smartwatch Pro Max" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">SKU (Stock Keeping Unit) <span class="text-danger">*</span></label>
+                                        <input type="text" id="prod-sku" class="form-control text-uppercase" placeholder="GUG-SW-PRO-01" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <label class="form-label mb-0">Category <span class="text-danger">*</span></label>
+                                            <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none text-danger fw-bold" style="font-size: 11px;" onclick="toggleCustomField('category')">
+                                                <i class="fas fa-plus-circle me-1"></i>+ Custom
+                                            </button>
+                                        </div>
+                                        <select id="prod-category" class="form-select" onchange="checkCustomOption(this, 'prod-category-custom')" required></select>
+                                        <input type="text" id="prod-category-custom" class="form-control mt-2" placeholder="Type custom category name..." style="display: none;">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <label class="form-label mb-0">Brand <span class="text-danger">*</span></label>
+                                            <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none text-danger fw-bold" style="font-size: 11px;" onclick="toggleCustomField('brand')">
+                                                <i class="fas fa-plus-circle me-1"></i>+ Custom
+                                            </button>
+                                        </div>
+                                        <select id="prod-brand" class="form-select" onchange="checkCustomOption(this, 'prod-brand-custom')" required></select>
+                                        <input type="text" id="prod-brand-custom" class="form-control mt-2" placeholder="Type custom brand name..." style="display: none;">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Barcode (EAN / UPC)</label>
+                                        <input type="text" id="prod-barcode" class="form-control" placeholder="896400112201">
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="p-3 bg-light rounded border d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <strong class="text-dark d-block"><i class="fas fa-star text-warning me-1"></i> Important / Featured Product</strong>
+                                                <small class="text-secondary">Highlight and display this product prominently in homepage Featured sections & catalog banners.</small>
+                                            </div>
+                                            <div class="form-check form-switch fs-5 mb-0">
+                                                <input class="form-check-input" type="checkbox" id="prod-is-important-tab1" onchange="syncFeaturedToggle('tab1')">
+                                                <label class="form-check-label fs-6 fw-bold ms-2 text-dark" for="prod-is-important-tab1">Important</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Short Description / Key Specs</label>
+                                        <input type="text" id="prod-short-desc" class="form-control" placeholder="1.96-inch AMOLED Display, Titanium Casing, 7-day battery life">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Full Technical Description</label>
+                                        <textarea id="prod-desc" class="form-control" rows="3" placeholder="Detailed product specifications, box contents, compatibility notes..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tab 2: Media & Images -->
+                            <div class="tab-pane fade" id="tab-media">
+                                <div class="row g-3">
+                                    <!-- Image Dimension & Resolution Guide -->
+                                    <div class="col-12">
+                                        <div class="p-3 bg-light border border-info border-opacity-50 rounded-3 shadow-sm">
+                                            <div class="d-flex align-items-center gap-2 mb-2">
+                                                <i class="fas fa-circle-info text-info fs-5"></i>
+                                                <h6 class="fw-bold text-dark mb-0">Recommended Product Image Specifications & Guide</h6>
+                                            </div>
+                                            <div class="row g-2 text-secondary small">
+                                                <div class="col-sm-6 col-md-3">
+                                                    <div class="p-2 bg-white rounded border">
+                                                        <strong class="text-dark d-block"><i class="fas fa-expand me-1 text-primary"></i> Dimensions</strong>
+                                                        <span>800 x 800 px (1:1 Square)</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 col-md-3">
+                                                    <div class="p-2 bg-white rounded border">
+                                                        <strong class="text-dark d-block"><i class="fas fa-arrows-alt me-1 text-success"></i> Resolution Limits</strong>
+                                                        <span>Min: 500x500 | Max: 1200x1200</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 col-md-3">
+                                                    <div class="p-2 bg-white rounded border">
+                                                        <strong class="text-dark d-block"><i class="fas fa-file-image me-1 text-warning"></i> File Format</strong>
+                                                        <span>JPG, PNG, WebP (Max 2MB)</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 col-md-3">
+                                                    <div class="p-2 bg-white rounded border">
+                                                        <strong class="text-dark d-block"><i class="fas fa-palette me-1 text-danger"></i> Background</strong>
+                                                        <span>Clean White / Transparent</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="small text-muted mt-2 pt-1 border-top">
+                                                <i class="fas fa-check-circle text-success me-1"></i> Uniform 1:1 aspect ratio ensures your products render crisp and un-stretched across storefront cards, shop grids, mobile screens, and dealer portals.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-8">
+                                        <label class="form-label fw-bold text-dark"><i class="fas fa-upload text-danger me-1"></i> Physical Media Upload (Images & Videos)</label>
+                                        <input type="file" id="prod-image-file" class="form-control mb-2" accept="image/*,video/*" onchange="handleProductFileUpload(this, 'prod-image', 'prod-image-preview')">
+                                        
+                                        <label class="form-label small text-secondary mt-1 mb-1">Or Manual Image / Video URL or Asset Path</label>
+                                        <div class="input-group">
+                                            <input type="text" id="prod-image" class="form-control" placeholder="assets/images/products/... or video URL" value="" oninput="updateProductMediaPreview('prod-image-preview', this.value)">
+                                            <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('prod-image').value=''; updateProductMediaPreview('prod-image-preview', 'assets/images/logo.png');"><i class="fas fa-times"></i></button>
+                                        </div>
+                                        <small class="text-muted">Upload any image or video file from your PC or enter an asset/web URL.</small>
+                                    </div>
+                                    <div class="col-md-4 text-center">
+                                        <label class="form-label d-block fw-bold text-dark">Live Media Preview</label>
+                                        <div class="p-2 bg-light border rounded d-inline-block" style="width: 120px; height: 120px; display: inline-flex; align-items: center; justify-content: center; overflow: hidden;">
+                                            <img id="prod-image-preview" src="assets/images/logo.png" style="max-height: 100px; max-width: 100px; object-fit: contain; background: #fff;" onerror="this.src='assets/images/logo.png'">
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Product Showcase Video URL (Optional)</label>
+                                        <input type="text" id="prod-video" class="form-control" placeholder="https://www.youtube.com/watch?v=...">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tab 3: Pricing & Profit -->
+                            <div class="tab-pane fade" id="tab-pricing">
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label">Purchase Price (PKR) <span class="text-danger">*</span></label>
+                                        <input type="number" id="prod-purchase-price" class="form-control" placeholder="16500" oninput="calculateMargin(); calculateModalSalePreview();" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Cost Price / Landing Cost (PKR)</label>
+                                        <input type="number" id="prod-cost-price" class="form-control" placeholder="17200" oninput="calculateMargin()">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Regular Retail Selling Price (PKR) <span class="text-danger">*</span></label>
+                                        <input type="number" id="prod-selling-price" class="form-control" placeholder="24999" oninput="calculateMargin(); calculateModalSalePreview();" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Wholesale / Corporate Price (PKR)</label>
+                                        <input type="number" id="prod-wholesale-price" class="form-control" placeholder="21000">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <label class="form-label mb-0">Warranty Coverage</label>
+                                            <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none text-danger fw-bold" style="font-size: 11px;" onclick="toggleCustomField('warranty')">
+                                                <i class="fas fa-plus-circle me-1"></i>+ Custom
+                                            </button>
+                                        </div>
+                                        <select id="prod-warranty" class="form-select" onchange="checkCustomOption(this, 'prod-warranty-custom')">
+                                             <option value="6">6 Months Official Warranty</option>
+                                             <option value="12" selected>12 Months Official Warranty</option>
+                                             <option value="24">24 Months Extended Warranty</option>
+                                             <option value="0">No Warranty (7-Day Check)</option>
+                                             <option value="__custom__" class="text-danger fw-bold">+ Enter Custom Warranty...</option>
+                                         </select>
+                                         <input type="text" id="prod-warranty-custom" class="form-control mt-2" placeholder="e.g. 3 Years Onsite Replacement" style="display: none;">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="p-3 bg-light rounded border text-center">
+                                            <span class="text-secondary small fw-bold text-uppercase d-block">Estimated Profit Margin</span>
+                                            <span class="fs-4 fw-bold text-success" id="calc-margin-badge">31%</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Dynamic Percentage Sale / Discount System Section -->
+                                    <div class="col-12 mt-3">
+                                        <div class="card border border-danger border-opacity-25 bg-danger bg-opacity-10 p-3 rounded-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <div>
+                                                    <h6 class="fw-bold text-danger mb-0"><i class="fas fa-tags me-1"></i> Promotional Sale & Dynamic Discount</h6>
+                                                    <small class="text-secondary">Enable a percentage discount. The storefront will display the original strikethrough price and discounted sale price.</small>
+                                                </div>
+                                                <div class="form-check form-switch fs-5 mb-0">
+                                                    <input class="form-check-input" type="checkbox" id="prod-on-sale" onchange="toggleSaleSection()">
+                                                    <label class="form-check-label fs-6 fw-bold ms-2 text-dark" for="prod-on-sale">Put On Sale</label>
+                                                </div>
+                                            </div>
+
+                                            <!-- Collapsible Sale Details Area -->
+                                            <div id="sale-details-area" style="display: none;" class="mt-3 pt-3 border-top border-danger border-opacity-25">
+                                                <div class="row g-3 align-items-center">
+                                                    <div class="col-md-5">
+                                                        <label class="form-label fw-bold small text-dark">Discount Percentage (%) <span class="text-danger">*</span></label>
+                                                        <div class="input-group">
+                                                            <input type="number" id="prod-sale-percent" class="form-control fw-bold" placeholder="20" min="0.1" max="99" step="any" oninput="calculateModalSalePreview()">
+                                                            <span class="input-group-text bg-white fw-bold text-danger">% OFF</span>
+                                                        </div>
+                                                        <!-- Quick Presets -->
+                                                        <div class="d-flex gap-1 mt-2 flex-wrap">
+                                                            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 small" onclick="setModalSalePreset(10)">10%</button>
+                                                            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 small" onclick="setModalSalePreset(15)">15%</button>
+                                                            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 small" onclick="setModalSalePreset(20)">20%</button>
+                                                            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 small" onclick="setModalSalePreset(25)">25%</button>
+                                                            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 small" onclick="setModalSalePreset(30)">30%</button>
+                                                            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 small" onclick="setModalSalePreset(50)">50%</button>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-7">
+                                                        <div class="p-3 bg-white rounded border border-danger border-opacity-25 shadow-sm">
+                                                            <div class="d-flex justify-content-between align-items-center small mb-1">
+                                                                <span class="text-secondary">Original Regular Price:</span>
+                                                                <span class="text-decoration-line-through text-muted fw-bold" id="modal-sale-prev-orig">Rs. 0</span>
+                                                            </div>
+                                                            <div class="d-flex justify-content-between align-items-center small mb-1">
+                                                                <span class="text-danger fw-bold">Discount Deducted:</span>
+                                                                <span class="text-danger fw-bold" id="modal-sale-prev-savings">- Rs. 0</span>
+                                                            </div>
+                                                            <div class="d-flex justify-content-between align-items-center border-top pt-2 mt-1">
+                                                                <span class="fw-bold text-dark">Live Discounted Selling Price:</span>
+                                                                <span class="fw-bold text-danger fs-5" id="modal-sale-prev-final">Rs. 0</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tab 4: Inventory & Hubs (Dynamic City Input & Multi-City Stock Grouping) -->
+                            <div class="tab-pane fade" id="tab-inventory">
+                                <div class="alert alert-light border small text-secondary mb-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
+                                    <div>
+                                        <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                                        <strong>Multi-City Inventory Allocation:</strong> Add stock across any city. Type any custom city name or choose from suggestions.
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="addCityStockRow()">
+                                        <i class="fas fa-plus-circle me-1"></i> Add City Stock Location
+                                    </button>
+                                </div>
+
+                                <!-- Datalist for autocomplete suggestion of previously typed/known cities -->
+                                <datalist id="inventory-city-datalist"></datalist>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold text-dark small text-uppercase"><i class="fas fa-boxes-stacked text-danger me-1"></i> City Warehouses &amp; Physical Stock Allocations</label>
+                                    <div id="city-stock-container" class="d-flex flex-column gap-2">
+                                        <!-- Dynamic rows will be inserted here -->
+                                    </div>
+                                    <div class="mt-2">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addCityStockRow()">
+                                            <i class="fas fa-plus me-1"></i> + Add Another City
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Real-time Combined Total Stock Summary Badge -->
+                                <div class="p-3 bg-light rounded border d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <strong class="text-dark d-block">Combined Total Stock (All Cities):</strong>
+                                        <small class="text-secondary">Accumulated stock units across all assigned city hubs.</small>
+                                    </div>
+                                    <span class="badge bg-primary fs-6 px-3 py-2" id="total-stock-preview">0 Units</span>
+                                </div>
+
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold text-dark"><i class="fas fa-bell text-warning me-1"></i> Custom Low-Stock Reminder Limit (Threshold)</label>
+                                        <input type="number" id="prod-threshold" class="form-control" placeholder="10" min="1" value="10">
+                                        <small class="text-muted">When total stock drops to or below this custom limit (e.g. 5, 10, 20), the system triggers prominent visual warning badges and alerts.</small>
+                                    </div>
+                                    <div class="col-md-6 d-flex align-items-center pt-3">
+                                        <div class="form-check form-switch fs-5">
+                                            <input class="form-check-input" type="checkbox" id="prod-serial-tracking" checked>
+                                            <label class="form-check-label fs-6 fw-bold ms-2 text-dark" for="prod-serial-tracking">Enable Serial Number &amp; RMA Tracking</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tab 5: Variants -->
+                            <div class="tab-pane fade" id="tab-variants">
+                                <div class="alert alert-light border small text-secondary mb-3">
+                                    <i class="fas fa-info-circle text-info me-1"></i> Specify color, storage, or switch variations for this item.
+                                </div>
+                                <div id="variants-container">
+                                    <div class="row g-2 mb-2 variant-row">
+                                        <div class="col-5">
+                                            <input type="text" class="form-control form-control-sm variant-name" placeholder="Variant Name (e.g. Space Black / 16GB)" value="Standard Edition">
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="text" class="form-control form-control-sm variant-sku" placeholder="Variant SKU" value="">
+                                        </div>
+                                        <div class="col-3">
+                                            <input type="number" class="form-control form-control-sm variant-price" placeholder="Price" value="">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tab 6: Website & SEO -->
+                            <div class="tab-pane fade" id="tab-seo">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Storefront Publishing Status</label>
+                                        <select id="prod-status" class="form-select">
+                                            <option value="Published" selected>Published (Visible to Customers)</option>
+                                            <option value="Draft">Draft (Internal Only)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Storefront Badges</label>
+                                        <div class="d-flex gap-3 pt-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="badge-featured" checked>
+                                                <label class="form-check-label" for="badge-featured">Featured (Important)</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="badge-bestseller" checked>
+                                                <label class="form-check-label" for="badge-bestseller">Best Seller</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">SEO Meta Description</label>
+                                        <input type="text" id="prod-seo-desc" class="form-control" placeholder="Buy original GearUp products with official warranty across Pakistan.">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer border-top p-3 bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger px-4" onclick="saveProductForm()"><i class="fas fa-save me-1"></i> Save Product</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Duplicate Consolidation Report Modal -->
+    <div class="modal fade" id="dedupModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-dark text-white border-bottom border-secondary border-opacity-25">
+                    <h5 class="modal-title fw-bold">
+                        <i class="fas fa-broom text-warning me-2"></i> Catalog Deduplication & Stock Consolidation
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4" id="dedup-modal-body">
+                    <!-- Populated dynamically -->
+                </div>
+                <div class="modal-footer border-top bg-light">
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger px-4" onclick="location.reload()"><i class="fas fa-rotate me-1"></i> Refresh Catalog</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/products-data.js"></script>
+    <script src="assets/js/gug-erp-core.js"></script>
+    <!-- Firebase Compat SDKs & Cloud Sync -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/firebase-sync.js"></script>
+    <script src="assets/js/admin.js"></script>
+    <script>
+        let modalInstance = null;
+        let saleModalInstance = null;
+        let prevProductCount = null;
+        let prevHeaderCount = null;
+
+        function executeCatalogDeduplication() {
+            if (!confirm('Are you sure you want to scan and consolidate all duplicate product listings in the database?\n\n? Duplicate listings will be merged into a single master product.\n? Available stock from all duplicates will be combined and updated on the master.\n? Extra duplicate entries will be permanently deleted.')) {
+                return;
+            }
+
+            const result = GUG_DB.consolidateDuplicates();
+            updateStats();
+            filterProducts();
+
+            const modalBody = document.getElementById('dedup-modal-body');
+            if (result.status === 'clean') {
+                modalBody.innerHTML = `
+                    <div class="text-center py-4">
+                        <div class="badge bg-success bg-opacity-10 text-success p-3 rounded-circle mb-3" style="font-size: 32px;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h4 class="fw-bold text-dark mb-2">Catalog Is 100% Unique!</h4>
+                        <p class="text-muted mb-0">No duplicate product entries were found based on SKU or Product Name.</p>
+                        <div class="mt-3 badge bg-light text-secondary border px-3 py-2 fs-6">
+                            Total Verified Unique Products: <strong class="text-dark">${result.totalProducts}</strong>
+                        </div>
+                    </div>
+                `;
+            } else {
+                let itemsTableHtml = '';
+                if (result.details && result.details.length > 0) {
+                    itemsTableHtml = `
+                        <div class="table-responsive mt-3" style="max-height: 280px; overflow-y: auto;">
+                            <table class="table table-sm table-bordered align-middle small mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Master Product</th>
+                                        <th>SKU</th>
+                                        <th class="text-center">Duplicates Merged</th>
+                                        <th class="text-end">Stock Added</th>
+                                        <th class="text-end">New Combined Stock</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${result.details.map(d => `
+                                        <tr>
+                                            <td>
+                                                <strong class="text-dark">${d.title}</strong>
+                                                <div class="text-muted" style="font-size: 11px;">Master ID: <code>${d.masterId}</code> &bull; Removed: ${d.duplicateIds.join(', ')}</div>
+                                            </td>
+                                            <td><code>${d.sku || 'N/A'}</code></td>
+                                            <td class="text-center"><span class="badge bg-danger">${d.duplicateCount}</span></td>
+                                            <td class="text-end text-success fw-bold">+${d.stockAdded.toLocaleString()}</td>
+                                            <td class="text-end fw-bold text-dark">${d.finalTotalStock.toLocaleString()} Units</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                }
+
+                modalBody.innerHTML = `
+                    <div class="alert alert-success d-flex align-items-center mb-3">
+                        <i class="fas fa-check-double fs-3 me-3 text-success"></i>
+                        <div>
+                            <h6 class="fw-bold mb-1">Catalog Successfully Consolidated & Cleaned!</h6>
+                            <div class="small">All extra duplicate listings have been safely removed after consolidating stock into master records.</div>
+                        </div>
+                    </div>
+                    <div class="row g-2 text-center mb-3">
+                        <div class="col-3">
+                            <div class="border rounded p-2 bg-light">
+                                <div class="text-secondary small">Total Scanned</div>
+                                <div class="fw-bold fs-5 text-dark">${result.totalScanned}</div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="border rounded p-2 bg-light">
+                                <div class="text-secondary small">Unique Products</div>
+                                <div class="fw-bold fs-5 text-success">${result.uniqueProducts}</div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="border rounded p-2 bg-light">
+                                <div class="text-secondary small">Duplicates Deleted</div>
+                                <div class="fw-bold fs-5 text-danger">${result.duplicatesRemoved}</div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="border rounded p-2 bg-light">
+                                <div class="text-secondary small">Stock Units Merged</div>
+                                <div class="fw-bold fs-5 text-primary">+${result.totalStockMerged.toLocaleString()}</div>
+                            </div>
+                        </div>
+                    </div>
+                    ${itemsTableHtml}
+                `;
+            }
+
+            const dedupModalEl = document.getElementById('dedupModal');
+            const dedupModalInst = new bootstrap.Modal(dedupModalEl);
+            dedupModalInst.show();
+
+            if (window.GUG_DB && window.GUG_DB.showToast) {
+                window.GUG_DB.showToast(result.message, result.status === 'clean' ? 'info' : 'success', 'Deduplication Complete');
+            }
+        }
+
+        function animateNumberCounter(element, start, end, duration = 500) {
+            if (!element) return;
+            start = Number(start) || 0;
+            end = Number(end) || 0;
+            if (start === end) {
+                element.innerText = end.toLocaleString();
+                return;
+            }
+            const range = end - start;
+            const startTime = performance.now();
+            function step(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const ease = 1 - Math.pow(1 - progress, 3);
+                const current = Math.round(start + range * ease);
+                element.innerText = current.toLocaleString();
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                } else {
+                    element.innerText = end.toLocaleString();
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
+        function initCatalogPage() {
+            const headerCounterWidget = `
+                <div id="header-catalog-counter-widget" class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-3 py-2 rounded-pill d-inline-flex align-items-center gap-2 shadow-sm align-middle" style="cursor: pointer;" onclick="document.getElementById('stat-total-products')?.scrollIntoView({behavior: 'smooth'})" title="Live active products synced with database and shop.html storefront">
+                    <span class="spinner-grow spinner-grow-sm text-danger" style="width: 8px; height: 8px;" role="status"></span>
+                    <span class="text-secondary fw-semibold text-uppercase" style="font-size: 11px; letter-spacing: 0.5px;">Live Catalogue:</span>
+                    <span class="badge bg-danger text-white fw-bold px-2 py-0.5 rounded-pill fs-6" id="header-total-products-count">0</span>
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-0.5 rounded-pill fw-bold" style="font-size: 10.5px;"><i class="fas fa-globe me-1"></i>Live Storefront</span>
+                </div>
+            `;
+            GUG_DB.renderGlobalHeader('gug-global-header-container', 'Product Catalog & Variant Management', headerCounterWidget);
+            GUG_DB.renderBeginnerHelpBanner('gug-beginner-help-container', {
+                whereAmI: 'Product Catalog & Inventory Master Directory',
+                whatCanIDo: 'View and manage all hardware items, retail selling prices, sale discounts, important featured items, multi-warehouse stock allocations, and variations.',
+                whatNext: 'Click "Add New Product" to register a new gadget, "Sale" to set discounts, "Important" to feature on the homepage, or "Edit" to modify product specs.'
+            });
+
+            populateCityDatalist();
+            populateDropdowns();
+            renderProductsTable();
+            updateStats();
+
+            // Auto-open modal if URL contains ?action=add
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('action') === 'add') {
+                openProductModal();
+            }
+            if (urlParams.get('search')) {
+                document.getElementById('product-search').value = urlParams.get('search');
+                filterProducts();
+            }
+        }
+
+        function populateDropdowns() {
+            const categories = GUG_DB.getCategories();
+            const brands = GUG_DB.getBrands();
+
+            const catFilter = document.getElementById('category-filter');
+            const prodCat = document.getElementById('prod-category');
+            catFilter.innerHTML = '<option value="">All Categories</option>';
+            prodCat.innerHTML = '<option value="" disabled selected>-- Select Category --</option>';
+            categories.forEach(c => {
+                catFilter.innerHTML += `<option value="${c.name}">${c.name}</option>`;
+                prodCat.innerHTML += `<option value="${c.name}">${c.name}</option>`;
+            });
+            prodCat.innerHTML += `<option value="__custom__" class="text-danger fw-bold">+ Enter Custom Category...</option>`;
+
+            const brandFilter = document.getElementById('brand-filter');
+            const prodBrand = document.getElementById('prod-brand');
+            brandFilter.innerHTML = '<option value="">All Brands</option>';
+            prodBrand.innerHTML = '<option value="" disabled selected>-- Select Brand --</option>';
+            brands.forEach(b => {
+                brandFilter.innerHTML += `<option value="${b.name}">${b.name}</option>`;
+                prodBrand.innerHTML += `<option value="${b.name}">${b.name}</option>`;
+            });
+            prodBrand.innerHTML += `<option value="__custom__" class="text-danger fw-bold">+ Enter Custom Brand...</option>`;
+        }
+
+        function updateStats() {
+            const products = GUG_DB.getProducts();
+            const totalCount = products.length;
+            const liveStorefrontProducts = GUG_DB.getStorefrontProducts ? GUG_DB.getStorefrontProducts() : products.filter(p => p.status !== 'Draft');
+            const liveCount = liveStorefrontProducts.length;
+
+            // 1. Update Header Live Counter Widget
+            const headerCountEl = document.getElementById('header-total-products-count');
+            if (headerCountEl) {
+                const prevH = prevHeaderCount !== null ? prevHeaderCount : 0;
+                animateNumberCounter(headerCountEl, prevH, totalCount, 500);
+                if (prevHeaderCount !== null && prevHeaderCount !== totalCount) {
+                    headerCountEl.classList.remove('counter-pulse-flash');
+                    void headerCountEl.offsetWidth; // trigger reflow
+                    headerCountEl.classList.add('counter-pulse-flash');
+                }
+                prevHeaderCount = totalCount;
+            }
+
+            // 2. Update Main Stats Card Counter
+            const totalEl = document.getElementById('stat-total-products');
+            if (totalEl) {
+                const prevC = prevProductCount !== null ? prevProductCount : 0;
+                animateNumberCounter(totalEl, prevC, totalCount, 500);
+                if (prevProductCount !== null && prevProductCount !== totalCount) {
+                    totalEl.classList.remove('counter-pulse-flash');
+                    void totalEl.offsetWidth; // trigger reflow
+                    totalEl.classList.add('counter-pulse-flash');
+                }
+                prevProductCount = totalCount;
+            }
+
+            // 3. Update Detailed Category Breakdown
+            const breakdownEl = document.getElementById('stat-catalog-breakdown');
+            if (breakdownEl) {
+                const net = products.filter(p => p.brand === 'TP-Link' || p.brand === 'Tapo' || p.category === 'Networking & Wireless').length;
+                const evn = products.filter(p => p.brand === 'EVNIA').length;
+                const a4 = products.filter(p => p.brand === 'A4Tech').length;
+                const bld = products.filter(p => p.brand === 'Bloody').length;
+                const core = products.length - net - evn - a4 - bld;
+                breakdownEl.innerHTML = `<span class="text-success fw-bold">${net} Networking</span> &bull; <span class="text-primary fw-bold">${evn} EVNIA</span> &bull; <span class="text-danger fw-bold">${a4} A4Tech</span> &bull; <span class="text-danger fw-bold">${bld} Bloody</span> &bull; <span class="text-secondary">${core} Hardware</span>`;
+            }
+
+            // 4. Update Category & Brand counters
+            const catEl = document.getElementById('stat-total-categories');
+            if (catEl) catEl.innerText = GUG_DB.getCategories().length;
+
+            const brdEl = document.getElementById('stat-total-brands');
+            if (brdEl) brdEl.innerText = GUG_DB.getBrands().length;
+
+            // 5. Update Low Stock Warning
+            const metrics = GUG_DB.calculateExecutiveMetrics();
+            const lowEl = document.getElementById('stat-low-stock');
+            if (lowEl) lowEl.innerText = metrics.lowStockCount;
+
+            // 6. Update Table Product Count Badge
+            const tableBadge = document.getElementById('table-product-count-badge');
+            if (tableBadge) {
+                tableBadge.innerText = `${totalCount} Products`;
+            }
+        }
+
+        function forceSyncMasterCatalog() {
+            try {
+                if (window.GUG_DB && typeof window.GUG_DB._ensureProductsSeed === 'function') {
+                    window.GUG_DB._ensureProductsSeed();
+                }
+                populateDropdowns();
+                renderProductsTable();
+                updateStats();
+                if (typeof showToast === 'function') {
+                    showToast(`Master catalog synchronized successfully! ${GUG_DB.getProducts().length} live items active.`, 'success');
+                } else {
+                    alert(`Catalog Synchronized! Total ${GUG_DB.getProducts().length} live products loaded.`);
+                }
+            } catch(e) {
+                console.error("Force sync error:", e);
+            }
+        }
+
+        function renderProductsTable(items = null) {
+            const products = items || GUG_DB.getProducts();
+            const tbody = document.getElementById('products-table-body');
+            tbody.innerHTML = '';
+
+            if (products.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <i class="fas fa-box-open fs-1 mb-3 text-secondary d-block"></i>
+                            <h6 class="fw-bold text-dark">No Products Found</h6>
+                            <p class="small text-secondary mb-3">No catalog items matched your active search and category filters.</p>
+                            <button class="btn btn-sm btn-danger" onclick="openProductModal()"><i class="fas fa-plus me-1"></i> Add Product</button>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            products.forEach(p => {
+                const normalizedStock = GUG_DB.normalizeProductStock ? GUG_DB.normalizeProductStock(p.stock) : (p.stock || {});
+                let totalStock = 0;
+                let cityBreakdowns = [];
+                if (typeof normalizedStock === 'object') {
+                    Object.entries(normalizedStock).forEach(([cName, q]) => {
+                        const qtyNum = Number(q || 0);
+                        totalStock += qtyNum;
+                        if (qtyNum > 0) {
+                            cityBreakdowns.push(`${cName}: ${qtyNum}`);
+                        }
+                    });
+                } else {
+                    totalStock = Number(normalizedStock || 0);
+                }
+
+                const threshold = Number(p.lowStockThreshold !== undefined ? p.lowStockThreshold : 10);
+                const cost = Number(p.costPrice || p.purchasePrice || (p.sellingPrice * 0.7));
+                const margin = Math.round(((p.sellingPrice - cost) / p.sellingPrice) * 100);
+
+                const isLow = totalStock <= threshold && totalStock > 0;
+                const isOut = totalStock === 0;
+
+                const breakdownTooltip = cityBreakdowns.length > 0 ? cityBreakdowns.join(' | ') : 'No allocated stock';
+                let stockBadge = `<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25" title="${breakdownTooltip}">${totalStock} Units</span>`;
+                if (isOut) {
+                    stockBadge = `<span class="badge bg-danger" title="0 stock available across all cities">Out of Stock</span>`;
+                } else if (isLow) {
+                    stockBadge = `<span class="badge bg-danger bg-opacity-10 text-danger border border-danger fw-bold" title="Low Stock: ${totalStock} remaining (Threshold: ${threshold}) | ${breakdownTooltip}"><i class="fas fa-exclamation-triangle me-1"></i>Low Stock (${totalStock} / min ${threshold})</span>`;
+                }
+                const cityLocationSummary = `<div class="small text-muted mt-1" style="font-size: 11px;" title="${breakdownTooltip}"><i class="fas fa-map-marker-alt text-danger me-1"></i>${cityBreakdowns.length > 0 ? cityBreakdowns.slice(0, 2).join(', ') + (cityBreakdowns.length > 2 ? ` +${cityBreakdowns.length - 2}` : '') : 'Unallocated'}</div>`;
+
+                const isImportant = Boolean(p.isFeatured);
+                const isOnSale = Boolean(p.onSale);
+
+                let priceDisplay = `<strong class="text-dark">Rs.  ${p.sellingPrice.toLocaleString()}</strong>`;
+                if (isOnSale && p.originalPrice && p.originalPrice > p.sellingPrice) {
+                    priceDisplay = `
+                        <div>
+                            <span class="text-decoration-line-through text-muted small">Rs.  ${p.originalPrice.toLocaleString()}</span>
+                            <strong class="text-danger d-block">Rs.  ${p.sellingPrice.toLocaleString()}</strong>
+                        </div>
+                    `;
+                }
+
+                const tr = document.createElement('tr');
+                const isProductVid = typeof window.isMediaVideo === 'function' ? window.isMediaVideo(p.image) : /\.(mp4|webm|mov|ogg|mkv|m4v)$/i.test(p.image || '');
+                const thumbMarkup = isProductVid 
+                    ? `<video src="${p.image}" autoplay loop muted playsinline class="product-thumb" style="object-fit:cover; width:44px; height:44px; border-radius:6px;"></video>`
+                    : `<img src="${p.image || 'assets/images/logo.png'}" class="product-thumb" onerror="this.src='assets/images/logo.png'">`;
+
+                tr.innerHTML = `
+                    <td class="ps-4">
+                        <div class="d-flex align-items-center gap-3">
+                            ${thumbMarkup}
+                            <div>
+                                <div class="d-flex align-items-center gap-1">
+                                    <strong class="text-dark">${p.title}</strong>
+                                    ${isImportant ? '<span class="badge bg-warning bg-opacity-25 text-dark border border-warning ms-1" style="font-size: 10px;"><i class="fas fa-star text-warning me-1"></i>Important</span>' : ''}
+                                    ${isOnSale ? `<span class="badge bg-danger ms-1" style="font-size: 10px;"><i class="fas fa-percent me-1"></i>${p.saleDiscountPercent ? p.saleDiscountPercent + '% OFF' : 'Sale'}</span>` : ''}
+                                </div>
+                                <small class="text-secondary">SKU: <code class="text-danger fw-bold">${p.sku}</code> ${p.barcode ? `&bull; Barcode: ${p.barcode}` : ''}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge bg-light text-dark border me-1">${p.category}</span>
+                        <small class="text-secondary d-block mt-1">${p.brand || 'GearUp Pro'}</small>
+                    </td>
+                    <td>
+                        ${priceDisplay}
+                        <small class="text-muted d-block">Cost: Rs.  ${cost.toLocaleString()}</small>
+                    </td>
+                    <td>
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">${margin}%</span>
+                    </td>
+                    <td>
+                        ${stockBadge}
+                        ${cityLocationSummary}
+                    </td>
+                    <td>
+                        <span class="badge ${p.status === 'Draft' ? 'bg-secondary' : 'bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25'}">${p.status || 'Published'}</span>
+                    </td>
+                    <td class="text-end pe-4">
+                        <div class="d-inline-flex align-items-center gap-1">
+                            <!-- Quick Edit Button -->
+                            <button class="btn btn-sm btn-outline-primary" onclick="openQuickProductModal('${p.id}')" title="Quick Edit Price, Image & Stock"><i class="fas fa-bolt"></i></button>
+
+                            <!-- Important Toggle Button -->
+                            <button class="btn btn-sm ${isImportant ? 'btn-warning text-dark' : 'btn-outline-secondary'}" 
+                                onclick="toggleImportantProduct('${p.id}')" 
+                                title="${isImportant ? 'Featured on Homepage (Click to Unfeature)' : 'Mark as Important (Feature on Homepage)'}">
+                                <i class="fas fa-star"></i>
+                                <span class="d-none d-xxl-inline ms-1 small fw-bold">${isImportant ? 'Important' : 'Feature'}</span>
+                            </button>
+
+                            <!-- Sale Promotion Button -->
+                            <button class="btn btn-sm ${isOnSale ? 'btn-danger fw-bold' : 'btn-outline-danger'}" 
+                                onclick="openSaleModal('${p.id}')" 
+                                title="${isOnSale ? `On Sale: ${p.saleDiscountPercent || ''}% OFF (Click to Edit)` : 'Put Product on Sale'}">
+                                <i class="fas fa-tags"></i>
+                                <span class="d-none d-xxl-inline ms-1 small">${isOnSale ? (p.saleDiscountPercent ? p.saleDiscountPercent + '% OFF' : 'Sale') : 'Sale'}</span>
+                            </button>
+
+                            <!-- Edit Button (Glowing White) -->
+                            <button class="btn btn-sm btn-edit-glowing" onclick="editProduct('${p.id}')" title="Edit Full Product Details"><i class="fas fa-edit"></i></button>
+
+                            <!-- Delete Button -->
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct('${p.id}')" title="Delete Product"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterProducts() {
+            const query = document.getElementById('product-search').value.toLowerCase().trim();
+            const cat = document.getElementById('category-filter').value;
+            const brand = document.getElementById('brand-filter').value;
+            const allProducts = GUG_DB.getProducts();
+
+            const filtered = allProducts.filter(p => {
+                const matchQ = !query || 
+                    (p.title && p.title.toLowerCase().includes(query)) || 
+                    (p.name && p.name.toLowerCase().includes(query)) || 
+                    (p.brand && p.brand.toLowerCase().includes(query)) || 
+                    (p.category && p.category.toLowerCase().includes(query)) || 
+                    (p.sku && p.sku.toLowerCase().includes(query)) || 
+                    (p.barcode && String(p.barcode).includes(query)) ||
+                    (p.description && p.description.toLowerCase().includes(query));
+                const matchCat = !cat || (p.category && p.category.toLowerCase() === cat.toLowerCase());
+                const matchBrand = !brand || (p.brand && p.brand.toLowerCase() === brand.toLowerCase());
+                return matchQ && matchCat && matchBrand;
+            });
+
+            const statusEl = document.getElementById('table-filter-status');
+            const badgeEl = document.getElementById('table-product-count-badge');
+            if (statusEl) {
+                if (query || cat || brand) {
+                    statusEl.innerHTML = `Showing <strong class="text-danger">${filtered.length}</strong> of ${allProducts.length} items (Filtered)`;
+                } else {
+                    statusEl.innerText = `All ${allProducts.length} products active & synced with storefront`;
+                }
+            }
+            if (badgeEl) {
+                badgeEl.innerText = `${filtered.length} Products`;
+            }
+
+            renderProductsTable(filtered);
+        }
+
+        function syncFeaturedToggle(source) {
+            if (source === 'tab1') {
+                const val = document.getElementById('prod-is-important-tab1').checked;
+                const bEl = document.getElementById('badge-featured');
+                if (bEl) bEl.checked = val;
+            } else {
+                const val = document.getElementById('badge-featured').checked;
+                const tEl = document.getElementById('prod-is-important-tab1');
+                if (tEl) tEl.checked = val;
+            }
+        }
+
+        function toggleSaleSection() {
+            const isOn = document.getElementById('prod-on-sale').checked;
+            const area = document.getElementById('sale-details-area');
+            if (isOn) {
+                area.style.display = 'block';
+                if (!document.getElementById('prod-sale-percent').value) {
+                    document.getElementById('prod-sale-percent').value = 20;
+                }
+                calculateModalSalePreview();
+            } else {
+                area.style.display = 'none';
+            }
+        }
+
+        function setModalSalePreset(percent) {
+            document.getElementById('prod-sale-percent').value = percent;
+            calculateModalSalePreview();
+        }
+
+        function calculateModalSalePreview() {
+            const sellInput = document.getElementById('prod-selling-price');
+            const basePrice = Number(sellInput.value || 0);
+            const rawVal = Number(document.getElementById('prod-sale-percent').value) || 0;
+            const percent = Math.min(99, Math.max(0.1, rawVal));
+            
+            const savings = Math.round(basePrice * (percent / 100));
+            const finalSalePrice = Math.max(0, basePrice - savings);
+
+            const origEl = document.getElementById('modal-sale-prev-orig');
+            const saveEl = document.getElementById('modal-sale-prev-savings');
+            const finalEl = document.getElementById('modal-sale-prev-final');
+
+            if (origEl) origEl.innerText = 'Rs.  ' + basePrice.toLocaleString();
+            if (saveEl) saveEl.innerText = `- Rs. ${savings.toLocaleString()} (${percent}% OFF)`;
+            if (finalEl) finalEl.innerText = 'Rs.  ' + finalSalePrice.toLocaleString();
+        }
+
+        function toggleCustomField(type) {
+            const selectEl = document.getElementById(`prod-${type}`);
+            const customInput = document.getElementById(`prod-${type}-custom`);
+            if (!customInput) return;
+            
+            if (customInput.style.display === 'none' || !customInput.style.display) {
+                customInput.style.display = 'block';
+                customInput.focus();
+                if (selectEl) selectEl.value = '__custom__';
+            } else {
+                customInput.style.display = 'none';
+                customInput.value = '';
+                if (selectEl && selectEl.value === '__custom__') {
+                    selectEl.selectedIndex = 0;
+                }
+            }
+        }
+
+        function checkCustomOption(selectEl, customInputId) {
+            const customInput = document.getElementById(customInputId);
+            if (!customInput) return;
+            if (selectEl.value === '__custom__') {
+                customInput.style.display = 'block';
+                customInput.focus();
+            } else {
+                customInput.style.display = 'none';
+                customInput.value = '';
+            }
+        }
+
+        function populateCityDatalist() {
+            const datalist = document.getElementById('inventory-city-datalist');
+            if (!datalist) return;
+            const cities = GUG_DB.getInventoryCities ? GUG_DB.getInventoryCities() : ['Karachi', 'Lahore', 'Islamabad', 'Faisalabad', 'Multan', 'Rawalpindi', 'Peshawar', 'Quetta', 'Sialkot', 'Gujranwala'];
+            datalist.innerHTML = cities.map(c => `<option value="${c}">`).join('');
+        }
+
+        function addCityStockRow(cityName = '', qty = 0) {
+            const container = document.getElementById('city-stock-container');
+            if (!container) return;
+            const row = document.createElement('div');
+            row.className = 'row g-2 align-items-center city-stock-row';
+            row.innerHTML = `
+                <div class="col-7">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-white"><i class="fas fa-city text-danger"></i></span>
+                        <input type="text" class="form-control city-name-input" list="inventory-city-datalist" placeholder="City name (e.g. Karachi, Islamabad, Sialkot)" value="${cityName}">
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="input-group input-group-sm">
+                        <input type="number" class="form-control city-qty-input" placeholder="Qty" min="0" value="${qty}" oninput="updateTotalStockPreview()">
+                        <span class="input-group-text bg-light text-muted small">Units</span>
+                    </div>
+                </div>
+                <div class="col-2 text-end">
+                    <button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="removeCityStockRow(this)" title="Remove city location"><i class="fas fa-trash-alt"></i></button>
+                </div>
+            `;
+            container.appendChild(row);
+            updateTotalStockPreview();
+        }
+
+        function removeCityStockRow(btn) {
+            const container = document.getElementById('city-stock-container');
+            const rows = container.getElementsByClassName('city-stock-row');
+            if (rows.length > 1) {
+                btn.closest('.city-stock-row').remove();
+            } else {
+                const row = btn.closest('.city-stock-row');
+                row.querySelector('.city-name-input').value = '';
+                row.querySelector('.city-qty-input').value = 0;
+            }
+            updateTotalStockPreview();
+        }
+
+        function updateTotalStockPreview() {
+            let total = 0;
+            const qtyInputs = document.querySelectorAll('#city-stock-container .city-qty-input');
+            qtyInputs.forEach(inp => {
+                total += Number(inp.value || 0);
+            });
+            const badge = document.getElementById('total-stock-preview');
+            if (badge) badge.innerText = `${total.toLocaleString()} Units`;
+        }
+
+        function openProductModal() {
+            document.getElementById('productForm').reset();
+            document.getElementById('prod-id').value = '';
+            document.getElementById('modalProductTitle').innerHTML = '<i class="fas fa-box-open text-danger me-2"></i> Add New Product to Catalog';
+            document.getElementById('calc-margin-badge').innerText = '30%';
+            
+            // Reset custom input fields
+            document.getElementById('prod-category-custom').style.display = 'none';
+            document.getElementById('prod-category-custom').value = '';
+            document.getElementById('prod-brand-custom').style.display = 'none';
+            document.getElementById('prod-brand-custom').value = '';
+            document.getElementById('prod-warranty-custom').style.display = 'none';
+            document.getElementById('prod-warranty-custom').value = '';
+
+            document.getElementById('prod-is-important-tab1').checked = false;
+            document.getElementById('badge-featured').checked = false;
+            document.getElementById('badge-bestseller').checked = false;
+            document.getElementById('prod-on-sale').checked = false;
+            document.getElementById('prod-sale-percent').value = '20';
+            document.getElementById('sale-details-area').style.display = 'none';
+            document.getElementById('prod-image-preview').src = 'assets/images/logo.png';
+            document.getElementById('prod-threshold').value = '10';
+
+            // Populate Datalist and Initial City Rows
+            populateCityDatalist();
+            const cityContainer = document.getElementById('city-stock-container');
+            if (cityContainer) {
+                cityContainer.innerHTML = '';
+                addCityStockRow('Karachi', 25);
+                addCityStockRow('Lahore', 10);
+                addCityStockRow('Islamabad', 5);
+            }
+            updateTotalStockPreview();
+            
+            const modalEl = document.getElementById('productModal');
+            modalInstance = new bootstrap.Modal(modalEl);
+            modalInstance.show();
+        }
+
+        function editProduct(id) {
+            const products = GUG_DB.getProducts();
+            const p = products.find(item => item.id === id);
+            if (!p) return;
+
+            document.getElementById('prod-id').value = p.id;
+            document.getElementById('prod-title').value = p.title || '';
+            document.getElementById('prod-sku').value = p.sku || '';
+
+            // Handle Category (Preset or Custom)
+            const catSelect = document.getElementById('prod-category');
+            const catCustom = document.getElementById('prod-category-custom');
+            catCustom.style.display = 'none';
+            catCustom.value = '';
+            if (p.category) {
+                let catExists = false;
+                for (let i = 0; i < catSelect.options.length; i++) {
+                    if (catSelect.options[i].value.toLowerCase() === p.category.toLowerCase()) {
+                        catSelect.selectedIndex = i;
+                        catExists = true;
+                        break;
+                    }
+                }
+                if (!catExists) {
+                    const newOpt = new Option(p.category, p.category, true, true);
+                    catSelect.add(newOpt, catSelect.options.length - 1);
+                    catSelect.value = p.category;
+                }
+            } else {
+                catSelect.selectedIndex = 0;
+            }
+
+            // Handle Brand (Preset or Custom)
+            const brandSelect = document.getElementById('prod-brand');
+            const brandCustom = document.getElementById('prod-brand-custom');
+            brandCustom.style.display = 'none';
+            brandCustom.value = '';
+            if (p.brand) {
+                let brandExists = false;
+                for (let i = 0; i < brandSelect.options.length; i++) {
+                    if (brandSelect.options[i].value.toLowerCase() === p.brand.toLowerCase()) {
+                        brandSelect.selectedIndex = i;
+                        brandExists = true;
+                        break;
+                    }
+                }
+                if (!brandExists) {
+                    const newOpt = new Option(p.brand, p.brand, true, true);
+                    brandSelect.add(newOpt, brandSelect.options.length - 1);
+                    brandSelect.value = p.brand;
+                }
+            } else {
+                brandSelect.selectedIndex = 0;
+            }
+
+            // Handle Warranty (Preset or Custom)
+            const warrantySelect = document.getElementById('prod-warranty');
+            const warrantyCustom = document.getElementById('prod-warranty-custom');
+            warrantyCustom.style.display = 'none';
+            warrantyCustom.value = '';
+            if (p.warranty !== undefined && p.warranty !== null && p.warranty !== '') {
+                let wExists = false;
+                for (let i = 0; i < warrantySelect.options.length; i++) {
+                    if (warrantySelect.options[i].value == p.warranty) {
+                        warrantySelect.selectedIndex = i;
+                        wExists = true;
+                        break;
+                    }
+                }
+                if (!wExists) {
+                    warrantySelect.value = '__custom__';
+                    warrantyCustom.style.display = 'block';
+                    warrantyCustom.value = p.warranty;
+                }
+            }
+
+            document.getElementById('prod-barcode').value = p.barcode || '';
+            document.getElementById('prod-short-desc').value = p.shortDescription || '';
+            document.getElementById('prod-desc').value = p.description || '';
+            document.getElementById('prod-image').value = p.image || '';
+            document.getElementById('prod-image-preview').src = p.image || 'assets/images/logo.png';
+            document.getElementById('prod-purchase-price').value = p.purchasePrice || '';
+            document.getElementById('prod-cost-price').value = p.costPrice || '';
+            
+            // For editing, if it's on sale, base regular price is originalPrice
+            const regularPrice = (p.onSale && p.originalPrice) ? p.originalPrice : (p.originalPrice || p.sellingPrice || '');
+            document.getElementById('prod-selling-price').value = regularPrice;
+            document.getElementById('prod-wholesale-price').value = p.wholesalePrice || '';
+            document.getElementById('prod-threshold').value = p.lowStockThreshold !== undefined ? p.lowStockThreshold : 10;
+            document.getElementById('prod-status').value = p.status || 'Published';
+            
+            const isFeatured = Boolean(p.isFeatured);
+            document.getElementById('badge-featured').checked = isFeatured;
+            document.getElementById('prod-is-important-tab1').checked = isFeatured;
+            document.getElementById('badge-bestseller').checked = Boolean(p.isBestSeller);
+
+            // Sale setup
+            const isOnSale = Boolean(p.onSale);
+            document.getElementById('prod-on-sale').checked = isOnSale;
+            let salePct = p.saleDiscountPercent || 0;
+            if (!salePct && isOnSale && p.originalPrice && p.sellingPrice && p.originalPrice > p.sellingPrice) {
+                salePct = Math.round(((p.originalPrice - p.sellingPrice) / p.originalPrice) * 100);
+            }
+            document.getElementById('prod-sale-percent').value = salePct || 20;
+            
+            if (isOnSale) {
+                document.getElementById('sale-details-area').style.display = 'block';
+                calculateModalSalePreview();
+            } else {
+                document.getElementById('sale-details-area').style.display = 'none';
+            }
+
+            // Populate Dynamic City Stock Locations
+            populateCityDatalist();
+            const cityContainer = document.getElementById('city-stock-container');
+            if (cityContainer) {
+                cityContainer.innerHTML = '';
+                const normStock = GUG_DB.normalizeProductStock ? GUG_DB.normalizeProductStock(p.stock) : (p.stock || {});
+                const cityKeys = Object.keys(normStock);
+                if (cityKeys.length > 0) {
+                    cityKeys.forEach(city => {
+                        addCityStockRow(city, Number(normStock[city] || 0));
+                    });
+                } else {
+                    addCityStockRow('Karachi', 0);
+                }
+            }
+            updateTotalStockPreview();
+
+            calculateMargin();
+            document.getElementById('modalProductTitle').innerHTML = '<i class="fas fa-edit text-danger me-2"></i> Edit Product &mdash; ' + p.title;
+
+            const modalEl = document.getElementById('productModal');
+            modalInstance = new bootstrap.Modal(modalEl);
+            modalInstance.show();
+        }
+
+        function calculateMargin() {
+            const cost = Number(document.getElementById('prod-cost-price').value || document.getElementById('prod-purchase-price').value || 0);
+            const sell = Number(document.getElementById('prod-selling-price').value || 0);
+            if (sell > 0 && cost > 0) {
+                const margin = Math.round(((sell - cost) / sell) * 100);
+                document.getElementById('calc-margin-badge').innerText = margin + '%';
+            }
+        }
+
+        function saveProductForm() {
+            const title = document.getElementById('prod-title').value.trim();
+            const sku = document.getElementById('prod-sku').value.trim().toUpperCase();
+            const regularSellPrice = Number(document.getElementById('prod-selling-price').value);
+
+            if (!title || !sku || !regularSellPrice) {
+                window.GUG_DB.showToast('Please fill in required fields: Product Name, SKU, and Regular Selling Price.', 'warning', 'Missing Details');
+                return;
+            }
+
+            // Resolve Category (Preset or Custom)
+            let finalCategory = document.getElementById('prod-category').value;
+            const customCatVal = document.getElementById('prod-category-custom').value.trim();
+            if (finalCategory === '__custom__' || customCatVal) {
+                finalCategory = customCatVal || 'Accessories';
+            }
+
+            // Resolve Brand (Preset or Custom)
+            let finalBrand = document.getElementById('prod-brand').value;
+            const customBrandVal = document.getElementById('prod-brand-custom').value.trim();
+            if (finalBrand === '__custom__' || customBrandVal) {
+                finalBrand = customBrandVal || 'GearUp Pro';
+            }
+
+            // Resolve Warranty (Preset or Custom)
+            let finalWarranty = document.getElementById('prod-warranty').value;
+            const customWarrantyVal = document.getElementById('prod-warranty-custom').value.trim();
+            if (finalWarranty === '__custom__' || customWarrantyVal) {
+                finalWarranty = customWarrantyVal || '12';
+            }
+
+            const prodId = document.getElementById('prod-id').value;
+            const existing = prodId ? GUG_DB.getProducts().find(p => p.id === prodId) : null;
+
+            const isOnSale = document.getElementById('prod-on-sale').checked;
+            const salePercent = isOnSale ? Math.min(99, Math.max(1, Number(document.getElementById('prod-sale-percent').value) || 0)) : 0;
+            
+            let finalSellingPrice = regularSellPrice;
+            let originalPrice = regularSellPrice;
+
+            if (isOnSale && salePercent > 0) {
+                const savings = Math.round(regularSellPrice * (salePercent / 100));
+                finalSellingPrice = Math.max(0, regularSellPrice - savings);
+                originalPrice = regularSellPrice;
+            }
+
+            const isFeaturedVal = document.getElementById('badge-featured').checked || document.getElementById('prod-is-important-tab1').checked;
+
+            // Collect Dynamic City Stock dictionary
+            const stockObj = {};
+            const cityRows = document.querySelectorAll('#city-stock-container .city-stock-row');
+            cityRows.forEach(row => {
+                const cityName = (row.querySelector('.city-name-input').value || '').trim();
+                const qty = Number(row.querySelector('.city-qty-input').value || 0);
+                if (cityName) {
+                    stockObj[cityName] = (stockObj[cityName] || 0) + qty;
+                }
+            });
+            if (Object.keys(stockObj).length === 0) {
+                stockObj['Karachi'] = 0;
+            }
+
+            const customThreshold = Number(document.getElementById('prod-threshold').value || 10);
+
+            const productData = {
+                id: prodId || undefined,
+                title: title,
+                sku: sku,
+                category: finalCategory,
+                brand: finalBrand,
+                warranty: finalWarranty,
+                barcode: document.getElementById('prod-barcode').value,
+                image: document.getElementById('prod-image').value || 'assets/images/logo.png',
+                description: document.getElementById('prod-desc').value,
+                shortDescription: document.getElementById('prod-short-desc').value,
+                purchasePrice: Number(document.getElementById('prod-purchase-price').value || regularSellPrice * 0.65),
+                costPrice: Number(document.getElementById('prod-cost-price').value || regularSellPrice * 0.7),
+                sellingPrice: finalSellingPrice,
+                price: finalSellingPrice,
+                originalPrice: originalPrice,
+                onSale: isOnSale && salePercent > 0,
+                saleDiscountPercent: isOnSale ? salePercent : 0,
+                wholesalePrice: Number(document.getElementById('prod-wholesale-price').value || regularSellPrice * 0.85),
+                lowStockThreshold: customThreshold,
+                status: document.getElementById('prod-status').value,
+                stock: stockObj,
+                hasSerialTracking: document.getElementById('prod-serial-tracking').checked,
+                isFeatured: isFeaturedVal,
+                isBestSeller: document.getElementById('badge-bestseller').checked
+            };
+
+            GUG_DB.saveProduct(productData);
+            if (modalInstance) modalInstance.hide();
+            populateDropdowns();
+            renderProductsTable();
+            updateStats();
+            renderSaleCampaignProducts();
+            
+            let toastMsg = `Product "${title}" successfully saved!`;
+            if (isOnSale && salePercent > 0) {
+                toastMsg += ` (Active Sale: ${salePercent}% OFF - Rs. ${finalSellingPrice.toLocaleString()})`;
+            }
+            if (isFeaturedVal) {
+                toastMsg += ` (Marked as Important / Featured)`;
+            }
+            window.GUG_DB.showToast(toastMsg, 'success', 'Product Saved');
+        }
+
+        function deleteProduct(id) {
+            if (confirm('Are you sure you want to permanently delete this product from catalog?')) {
+                GUG_DB.deleteProduct(id);
+                renderProductsTable();
+                updateStats();
+                renderSaleCampaignProducts();
+                window.GUG_DB.showToast('Product deleted from database.', 'info', 'Product Deleted');
+            }
+        }
+
+        // --- Sale Promotion & Discount Management ---
+        function openSaleModal(productId) {
+            const products = GUG_DB.getProducts();
+            const p = products.find(item => item.id === productId);
+            if (!p) return;
+
+            document.getElementById('sale-prod-id').value = p.id;
+            document.getElementById('sale-prod-title').innerText = p.title;
+            document.getElementById('sale-prod-img').src = p.image || 'assets/images/logo.png';
+            
+            const orig = Number(p.originalPrice || p.sellingPrice || p.price || 0);
+            const curr = Number(p.sellingPrice || p.price || 0);
+            
+            document.getElementById('sale-base-price').innerText = 'Rs.  ' + orig.toLocaleString();
+            
+            let defaultPercent = p.saleDiscountPercent || 0;
+            if (!defaultPercent && p.onSale && orig > curr) {
+                defaultPercent = Math.round(((orig - curr) / orig) * 100);
+            }
+            
+            document.getElementById('sale-discount-input').value = defaultPercent || 20;
+            
+            const removeBtn = document.getElementById('btn-remove-sale');
+            if (p.onSale) {
+                removeBtn.style.display = 'inline-block';
+            } else {
+                removeBtn.style.display = 'none';
+            }
+
+            calculateSalePreview();
+
+            const el = document.getElementById('saleModal');
+            saleModalInstance = new bootstrap.Modal(el);
+            saleModalInstance.show();
+        }
+
+        function selectSalePreset(percent) {
+            document.getElementById('sale-discount-input').value = percent;
+            calculateSalePreview();
+        }
+
+        function calculateSalePreview() {
+            const prodId = document.getElementById('sale-prod-id').value;
+            const products = GUG_DB.getProducts();
+            const p = products.find(item => item.id === prodId);
+            if (!p) return;
+
+            const orig = Number(p.originalPrice || p.sellingPrice || p.price || 0);
+            const rawVal = Number(document.getElementById('sale-discount-input').value) || 0;
+            const percent = Math.min(99, Math.max(0.1, rawVal));
+            
+            const savings = Math.round(orig * (percent / 100));
+            const newPrice = Math.max(0, orig - savings);
+
+            document.getElementById('sale-preview-orig').innerText = 'Rs.  ' + orig.toLocaleString();
+            document.getElementById('sale-preview-savings').innerText = `- Rs. ${savings.toLocaleString()} (${percent}% OFF)`;
+            document.getElementById('sale-preview-new').innerText = 'Rs.  ' + newPrice.toLocaleString();
+        }
+
+        function applySaleDiscount() {
+            const prodId = document.getElementById('sale-prod-id').value;
+            const products = GUG_DB.getProducts();
+            const p = products.find(item => item.id === prodId);
+            if (!p) return;
+
+            const rawVal = Number(document.getElementById('sale-discount-input').value) || 0;
+            const percent = Math.min(99, Math.max(0.1, rawVal));
+            if (!rawVal || rawVal <= 0) {
+                GUG_DB.showToast('Please enter a valid discount percentage (e.g. 5, 10, 15, 20...).', 'warning', 'Discount Required');
+                return;
+            }
+
+            const orig = Number(p.originalPrice || p.sellingPrice || p.price || 0);
+            const savings = Math.round(orig * (percent / 100));
+            const newPrice = Math.max(0, orig - savings);
+
+            p.onSale = true;
+            p.originalPrice = orig;
+            p.saleDiscountPercent = percent;
+            p.sellingPrice = newPrice;
+            p.price = newPrice;
+
+            GUG_DB.saveProduct(p);
+            if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.saveProduct === 'function') {
+                window.GUG_FIREBASE.saveProduct(p);
+            }
+            if (saleModalInstance) saleModalInstance.hide();
+            renderProductsTable();
+            updateStats();
+            renderSaleCampaignProducts();
+            GUG_DB.showToast(`Product "${p.title}" is now ON SALE at ${percent}% OFF (Rs.  ${newPrice.toLocaleString()})!`, 'success', 'Sale Activated');
+        }
+
+        function removeSaleDiscount() {
+            const prodId = document.getElementById('sale-prod-id').value;
+            const products = GUG_DB.getProducts();
+            const p = products.find(item => item.id === prodId);
+            if (!p) return;
+
+            const orig = Number(p.originalPrice || p.sellingPrice || p.price || 0);
+            p.onSale = false;
+            p.sellingPrice = orig;
+            p.price = orig;
+            p.originalPrice = null;
+            p.saleDiscountPercent = 0;
+
+            GUG_DB.saveProduct(p);
+            if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.saveProduct === 'function') {
+                window.GUG_FIREBASE.saveProduct(p);
+            }
+            if (saleModalInstance) saleModalInstance.hide();
+            renderProductsTable();
+            updateStats();
+            renderSaleCampaignProducts();
+            GUG_DB.showToast(`Sale removed for "${p.title}". Reverted to regular price Rs.  ${orig.toLocaleString()}.`, 'info', 'Sale Removed');
+        }
+
+        // ========================================================
+        // SALES CAMPAIGN DISCOUNTED PRODUCTS ENGINE
+        // ========================================================
+        function escapeHtmlHelper(str) {
+            if (str === null || str === undefined) return '';
+            return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
+        }
+
+        function renderSaleCampaignProducts() {
+            const tbody = document.getElementById('sale-campaign-products-tbody');
+            const countBadge = document.getElementById('sale-products-count-badge');
+            const categorySelect = document.getElementById('sale-product-category-filter');
+            if (!tbody) return;
+
+            const products = (typeof GUG_DB !== 'undefined' && typeof GUG_DB.getProducts === 'function') ? GUG_DB.getProducts() : [];
+            const saleProducts = products.filter(p => {
+                const isOnSale = Boolean(p.onSale);
+                const hasDiscount = (Number(p.saleDiscountPercent) > 0) || (p.originalPrice && Number(p.originalPrice) > Number(p.sellingPrice || p.price));
+                return isOnSale && hasDiscount;
+            });
+
+            if (countBadge) {
+                countBadge.textContent = `${saleProducts.length} Product${saleProducts.length === 1 ? '' : 's'} on Sale`;
+            }
+
+            // Populate category select options if needed
+            if (categorySelect && (!categorySelect.options || categorySelect.options.length <= 1)) {
+                const cats = [...new Set(saleProducts.map(p => p.category).filter(Boolean))].sort();
+                categorySelect.innerHTML = '<option value="">All Categories</option>' + cats.map(c => `<option value="${escapeHtmlHelper(c)}">${escapeHtmlHelper(c)}</option>`).join('');
+            }
+
+            if (saleProducts.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center py-5 text-secondary">
+                            <i class="fas fa-tags text-danger fs-1 mb-3 d-block opacity-50"></i>
+                            <h6 class="text-white fw-bold mb-1">No Active Discounted Products</h6>
+                            <p class="small text-secondary mb-3">No products are currently on promotional sale. Put any product on sale from the Products & Catalog tab to feature it in sales campaigns.</p>
+                            <button type="button" class="btn btn-danger btn-sm px-3 fw-bold" onclick="switchToCatalogTab()">
+                                <i class="fas fa-boxes-stacked me-1"></i> Browse Catalog & Add Discounts
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            const searchVal = (document.getElementById('sale-product-search')?.value || '').trim().toLowerCase();
+            const catVal = (document.getElementById('sale-product-category-filter')?.value || '').trim().toLowerCase();
+
+            const filtered = saleProducts.filter(p => {
+                const title = (p.title || p.name || '').toLowerCase();
+                const brand = (p.brand || '').toLowerCase();
+                const sku = (p.sku || p.id || '').toLowerCase();
+                const category = (p.category || '').toLowerCase();
+
+                const matchesSearch = !searchVal || title.includes(searchVal) || brand.includes(searchVal) || sku.includes(searchVal);
+                const matchesCat = !catVal || category === catVal;
+                return matchesSearch && matchesCat;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center py-4 text-secondary">
+                            <p class="mb-0">No active sale products match your filter search.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(p => {
+                const orig = Number(p.originalPrice || p.sellingPrice || p.price || 0);
+                const curr = Number(p.sellingPrice || p.price || 0);
+                let discount = Number(p.saleDiscountPercent) || 0;
+                if (!discount && orig > curr && orig > 0) {
+                    discount = Math.round(((orig - curr) / orig) * 100);
+                }
+                const savings = Math.max(0, orig - curr);
+                const stock = (typeof p.stock === 'object' && p.stock !== null) 
+                    ? Object.values(p.stock).reduce((a, b) => a + Number(b || 0), 0) 
+                    : Number(p.stock || 0);
+
+                const img = p.image || 'assets/images/logo.png';
+                const isSaleVid = typeof window.isMediaVideo === 'function' ? window.isMediaVideo(img) : /\.(mp4|webm|mov|ogg|mkv|m4v)$/i.test(img);
+                const saleThumbHtml = isSaleVid 
+                    ? `<video src="${escapeHtmlHelper(img)}" autoplay loop muted playsinline class="product-thumb" style="object-fit:cover; width:44px; height:44px; border-radius:6px;"></video>`
+                    : `<img src="${escapeHtmlHelper(img)}" class="product-thumb" alt="${escapeHtmlHelper(p.title || p.name)}" onerror="this.src='assets/images/logo.png'">`;
+
+                return `
+                    <tr>
+                        <td class="ps-3 py-3">
+                            <div class="d-flex align-items-center gap-2">
+                                ${saleThumbHtml}
+                                <div>
+                                    <div class="fw-bold text-white small text-truncate" style="max-width: 280px;" title="${escapeHtmlHelper(p.title || p.name)}">
+                                        ${escapeHtmlHelper(p.title || p.name)}
+                                    </div>
+                                    <small class="text-secondary" style="font-size: 11px;">SKU: ${escapeHtmlHelper(p.sku || p.id || 'N/A')}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-3">
+                            <div class="small text-white">${escapeHtmlHelper(p.category || 'Hardware')}</div>
+                            <small class="text-secondary" style="font-size: 11px;">${escapeHtmlHelper(p.brand || 'GearUp')}</small>
+                        </td>
+                        <td class="py-3">
+                            <del class="text-secondary small fw-semibold">Rs. ${orig.toLocaleString()}</del>
+                        </td>
+                        <td class="py-3">
+                            <span class="badge bg-danger fw-bold"><i class="fas fa-percent me-1"></i>${discount}% OFF</span>
+                        </td>
+                        <td class="py-3">
+                            <strong class="text-success fs-6">Rs. ${curr.toLocaleString()}</strong>
+                        </td>
+                        <td class="py-3">
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">Save Rs. ${savings.toLocaleString()}</span>
+                        </td>
+                        <td class="py-3">
+                            <span class="badge ${stock > 0 ? 'bg-light text-dark' : 'bg-danger text-white'}">${stock} units</span>
+                        </td>
+                        <td class="text-end pe-3 py-3">
+                            <div class="btn-group btn-group-sm">
+                                <button type="button" class="btn btn-outline-warning btn-sm" onclick="openSaleModal('${escapeHtmlHelper(p.id)}')" title="Edit Promotional Discount">
+                                    <i class="fas fa-edit me-1"></i> Edit
+                                </button>
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="quickRemoveSale('${escapeHtmlHelper(p.id)}')" title="Revert to Regular Price">
+                                    <i class="fas fa-xmark me-1"></i> End Sale
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        window.renderSaleCampaignProducts = renderSaleCampaignProducts;
+
+        function filterSaleCampaignProducts() {
+            renderSaleCampaignProducts();
+        }
+        window.filterSaleCampaignProducts = filterSaleCampaignProducts;
+
+        function quickRemoveSale(prodId) {
+            if (!confirm('Are you sure you want to remove this product from the sale campaign and revert it to its regular price?')) return;
+            const products = GUG_DB.getProducts();
+            const p = products.find(item => item.id === prodId);
+            if (!p) return;
+
+            const orig = Number(p.originalPrice || p.sellingPrice || p.price || 0);
+            p.onSale = false;
+            p.sellingPrice = orig;
+            p.price = orig;
+            p.originalPrice = null;
+            p.saleDiscountPercent = 0;
+
+            GUG_DB.saveProduct(p);
+            if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.saveProduct === 'function') {
+                window.GUG_FIREBASE.saveProduct(p);
+            }
+            renderProductsTable();
+            updateStats();
+            renderSaleCampaignProducts();
+            GUG_DB.showToast(`Sale removed for "${p.title || p.name}". Reverted to regular price Rs. ${orig.toLocaleString()}.`, 'info', 'Sale Removed');
+        }
+        window.quickRemoveSale = quickRemoveSale;
+
+        function switchToCatalogTab() {
+            const tabTrigger = document.querySelector('#products-catalog-tab');
+            if (tabTrigger) {
+                tabTrigger.click();
+            }
+            window.scrollTo({ top: 300, behavior: 'smooth' });
+        }
+        window.switchToCatalogTab = switchToCatalogTab;
+
+        function toggleImportantProduct(id) {
+            const products = GUG_DB.getProducts();
+            const p = products.find(item => item.id === id);
+            if (!p) return;
+
+            p.isFeatured = !p.isFeatured;
+            GUG_DB.saveProduct(p);
+
+            if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.saveProduct === 'function') {
+                window.GUG_FIREBASE.saveProduct(p);
+            }
+
+            renderProductsTable();
+            updateStats();
+
+            const statusText = p.isFeatured ? 'marked as Important (Featured on Homepage)' : 'removed from Important products';
+            GUG_DB.showToast(`Product "${p.title || p.name}" ${statusText}.`, p.isFeatured ? 'success' : 'info', 'Important Status');
+        }
+        window.toggleImportantProduct = toggleImportantProduct;
+
+        // --- Physical File Upload & Dynamic Media Preview Helpers ---
+        function updateProductMediaPreview(targetPreviewId, mediaSrc) {
+            const preview = document.getElementById(targetPreviewId);
+            if (!preview) return;
+            const parent = preview.parentElement;
+            const src = mediaSrc || 'assets/images/logo.png';
+            const isVid = typeof window.isMediaVideo === 'function' ? window.isMediaVideo(src) : /\.(mp4|webm|mov|ogg|mkv|m4v)$/i.test(src);
+            if (parent) {
+                if (isVid) {
+                    parent.innerHTML = `<video id="${targetPreviewId}" src="${src}" autoplay loop muted playsinline class="${preview.className || ''}" style="${preview.style.cssText || 'max-height: 90px; width: 90px; object-fit: contain;'}"></video>`;
+                } else {
+                    parent.innerHTML = `<img id="${targetPreviewId}" src="${src}" class="${preview.className || ''}" style="${preview.style.cssText || 'max-height: 90px; width: 90px; object-fit: contain;'}" onerror="this.src='assets/images/logo.png'">`;
+                }
+            } else {
+                preview.src = src;
+            }
+        }
+        window.updateProductMediaPreview = updateProductMediaPreview;
+
+        function handleProductFileUpload(fileInput, targetInputId, targetPreviewId) {
+            const file = fileInput.files[0];
+            if (!file) return;
+            const isVid = file.type.startsWith('video/') || /\.(mp4|webm|mov|ogg|mkv|m4v)$/i.test(file.name);
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const dataUrl = e.target.result;
+                const targetInput = document.getElementById(targetInputId);
+                if (targetInput) targetInput.value = dataUrl;
+                updateProductMediaPreview(targetPreviewId, dataUrl);
+                if (window.GUG_DB && window.GUG_DB.showToast) {
+                    window.GUG_DB.showToast(`Product ${isVid ? 'video' : 'image'} selected and ready!`, 'info', 'Media Loaded');
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // --- Quick Edit Product Modal Logic ---
+        let quickProductModalInstance = null;
+
+        function populateQuickDatalists() {
+            const categories = GUG_DB.getCategories();
+            const brands = GUG_DB.getBrands();
+            
+            const catDatalist = document.getElementById('qp-category-datalist');
+            if (catDatalist) {
+                catDatalist.innerHTML = categories.map(c => `<option value="${c.name}">`).join('');
+            }
+            const brandDatalist = document.getElementById('qp-brand-datalist');
+            if (brandDatalist) {
+                brandDatalist.innerHTML = brands.map(b => `<option value="${b.name}">`).join('');
+            }
+        }
+
+        function addQPCityStockRow(cityName = '', qty = 0) {
+            const container = document.getElementById('qp-city-stock-container');
+            if (!container) return;
+            const row = document.createElement('div');
+            row.className = 'row g-2 align-items-center qp-city-stock-row';
+            row.innerHTML = `
+                <div class="col-7">
+                    <input type="text" class="form-control form-control-sm qp-city-name-input" list="inventory-city-datalist" placeholder="City name (e.g. Karachi, Multan)" value="${cityName}">
+                </div>
+                <div class="col-3">
+                    <input type="number" class="form-control form-control-sm qp-city-qty-input" placeholder="Qty" min="0" value="${qty}" oninput="updateQPTotalStockPreview()">
+                </div>
+                <div class="col-2 text-end">
+                    <button type="button" class="btn btn-outline-danger btn-sm p-1 w-100" onclick="removeQPCityStockRow(this)"><i class="fas fa-times"></i></button>
+                </div>
+            `;
+            container.appendChild(row);
+            updateQPTotalStockPreview();
+        }
+
+        function removeQPCityStockRow(btn) {
+            const container = document.getElementById('qp-city-stock-container');
+            const rows = container.getElementsByClassName('qp-city-stock-row');
+            if (rows.length > 1) {
+                btn.closest('.qp-city-stock-row').remove();
+            } else {
+                const row = btn.closest('.qp-city-stock-row');
+                row.querySelector('.qp-city-name-input').value = '';
+                row.querySelector('.qp-city-qty-input').value = 0;
+            }
+            updateQPTotalStockPreview();
+        }
+
+        function updateQPTotalStockPreview() {
+            let total = 0;
+            const qtyInputs = document.querySelectorAll('#qp-city-stock-container .qp-city-qty-input');
+            qtyInputs.forEach(inp => {
+                total += Number(inp.value || 0);
+            });
+            const badge = document.getElementById('qp-total-stock-preview');
+            if (badge) badge.innerText = `${total.toLocaleString()} Units`;
+        }
+
+        function calculateQPDiscount() {
+            const regular = Number(document.getElementById('qp-price').value) || 0;
+            const isOnSale = document.getElementById('qp-on-sale').checked;
+            const discountPercent = Number(document.getElementById('qp-discount').value) || 0;
+            
+            let finalPrice = regular;
+            if (isOnSale && discountPercent > 0) {
+                const savings = Math.round(regular * (discountPercent / 100));
+                finalPrice = Math.max(0, regular - savings);
+            }
+            
+            const previewEl = document.getElementById('qp-live-price-preview');
+            if (previewEl) {
+                if (isOnSale && discountPercent > 0) {
+                    previewEl.innerHTML = `<span class="text-decoration-line-through text-muted small me-2">Rs. ${regular.toLocaleString()}</span> Rs. ${finalPrice.toLocaleString()} (${discountPercent}% OFF)`;
+                } else {
+                    previewEl.innerText = 'Rs. ' + regular.toLocaleString();
+                }
+            }
+        }
+
+        function openQuickProductModal(productId) {
+            populateCityDatalist();
+            populateQuickDatalists();
+            const products = GUG_DB.getProducts();
+            const p = products.find(item => item.id === productId);
+            if (!p) return;
+
+            document.getElementById('qp-id').value = p.id;
+            document.getElementById('qp-title').value = p.title || p.name || '';
+            document.getElementById('qp-sku').value = p.sku || p.id;
+            document.getElementById('qp-image').value = p.image || '';
+            document.getElementById('qp-image-preview').src = p.image || 'assets/images/logo.png';
+            document.getElementById('qp-image-file').value = '';
+            document.getElementById('qp-category').value = p.category || 'Accessories';
+            document.getElementById('qp-brand').value = p.brand || 'GearUp Pro';
+
+            const regPrice = (p.onSale && p.originalPrice) ? p.originalPrice : (p.originalPrice || p.sellingPrice || p.price || 0);
+            document.getElementById('qp-price').value = regPrice;
+            document.getElementById('qp-on-sale').checked = Boolean(p.onSale);
+            document.getElementById('qp-discount').value = p.saleDiscountPercent || 0;
+            document.getElementById('qp-featured').checked = Boolean(p.isFeatured);
+            document.getElementById('qp-threshold').value = p.lowStockThreshold !== undefined ? p.lowStockThreshold : 10;
+
+            // Populate Quick Edit Dynamic City Stock
+            const qpContainer = document.getElementById('qp-city-stock-container');
+            if (qpContainer) {
+                qpContainer.innerHTML = '';
+                const normStock = GUG_DB.normalizeProductStock ? GUG_DB.normalizeProductStock(p.stock) : (p.stock || {});
+                const cityKeys = Object.keys(normStock);
+                if (cityKeys.length > 0) {
+                    cityKeys.forEach(city => {
+                        addQPCityStockRow(city, Number(normStock[city] || 0));
+                    });
+                } else {
+                    addQPCityStockRow('Karachi', 0);
+                }
+            }
+            updateQPTotalStockPreview();
+
+            calculateQPDiscount();
+
+            const modalEl = document.getElementById('quickProductModal');
+            quickProductModalInstance = new bootstrap.Modal(modalEl);
+            modalInstance = quickProductModalInstance;
+            quickProductModalInstance.show();
+        }
+
+        function saveQuickProductForm(e) {
+            e.preventDefault();
+            const prodId = document.getElementById('qp-id').value;
+            const products = GUG_DB.getProducts();
+            const p = products.find(item => item.id === prodId);
+            if (!p) return;
+
+            const title = document.getElementById('qp-title').value.trim();
+            const category = document.getElementById('qp-category').value.trim() || 'Accessories';
+            const brand = document.getElementById('qp-brand').value.trim() || 'GearUp Pro';
+            const image = document.getElementById('qp-image').value.trim() || 'assets/images/logo.png';
+            const regPrice = Number(document.getElementById('qp-price').value) || 0;
+            const isOnSale = document.getElementById('qp-on-sale').checked;
+            const discountPercent = isOnSale ? (Number(document.getElementById('qp-discount').value) || 0) : 0;
+            const isFeatured = document.getElementById('qp-featured').checked;
+
+            let finalSellingPrice = regPrice;
+            if (isOnSale && discountPercent > 0) {
+                const savings = Math.round(regPrice * (discountPercent / 100));
+                finalSellingPrice = Math.max(0, regPrice - savings);
+            }
+
+            // Collect Quick Edit Dynamic City Stock
+            const stockObj = {};
+            const cityRows = document.querySelectorAll('#qp-city-stock-container .qp-city-stock-row');
+            cityRows.forEach(row => {
+                const cityName = (row.querySelector('.qp-city-name-input').value || '').trim();
+                const qty = Number(row.querySelector('.qp-city-qty-input').value || 0);
+                if (cityName) {
+                    stockObj[cityName] = (stockObj[cityName] || 0) + qty;
+                }
+            });
+            if (Object.keys(stockObj).length === 0) {
+                stockObj['Karachi'] = 0;
+            }
+
+            p.title = title;
+            p.name = title;
+            p.category = category;
+            p.brand = brand;
+            p.image = image;
+            p.originalPrice = regPrice;
+            p.sellingPrice = finalSellingPrice;
+            p.price = finalSellingPrice;
+            p.onSale = isOnSale && discountPercent > 0;
+            p.saleDiscountPercent = isOnSale ? discountPercent : 0;
+            p.isFeatured = isFeatured;
+            p.stock = stockObj;
+            p.lowStockThreshold = Number(document.getElementById('qp-threshold').value || 10);
+
+            GUG_DB.saveProduct(p);
+            if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.saveProduct === 'function') {
+                window.GUG_FIREBASE.saveProduct(p);
+            }
+            if (quickProductModalInstance) quickProductModalInstance.hide();
+            populateDropdowns();
+            renderProductsTable();
+            updateStats();
+            renderSaleCampaignProducts();
+            GUG_DB.showToast(`Product "${p.title}" successfully updated and synced live to storefront!`, 'success', 'Storefront Updated');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initCatalogPage();
+            renderSaleCampaignProducts();
+
+            // Sales Campaign & Top Banner Tab initialization
+            if (typeof window.renderSalesBanners === 'function') {
+                window.renderSalesBanners();
+            }
+            const savedEventName = localStorage.getItem('gug_sales_event_name');
+            const eventNameEl = document.getElementById('event-sale-name');
+            if (eventNameEl && savedEventName) eventNameEl.value = savedEventName;
+
+            const salesBannersToggle = document.getElementById('master-sales-banners-toggle');
+            const salesBannersLabel = document.getElementById('master-sales-banners-label');
+            if (salesBannersToggle) {
+                const isSalesBannersEnabled = localStorage.getItem('gug_sales_banners_enabled') !== 'false';
+                salesBannersToggle.checked = isSalesBannersEnabled;
+                if (salesBannersLabel) {
+                    salesBannersLabel.textContent = isSalesBannersEnabled ? 'ON' : 'OFF';
+                    salesBannersLabel.className = isSalesBannersEnabled ? 'form-check-label small ms-1 text-success fw-bold' : 'form-check-label small ms-1 text-secondary';
+                }
+            }
+
+            const salesTabBtn = document.getElementById('sales-campaign-tab');
+            if (salesTabBtn) {
+                salesTabBtn.addEventListener('shown.bs.tab', () => {
+                    if (typeof window.renderSalesBanners === 'function') window.renderSalesBanners();
+                    if (typeof window.renderSaleCampaignProducts === 'function') window.renderSaleCampaignProducts();
+                });
+            }
+
+            // Interactive Tab Navigation Engine
+            const catTabButtons = document.querySelectorAll('#catalogManagementTabs button[data-bs-toggle="tab"]');
+            catTabButtons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    catTabButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const targetSelector = this.getAttribute('data-bs-target');
+                    document.querySelectorAll('#catalogManagementTabsContent .tab-pane').forEach(p => {
+                        p.classList.remove('show', 'active');
+                    });
+                    const targetPane = document.querySelector(targetSelector);
+                    if (targetPane) {
+                        targetPane.classList.add('show', 'active');
+                    }
+                    if (targetSelector === '#tab-sales-campaign') {
+                        if (typeof window.renderSalesBanners === 'function') window.renderSalesBanners();
+                        if (typeof window.renderSaleCampaignProducts === 'function') window.renderSaleCampaignProducts();
+                    }
+                });
+            });
+
+            // Handle tab selection from URL param or hash (?tab=sales-campaign or #tab-sales-campaign)
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('tab') === 'sales-campaign' || window.location.hash === '#tab-sales-campaign') {
+                const tabTrigger = document.querySelector('#sales-campaign-tab');
+                const catTab = document.querySelector('#products-catalog-tab');
+                const targetPane = document.querySelector('#tab-sales-campaign');
+                const catPane = document.querySelector('#tab-products-catalog');
+
+                if (catTab) { catTab.classList.remove('active'); catTab.setAttribute('aria-selected', 'false'); }
+                if (tabTrigger) { tabTrigger.classList.add('active'); tabTrigger.setAttribute('aria-selected', 'true'); }
+                if (catPane) catPane.classList.remove('show', 'active');
+                if (targetPane) targetPane.classList.add('show', 'active');
+
+                if (typeof window.renderSalesBanners === 'function') window.renderSalesBanners();
+                if (typeof window.renderSaleCampaignProducts === 'function') window.renderSaleCampaignProducts();
+            }
+
+            // Real-time synchronization listeners across tabs, windows, and ERP events
+            window.addEventListener('gugProductsUpdated', () => {
+                updateStats();
+                filterProducts();
+                renderSaleCampaignProducts();
+            });
+            window.addEventListener('productsReady', () => {
+                updateStats();
+                filterProducts();
+                renderSaleCampaignProducts();
+            });
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'gug_erp_products' || e.key === 'admin_custom_products' || e.key === 'admin_deleted_products' || e.key === 'gug_products') {
+                    updateStats();
+                    filterProducts();
+                    renderSaleCampaignProducts();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,2697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Immediate Zero-Delay Embedded View Detection (Prevents Duplicate Sidebar & Layout Snap) -->
+    <script>if(window.self!==window.top||(typeof location!=='undefined'&&location.search.indexOf('staff_view=1')!==-1)){document.documentElement.classList.add('is-embedded');}</script>
+    <style>
+        html.is-embedded .admin-sidebar, html.is-embedded aside.admin-sidebar, body.is-embedded .admin-sidebar { display: none !important; visibility: hidden !important; width: 0 !important; height: 0 !important; position: absolute !important; left: -9999px !important; opacity: 0 !important; pointer-events: none !important; animation: none !important; -webkit-animation: none !important; transition: none !important; transform: none !important; }
+        html.is-embedded .admin-main, body.is-embedded .admin-main { margin-left: 0 !important; width: 100% !important; padding: 15px 20px !important; animation: none !important; transition: none !important; }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Relationship Management (CRM) | GearUp Gadgets ERP</title>    
+    <!-- Favicon & Device Web Icons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/images/favicon-64x64.png">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/fonts/font-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <style>
+        body { background-color: var(--gug-bg-color, #07090d) !important; background-image: var(--gug-bg-image) !important; background-attachment: var(--gug-bg-attachment, fixed) !important; background-size: var(--gug-bg-size, cover, cover, 28px 49px) !important; background-position: var(--gug-bg-position, center top) !important; background-repeat: var(--gug-bg-repeat, no-repeat, no-repeat, repeat) !important; min-height: 100vh; color: #ffffff !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .admin-sidebar { width: 260px; background: rgba(10, 10, 15, 0.6) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; height: 100vh; position: fixed; left: 0; top: 0; padding: 20px 15px; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; overflow-y: auto; z-index: 1000; }
+        .admin-main { margin-left: 260px; padding: 25px 30px; min-height: 100vh; background-color: transparent !important; color: #ffffff !important; }
+        .admin-nav-link { display: flex; align-items: center; padding: 9px 13px; color: #94a3b8; text-decoration: none; border-radius: 8px; margin-bottom: 3px; font-size: 13px; font-weight: 500; transition: all 0.2s ease; }
+        .admin-nav-link:hover { background-color: rgba(219, 39, 36, 0.15); color: #fff; }
+        .admin-nav-link.active { background-color: var(--accent-red); color: #fff !important; font-weight: 600; box-shadow: 0 4px 12px rgba(219, 39, 36, 0.3); }
+        .sidebar-section-heading { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #64748b; margin-top: 15px; margin-bottom: 6px; padding-left: 10px; }
+        
+        .admin-card { background: rgba(10, 10, 15, 0.45) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 16px !important; padding: 20px; margin-bottom: 20px; color: #ffffff !important; box-shadow: 0 16px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important; }
+        .admin-card .table { color: #ffffff !important; background-color: transparent !important; vertical-align: middle; }
+        .admin-card .table th { background-color: rgba(255, 255, 255, 0.06) !important; border-bottom: 2px solid rgba(255, 255, 255, 0.15) !important; color: #ffffff !important; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .admin-card .table td { border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important; font-size: 13.5px; color: #ffffff !important; }
+
+        /* Customer 360 Modal & White Background Text Visibility (Zero Text-Shadow) */
+        #customerDetailModal,
+        #customerDetailModal .modal-content,
+        #customerDetailModal .modal-body,
+        #customerDetailModal .modal-header,
+        #customerDetailModal .modal-footer,
+        #customerDetailModal * {
+            text-shadow: none !important;
+        }
+
+        #customerDetailModal {
+            background: transparent !important;
+            background-color: transparent !important;
+        }
+
+        .modal-backdrop {
+            background-color: #000000 !important;
+        }
+
+        .modal-backdrop.show {
+            opacity: 0.65 !important;
+        }
+
+        #customerDetailModal .modal-content {
+            background-color: #ffffff !important;
+            background: #ffffff !important;
+            color: #222222 !important;
+            border-radius: 16px !important;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6) !important;
+        }
+
+        #customerDetailModal h1, #customerDetailModal h2, #customerDetailModal h3,
+        #customerDetailModal h4, #customerDetailModal h5, #customerDetailModal h6,
+        #customerDetailModal strong {
+            color: #111827 !important;
+            text-shadow: none !important;
+        }
+
+        #customerDetailModal p, #customerDetailModal span:not(.badge),
+        #customerDetailModal div:not(.badge), #customerDetailModal small,
+        #customerDetailModal label {
+            color: #222222 !important;
+            text-shadow: none !important;
+        }
+
+        #customerDetailModal .table {
+            color: #222222 !important;
+            background-color: #ffffff !important;
+            text-shadow: none !important;
+        }
+
+        #customerDetailModal .table th {
+            background: #f1f5f9 !important;
+            background-color: #f1f5f9 !important;
+            color: #111827 !important;
+            font-weight: 800 !important;
+            font-size: 12px !important;
+            letter-spacing: 0.5px !important;
+            text-transform: uppercase !important;
+            border-bottom: 2px solid #cbd5e1 !important;
+            border-top: none !important;
+            padding: 12px 14px !important;
+            text-shadow: none !important;
+        }
+
+        #customerDetailModal .table td {
+            background: #ffffff !important;
+            background-color: #ffffff !important;
+            color: #222222 !important;
+            font-size: 13.5px !important;
+            border-bottom: 1px solid #e2e8f0 !important;
+            text-shadow: none !important;
+        }
+
+        #customerDetailModal .spec-label {
+            background: #f8fafc !important;
+            background-color: #f8fafc !important;
+            color: #111827 !important;
+            font-weight: 700 !important;
+            font-size: 12px !important;
+            padding: 7px 12px !important;
+            border: 1px solid #e2e8f0 !important;
+            border-right: 2px solid #cbd5e1 !important;
+            white-space: nowrap !important;
+            text-shadow: none !important;
+            width: 32% !important;
+        }
+
+        #customerDetailModal .spec-value {
+            background: #ffffff !important;
+            background-color: #ffffff !important;
+            color: #333333 !important;
+            font-weight: 500 !important;
+            font-size: 12px !important;
+            padding: 7px 12px !important;
+            border: 1px solid #e2e8f0 !important;
+            text-shadow: none !important;
+        }
+        
+        .avatar-circle { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; background: #e0f2fe; color: #0284c7; }
+
+        /* ==========================================================================
+           CUSTOMER CRM PRINT SLIP & SPREADSHEET TABLE RULES (SCREEN & PRINT)
+           Strict Native Excel-Like Invoice Table Layout & Full Black / Red Contrast
+           ========================================================================== */
+        .order-products-table,
+        table.order-products-table,
+        .gug-individual-slip table {
+            display: table !important;
+            border-collapse: collapse !important;
+            width: 100% !important;
+            border: 1px solid #000 !important;
+            background: #ffffff !important;
+            background-color: #ffffff !important;
+            margin: 0 !important;
+            table-layout: fixed !important;
+        }
+
+        .order-products-table thead,
+        table.order-products-table thead,
+        .gug-individual-slip table thead {
+            display: table-header-group !important;
+            position: static !important;
+            width: auto !important;
+            height: auto !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        .order-products-table thead tr,
+        table.order-products-table thead tr,
+        .gug-individual-slip table thead tr {
+            display: table-row !important;
+            position: static !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        .order-products-table tbody,
+        table.order-products-table tbody,
+        .gug-individual-slip table tbody {
+            display: table-row-group !important;
+        }
+
+        .order-products-table tr,
+        table.order-products-table tr,
+        .gug-individual-slip table tr {
+            display: table-row !important;
+            border: none !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .order-products-table th,
+        .order-products-table td,
+        table.order-products-table th,
+        table.order-products-table td,
+        .gug-individual-slip table th,
+        .gug-individual-slip table td {
+            display: table-cell !important;
+            border: 1px solid #000 !important;
+            padding: 4px !important;
+            background: #ffffff !important;
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            font-size: 8.5pt !important;
+            box-shadow: none !important;
+            box-sizing: border-box !important;
+            border-radius: 0 !important;
+        }
+
+        .order-products-table *::before,
+        .order-products-table *::after,
+        table.order-products-table *::before,
+        table.order-products-table *::after,
+        .gug-individual-slip table *::before,
+        .gug-individual-slip table *::after {
+            display: none !important;
+            content: none !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .order-products-table th,
+        table.order-products-table th {
+            font-weight: 700 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.2px !important;
+            text-align: center !important;
+        }
+
+        .order-products-table th:nth-child(1),
+        .order-products-table td:nth-child(1),
+        table.order-products-table th:nth-child(1),
+        table.order-products-table td:nth-child(1) {
+            width: 5% !important;
+            text-align: center !important;
+        }
+
+        .order-products-table th:nth-child(2),
+        table.order-products-table th:nth-child(2) {
+            width: 60% !important;
+            text-align: center !important;
+        }
+
+        .order-products-table td:nth-child(2),
+        table.order-products-table td:nth-child(2) {
+            width: 60% !important;
+            text-align: left !important;
+        }
+
+        .order-products-table th:nth-child(3),
+        .order-products-table td:nth-child(3),
+        table.order-products-table th:nth-child(3),
+        table.order-products-table td:nth-child(3) {
+            width: 15% !important;
+            text-align: center !important;
+        }
+
+        .order-products-table th:nth-child(4),
+        .order-products-table td:nth-child(4),
+        table.order-products-table th:nth-child(4),
+        table.order-products-table td:nth-child(4) {
+            width: 5% !important;
+            text-align: center !important;
+        }
+
+        .order-products-table th:nth-child(5),
+        .order-products-table td:nth-child(5),
+        table.order-products-table th:nth-child(5),
+        table.order-products-table td:nth-child(5) {
+            width: 15% !important;
+            text-align: center !important;
+        }
+
+        /* ==========================================================================
+           CUSTOMER CRM PRINT SLIP & ORDER HISTORY @MEDIA PRINT RULES
+           Strict Excel-Like Invoice Table Layout & Full Black / Red Contrast
+           ========================================================================== */
+        @media print {
+            body {
+                background: #ffffff !important;
+                background-color: #ffffff !important;
+                background-image: none !important;
+                color: #000000 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            @page {
+                margin: 0 !important;
+                size: auto;
+            }
+
+            /* Isolate Individual Print Container when active */
+            body.gug-individual-print-active > *:not(#gug-individual-print-container):not(#print-container) {
+                display: none !important;
+                visibility: hidden !important;
+                height: 0 !important;
+                width: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+            }
+
+            body.gug-individual-print-active #gug-individual-print-container,
+            body.gug-individual-print-active #print-container {
+                display: block !important;
+                visibility: visible !important;
+                position: relative !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #ffffff !important;
+                color: #000000 !important;
+            }
+
+            #gug-individual-print-container *,
+            #print-container * {
+                visibility: visible !important;
+            }
+
+            /* Clean Card Containers */
+            .gug-individual-slip {
+                display: block !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                background: #ffffff !important;
+                color: #000000 !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            /* Brand Logo: Full Authentic Color (No Grayscale / Brightness Filter) */
+            .gug-slip-brand-header img,
+            .gug-print-logo-img,
+            .brand-logo-img {
+                display: block !important;
+                margin: 0 auto 4px auto !important;
+                max-height: 52px !important;
+                height: 52px !important;
+                object-fit: contain !important;
+                filter: none !important;
+                -webkit-filter: none !important;
+                background: transparent !important;
+            }
+
+            /* Section 2: Order Summary Row */
+            .order-meta-top-row {
+                display: flex !important;
+                flex-direction: row !important;
+                justify-content: space-between !important;
+                align-items: flex-end !important;
+                flex-wrap: wrap !important;
+                gap: 8px !important;
+                width: 100% !important;
+                padding-bottom: 6px !important;
+                margin-bottom: 6px !important;
+                border-bottom: none !important;
+            }
+
+            /* Order Data Boxes: Small uppercase black bold headings */
+            .order-label,
+            .order-data-label {
+                color: #000000 !important;
+                font-weight: bold !important;
+                font-weight: 700 !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.5px !important;
+                font-size: 8pt !important;
+                display: block !important;
+                margin-bottom: 2px !important;
+            }
+
+            /* Strict Excel-Like Table for Product Details */
+            .order-products-fullwidth {
+                width: 100% !important;
+                display: block !important;
+                margin-top: 6px !important;
+            }
+
+            .order-table-wrapper {
+                width: 100% !important;
+                background: #ffffff !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+            }
+
+            /* Force Standard Native Grid (Purged of All Hacks, Zero '+' Artifacts) */
+            .order-products-table,
+            table.order-products-table {
+                border-collapse: collapse !important;
+                width: 100% !important;
+                border: 1px solid #000 !important;
+                background: #ffffff !important;
+                background-color: #ffffff !important;
+                margin: 0 !important;
+                table-layout: fixed !important;
+            }
+
+            .order-products-table th,
+            .order-products-table td,
+            table.order-products-table th,
+            table.order-products-table td {
+                border: 1px solid #000 !important;
+                padding: 4px !important;
+                background: #ffffff !important;
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                font-size: 8.5pt !important;
+                box-shadow: none !important;
+                box-sizing: border-box !important;
+            }
+
+            /* Destroy '+' Artifacts: Completely remove any pseudo-elements or background patterns */
+            .order-products-table *::before,
+            .order-products-table *::after,
+            table.order-products-table *::before,
+            table.order-products-table *::after {
+                display: none !important;
+                content: none !important;
+                border: none !important;
+                box-shadow: none !important;
+            }
+
+            /* Headers: Bold and Centered */
+            .order-products-table th,
+            table.order-products-table th {
+                font-weight: 700 !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.2px !important;
+                text-align: center !important;
+            }
+
+            /* Column Proportions and Alignments */
+            .order-products-table th:nth-child(1),
+            .order-products-table td:nth-child(1),
+            table.order-products-table th:nth-child(1),
+            table.order-products-table td:nth-child(1) {
+                width: 5% !important;
+                text-align: center !important;
+            }
+
+            .order-products-table th:nth-child(2),
+            table.order-products-table th:nth-child(2) {
+                width: 60% !important;
+                text-align: center !important;
+            }
+
+            .order-products-table td:nth-child(2),
+            table.order-products-table td:nth-child(2) {
+                width: 60% !important;
+                text-align: left !important;
+            }
+
+            .order-products-table th:nth-child(3),
+            .order-products-table td:nth-child(3),
+            table.order-products-table th:nth-child(3),
+            table.order-products-table td:nth-child(3) {
+                width: 15% !important;
+                text-align: center !important;
+            }
+
+            .order-products-table th:nth-child(4),
+            .order-products-table td:nth-child(4),
+            table.order-products-table th:nth-child(4),
+            table.order-products-table td:nth-child(4) {
+                width: 5% !important;
+                text-align: center !important;
+            }
+
+            .order-products-table th:nth-child(5),
+            .order-products-table td:nth-child(5),
+            table.order-products-table th:nth-child(5),
+            table.order-products-table td:nth-child(5) {
+                width: 15% !important;
+                text-align: center !important;
+            }
+
+            /* Strictly Preserve Red, Blue & Green Accent Colors */
+            .text-danger,
+            .text-danger *,
+            .order-amount-red,
+            .order-id,
+            code.order-id {
+                color: #dc2626 !important;
+                -webkit-text-fill-color: #dc2626 !important;
+                font-weight: 700 !important;
+            }
+
+            .order-amount-red {
+                font-size: 11pt !important;
+                font-weight: 800 !important;
+            }
+
+            .text-success,
+            .text-success * {
+                color: #16a34a !important;
+                -webkit-text-fill-color: #16a34a !important;
+            }
+
+            .text-primary,
+            .text-primary * {
+                color: #2563eb !important;
+                -webkit-text-fill-color: #2563eb !important;
+            }
+
+            /* Hide Navigation, Action Buttons & Footers in Print */
+            .no-print,
+            .btn,
+            .admin-sidebar,
+            .nav-tabs,
+            #gug-global-header-container,
+            #gug-beginner-help-container,
+            .modal-backdrop,
+            .modal,
+            .print-signature-block,
+            .gug-slip-footer-disclaimer {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+        <!-- Enterprise Sidebar Navigation -->
+    <div class="admin-sidebar">
+        <div class="d-flex align-items-center mb-3 px-2">
+            <i class="fas fa-shield-alt text-danger fs-4 me-2"></i>
+            <div>
+                <h6 class="text-white m-0 fw-bold">GearUp ERP</h6>
+                <small class="text-secondary" style="font-size: 11px;">Enterprise Operating System</small>
+            </div>
+        </div>
+
+        <a href="dashboard.html" class="admin-nav-link" id="nav-dashboard"><i class="fas fa-chart-pie me-2"></i> Executive Dashboard</a>
+        
+        <!-- Accordion 1: Catalog & E-Commerce -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-catalog">
+                <span><i class="fas fa-shopping-bag text-danger me-2"></i> Catalog & E-Commerce</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-catalog">
+                <a href="products.html" class="admin-nav-link" id="nav-products"><i class="fas fa-boxes-stacked me-2"></i> Products & Catalog</a>
+                <a href="admin-crm.html" class="admin-nav-link" id="nav-crm"><i class="fas fa-users-viewfinder me-2"></i> Customers (CRM)</a>
+                <a href="admin-marketing.html" class="admin-nav-link" id="nav-marketing"><i class="fas fa-tags me-2"></i> Coupons & Marketing</a>
+            </div>
+        </div>
+
+        <!-- Accordion 2: Supply Chain & Operations -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-supply">
+                <span><i class="fas fa-truck-ramp-box text-primary me-2"></i> Supply Chain & Operations</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-supply">
+                <a href="admin-inventory.html" class="admin-nav-link" id="nav-inventory"><i class="fas fa-warehouse me-2"></i> Multi-Warehouse Stock</a>
+                <a href="admin-purchasing.html" class="admin-nav-link" id="nav-purchasing"><i class="fas fa-dolly me-2"></i> Purchasing & Suppliers</a>
+                <a href="orders.html" class="admin-nav-link" id="nav-orders"><i class="fas fa-cart-shopping me-2"></i> Sales Orders Pipeline</a>
+                <a href="admin-logistics.html" class="admin-nav-link" id="nav-logistics"><i class="fas fa-truck-fast me-2"></i> Logistics & Courier COD</a>
+                <a href="admin-returns.html" class="admin-nav-link" id="nav-returns"><i class="fas fa-rotate-left me-2"></i> Returns & Warranty (RMA)</a>
+            </div>
+        </div>
+
+        <!-- Accordion 3: Finance & B2B Wholesale -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-finance">
+                <span><i class="fas fa-coins text-warning me-2"></i> Finance & B2B Wholesale</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-finance">
+                <a href="admin-dealers.html" class="admin-nav-link" id="nav-dealers"><i class="fas fa-handshake me-2"></i> B2B Dealers & Ledger</a>
+                <a href="admin-finance.html" class="admin-nav-link" id="nav-finance"><i class="fas fa-file-invoice-dollar me-2"></i> Finance & P&L Ledger</a>
+                <a href="admin-staff.html" class="admin-nav-link" id="nav-staff"><i class="fas fa-user-tie me-2"></i> HR & Employee Payroll</a>
+                <a href="admin-tasks.html" class="admin-nav-link" id="nav-tasks"><i class="fas fa-list-check me-2"></i> Task Kanban & Workflow</a>
+                <a href="admin-reports.html" class="admin-nav-link" id="nav-reports"><i class="fas fa-chart-column me-2"></i> Business Reports</a>
+                <a href="admin-audit.html" class="admin-nav-link" id="nav-audit"><i class="fas fa-fingerprint me-2"></i> Security & Audit Logs</a>
+            </div>
+        </div>
+
+        <!-- Standalone Section: System Settings & Store Customization -->
+        <div class="mt-3 pt-3 border-top border-secondary border-opacity-25">
+            <div class="px-3 text-secondary text-uppercase fw-bold mb-2" style="font-size: 11px; letter-spacing: 0.6px;">System & Settings</div>
+            <a href="admin-settings.html" class="admin-nav-link" id="nav-settings"><i class="fas fa-sliders text-danger me-2"></i> System Settings & APIs</a>
+            <a href="admin-sales.html" class="admin-nav-link" id="nav-sales"><i class="fas fa-palette text-warning me-2"></i> Banner & Theme</a>
+        </div>
+        
+        <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
+            <a href="dealer-portal.html" target="_blank" class="admin-nav-link text-warning"><i class="fas fa-store-alt me-2"></i> Dealer Portal View</a>
+            <a href="employee-portal.html" class="admin-nav-link text-info"><i class="fas fa-id-badge me-2"></i> Employee Workspace</a>
+            <a href="index.html" target="_blank" class="admin-nav-link text-success"><i class="fas fa-store me-2"></i> Customer Storefront</a>
+            <a href="#" class="admin-nav-link text-danger mt-2" onclick="localStorage.removeItem('admin_logged_in'); localStorage.removeItem('admin_role'); localStorage.removeItem('admin_username'); window.location.href = 'admin.html'; return false;"><i class="fas fa-sign-out-alt me-2"></i> Sign Out</a>
+        </div>
+    </div>
+    <script>try{var _s=sessionStorage.getItem('gug_admin_sidebar_scroll');if(_s!==null){var _sb=document.querySelector('.admin-sidebar');if(_sb)_sb.scrollTop=parseFloat(_s);}}catch(e){}</script>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Global Header -->
+        <div id="gug-global-header-container"></div>
+
+        <!-- Beginner Help Banner -->
+        <div id="gug-beginner-help-container"></div>
+
+        <!-- CRM KPI Metrics Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="admin-card p-3 mb-0">
+                    <span class="text-secondary small fw-bold text-uppercase">Total Customers</span>
+                    <h3 class="fw-bold text-dark mb-0 mt-1" id="stat-crm-total">0</h3>
+                    <small class="text-muted">Registered profiles</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="admin-card p-3 mb-0">
+                    <span class="text-secondary small fw-bold text-uppercase">VIP Customers (5+ Orders)</span>
+                    <h3 class="fw-bold text-success mb-0 mt-1" id="stat-crm-vip">0</h3>
+                    <small class="text-success"><i class="fas fa-crown me-1"></i> High Lifetime Value</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="admin-card p-3 mb-0">
+                    <span class="text-secondary small fw-bold text-uppercase">Returning Buyers</span>
+                    <h3 class="fw-bold text-primary mb-0 mt-1" id="stat-crm-returning">0</h3>
+                    <small class="text-primary">Repeat Storefront Purchasers</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="admin-card p-3 mb-0">
+                    <span class="text-secondary small fw-bold text-uppercase">Customer Lifetime Value</span>
+                    <h3 class="fw-bold text-danger mb-0 mt-1" id="stat-crm-clv">Rs.  0</h3>
+                    <small class="text-muted">Accumulated revenue</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="admin-card mb-4">
+            <div class="row g-3 align-items-center">
+                <div class="col-lg-5 col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-danger border-end-0"><i class="fas fa-search"></i></span>
+                        <input type="text" id="crm-search" class="form-control border-start-0" placeholder="Search by Customer Name, Phone, Email, City..." oninput="filterCustomers()">
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <select id="crm-segment-filter" class="form-select" onchange="filterCustomers()">
+                        <option value="">All Customer Segments</option>
+                        <option value="VIP">VIP Customers</option>
+                        <option value="Returning">Returning Buyers</option>
+                        <option value="New">New Customers</option>
+                    </select>
+                </div>
+                <div class="col-lg-4 col-md-12 d-flex justify-content-end gap-2">
+                    <button class="btn btn-outline-danger fw-bold no-print d-flex align-items-center gap-2" onclick="window.printBatchCustomerSlips ? window.printBatchCustomerSlips() : window.GUG_DB.printBatchCustomerSlips()" title="Print All Customer Slips (Multi-Page A4)">
+                        <i class="fas fa-print"></i> <span>Print Slip</span>
+                    </button>
+                    <button class="btn btn-danger d-flex align-items-center gap-2" onclick="openAddCustomerModal()">
+                        <i class="fas fa-user-plus"></i> <span>Add New Customer</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Pills for Customer Profiles vs Orders vs Contact Inquiries vs Custom PC Builds -->
+        <ul class="nav nav-pills mb-3 gap-2" id="crm-tabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active fw-bold" id="tab-cust-btn" data-bs-toggle="pill" data-bs-target="#pane-customers" type="button" role="tab">
+                    <i class="fas fa-users-gear me-1"></i> Customer Profiles
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link fw-bold" id="tab-orders-btn" data-bs-toggle="pill" data-bs-target="#pane-orders" type="button" role="tab" onclick="renderCrmOrdersTable()">
+                    <i class="fas fa-cart-shopping me-1"></i> Customer Orders & Tracking
+                    <span class="badge bg-danger ms-1" id="stat-crm-orders-badge">0</span>
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link fw-bold" id="tab-inq-btn" data-bs-toggle="pill" data-bs-target="#pane-inquiries" type="button" role="tab" onclick="renderInquiriesTable()">
+                    <i class="fas fa-envelope-open-text me-1"></i> Customer Contact Inquiries 
+                    <span class="badge bg-danger ms-1" id="stat-inquiries-badge">0</span>
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link fw-bold" id="tab-pcbuilds-btn" data-bs-toggle="pill" data-bs-target="#pane-pcbuilds" type="button" role="tab" onclick="renderPcBuildsTable()">
+                    <i class="fas fa-desktop me-1"></i> Custom PC Build Requests
+                    <span class="badge bg-danger ms-1" id="stat-pcbuilds-badge">0</span>
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="crmTabContent">
+            <!-- Tab Pane 1: Customer Profiles -->
+            <div class="tab-pane fade show active" id="pane-customers" role="tabpanel">
+                <div class="admin-card p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="ps-4">Customer Profile</th>
+                                    <th>Contact Information</th>
+                                    <th>Location / City</th>
+                                    <th>Total Orders</th>
+                                    <th>Lifetime Spend</th>
+                                    <th>Segment</th>
+                                    <th class="text-end pe-4">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customers-tbody">
+                                <!-- Injected via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Pane 2: Customer Contact Inquiries -->
+            <div class="tab-pane fade" id="pane-inquiries" role="tabpanel">
+                <div class="admin-card p-0">
+                    <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="fw-bold text-dark mb-0"><i class="fas fa-inbox text-danger me-2"></i> Live Customer Inquiries & Contact Messages</h6>
+                            <small class="text-secondary">Direct customer feedback and queries submitted via contact form.</small>
+                        </div>
+                        <span class="badge bg-primary px-3 py-2" id="inquiries-total-badge">0 Inquiries</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="ps-4">Sender & Contact</th>
+                                    <th>Subject</th>
+                                    <th>Message Details</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th class="text-end pe-4">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inquiries-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Pane 3: Custom PC Build Requests -->
+            <div class="tab-pane fade" id="pane-pcbuilds" role="tabpanel">
+                <div class="admin-card p-0">
+                    <div class="p-3 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
+                        <div>
+                            <h6 class="fw-bold text-dark mb-0"><i class="fas fa-desktop text-danger me-2"></i> Custom PC Build Inquiries & Hardware Specifications</h6>
+                            <small class="text-secondary">Submitted live via the Student PC, Corporate PC, and Gaming PC configuration forms on the storefront.</small>
+                        </div>
+                        <span class="badge bg-danger px-3 py-2" id="pcbuilds-total-badge">0 Build Requests</span>
+                    </div>
+
+                    <!-- Search and Filter Bar -->
+                    <div class="p-3 border-bottom bg-light">
+                        <div class="row g-2 align-items-center">
+                            <div class="col-lg-5 col-md-4">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text bg-white text-danger border-end-0"><i class="fas fa-search"></i></span>
+                                    <input type="text" id="pcbuild-search" class="form-control border-start-0" placeholder="Search customer, phone, whatsapp, CPU, GPU, city..." oninput="filterPcBuilds()">
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-4">
+                                <select id="pcbuild-tier-filter" class="form-select form-select-sm" onchange="filterPcBuilds()">
+                                    <option value="">All Build Tiers (Student / Corporate / Gaming)</option>
+                                    <option value="Student PC">Student PC</option>
+                                    <option value="Corporate PC">Corporate PC</option>
+                                    <option value="Gaming PC">Gaming PC</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-3 col-md-4">
+                                <select id="pcbuild-status-filter" class="form-select form-select-sm" onchange="filterPcBuilds()">
+                                    <option value="">All Statuses</option>
+                                    <option value="New Lead">New Lead</option>
+                                    <option value="Contacted">Contacted / In Discussion</option>
+                                    <option value="Quoted">Quotation Sent</option>
+                                    <option value="In Build">In Assembly / Testing</option>
+                                    <option value="Completed">Completed & Dispatched</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-1 col-md-12 text-end">
+                                <button class="btn btn-sm btn-outline-secondary w-100" title="Reset Filters" onclick="resetPcBuildFilters()"><i class="fas fa-rotate"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="ps-4">Request ID & Customer</th>
+                                    <th>Build Tier</th>
+                                    <th>Key Hardware Specs</th>
+                                    <th>Target Budget</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th class="text-end pe-4">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pcbuilds-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Pane 4: Customer Orders & Tracking -->
+            <div class="tab-pane fade" id="pane-orders" role="tabpanel">
+                <div class="admin-card p-0">
+                    <div class="p-3 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
+                        <div>
+                            <h6 class="fw-bold text-dark mb-0"><i class="fas fa-boxes-packing text-danger me-2"></i> Real-Time Customer Orders & Tracking</h6>
+                            <small class="text-secondary">Review placed orders, view customer line items, and cancel or manage order status directly.</small>
+                        </div>
+                        <span class="badge bg-danger px-3 py-2" id="crm-orders-total-badge">0 Orders</span>
+                    </div>
+
+                    <!-- Search & Filter Toolbar for Orders -->
+                    <div class="p-3 border-bottom bg-light">
+                        <div class="row g-2 align-items-center">
+                            <div class="col-lg-5 col-md-4">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text bg-white text-danger border-end-0"><i class="fas fa-search"></i></span>
+                                    <input type="text" id="crm-order-search" class="form-control border-start-0" placeholder="Search by Order #, Customer, Phone, City, Product..." oninput="filterCrmOrders()">
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-4">
+                                <select id="crm-order-status-filter" class="form-select form-select-sm" onchange="filterCrmOrders()">
+                                    <option value="">All Fulfillment Statuses</option>
+                                    <option value="Pending">Pending Approval</option>
+                                    <option value="Processing">Processing / Packing</option>
+                                    <option value="Dispatched">Dispatched (Courier Transit)</option>
+                                    <option value="Delivered">Delivered</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-3 col-md-3">
+                                <select id="crm-order-payment-filter" class="form-select form-select-sm" onchange="filterCrmOrders()">
+                                    <option value="">All Payment Types</option>
+                                    <option value="Cash on Delivery">Cash on Delivery (COD)</option>
+                                    <option value="Paid">Paid</option>
+                                    <option value="Pending">Payment Pending</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-1 col-md-1 text-end">
+                                <button class="btn btn-sm btn-outline-secondary w-100" title="Reset Filters" onclick="resetCrmOrderFilters()"><i class="fas fa-rotate"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="ps-4">Order ID & Date</th>
+                                    <th>Customer Details</th>
+                                    <th>Items Summary</th>
+                                    <th>Total Amount</th>
+                                    <th>Payment Method</th>
+                                    <th>Fulfillment Status</th>
+                                    <th class="text-end pe-4">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="crm-orders-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Profile 360 Drawer Modal -->
+    <div class="modal fade" id="customerDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+            <div class="modal-content bg-white shadow-lg border-0" style="background-color: #ffffff !important; color: #222222 !important; text-shadow: none !important;">
+                <div class="modal-header border-bottom p-3 bg-white" style="border-color: #e2e8f0 !important; background-color: #ffffff !important;">
+                    <h5 class="modal-title fw-bold" style="color: #111827 !important; text-shadow: none !important;"><i class="fas fa-id-card text-danger me-2"></i> Customer 360&deg; Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="clearCustomer360State()" style="filter: none !important;"></button>
+                </div>
+                <div class="modal-body p-4 bg-white" id="customer-detail-body" style="background-color: #ffffff !important; color: #222222 !important; text-shadow: none !important;">
+                    <!-- Populated dynamically -->
+                </div>
+                <div class="modal-footer border-top p-3 bg-light d-flex justify-content-between align-items-center" style="border-color: #e2e8f0 !important; background-color: #f8fafc !important; text-shadow: none !important;">
+                    <button type="button" class="btn btn-outline-danger btn-sm fw-bold no-print" onclick="printCustomerSlip(currentCustomer360State ? currentCustomer360State.customerId : '')"><i class="fas fa-print me-1"></i> Print Customer Slip</button>
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" onclick="clearCustomer360State()">Close Profile</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Customer Modal -->
+    <div class="modal fade" id="customerModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-white shadow-lg border-0" style="background-color: #ffffff !important; color: #222222 !important; text-shadow: none !important;">
+                <div class="modal-header border-bottom p-3 bg-white" style="border-color: #e2e8f0 !important; background-color: #ffffff !important;">
+                    <h5 class="modal-title fw-bold" style="color: #111827 !important; text-shadow: none !important;"><i class="fas fa-user-plus text-danger me-2"></i> Register New Customer</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter: none !important;"></button>
+                </div>
+                <div class="modal-body p-4 bg-white" style="background-color: #ffffff !important; color: #222222 !important; text-shadow: none !important;">
+                    <form id="customerForm" onsubmit="event.preventDefault(); saveCustomerForm();">
+                        <input type="hidden" id="cust-id">
+                        <div class="mb-3">
+                            <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                            <input type="text" id="cust-name" class="form-control" placeholder="e.g. Bilal Chaudhry" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Phone Number <span class="text-danger">*</span></label>
+                            <input type="text" id="cust-phone" class="form-control" placeholder="+92 300 1234567" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" id="cust-email" class="form-control" placeholder="customer@gmail.com">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">City</label>
+                            <input type="text" id="cust-city" class="form-control" placeholder="Karachi / Lahore / Islamabad">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Shipping Address</label>
+                            <textarea id="cust-address" class="form-control" rows="2" placeholder="Full delivery address..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Internal Staff Notes</label>
+                            <input type="text" id="cust-notes" class="form-control" placeholder="e.g. VIP bulk client, call before delivery">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-top p-3 bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger px-4" onclick="saveCustomerForm()"><i class="fas fa-save me-1"></i> Save Customer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PC Build Request 360 Detail Modal -->
+    <div class="modal fade" id="pcBuildDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+            <div class="modal-content shadow-lg border-0">
+                <div class="modal-header border-bottom p-3 bg-dark text-white">
+                    <h5 class="modal-title fw-bold" id="pcBuildDetailModalTitle"><i class="fas fa-desktop text-danger me-2"></i> Custom PC Build Request Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4" id="pc-build-detail-body">
+                    <!-- Populated dynamically -->
+                </div>
+                <div class="modal-footer border-top p-3 bg-light d-flex justify-content-between">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline-danger" id="pc-build-delete-modal-btn"><i class="fas fa-trash me-1"></i> Delete Lead</button>
+                        <button type="button" class="btn btn-danger px-4" id="pc-build-save-modal-btn"><i class="fas fa-save me-1"></i> Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Cancellation Confirmation Modal -->
+    <div class="modal fade" id="cancelOrderModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg border-0">
+                <div class="modal-header border-bottom p-3 bg-danger text-white">
+                    <h5 class="modal-title fw-bold"><i class="fas fa-ban me-2"></i> Cancel Customer Order</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4 bg-white text-dark">
+                    <input type="hidden" id="cancel-modal-order-id">
+                    <input type="hidden" id="cancel-modal-customer-id">
+                    <p class="mb-3 text-secondary">
+                        Are you sure you want to cancel order <strong class="text-dark" id="cancel-modal-order-label">#ORD-XXXX</strong>? 
+                        This action will mark the order as <strong>Cancelled</strong>, record an audit event, and synchronize across CRM, Sales Pipeline, and Cloud Firestore.
+                    </p>
+                    <div class="mb-3">
+                        <label class="form-label text-dark fw-bold small">Reason for Cancellation <span class="text-danger">*</span></label>
+                        <select id="cancel-order-reason-select" class="form-select form-select-sm mb-2" onchange="handleCancelReasonSelect(this)">
+                            <option value="Customer requested cancellation">Customer requested cancellation</option>
+                            <option value="Customer unreachable / Phone not responding">Customer unreachable / Phone not responding</option>
+                            <option value="Item out of stock / Inventory shortage">Item out of stock / Inventory shortage</option>
+                            <option value="Incorrect shipping address or duplicate order">Incorrect shipping address or duplicate order</option>
+                            <option value="Cancelled by Admin / Other">Other custom reason</option>
+                        </select>
+                        <input type="text" id="cancel-order-custom-reason" class="form-control form-control-sm d-none" placeholder="Enter custom cancellation reason...">
+                    </div>
+                </div>
+                <div class="modal-footer border-top p-3 bg-light d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-outline-secondary btn-sm px-3" data-bs-dismiss="modal">Keep Order Active</button>
+                    <button type="button" class="btn btn-danger btn-sm px-4 fw-bold" onclick="executeCancelOrder()"><i class="fas fa-ban me-1"></i> Yes, Cancel Order</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/products-data.js"></script>
+    <script src="assets/js/gug-erp-core.js"></script>
+    <!-- Firebase Compat SDKs & Cloud Sync -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/firebase-sync.js"></script>
+    <script src="assets/js/admin.js"></script>
+    <script>
+        let custModalInstance = null;
+        let detailModalInstance = null;
+        let pcBuildDetailModalInstance = null;
+        let activePcBuildId = null;
+
+        // Active Customer 360 State Store (Strict Data Isolation)
+        let currentCustomer360State = {
+            customer: null,
+            orders: [],
+            customerId: null,
+            isOpen: false
+        };
+
+        function clearCustomer360State() {
+            currentCustomer360State = {
+                customer: null,
+                orders: [],
+                customerId: null,
+                isOpen: false
+            };
+            const container = document.getElementById('customer-detail-body');
+            if (container) {
+                container.innerHTML = `
+                    <div class="text-center py-5 text-muted" style="text-shadow: none !important;">
+                        <div class="spinner-border text-danger mb-2" role="status"></div>
+                        <div class="small text-secondary">Loading customer profile...</div>
+                    </div>
+                `;
+            }
+        }
+        window.clearCustomer360State = clearCustomer360State;
+
+        function generateCustomerSlipHtml(c, orders, totalSpend, currentUser, isLast = true) {
+            const now = new Date();
+            const dateFormatted = now.toLocaleDateString('en-PK', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+            const timeFormatted = now.toLocaleTimeString('en-PK', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+            const refCode = 'CUST-SLIP-' + c.id + '-' + Date.now().toString().slice(-6);
+
+            return `
+                <div class="gug-individual-slip ${isLast ? '' : 'gug-slip-page-break'}" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; color: #000000 !important; background: #ffffff !important; background-color: #ffffff !important; max-width: 800px; margin: 0 auto ${isLast ? '0' : '30px'}; padding: 25px; box-sizing: border-box; ${isLast ? 'page-break-after: auto !important; break-after: auto !important;' : 'page-break-after: always !important; break-after: page !important;'}">
+                    <!-- Brand Header (Colored Logo for Print) -->
+                    <div class="text-center mb-2 pb-2 gug-slip-brand-header" style="border-bottom: 1.5px solid #000000 !important; background: #ffffff !important;">
+                        <img src="assets/images/logo.png" alt="Gear Up Gadgets" class="gug-print-logo-img" style="max-height: 52px; height: 52px; object-fit: contain; margin: 0 auto 4px auto; display: block; background: transparent !important;">
+                        <div style="font-size: 8.5pt; font-weight: 700 !important; text-transform: uppercase; color: #000000 !important; letter-spacing: 0.5px; margin-top: 2px;">
+                            ENTERPRISE CRM DIVISION &bull; CUSTOMER 360&deg; ACCOUNT DOSSIER
+                        </div>
+                        <div style="font-size: 8pt; color: #374151 !important; margin-top: 2px;">
+                            Shop F6, Technocity Mall, Hasrat Mohani Road, Karachi, Pakistan &bull; WhatsApp / UAN: +92 300 1234567 &bull; support@gearupgadgets.com
+                        </div>
+                    </div>
+
+                    <!-- Slip Meta Bar -->
+                    <div style="border-top: 1.5px solid #000000 !important; border-bottom: 1.5px solid #000000 !important; padding: 8px 4px; margin-bottom: 14px; display: grid; grid-template-columns: 2fr 1.6fr 1.3fr 1.3fr; gap: 8px; align-items: start; font-size: 8.5pt; color: #000000 !important; background: #ffffff !important;">
+                        <div>
+                            <strong style="color: #000000 !important;">DOCUMENT:</strong> 
+                            <span style="color: #dc2626 !important; font-weight: 700 !important; text-transform: uppercase;">CUSTOMER PROFILE &amp;<br>PURCHASE DOSSIER</span>
+                        </div>
+                        <div>
+                            <div style="font-weight: 700 !important; color: #000000 !important; margin-bottom: 2px;">REF #:</div>
+                            <div style="border: 1px solid #fca5a5 !important; background: #ffffff !important; padding: 2px 6px; border-radius: 4px; display: inline-block;">
+                                <code class="order-id text-danger" style="color: #dc2626 !important; font-weight: 700 !important; font-family: monospace; font-size: 8pt;">${refCode}</code>
+                            </div>
+                        </div>
+                        <div>
+                            <strong style="color: #000000 !important;">DATE:</strong> <span style="color: #000000 !important;">${dateFormatted}</span><br>
+                            <span style="color: #000000 !important;">${timeFormatted}</span>
+                        </div>
+                        <div>
+                            <strong style="color: #000000 !important;">ISSUER:</strong> <span style="color: #000000 !important;">${currentUser.name || 'Khan'} (${currentUser.role || 'Super Admin'})</span><br>
+                            <span style="color: #666666 !important;">(${currentUser.role || 'Super Admin'})</span>
+                        </div>
+                    </div>
+
+                    <!-- Customer Core Details -->
+                    <div class="gug-print-box gug-print-customer-info" style="border: 1px solid #d1d5db !important; border-radius: 6px; padding: 12px 16px; margin-bottom: 14px; background: #ffffff !important; background-color: #ffffff !important; box-shadow: none !important; color: #000000 !important; page-break-inside: auto !important; break-inside: auto !important;">
+                        <h4 style="font-size: 11pt; font-weight: 700 !important; margin: 0 0 10px 0; color: #000000 !important; border-bottom: 1px solid #e5e7eb !important; padding-bottom: 6px;">
+                            1. Customer Identification &amp; Account Parameters
+                        </h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; font-size: 9pt; color: #000000 !important;">
+                            <div><strong style="color: #000000 !important;">Customer Name:</strong> <span style="color: #000000 !important; font-weight: 600;">${c.name}</span></div>
+                            <div><strong style="color: #000000 !important;">Customer ID:</strong> <code class="order-id text-danger" style="color: #dc2626 !important; font-weight: 700 !important; background: #ffffff !important; border: 1px solid #fca5a5 !important; padding: 2px 6px; border-radius: 4px; font-family: monospace;">${c.id}</code></div>
+                            <div><strong style="color: #000000 !important;">Phone / WhatsApp:</strong> <span style="color: #000000 !important;">${c.phone || 'N/A'}</span></div>
+                            <div><strong style="color: #000000 !important;">Email Address:</strong> <span style="color: #000000 !important;">${c.email || 'N/A'}</span></div>
+                            <div><strong style="color: #000000 !important;">Shipping City / Area:</strong> <span style="color: #000000 !important;">${c.city || 'Karachi'}</span></div>
+                            <div><strong style="color: #000000 !important;">Account Classification:</strong> <span style="font-weight: 700 !important; color: #2563eb !important;">${c.segment || (orders.length >= 5 ? 'VIP Client' : 'New')}</span></div>
+                            <div><strong style="color: #000000 !important;">Total Orders Count:</strong> <span style="color: #000000 !important; font-weight: 600;">${orders.length} Orders</span></div>
+                            <div><strong style="color: #000000 !important;">Total Lifetime Spend:</strong> <strong style="color: #16a34a !important; font-size: 10.5pt; font-weight: 800 !important;">Rs. ${totalSpend.toLocaleString()}</strong></div>
+                        </div>
+                    </div>
+
+                    <!-- Customer Order History Data Boxes (Section 2 - Row-wise Layout for Large Orders) -->
+                    <div class="gug-print-box gug-print-section-orders order-history-section" style="border: 1px solid #d1d5db !important; border-radius: 6px; padding: 12px 16px; margin-bottom: 14px; background: #ffffff !important; background-color: #ffffff !important; box-shadow: none !important; color: #000000 !important; page-break-before: auto !important; break-before: auto !important; page-break-inside: auto !important; break-inside: auto !important; height: auto !important; max-height: none !important;">
+                        <h4 style="font-size: 11pt; font-weight: 700 !important; margin: 0 0 10px 0; color: #000000 !important; border-bottom: 1px solid #e5e7eb !important; padding-bottom: 6px;">
+                            <span style="color: #dc2626 !important; margin-right: 6px;">📕</span> 2. Specific Customer Purchase Order History (${orders.length} Records)
+                        </h4>
+                        ${orders.length === 0 ? '<div style="font-size: 9pt; color: #000000 !important; padding: 10px 0;">No prior purchases logged for this customer profile.</div>' : (() => {
+                            let allProducts = [];
+                            orders.forEach(o => {
+                                if (Array.isArray(o.items) && o.items.length > 0) {
+                                    o.items.forEach(it => {
+                                        const name = it.title || it.name || it.productName || 'Gear Up Gadget Item';
+                                        const specs = it.specs || it.description || '';
+                                        const details = specs ? `${name} - ${specs}` : name;
+                                        const qty = Number(it.quantity || it.qty || 1);
+                                        const unitPrice = Number(it.price || it.unitPrice || (o.items.length === 1 ? Number(o.total || 0) : Math.round(Number(o.total || 0) / o.items.length)));
+                                        const totalPrice = unitPrice * qty;
+                                        allProducts.push({
+                                             orderId: o.id,
+                                             details: details,
+                                             price: unitPrice,
+                                             qty: qty,
+                                             total: totalPrice
+                                        });
+                                    });
+                                } else {
+                                    const rawItems = o.productSummary ? o.productSummary.split(',').map(s => s.trim()).filter(Boolean) : ['Storefront Gadget Order'];
+                                    const totalAmount = Number(o.total || 0);
+                                    const splitPrice = Math.round(totalAmount / rawItems.length);
+                                    rawItems.forEach(itemText => {
+                                        const qtyMatch = itemText.match(/^(\d+)x\s*(.*)$/);
+                                        const qty = qtyMatch ? Number(qtyMatch[1]) : 1;
+                                        const details = qtyMatch ? qtyMatch[2] : itemText;
+                                        const unitPrice = splitPrice;
+                                        const totalPrice = unitPrice * qty;
+                                        allProducts.push({
+                                             orderId: o.id,
+                                             details: details,
+                                             price: unitPrice,
+                                             qty: qty,
+                                             total: totalPrice
+                                        });
+                                    });
+                                }
+                            });
+
+                            const firstOrder = orders[0] || {};
+                            const totalOrdersAmount = orders.reduce((sum, o) => sum + Number(o.total || 0), 0);
+
+                            return `
+                                <!-- Compact Top Row: Order #, Date, Fulfillment, Payment, Total Amount -->
+                                <div class="order-meta-top-row d-flex flex-wrap justify-content-between align-items-end pb-2 mb-2" style="border-bottom: none !important; gap: 8px;">
+                                    <div class="order-data-box">
+                                        <small class="order-label" style="font-size: 8pt; font-weight: bold !important; font-weight: 700 !important; color: #000000 !important; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px;">ORDER #</small>
+                                        <code class="order-id text-danger" style="color: #dc2626 !important; font-weight: 700 !important; font-family: monospace; font-size: 8.5pt;">${orders.map(o => o.id).join(', ')}</code>
+                                    </div>
+                                    <div class="order-data-box">
+                                        <small class="order-label" style="font-size: 8pt; font-weight: bold !important; font-weight: 700 !important; color: #000000 !important; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px;">DATE</small>
+                                        <span class="order-data-val" style="color: #000000 !important; font-size: 8.5pt; font-weight: 500;">${firstOrder.date ? new Date(firstOrder.date).toLocaleDateString('en-GB') : 'Recent'}</span>
+                                    </div>
+                                    <div class="order-data-box">
+                                        <small class="order-label" style="font-size: 8pt; font-weight: bold !important; font-weight: 700 !important; color: #000000 !important; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px;">FULFILLMENT</small>
+                                        <span class="order-data-val" style="color: ${firstOrder.orderStatus === 'Cancelled' ? '#dc2626' : '#000000'} !important; font-size: 8.5pt; font-weight: ${firstOrder.orderStatus === 'Cancelled' ? '700' : '500'};">${firstOrder.orderStatus || 'New Order'}</span>
+                                    </div>
+                                    <div class="order-data-box">
+                                        <small class="order-label" style="font-size: 8pt; font-weight: bold !important; font-weight: 700 !important; color: #000000 !important; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px;">PAYMENT</small>
+                                        <span class="order-data-val" style="color: #000000 !important; font-size: 8.5pt; font-weight: 500;">${(!firstOrder.paymentStatus || firstOrder.paymentStatus === 'Pending') ? 'Cash on Delivery' : firstOrder.paymentStatus}</span>
+                                    </div>
+                                    <div class="order-data-box text-end">
+                                        <small class="order-label" style="font-size: 8pt; font-weight: bold !important; font-weight: 700 !important; color: #000000 !important; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px; text-align: right;">TOTAL AMOUNT</small>
+                                        <strong class="order-amount-red text-danger" style="color: #dc2626 !important; font-size: 11pt; font-weight: 800 !important; display: block; text-align: right;">Rs. ${totalOrdersAmount.toLocaleString()}</strong>
+                                    </div>
+                                </div>
+
+                                <!-- Product Details Section: Strict Native HTML Table (Excel Spreadsheet Layout) -->
+                                <div class="order-products-fullwidth w-100" style="width: 100% !important; margin-top: 6px;">
+                                    <table class="order-products-table" style="border-collapse: collapse !important; width: 100% !important; border: 1px solid #000 !important; margin: 0 !important; background: #ffffff !important; table-layout: fixed !important;">
+                                        <thead>
+                                            <tr>
+                                                <th style="border: 1px solid #000 !important; padding: 4px !important; width: 5%; text-align: center !important; font-weight: 700; color: #000000 !important; font-size: 8.5pt;">S.NO.</th>
+                                                <th style="border: 1px solid #000 !important; padding: 4px !important; width: 60%; text-align: center !important; font-weight: 700; color: #000000 !important; font-size: 8.5pt;">PRODUCT DETAIL</th>
+                                                <th style="border: 1px solid #000 !important; padding: 4px !important; width: 15%; text-align: center !important; font-weight: 700; color: #000000 !important; font-size: 8.5pt;">PRICE</th>
+                                                <th style="border: 1px solid #000 !important; padding: 4px !important; width: 5%; text-align: center !important; font-weight: 700; color: #000000 !important; font-size: 8.5pt;">QTY</th>
+                                                <th style="border: 1px solid #000 !important; padding: 4px !important; width: 15%; text-align: center !important; font-weight: 700; color: #000000 !important; font-size: 8.5pt;">TOTAL</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${allProducts.map((p, idx) => `
+                                                <tr>
+                                                    <td style="border: 1px solid #000 !important; padding: 4px !important; width: 5%; text-align: center !important; color: #000000 !important; font-size: 8.5pt;">${idx + 1}</td>
+                                                    <td style="border: 1px solid #000 !important; padding: 4px !important; width: 60%; text-align: left !important; color: #000000 !important; font-size: 8.5pt;">${p.details}</td>
+                                                    <td style="border: 1px solid #000 !important; padding: 4px !important; width: 15%; text-align: center !important; color: #000000 !important; font-size: 8.5pt;">Rs. ${Number(p.price || 0).toLocaleString()}</td>
+                                                    <td style="border: 1px solid #000 !important; padding: 4px !important; width: 5%; text-align: center !important; color: #000000 !important; font-size: 8.5pt;">${p.qty}</td>
+                                                    <td style="border: 1px solid #000 !important; padding: 4px !important; width: 15%; text-align: center !important; color: #000000 !important; font-weight: bold; font-size: 8.5pt;">Rs. ${Number(p.total || 0).toLocaleString()}</td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            `;
+                        })()}
+                    </div>
+                </div>
+            `;
+        }
+
+        window.generateCustomerSlipHtml = generateCustomerSlipHtml;
+        window.printCustomerSlip = function(id) {
+            if (window.GUG_DB && typeof window.GUG_DB.printCustomerSlip === 'function') {
+                return window.GUG_DB.printCustomerSlip(id);
+            }
+            const customers = (window.GUG_DB && typeof window.GUG_DB.getCustomers === 'function') 
+                ? window.GUG_DB.getCustomers() 
+                : JSON.parse(localStorage.getItem('admin_customers') || '[]');
+            const cleanId = String(id).trim().toLowerCase();
+            const c = customers.find(item => String(item.id).trim().toLowerCase() === cleanId);
+            if (!c) {
+                alert('Customer record not found!');
+                return { success: false };
+            }
+            const allOrders = (window.GUG_DB && typeof window.GUG_DB.getOrders === 'function') 
+                ? window.GUG_DB.getOrders() 
+                : JSON.parse(localStorage.getItem('admin_orders') || '[]');
+            const orders = (typeof filterOrdersForCustomer === 'function') 
+                ? filterOrdersForCustomer(c, allOrders)
+                : allOrders.filter(o => o.customer && (o.customer.id === c.id || o.customer.email === c.email || o.customer.phone === c.phone));
+            let totalSpend = 0;
+            orders.forEach(o => {
+                if (o.orderStatus !== 'Cancelled' && o.orderStatus !== 'Refunded') {
+                    totalSpend += Number(o.total || o.totalAmount || 0);
+                }
+            });
+            const currentUser = (window.GUG_DB && typeof window.GUG_DB.getCurrentUser === 'function') 
+                ? window.GUG_DB.getCurrentUser() 
+                : { name: 'Admin', role: 'Super Admin' };
+
+            let printContainer = document.getElementById('gug-individual-print-container');
+            if (!printContainer) {
+                printContainer = document.createElement('div');
+                printContainer.id = 'gug-individual-print-container';
+                document.body.appendChild(printContainer);
+            }
+
+            printContainer.innerHTML = generateCustomerSlipHtml(c, orders, totalSpend, currentUser, true);
+            document.body.classList.add('gug-individual-print-active');
+            setTimeout(() => { window.print(); }, 120);
+            window.addEventListener('afterprint', () => {
+                document.body.classList.remove('gug-individual-print-active');
+            }, { once: true });
+            setTimeout(() => {
+                document.body.classList.remove('gug-individual-print-active');
+            }, 3000);
+            return { success: true, customerId: c.id };
+        };
+
+        function initCRMPage() {
+            GUG_DB.renderGlobalHeader('gug-global-header-container', 'Customer CRM & Relationship Profiles');
+            GUG_DB.renderBeginnerHelpBanner('gug-beginner-help-container', {
+                whereAmI: 'Customer Relationship Management (CRM) Directory',
+                whatCanIDo: 'View all customer profiles, lifetime spending amounts, order timelines, communication notes, and custom PC build requests.',
+                whatNext: 'Click "View Profile" on any customer to inspect their full purchase history, or review "Custom PC Build Requests" submitted via the storefront.'
+            });
+
+            // Bind bootstrap hidden event to unconditionally clear customer profile state on close
+            const custDetailModalEl = document.getElementById('customerDetailModal');
+            if (custDetailModalEl && !custDetailModalEl._crmCloseBound) {
+                custDetailModalEl._crmCloseBound = true;
+                custDetailModalEl.addEventListener('hidden.bs.modal', () => {
+                    clearCustomer360State();
+                });
+            }
+
+            renderCustomersTable();
+            renderInquiriesTable();
+            renderPcBuildsTable();
+            renderCrmOrdersTable();
+            updateCRMStats();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('action') === 'add') {
+                openAddCustomerModal();
+            }
+            if (urlParams.get('tab') === 'pcbuilds') {
+                const pcTabBtn = document.getElementById('tab-pcbuilds-btn');
+                if (pcTabBtn) {
+                    new bootstrap.Tab(pcTabBtn).show();
+                }
+            }
+            if (urlParams.get('tab') === 'orders') {
+                const ordTabBtn = document.getElementById('tab-orders-btn');
+                if (ordTabBtn) {
+                    new bootstrap.Tab(ordTabBtn).show();
+                }
+            }
+            if (urlParams.get('search')) {
+                document.getElementById('crm-search').value = urlParams.get('search');
+                filterCustomers();
+            }
+        }
+
+        function updateCRMStats() {
+            const customers = GUG_DB.getCustomers();
+            document.getElementById('stat-crm-total').innerText = customers.length;
+            
+            const vipCount = customers.filter(c => c.segment === 'VIP' || c.totalOrders >= 5).length;
+            document.getElementById('stat-crm-vip').innerText = vipCount;
+
+            const returningCount = customers.filter(c => c.segment === 'Returning' || (c.totalOrders > 1 && c.totalOrders < 5)).length;
+            document.getElementById('stat-crm-returning').innerText = returningCount;
+
+            let totalCLV = 0;
+            customers.forEach(c => totalCLV += Number(c.lifetimeSpend || 0));
+            document.getElementById('stat-crm-clv').innerText = 'Rs.  ' + totalCLV.toLocaleString();
+        }
+
+        function renderCustomersTable(items = null) {
+            const customers = items || GUG_DB.getCustomers();
+            const tbody = document.getElementById('customers-tbody');
+            tbody.innerHTML = '';
+
+            if (customers.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <i class="fas fa-users fs-1 mb-3 text-secondary d-block"></i>
+                            <h6 class="fw-bold text-dark">No Customers Found</h6>
+                            <p class="small text-secondary mb-3">No profiles matched your search criteria.</p>
+                            <button class="btn btn-sm btn-danger" onclick="openAddCustomerModal()"><i class="fas fa-user-plus me-1"></i> Add Customer</button>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            customers.forEach(c => {
+                const initials = (c.name || 'C').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                
+                let segmentBadge = '<span class="badge bg-secondary">New Customer</span>';
+                if (c.segment === 'VIP' || c.totalOrders >= 5) {
+                    segmentBadge = '<span class="badge bg-warning bg-opacity-10 text-dark border border-warning"><i class="fas fa-crown text-warning me-1"></i> VIP Client</span>';
+                } else if (c.segment === 'Returning' || c.totalOrders > 1) {
+                    segmentBadge = '<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25">Returning Buyer</span>';
+                }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="ps-4">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="avatar-circle">${initials}</div>
+                            <div>
+                                <strong class="text-dark d-block">${c.name}</strong>
+                                <small class="text-secondary">ID: <code>${c.id}</code> &bull; Since: ${c.customerSince || '2024'}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="text-dark fw-semibold"><i class="fas fa-phone small text-secondary me-1"></i> ${c.phone || 'N/A'}</div>
+                        <small class="text-secondary"><i class="fas fa-envelope small me-1"></i> ${c.email || 'N/A'}</small>
+                    </td>
+                    <td>
+                        <span class="badge bg-light text-dark border"><i class="fas fa-map-marker-alt text-danger me-1"></i> ${c.city || 'Pakistan'}</span>
+                    </td>
+                    <td>
+                        <strong class="text-dark">${c.totalOrders || 0} Orders</strong>
+                    </td>
+                    <td>
+                        <strong class="text-success">Rs.  ${(c.lifetimeSpend || 0).toLocaleString()}</strong>
+                    </td>
+                    <td>
+                        ${segmentBadge}
+                    </td>
+                    <td class="text-end pe-4 text-nowrap">
+                        <button class="btn btn-sm btn-outline-danger me-1 no-print" onclick="printCustomerSlip('${c.id}')" title="Print Customer Slip"><i class="fas fa-print me-1"></i> Print Slip</button>
+                        <button class="btn btn-sm btn-outline-dark me-1" onclick="viewCustomer360('${c.id}')"><i class="fas fa-eye me-1"></i> View Profile</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterCustomers() {
+            const q = document.getElementById('crm-search').value.toLowerCase().trim();
+            const seg = document.getElementById('crm-segment-filter').value;
+            const customers = GUG_DB.getCustomers();
+
+            const filtered = customers.filter(c => {
+                const matchQ = !q || c.name.toLowerCase().includes(q) || (c.phone && c.phone.includes(q)) || (c.email && c.email.toLowerCase().includes(q)) || (c.city && c.city.toLowerCase().includes(q));
+                const matchSeg = !seg || c.segment === seg || (seg === 'VIP' && c.totalOrders >= 5) || (seg === 'Returning' && c.totalOrders > 1);
+                return matchQ && matchSeg;
+            });
+
+            renderCustomersTable(filtered);
+        }
+
+        function openAddCustomerModal() {
+            document.getElementById('customerForm').reset();
+            document.getElementById('cust-id').value = '';
+            custModalInstance = new bootstrap.Modal(document.getElementById('customerModal'));
+            custModalInstance.show();
+        }
+
+        function saveCustomerForm() {
+            const name = document.getElementById('cust-name').value.trim();
+            const phone = document.getElementById('cust-phone').value.trim();
+            if (!name || !phone) {
+                window.GUG_DB.showToast('Please enter Customer Name and Phone Number.', 'warning', 'Missing Details');
+                return;
+            }
+
+            const custData = {
+                id: document.getElementById('cust-id').value || undefined,
+                name: name,
+                phone: phone,
+                email: document.getElementById('cust-email').value.trim(),
+                city: document.getElementById('cust-city').value.trim() || 'Karachi',
+                address: document.getElementById('cust-address').value.trim(),
+                notes: document.getElementById('cust-notes').value.trim(),
+                totalOrders: 0,
+                lifetimeSpend: 0,
+                segment: 'New'
+            };
+
+            GUG_DB.saveCustomer(custData);
+            if (custModalInstance) custModalInstance.hide();
+            renderCustomersTable();
+            updateCRMStats();
+            window.GUG_DB.showToast(`Customer Profile for "${name}" saved successfully!`, 'success', 'Customer Saved');
+        }
+
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function extractBrand(name) {
+            if (!name) return 'Gear Up Gadget';
+            const brands = ['Apple', 'Samsung', 'ASUS', 'MSI', 'Zotac', 'Gigabyte', 'Sapphire', 'AMD', 'Intel', 'Logitech', 'Razer', 'Attack Shark', 'Corsair', 'Lian Li', 'XPG', 'WESTERN DIGITAL', 'WD', 'Kingston', 'HP', 'Dell', 'Lenovo', 'AOC', 'Viewsonic', 'SAMA'];
+            for (let brand of brands) {
+                if (name.toLowerCase().includes(brand.toLowerCase())) {
+                    return brand;
+                }
+            }
+            return 'Gear Up Gadget';
+        }
+
+        function findCatalogProduct(item) {
+            if (!item) return null;
+            const catalog = (window.GUG_DB && typeof window.GUG_DB.getStorefrontProducts === 'function')
+                ? window.GUG_DB.getStorefrontProducts()
+                : (typeof productDatabase !== 'undefined' ? productDatabase : (window.PRODUCTS_DATA || []));
+            
+            const adminProducts = (window.GUG_DB && typeof window.GUG_DB.getProducts === 'function')
+                ? window.GUG_DB.getProducts()
+                : [];
+                
+            const fullList = [...catalog, ...adminProducts];
+
+            const itemId = String(item.id || '').trim().toLowerCase();
+            const itemTitle = String(item.title || item.name || '').trim().toLowerCase();
+
+            // 1. By ID match
+            if (itemId && itemId !== 'prod-gen') {
+                const byId = fullList.find(p => p.id && String(p.id).toLowerCase() === itemId);
+                if (byId) return byId;
+                const byPrefix = fullList.find(p => p.id && itemId.startsWith(String(p.id).toLowerCase()));
+                if (byPrefix) return byPrefix;
+            }
+
+            // 2. By SKU match
+            const itemSku = String(item.sku || '').trim().toLowerCase();
+            if (itemSku && itemSku !== 'gug-sku') {
+                const bySku = fullList.find(p => p.sku && String(p.sku).toLowerCase() === itemSku);
+                if (bySku) return bySku;
+            }
+
+            // 3. By exact title
+            if (itemTitle) {
+                const byTitle = fullList.find(p => {
+                    const pTitle = (p.title || p.name || '').trim().toLowerCase();
+                    return pTitle && pTitle === itemTitle;
+                });
+                if (byTitle) return byTitle;
+            }
+
+            // 4. By partial title inclusion
+            if (itemTitle) {
+                const byFuzzy = fullList.find(p => {
+                    const pTitle = (p.title || p.name || '').trim().toLowerCase();
+                    return pTitle && (itemTitle.includes(pTitle) || pTitle.includes(itemTitle));
+                });
+                if (byFuzzy) return byFuzzy;
+            }
+
+            return null;
+        }
+
+        function generateFrontEndSpecs(product, item) {
+            const prod = product || {};
+            const name = item.title || item.name || prod.title || prod.name || '';
+            const nameLower = name.toLowerCase();
+            const category = (prod.category || item.category || 'Mobiles').toLowerCase();
+            const brand = prod.brand || item.brand || extractBrand(name);
+
+            const defaultSpecs = {
+                "Brand": brand,
+                "Category": (prod.category || item.category || 'Mobiles & Gadgets').toUpperCase().replace('-', ' '),
+                "Item Model": name.split(' ').slice(0, 4).join(' '),
+                "Condition": nameLower.includes('used') ? "Used (Pre-owned)" : (nameLower.includes('open box') ? "Open Box" : "Brand New / 100% Sealed"),
+                "Warranty": "1-Year Official Warranty (Authorized Service Center Pakistan)",
+                "Availability": "In Stock & Verified for Dispatch"
+            };
+
+            // Mobile / iPhone specs
+            if (category.includes('mobile') || category.includes('phone') || brand.toLowerCase() === 'apple' || nameLower.includes('iphone')) {
+                const isIphone18 = nameLower.includes('iphone 18');
+                const isProMax = nameLower.includes('max');
+                let activeStorage = "256GB / 512GB / 1TB / 2TB Available";
+                if (nameLower.includes('2tb') || nameLower.includes('2 tb')) activeStorage = "2 TB High-Speed NVMe";
+                else if (nameLower.includes('1tb') || nameLower.includes('1 tb')) activeStorage = "1 TB High-Speed NVMe";
+                else if (nameLower.includes('512gb') || nameLower.includes('512 gb')) activeStorage = "512 GB High-Speed NVMe";
+                else if (nameLower.includes('256gb') || nameLower.includes('256 gb')) activeStorage = "256 GB High-Speed NVMe";
+
+                return {
+                    ...defaultSpecs,
+                    "Brand": brand || "Apple",
+                    "Item Model": isIphone18 ? (isProMax ? "iPhone 18 Pro Max" : "iPhone 18 Pro") : name.split(' ').slice(0, 4).join(' '),
+                    "PTA Status": "Official PTA Approved",
+                    "Protection Plan": "Comprehensive Protection Plan Included (Front screen, back glass & liquid damage)",
+                    "Warranty": "2-Year Official Warranty (Apple Official + Mercantile Pakistan authorized)",
+                    "Storage Option": activeStorage,
+                    "Display": isProMax ? '6.9" Super Retina XDR OLED 120Hz ProMotion' : '6.3" Super Retina XDR OLED 120Hz ProMotion',
+                    "Processor / Chipset": isIphone18 ? "Apple A19 Pro Bionic Chip" : (nameLower.includes('a18') ? "Apple A18 Pro" : "Apple Bionic / Qualcomm Snapdragon"),
+                    "Camera System": "48MP Pro Fusion (Variable Aperture) + 48MP Ultra-Wide + 48MP Periscope Telephoto",
+                    "Build & Materials": "Grade 5 Aerospace Titanium with Ceramic Shield 2 Front",
+                    "Condition": "Brand New / 100% Factory Sealed"
+                };
+            }
+
+            // Processors
+            if (category.includes('processor') || category.includes('cpu') || nameLower.includes('ryzen') || nameLower.includes('core i') || nameLower.includes('intel') || nameLower.includes('amd')) {
+                return {
+                    ...defaultSpecs,
+                    "Socket Type": nameLower.includes('am5') ? 'AMD Socket AM5' : (nameLower.includes('am4') ? 'AMD Socket AM4' : (nameLower.includes('1700') ? 'Intel LGA 1700' : 'Intel LGA 1851')),
+                    "Cores / Threads": nameLower.includes('9950x') ? '16 Cores / 32 Threads' : (nameLower.includes('7800x3d') || nameLower.includes('9800x3d') ? '8 Cores / 16 Threads' : '6 Cores / 12 Threads'),
+                    "Boost Clock": nameLower.includes('i9') ? '5.8 GHz' : (nameLower.includes('ryzen 7') ? '5.0 GHz' : '4.6 GHz'),
+                    "Cache": nameLower.includes('x3d') ? '104MB Cache (3D V-Cache)' : '32MB Cache',
+                    "Integrated Graphics": nameLower.includes('f') ? 'No' : 'Intel UHD Graphics / AMD Radeon Graphics',
+                    "Warranty": "3-Year Official Brand Warranty"
+                };
+            }
+
+            // Graphics Cards
+            if (category.includes('graphics') || category.includes('gpu') || nameLower.includes('rtx') || nameLower.includes('radeon') || nameLower.includes('geforce')) {
+                return {
+                    ...defaultSpecs,
+                    "Chipset Manufacturer": nameLower.includes('radeon') || nameLower.includes('rx') ? 'AMD' : 'NVIDIA',
+                    "Video Memory": nameLower.includes('4090') ? '24GB GDDR6X' : (nameLower.includes('70 ti') ? '16GB GDDR7' : (nameLower.includes('3060') ? '12GB GDDR6' : '8GB GDDR6')),
+                    "Bus Width": nameLower.includes('4090') ? '384-Bit' : (nameLower.includes('70') ? '256-Bit' : '192-Bit'),
+                    "Cooling System": nameLower.includes('2x') || nameLower.includes('twin') ? 'Dual Fan' : 'Triple Fan (Active Air Cooler)',
+                    "Interface": "PCI Express 4.0 / 5.0 x16",
+                    "Warranty": "1-Year Local Warranty"
+                };
+            }
+
+            // Monitors / LCD Displays
+            if (category.includes('monitor') || category.includes('display') || category.includes('lcd') || nameLower.includes('monitor') || nameLower.includes('screen') || nameLower.includes('lcd')) {
+                return {
+                    ...defaultSpecs,
+                    "Screen Size": nameLower.includes('49') ? '49" Ultra-wide' : (nameLower.includes('34') ? '34" Curved' : (nameLower.includes('32') ? '32" Widescreen' : '27" Widescreen')),
+                    "Resolution": nameLower.includes('4k') || nameLower.includes('3840') ? '3840 x 2160 (4K UHD)' : (nameLower.includes('qhd') || nameLower.includes('2560') ? '2560 x 1440 (QHD)' : '1920 x 1080 (FHD)'),
+                    "Refresh Rate": nameLower.includes('360hz') ? '360Hz' : (nameLower.includes('240hz') ? '240Hz' : (nameLower.includes('180hz') ? '180Hz' : '144Hz')),
+                    "Panel Type": nameLower.includes('ips') ? 'IPS (In-Plane Switching)' : (nameLower.includes('oled') ? 'QD-OLED' : 'VA Panel'),
+                    "Response Time": nameLower.includes('0.03ms') ? '0.03ms (GtG)' : '1ms (GtG)',
+                    "Color Gamut": "99% DCI-P3 / 100% sRGB Calman Verified",
+                    "Warranty": "1-Year Official Brand Warranty"
+                };
+            }
+
+            // Keyboards
+            if (category.includes('keyboard') || nameLower.includes('keyboard')) {
+                return {
+                    ...defaultSpecs,
+                    "Switch Type": nameLower.includes('optical') ? 'Opto-Mechanical Switches' : 'Linear Hot-Swappable Red Switches',
+                    "Connectivity": 'Tri-Mode (Bluetooth 5.2 / 2.4GHz Wireless / USB-C Wired)',
+                    "Lighting": 'Per-Key RGB with Dynamic Effects & Software Sync',
+                    "Layout": nameLower.includes('tkl') ? 'Tenkeyless (87 Keys)' : 'Full Size (104 Keys)',
+                    "Keycaps": 'Double-Shot PBT Keycaps (Anti-Fade)',
+                    "Battery Life": 'Up to 200 hours without RGB',
+                    "Warranty": "1-Year Local Warranty"
+                };
+            }
+
+            // Mice
+            if (category.includes('mouse') || category.includes('mice') || nameLower.includes('mouse')) {
+                return {
+                    ...defaultSpecs,
+                    "Sensor": nameLower.includes('logitech') ? 'HERO 25K Sensor' : 'PixArt 3395 High-Precision Optical',
+                    "Max DPI": '25,600 DPI (Sub-micron tracking)',
+                    "Connectivity": 'Ultra-Low Latency Wireless (1ms) + Type-C Charging',
+                    "Weight": '60g Ultra-Lightweight Ergonomic Shell',
+                    "Switches": 'Optical-Mechanical Hybrid Switches (100M Clicks)',
+                    "Battery": '70+ Hours Continuous Gaming',
+                    "Warranty": "1-Year Local Warranty"
+                };
+            }
+
+            // Smartwatches / Wearables
+            if (category.includes('smartwatch') || category.includes('wearable') || nameLower.includes('smartwatch') || nameLower.includes('watch')) {
+                return {
+                    ...defaultSpecs,
+                    "Display": '2.02" High-Brightness AMOLED Display (1000 nits)',
+                    "Battery Life": 'Up to 7 Days Normal Use / 14 Days Standby',
+                    "Water Resistance": 'IP68 / 5ATM Water Resistant',
+                    "Sensors": 'Optical Heart Rate, SpO2 Blood Oxygen, Sleep Tracker, Step Counter',
+                    "Connectivity": 'Bluetooth 5.3 + GPS Assisted Tracking',
+                    "Warranty": "1-Year Local Warranty"
+                };
+            }
+
+            // Audio / Headphones
+            if (category.includes('audio') || category.includes('headphone') || category.includes('earphone') || nameLower.includes('headphone') || nameLower.includes('anc')) {
+                return {
+                    ...defaultSpecs,
+                    "Driver Unit": '40mm High-Definition Titanium Coated Drivers',
+                    "Noise Cancellation": 'Hybrid Active Noise Cancellation (ANC) up to -35dB',
+                    "Battery Life": '40 Hours Playback (ANC ON) / 60 Hours (ANC OFF)',
+                    "Microphone": 'Quad ENC Microphones for Crystal Clear Calls',
+                    "Connectivity": 'Bluetooth 5.3 + 3.5mm Aux Audio Jack',
+                    "Warranty": "1-Year Local Warranty"
+                };
+            }
+
+            return defaultSpecs;
+        }
+
+        window.toggleOrderRowDetails = function(targetRowId, btnEl) {
+            const row = document.getElementById(targetRowId);
+            if (!row) return;
+
+            const isHidden = row.classList.contains('d-none');
+            if (isHidden) {
+                row.classList.remove('d-none');
+                if (btnEl) {
+                    btnEl.classList.remove('btn-outline-danger');
+                    btnEl.classList.add('btn-danger', 'text-white');
+                    const icon = btnEl.querySelector('i');
+                    if (icon) {
+                        icon.className = 'fas fa-chevron-up';
+                    }
+                }
+            } else {
+                row.classList.add('d-none');
+                if (btnEl) {
+                    btnEl.classList.remove('btn-danger', 'text-white');
+                    btnEl.classList.add('btn-outline-danger');
+                    const icon = btnEl.querySelector('i');
+                    if (icon) {
+                        icon.className = 'fas fa-chevron-down';
+                    }
+                }
+            }
+        };
+
+        window.toggleAllOrderRows = function(expand) {
+            const rows = document.querySelectorAll('.crm-order-expand-row');
+            const btns = document.querySelectorAll('.order-expand-btn');
+            rows.forEach(r => {
+                if (expand) r.classList.remove('d-none');
+                else r.classList.add('d-none');
+            });
+            btns.forEach(b => {
+                const icon = b.querySelector('i');
+                if (expand) {
+                    b.classList.remove('btn-outline-danger');
+                    b.classList.add('btn-danger', 'text-white');
+                    if (icon) icon.className = 'fas fa-chevron-up';
+                } else {
+                    b.classList.remove('btn-danger', 'text-white');
+                    b.classList.add('btn-outline-danger');
+                    if (icon) icon.className = 'fas fa-chevron-down';
+                }
+            });
+        };
+
+        /**
+         * Strictly filters an array of orders to include ONLY orders belonging to the specified customer.
+         * Strict isolation rules:
+         * 1. If an order specifies customer ID, and it does not match, it is REJECTED.
+         * 2. If customer ID matches exactly, it is ACCEPTED.
+         * 3. If both customer and order have non-empty emails, they must match exactly.
+         * 4. If both have valid phone numbers (10 digits), they must match exactly.
+         * 5. If no ID, email or phone is present, fallback to exact full name match only (never substring/includes).
+         */
+        function filterOrdersForCustomer(customer, allOrders = []) {
+            if (!customer || !Array.isArray(allOrders)) return [];
+
+            const custId = customer.id ? String(customer.id).trim().toLowerCase() : '';
+            const custEmail = customer.email ? String(customer.email).trim().toLowerCase() : '';
+            const custName = customer.name ? String(customer.name).trim().toLowerCase() : '';
+
+            const normalizeDigits = (str) => String(str || '').replace(/[^0-9]/g, '');
+            const custPhoneDigits = normalizeDigits(customer.phone);
+            const custPhoneKey = custPhoneDigits.length >= 10 ? custPhoneDigits.slice(-10) : (custPhoneDigits.length >= 7 ? custPhoneDigits : '');
+
+            return allOrders.filter(order => {
+                if (!order) return false;
+
+                const oCust = order.customer || {};
+                const oCustId = String(oCust.id || order.customerId || '').trim().toLowerCase();
+                const oEmail = String(oCust.email || order.email || '').trim().toLowerCase();
+                const oName = String(oCust.name || order.name || '').trim().toLowerCase();
+
+                const oPhoneDigits = normalizeDigits(oCust.phone || order.phone);
+                const oPhoneKey = oPhoneDigits.length >= 10 ? oPhoneDigits.slice(-10) : (oPhoneDigits.length >= 7 ? oPhoneDigits : '');
+
+                // 1. Strict Exclusion: Order explicitly belongs to another Customer ID
+                if (oCustId && custId && oCustId !== custId) {
+                    return false;
+                }
+
+                // 2. Strict Match by Customer ID
+                if (custId && oCustId && custId === oCustId) {
+                    return true;
+                }
+
+                // 3. Strict Exclusion: Order has a different registered email
+                if (custEmail && oEmail && custEmail !== oEmail) {
+                    return false;
+                }
+
+                // 4. Strict Match by Email
+                if (custEmail && oEmail && custEmail === oEmail) {
+                    return true;
+                }
+
+                // 5. Strict Exclusion: Order has a different phone number
+                if (custPhoneKey && oPhoneKey && custPhoneKey !== oPhoneKey) {
+                    return false;
+                }
+
+                // 6. Strict Match by Phone Key (Last 10 digits or exact digits)
+                if (custPhoneKey && oPhoneKey && custPhoneKey === oPhoneKey) {
+                    return true;
+                }
+
+                // 7. Strict Full Name Fallback (only if order lacks both email and phone)
+                if (!oEmail && !oPhoneKey && custName && oName && custName === oName && custName.length >= 3) {
+                    return true;
+                }
+
+                return false;
+            });
+        }
+        window.filterOrdersForCustomer = filterOrdersForCustomer;
+
+        function viewCustomer360(id) {
+            if (!id) return;
+
+            // 1. Reset state completely before opening new customer profile to prevent data bleed
+            clearCustomer360State();
+
+            const customers = GUG_DB.getCustomers();
+            const cleanId = String(id).trim().toLowerCase();
+            const c = customers.find(item => String(item.id).trim().toLowerCase() === cleanId);
+            if (!c) {
+                if (window.GUG_DB && window.GUG_DB.showToast) {
+                    window.GUG_DB.showToast('Customer record not found.', 'danger', 'CRM Error');
+                }
+                return;
+            }
+
+            // 2. Strictly filter orders for THIS customer only
+            const allOrders = GUG_DB.getOrders();
+            const orders = (typeof GUG_DB.filterOrdersByCustomer === 'function')
+                ? GUG_DB.filterOrdersByCustomer(c, allOrders)
+                : filterOrdersForCustomer(c, allOrders);
+
+            // 3. Commit to active state store
+            currentCustomer360State = {
+                customer: { ...c },
+                orders: [...orders],
+                customerId: c.id,
+                isOpen: true
+            };
+
+            // Calculate live spend & orders count strictly for this customer
+            let computedSpend = 0;
+            orders.forEach(o => {
+                if (o.orderStatus !== 'Cancelled' && o.orderStatus !== 'Refunded') {
+                    computedSpend += Number(o.total || o.totalAmount || 0);
+                }
+            });
+            const displaySpend = computedSpend > 0 ? computedSpend : (c.lifetimeSpend || 0);
+
+            const container = document.getElementById('customer-detail-body');
+            container.innerHTML = `
+                <div class="d-flex align-items-center justify-content-between pb-3 border-bottom mb-4 flex-wrap gap-3" style="border-color: #e2e8f0 !important; text-shadow: none !important;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="avatar-circle fs-4" style="width: 56px; height: 56px; background: #e0f2fe; color: #0284c7; text-shadow: none !important;">${escapeHtml(c.name.substring(0,2).toUpperCase())}</div>
+                        <div>
+                            <h4 class="fw-bold mb-0" style="color: #111827 !important; text-shadow: none !important;">${escapeHtml(c.name)}</h4>
+                            <span class="badge border me-2" style="background-color: #eff6ff !important; color: #2563eb !important; border-color: #bfdbfe !important; text-shadow: none !important;">${escapeHtml(c.segment || 'Customer')}</span>
+                            <small style="color: #64748b !important; text-shadow: none !important;">Customer Since: ${escapeHtml(c.customerSince || '2024')}</small>
+                        </div>
+                    </div>
+                    <div class="text-md-end text-start">
+                        <span class="small fw-bold text-uppercase d-block" style="color: #64748b !important; text-shadow: none !important;">Lifetime Spend</span>
+                        <h4 class="fw-bold mb-0" style="color: #16a34a !important; text-shadow: none !important;">Rs.  ${displaySpend.toLocaleString()}</h4>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="p-3 rounded border h-100" style="background-color: #f8fafc !important; border-color: #e2e8f0 !important; color: #222222 !important; text-shadow: none !important;">
+                            <strong class="d-block mb-2" style="color: #111827 !important; font-weight: 700 !important; font-size: 13.5px !important; text-shadow: none !important;"><i class="fas fa-address-book text-danger me-1"></i> Contact & Address</strong>
+                            <div class="mb-1" style="color: #222222 !important; font-size: 13px !important; text-shadow: none !important;"><i class="fas fa-phone text-secondary me-2"></i> ${escapeHtml(c.phone || 'N/A')}</div>
+                            <div class="mb-1" style="color: #222222 !important; font-size: 13px !important; text-shadow: none !important;"><i class="fas fa-envelope text-secondary me-2"></i> ${escapeHtml(c.email || 'N/A')}</div>
+                            <div style="color: #222222 !important; font-size: 13px !important; text-shadow: none !important;"><i class="fas fa-map-marker-alt text-secondary me-2"></i> ${escapeHtml(c.address || c.city || 'Karachi, Pakistan')}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 rounded border h-100" style="background-color: #f8fafc !important; border-color: #e2e8f0 !important; color: #222222 !important; text-shadow: none !important;">
+                            <strong class="d-block mb-2" style="color: #111827 !important; font-weight: 700 !important; font-size: 13.5px !important; text-shadow: none !important;"><i class="fas fa-sticky-note text-warning me-1"></i> Internal Staff Notes</strong>
+                            <p class="mb-0" style="color: #4b5563 !important; font-size: 13px !important; line-height: 1.5 !important; text-shadow: none !important;">${escapeHtml(c.notes || 'No internal notes on this customer.')}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                    <div>
+                        <h6 class="fw-bold mb-0" style="color: #111827 !important; font-size: 15px !important; text-shadow: none !important;"><i class="fas fa-receipt text-danger me-2"></i> Purchase Order History (${orders.length})</h6>
+                        <small style="color: #64748b !important; text-shadow: none !important;">Click the drop-down arrow next to any order to view exact product photos, names & specifications.</small>
+                    </div>
+                    ${orders.length > 0 ? `
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-sm btn-outline-dark" style="color: #111827 !important; border-color: #cbd5e1 !important; background-color: #ffffff !important; text-shadow: none !important;" onclick="toggleAllOrderRows(true)">
+                                <i class="fas fa-angle-double-down me-1"></i> Expand All Orders
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-dark" style="color: #111827 !important; border-color: #cbd5e1 !important; background-color: #ffffff !important; text-shadow: none !important;" onclick="toggleAllOrderRows(false)">
+                                <i class="fas fa-angle-double-up me-1"></i> Collapse All
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+
+                <div class="table-responsive border rounded bg-white shadow-sm" style="border-color: #e2e8f0 !important; text-shadow: none !important;">
+                    <table class="table align-middle mb-0 order-history-table" style="background-color: #ffffff !important; text-shadow: none !important;">
+                        <thead style="background-color: #f1f5f9 !important;">
+                            <tr>
+                                <th style="width: 50px; background-color: #f1f5f9 !important; color: #111827 !important; font-weight: 800 !important; font-size: 12px !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; border-bottom: 2px solid #cbd5e1 !important; text-shadow: none !important; padding: 12px 10px;" class="text-center">VIEW</th>
+                                <th style="background-color: #f1f5f9 !important; color: #111827 !important; font-weight: 800 !important; font-size: 12px !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; border-bottom: 2px solid #cbd5e1 !important; text-shadow: none !important; padding: 12px 14px;">ORDER #</th>
+                                <th style="background-color: #f1f5f9 !important; color: #111827 !important; font-weight: 800 !important; font-size: 12px !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; border-bottom: 2px solid #cbd5e1 !important; text-shadow: none !important; padding: 12px 14px;">DATE</th>
+                                <th style="background-color: #f1f5f9 !important; color: #111827 !important; font-weight: 800 !important; font-size: 12px !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; border-bottom: 2px solid #cbd5e1 !important; text-shadow: none !important; padding: 12px 14px;">PURCHASED ITEMS</th>
+                                <th style="background-color: #f1f5f9 !important; color: #111827 !important; font-weight: 800 !important; font-size: 12px !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; border-bottom: 2px solid #cbd5e1 !important; text-shadow: none !important; padding: 12px 14px;">TOTAL AMOUNT</th>
+                                <th style="background-color: #f1f5f9 !important; color: #111827 !important; font-weight: 800 !important; font-size: 12px !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; border-bottom: 2px solid #cbd5e1 !important; text-shadow: none !important; padding: 12px 14px;">PAYMENT</th>
+                                <th style="background-color: #f1f5f9 !important; color: #111827 !important; font-weight: 800 !important; font-size: 12px !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; border-bottom: 2px solid #cbd5e1 !important; text-shadow: none !important; padding: 12px 14px;">STATUS</th>
+                                <th style="background-color: #f1f5f9 !important; color: #111827 !important; font-weight: 800 !important; font-size: 12px !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; border-bottom: 2px solid #cbd5e1 !important; text-shadow: none !important; padding: 12px 14px;" class="text-end pe-3">ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${orders.length === 0 ? '<tr><td colspan="8" class="text-center py-4 text-muted small" style="color: #64748b !important; text-shadow: none !important;"><i class="fas fa-box-open fs-3 d-block mb-2 text-secondary"></i>No storefront orders placed yet.</td></tr>' : orders.map(o => {
+                                // Extract line items
+                                let items = [];
+                                if (Array.isArray(o.items) && o.items.length > 0) {
+                                    items = o.items;
+                                } else if (o.product || o.title || o.productName) {
+                                    items = [{
+                                        id: o.productId || 'PROD-GEN',
+                                        title: o.product || o.title || o.productName,
+                                        name: o.product || o.title || o.productName,
+                                        price: o.total || o.price || 0,
+                                        quantity: o.quantity || 1,
+                                        image: o.image || '',
+                                        sku: o.sku || '',
+                                        category: o.category || ''
+                                    }];
+                                } else {
+                                    items = [{
+                                        id: 'PROD-GEN',
+                                        title: 'Gear Up Gadget Hardware Package',
+                                        name: 'Gear Up Gadget Hardware Package',
+                                        price: o.total || 0,
+                                        quantity: 1,
+                                        image: 'assets/images/logo.png',
+                                        sku: 'GUG-PKG-01',
+                                        category: 'Gadgets'
+                                    }];
+                                }
+
+                                const expandRowId = `crm-order-expand-${String(o.id).replace(/[^a-zA-Z0-9_-]/g, '_')}`;
+
+                                return `
+                                    <tr class="align-middle border-bottom" style="cursor: pointer; background-color: #ffffff !important; color: #222222 !important; text-shadow: none !important;" onclick="toggleOrderRowDetails('${expandRowId}', this.querySelector('.order-expand-btn'))">
+                                        <td class="text-center" style="width: 50px; background-color: #ffffff !important; color: #222222 !important; text-shadow: none !important;">
+                                            <button type="button" class="btn btn-sm btn-outline-danger p-0 order-expand-btn shadow-sm" 
+                                                    onclick="event.stopPropagation(); toggleOrderRowDetails('${expandRowId}', this)"
+                                                    title="Click drop-down arrow to view full product details & specifications"
+                                                    style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; transition: all 0.2s ease; text-shadow: none !important;">
+                                                <i class="fas fa-chevron-down"></i>
+                                            </button>
+                                        </td>
+                                        <td style="background-color: #ffffff !important; color: #222222 !important; text-shadow: none !important;">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <code class="fw-bold fs-6" style="color: #dc2626 !important; background-color: #fef2f2 !important; border: 1px solid #fecaca !important; padding: 2px 6px; border-radius: 4px; text-shadow: none !important;">${escapeHtml(o.id)}</code>
+                                            </div>
+                                            <div class="mt-1" style="font-size: 11px; color: #64748b !important; text-shadow: none !important;">
+                                                <i class="fas fa-arrow-turn-down text-danger me-1"></i>Click arrow to expand
+                                            </div>
+                                        </td>
+                                        <td style="background-color: #ffffff !important; color: #333333 !important; font-weight: 500 !important; font-size: 13.5px !important; text-shadow: none !important;">${escapeHtml((o.date || '').split('T')[0] || 'Recent')}</td>
+                                        <td style="background-color: #ffffff !important; text-shadow: none !important;">
+                                            <span class="badge py-1 px-2 fw-semibold" style="background-color: #fef2f2 !important; color: #dc2626 !important; border: 1px solid #fecaca !important; text-shadow: none !important;">
+                                                <i class="fas fa-box-open me-1"></i>${items.length} ${items.length === 1 ? 'Product' : 'Products'}
+                                            </span>
+                                            <div class="text-truncate mt-1" style="max-width: 220px; font-size: 12px; color: #374151 !important; font-weight: 600 !important; text-shadow: none !important;" title="${escapeHtml(items.map(it => it.title || it.name).join(', '))}">
+                                                ${escapeHtml(items.map(it => it.title || it.name).join(', '))}
+                                            </div>
+                                        </td>
+                                        <td style="background-color: #ffffff !important; color: #111827 !important; font-weight: 800 !important; font-size: 14px !important; text-shadow: none !important;">Rs. ${(Number(o.total || 0)).toLocaleString()}</td>
+                                        <td style="background-color: #ffffff !important; text-shadow: none !important;">
+                                            <small class="badge border" style="background-color: #f8fafc !important; color: #1e293b !important; border-color: #cbd5e1 !important; font-size: 11px !important; text-shadow: none !important;">${escapeHtml(o.paymentStatus || 'Pending')}</small>
+                                        </td>
+                                        <td style="background-color: #ffffff !important; text-shadow: none !important;">
+                                            <span class="badge ${o.orderStatus === 'Delivered' ? 'bg-success' : (o.orderStatus === 'Cancelled' ? 'bg-danger' : 'bg-primary')}" style="text-shadow: none !important;">${escapeHtml(o.orderStatus || 'Processing')}</span>
+                                        </td>
+                                        <td class="text-end pe-3" style="background-color: #ffffff !important; text-shadow: none !important;">
+                                            ${o.orderStatus === 'Cancelled' ? `
+                                                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-50 py-1 px-2" title="${escapeHtml(o.cancelReason || 'Cancelled by Admin')}">
+                                                    <i class="fas fa-ban me-1"></i> Cancelled
+                                                </span>
+                                            ` : `
+                                                <button type="button" class="btn btn-sm btn-outline-danger py-1 px-2 fw-semibold" 
+                                                        onclick="event.stopPropagation(); promptCancelOrder('${escapeHtml(o.id)}', '${escapeHtml(c.id)}')" 
+                                                        title="Cancel Customer Order">
+                                                    <i class="fas fa-times-circle me-1"></i> Cancel Order
+                                                </button>
+                                            `}
+                                        </td>
+                                    </tr>
+
+                                    <!-- Collapsible Detailed View Row -->
+                                    <tr id="${expandRowId}" class="crm-order-expand-row d-none" style="background-color: #f8fafc !important; text-shadow: none !important;">
+                                        <td colspan="8" class="p-3 border-0" style="background-color: #f8fafc !important; text-shadow: none !important;">
+                                            <div class="card border rounded-3 p-3 bg-white shadow-sm mb-0" style="border-color: #e2e8f0 !important; text-shadow: none !important;">
+                                                <div class="d-flex justify-content-between align-items-center pb-2 mb-3 border-bottom flex-wrap gap-2" style="border-color: #e2e8f0 !important;">
+                                                    <div>
+                                                        <strong class="fs-6" style="color: #111827 !important; text-shadow: none !important;"><i class="fas fa-boxes-stacked text-danger me-2"></i>Ordered Products Breakdown (${items.length} ${items.length === 1 ? 'Item' : 'Items'})</strong>
+                                                        <div class="small" style="color: #64748b !important; text-shadow: none !important;">Order ID: <code style="color: #dc2626 !important; font-weight: 700; background-color: #fef2f2 !important; border: 1px solid #fecaca !important; padding: 1px 5px; border-radius: 3px; text-shadow: none !important;">${escapeHtml(o.id)}</code> &bull; Placed: ${escapeHtml(o.date || 'Recent')}</div>
+                                                    </div>
+                                                    <div class="text-end d-flex align-items-center gap-2">
+                                                        <span class="badge border px-2 py-1" style="background-color: #f0fdf4 !important; color: #16a34a !important; border-color: #bbf7d0 !important; text-shadow: none !important;">
+                                                            <i class="fas fa-check-circle me-1"></i>Payment: ${escapeHtml(o.paymentStatus || 'Pending')}
+                                                        </span>
+                                                        ${o.orderStatus === 'Cancelled' ? `
+                                                            <span class="badge bg-danger px-2 py-1"><i class="fas fa-ban me-1"></i> Order Cancelled</span>
+                                                        ` : `
+                                                            <button type="button" class="btn btn-sm btn-danger py-1 px-2 fw-bold" onclick="promptCancelOrder('${escapeHtml(o.id)}', '${escapeHtml(c.id)}')">
+                                                                <i class="fas fa-ban me-1"></i> Cancel Order
+                                                            </button>
+                                                        `}
+                                                    </div>
+                                                </div>
+
+                                                <!-- Product Items Cards -->
+                                                <div class="d-flex flex-column gap-3">
+                                                    ${items.map((item, itIdx) => {
+                                                        const prodMatch = findCatalogProduct(item);
+                                                        const prodName = item.title || item.name || (prodMatch ? (prodMatch.title || prodMatch.name) : 'Product');
+                                                        
+                                                        // High-res Image resolution with graceful fallback
+                                                        let imgSrc = item.image || (prodMatch ? prodMatch.image : null);
+                                                        if (!imgSrc || imgSrc === 'undefined' || imgSrc === 'null') {
+                                                            imgSrc = 'assets/images/logo.png';
+                                                        }
+                                                        
+                                                        const itemQty = Number(item.quantity || item.qty || 1);
+                                                        const unitPrice = Number(item.price || item.unitPrice || (prodMatch ? prodMatch.sellingPrice : 0));
+                                                        const itemTotal = itemQty * unitPrice;
+                                                        const sku = item.sku || (prodMatch ? prodMatch.sku : ('GUG-SKU-' + (itIdx + 1)));
+                                                        
+                                                        // Front-end Specifications Table
+                                                        const specs = generateFrontEndSpecs(prodMatch, item);
+
+                                                        return `
+                                                            <div class="border rounded-3 p-3 bg-white" style="border-left: 4px solid var(--accent-red, #ef4444) !important; border-color: #e2e8f0 !important; box-shadow: 0 1px 4px rgba(0,0,0,0.04); text-shadow: none !important;">
+                                                                <div class="row g-3 align-items-start">
+                                                                    <!-- Product Image -->
+                                                                    <div class="col-12 col-md-auto text-center">
+                                                                        <div class="p-2 border rounded bg-white" style="width: 110px; height: 110px; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-color: #e2e8f0 !important;">
+                                                                            <img src="${imgSrc}" alt="${escapeHtml(prodName)}" 
+                                                                                 style="max-width: 100%; max-height: 100%; object-fit: contain;" 
+                                                                                 onerror="this.onerror=null; this.src='assets/images/logo.png';">
+                                                                        </div>
+                                                                        <div class="mt-1 fw-bold" style="font-size: 11px; color: #64748b !important; text-shadow: none !important;">
+                                                                            <i class="fas fa-camera text-danger me-1"></i>Product Image
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <!-- Product Title & Specifications -->
+                                                                    <div class="col-12 col-md">
+                                                                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 pb-2 mb-2 border-bottom" style="border-color: #e2e8f0 !important;">
+                                                                            <div>
+                                                                                <h6 class="fw-bold mb-1 fs-6" style="color: #111827 !important; text-shadow: none !important;">${escapeHtml(prodName)}</h6>
+                                                                                <div class="d-flex flex-wrap gap-1 align-items-center mt-1">
+                                                                                    <span class="badge border" style="background-color: #fef2f2 !important; color: #dc2626 !important; border-color: #fecaca !important; text-shadow: none !important;">${escapeHtml(specs["Brand"] || 'Gear Up Gadget')}</span>
+                                                                                    <span class="badge border" style="background-color: #eff6ff !important; color: #2563eb !important; border-color: #bfdbfe !important; text-shadow: none !important;">${escapeHtml(specs["Category"] || 'Hardware')}</span>
+                                                                                    <span class="badge border" style="background-color: #f8fafc !important; color: #334155 !important; border-color: #e2e8f0 !important; text-shadow: none !important;">SKU: ${escapeHtml(sku)}</span>
+                                                                                    ${specs["Storage Option"] ? `<span class="badge border" style="background-color: #f0fdf4 !important; color: #16a34a !important; border-color: #bbf7d0 !important; text-shadow: none !important;"><i class="fas fa-hard-drive me-1"></i>${escapeHtml(specs["Storage Option"])}</span>` : ''}
+                                                                                    <span class="badge border" style="background-color: #f8fafc !important; color: #475569 !important; border-color: #e2e8f0 !important; text-shadow: none !important;">
+                                                                                        <i class="fas fa-shield-alt text-success me-1"></i>Authentic Stock
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="text-md-end text-start">
+                                                                                <span class="badge px-2 py-1 fs-6" style="background-color: #1e293b !important; color: #ffffff !important; text-shadow: none !important;"><i class="fas fa-cubes me-1"></i>Qty: ${itemQty}</span>
+                                                                                <div class="mt-1" style="font-size: 12px; color: #475569 !important; text-shadow: none !important;">Unit Price: <strong style="color: #111827 !important;">Rs. ${unitPrice.toLocaleString()}</strong></div>
+                                                                                <div class="fw-bold fs-6 mt-1" style="color: #16a34a !important; text-shadow: none !important;">Subtotal: Rs. ${itemTotal.toLocaleString()}</div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <!-- Front-End Style Specifications Table -->
+                                                                        <div class="mt-2">
+                                                                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                                                                <span class="fw-bold text-uppercase" style="letter-spacing: 0.5px; font-size: 11px; color: #111827 !important; text-shadow: none !important;">
+                                                                                    <i class="fas fa-list-check text-danger me-1"></i> Complete Product Specifications (Storefront Data)
+                                                                                </span>
+                                                                                <span class="badge border" style="background-color: #f8fafc !important; color: #475569 !important; border-color: #e2e8f0 !important; font-size: 10px; text-shadow: none !important;">
+                                                                                    <i class="fas fa-circle-check text-success me-1"></i> Front-End Formatted
+                                                                                </span>
+                                                                            </div>
+                                                                            <div class="table-responsive border rounded bg-white" style="border-color: #e2e8f0 !important;">
+                                                                                <table class="table table-sm mb-0 product-specs-table" style="font-size: 12px; border-collapse: collapse !important; background-color: #ffffff !important; text-shadow: none !important;">
+                                                                                    <tbody>
+                                                                                        ${Object.keys(specs).map(k => `
+                                                                                            <tr style="border-bottom: 1px solid #e2e8f0 !important; text-shadow: none !important;">
+                                                                                                <td class="spec-label" style="background-color: #f8fafc !important; color: #111827 !important; font-weight: 700 !important; font-size: 12px !important; width: 32% !important; border-right: 2px solid #cbd5e1 !important; border-bottom: 1px solid #e2e8f0 !important; padding: 7px 12px !important; white-space: nowrap !important; text-shadow: none !important;">${escapeHtml(k)}</td>
+                                                                                                <td class="spec-value" style="background-color: #ffffff !important; color: #333333 !important; font-weight: 500 !important; font-size: 12px !important; border-bottom: 1px solid #e2e8f0 !important; padding: 7px 12px !important; text-shadow: none !important;">${escapeHtml(specs[k])}</td>
+                                                                                            </tr>
+                                                                                        `).join('')}
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        `;
+                                                    }).join('')}
+                                                </div>
+
+                                                <!-- Order Fulfillment & Logistics Summary Bar -->
+                                                <div class="mt-3 p-3 rounded border d-flex justify-content-between align-items-center flex-wrap gap-2 order-summary-bar" style="background-color: #f8fafc !important; border-color: #e2e8f0 !important; color: #1f2937 !important; text-shadow: none !important; font-size: 12.5px;">
+                                                    <div style="color: #1f2937 !important; text-shadow: none !important;">
+                                                        <i class="fas fa-truck-fast text-danger me-1"></i><strong style="color: #111827 !important;">Courier:</strong> ${escapeHtml(o.courier || 'Leopard Express (Auto-Assigned)')} &bull; 
+                                                        <strong style="color: #111827 !important;">Tracking #:</strong> <code style="color: #dc2626 !important; background-color: #fef2f2 !important; border: 1px solid #fecaca !important; padding: 1px 5px; border-radius: 3px; text-shadow: none !important;">${escapeHtml(o.trackingNumber || o.trackingCN || ('TRK-' + o.id))}</code> &bull; 
+                                                        <strong style="color: #111827 !important;">Destination:</strong> ${escapeHtml(o.customer?.city || o.city || 'Karachi, Pakistan')}
+                                                    </div>
+                                                    <div class="fw-bold text-end" style="color: #1f2937 !important; text-shadow: none !important;">
+                                                        <span style="color: #374151 !important;">Subtotal: Rs. ${(Number(o.subtotal || o.total || 0)).toLocaleString()}</span>
+                                                        ${o.shipping ? `<span class="ms-2" style="color: #374151 !important;">&bull; Shipping: Rs. ${Number(o.shipping).toLocaleString()}</span>` : ''}
+                                                        <span class="ms-2 fs-6" style="color: #16a34a !important; font-weight: 800 !important;">&bull; Order Total: Rs. ${(Number(o.total || 0)).toLocaleString()}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            const modalEl = document.getElementById('customerDetailModal');
+            let modalInst = bootstrap.Modal.getInstance(modalEl);
+            if (!modalInst) {
+                modalInst = new bootstrap.Modal(modalEl);
+            }
+            detailModalInstance = modalInst;
+            detailModalInstance.show();
+        }
+
+        function renderInquiriesTable() {
+            const inquiries = JSON.parse(localStorage.getItem('admin_contact_inquiries') || '[]');
+            const tbody = document.getElementById('inquiries-tbody');
+            const badge = document.getElementById('stat-inquiries-badge');
+            const totalBadge = document.getElementById('inquiries-total-badge');
+            
+            if (badge) badge.innerText = inquiries.length;
+            if (totalBadge) totalBadge.innerText = `${inquiries.length} Inquiries`;
+            if (!tbody) return;
+            
+            if (inquiries.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <i class="fas fa-envelope-open fs-1 mb-3 text-secondary d-block"></i>
+                            <h6 class="fw-bold text-dark">No Contact Inquiries Yet</h6>
+                            <p class="small text-secondary mb-0">Customer inquiries from the Contact Us page will automatically appear here in real time.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = inquiries.map((inq, idx) => `
+                <tr class="${inq.archived ? 'opacity-75 bg-light' : ''}">
+                    <td class="ps-4">
+                        <strong class="text-dark d-block">${inq.name || 'Anonymous'}</strong>
+                        <a href="mailto:${inq.email}" class="small text-danger text-decoration-none">${inq.email || 'No Email'}</a>
+                    </td>
+                    <td>
+                        <strong class="text-dark">${inq.subject || 'General Inquiry'}</strong>
+                    </td>
+                    <td style="max-width: 320px;">
+                        <div class="small text-secondary text-truncate" title="${inq.message || ''}">${inq.message || 'No message content'}</div>
+                    </td>
+                    <td class="small text-secondary">
+                        ${inq.date ? new Date(inq.date).toLocaleDateString() : 'Recent'}
+                    </td>
+                    <td>
+                        <span class="badge ${inq.archived ? 'bg-secondary' : 'bg-success bg-opacity-10 text-success border border-success border-opacity-25'}">
+                            ${inq.archived ? 'Archived' : (inq.status || 'New')}
+                        </span>
+                    </td>
+                    <td class="text-end pe-4">
+                        <div class="d-flex justify-content-end gap-1">
+                            <a href="mailto:${inq.email}?subject=Re: ${encodeURIComponent(inq.subject || 'Gear Up Gadget Inquiry')}" class="btn btn-sm btn-outline-danger" title="Reply via Email">
+                                <i class="fas fa-reply"></i>
+                            </a>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="toggleArchiveInquiry('${inq.id || idx}')" title="Archive / Unarchive">
+                                <i class="fas ${inq.archived ? 'fa-box-open' : 'fa-box-archive'}"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteInquiry('${inq.id || idx}')" title="Delete Inquiry">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function toggleArchiveInquiry(id) {
+            let inquiries = JSON.parse(localStorage.getItem('admin_contact_inquiries') || '[]');
+            let target = inquiries.find(c => String(c.id) === String(id)) || inquiries[parseInt(id, 10)];
+            if (target) {
+                target.archived = !target.archived;
+                localStorage.setItem('admin_contact_inquiries', JSON.stringify(inquiries));
+                if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.updateContactStatus === 'function') {
+                    window.GUG_FIREBASE.updateContactStatus(target.id, target.status, target.archived);
+                }
+                renderInquiriesTable();
+            }
+        }
+
+        function deleteInquiry(id) {
+            if (!confirm('Are you sure you want to delete this customer inquiry?')) return;
+            let inquiries = JSON.parse(localStorage.getItem('admin_contact_inquiries') || '[]');
+            let target = inquiries.find(c => String(c.id) === String(id));
+            const inqId = target ? target.id : id;
+            inquiries = inquiries.filter(c => String(c.id) !== String(inqId));
+            localStorage.setItem('admin_contact_inquiries', JSON.stringify(inquiries));
+            if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.deleteContact === 'function') {
+                window.GUG_FIREBASE.deleteContact(inqId);
+            }
+            renderInquiriesTable();
+        }
+
+        // =========================================================================
+        // CUSTOM PC BUILD REQUESTS MANAGEMENT & FIREBASE SYNC
+        // =========================================================================
+        function getPcBuildsData() {
+            if (window.GUG_DB && typeof window.GUG_DB.getPcBuildRequests === 'function') {
+                return window.GUG_DB.getPcBuildRequests();
+            }
+            return JSON.parse(localStorage.getItem('admin_pc_build_requests') || '[]');
+        }
+
+        function renderPcBuildsTable(items = null) {
+            const builds = items || getPcBuildsData();
+            const tbody = document.getElementById('pcbuilds-tbody');
+            const badge = document.getElementById('stat-pcbuilds-badge');
+            const totalBadge = document.getElementById('pcbuilds-total-badge');
+
+            const allBuilds = getPcBuildsData();
+            if (badge) badge.innerText = allBuilds.length;
+            if (totalBadge) totalBadge.innerText = `${allBuilds.length} Build Requests`;
+
+            if (!tbody) return;
+
+            if (builds.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <i class="fas fa-desktop fs-1 mb-3 text-secondary d-block"></i>
+                            <h6 class="fw-bold text-dark">No Custom PC Build Requests Found</h6>
+                            <p class="small text-secondary mb-0">When customers submit build requests for Student PC, Corporate PC, or Gaming PC on the homepage, they will instantly appear here.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = builds.map(b => {
+                const reqId = b.buildId || b.id || 'N/A';
+                const clientName = b.fullName || b.name || 'Valued Customer';
+                const phone = b.mobileNumber || b.phone || 'N/A';
+                const wa = (b.whatsappNumber || b.whatsapp || phone || '').replace(/[^0-9]/g, '');
+                const email = b.email || '';
+                const city = b.city || b.address || 'Pakistan';
+                const tier = b.buildTier || b.category || 'Custom PC';
+                
+                let tierBadge = '<span class="badge bg-secondary">Custom PC</span>';
+                if (tier.includes('Student')) {
+                    tierBadge = '<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25"><i class="fas fa-graduation-cap me-1"></i> Student PC</span>';
+                } else if (tier.includes('Corporate')) {
+                    tierBadge = '<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25"><i class="fas fa-building me-1"></i> Corporate PC</span>';
+                } else if (tier.includes('Gaming')) {
+                    tierBadge = '<span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25"><i class="fas fa-gamepad me-1"></i> Gaming PC</span>';
+                }
+
+                const status = b.status || 'New Lead';
+                let statusBadge = '<span class="badge bg-danger">New Lead</span>';
+                if (status === 'Contacted') statusBadge = '<span class="badge bg-info text-dark">Contacted</span>';
+                else if (status === 'Quoted') statusBadge = '<span class="badge bg-primary">Quoted</span>';
+                else if (status === 'In Build') statusBadge = '<span class="badge bg-warning text-dark">In Build</span>';
+                else if (status === 'Completed') statusBadge = '<span class="badge bg-success">Completed</span>';
+                else if (status === 'Cancelled') statusBadge = '<span class="badge bg-secondary">Cancelled</span>';
+
+                const budgetVal = b.budget ? (b.budget.startsWith('Rs') ? b.budget : `Rs. ${Number(b.budget.replace(/[^0-9]/g, '') || 0).toLocaleString()}`) : 'Budget Open';
+                const dateStr = b.date ? new Date(b.date).toLocaleDateString() : 'Recent';
+
+                // Pre-formatted WhatsApp Message for sales reps
+                const waGreeting = encodeURIComponent(`Assalam-o-Alaikum ${clientName}, this is Gear Up Gadgets regarding your ${tier} build request (Ref: ${reqId}). We have reviewed your components (CPU: ${b.cpu || 'Any'}, GPU: ${b.gpu || 'Any'}) and prepared a customized quotation for you.`);
+
+                return `
+                    <tr>
+                        <td class="ps-4">
+                            <strong class="text-dark d-block">${clientName}</strong>
+                            <div class="small text-secondary"><code class="text-danger fw-bold">${reqId}</code> &bull; <i class="fas fa-map-marker-alt text-danger ms-1 me-1"></i>${city}</div>
+                            <div class="small text-muted"><i class="fas fa-phone me-1"></i>${phone} ${email ? `&bull; ${email}` : ''}</div>
+                        </td>
+                        <td>
+                            ${tierBadge}
+                        </td>
+                        <td>
+                            <div class="small text-dark"><strong>CPU:</strong> ${b.cpu || '<span class="text-muted">Not Specified</span>'}</div>
+                            <div class="small text-dark"><strong>GPU:</strong> ${b.gpu || '<span class="text-muted">Integrated / Open</span>'}</div>
+                            <div class="small text-secondary"><strong>RAM / SSD:</strong> ${b.ram || 'Standard'} / ${b.storage || 'Standard'}</div>
+                        </td>
+                        <td>
+                            <strong class="text-dark">${budgetVal}</strong>
+                        </td>
+                        <td class="small text-secondary">
+                            ${dateStr}
+                        </td>
+                        <td>
+                            ${statusBadge}
+                        </td>
+                        <td class="text-end pe-4">
+                            <div class="d-flex justify-content-end gap-1">
+                                <button class="btn btn-sm btn-outline-dark" onclick="viewPcBuildDetail('${reqId}')" title="View Full Specs & Notes">
+                                    <i class="fas fa-eye me-1"></i> Specs
+                                </button>
+                                ${wa ? `
+                                <a href="https://wa.me/${wa}?text=${waGreeting}" target="_blank" class="btn btn-sm btn-outline-success" title="Chat on WhatsApp">
+                                    <i class="fab fa-whatsapp"></i>
+                                </a>` : ''}
+                                ${email ? `
+                                <a href="mailto:${email}?subject=Gear Up Gadget Quotation - ${encodeURIComponent(tier + ' ' + reqId)}" class="btn btn-sm btn-outline-primary" title="Email Quotation">
+                                    <i class="fas fa-envelope"></i>
+                                </a>` : ''}
+                                <button class="btn btn-sm btn-outline-danger" onclick="deletePcBuildLead('${reqId}')" title="Delete Lead">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function filterPcBuilds() {
+            const q = (document.getElementById('pcbuild-search')?.value || '').toLowerCase().trim();
+            const tier = document.getElementById('pcbuild-tier-filter')?.value || '';
+            const status = document.getElementById('pcbuild-status-filter')?.value || '';
+            const builds = getPcBuildsData();
+
+            const filtered = builds.filter(b => {
+                const clientName = (b.fullName || b.name || '').toLowerCase();
+                const phone = (b.mobileNumber || b.phone || '').toLowerCase();
+                const wa = (b.whatsappNumber || b.whatsapp || '').toLowerCase();
+                const email = (b.email || '').toLowerCase();
+                const city = (b.city || b.address || '').toLowerCase();
+                const cpu = (b.cpu || '').toLowerCase();
+                const gpu = (b.gpu || '').toLowerCase();
+                const reqId = (b.buildId || b.id || '').toLowerCase();
+
+                const matchQ = !q || clientName.includes(q) || phone.includes(q) || wa.includes(q) || email.includes(q) || city.includes(q) || cpu.includes(q) || gpu.includes(q) || reqId.includes(q);
+                const bTier = b.buildTier || b.category || '';
+                const matchTier = !tier || bTier.toLowerCase().includes(tier.toLowerCase());
+                const bStatus = b.status || 'New Lead';
+                const matchStatus = !status || bStatus === status;
+
+                return matchQ && matchTier && matchStatus;
+            });
+
+            renderPcBuildsTable(filtered);
+        }
+
+        function resetPcBuildFilters() {
+            if (document.getElementById('pcbuild-search')) document.getElementById('pcbuild-search').value = '';
+            if (document.getElementById('pcbuild-tier-filter')) document.getElementById('pcbuild-tier-filter').value = '';
+            if (document.getElementById('pcbuild-status-filter')) document.getElementById('pcbuild-status-filter').value = '';
+            renderPcBuildsTable();
+        }
+
+        function viewPcBuildDetail(id) {
+            activePcBuildId = id;
+            const builds = getPcBuildsData();
+            const b = builds.find(item => (item.buildId === id || item.id === id));
+            if (!b) return;
+
+            const clientName = b.fullName || b.name || 'Valued Customer';
+            const phone = b.mobileNumber || b.phone || 'N/A';
+            const wa = (b.whatsappNumber || b.whatsapp || phone || '').replace(/[^0-9]/g, '');
+            const email = b.email || 'N/A';
+            const city = b.city || b.address || 'Pakistan';
+            const officeAddr = b.officeAddress || '';
+            const tier = b.buildTier || b.category || 'Custom PC';
+            const budgetVal = b.budget ? (b.budget.startsWith('Rs') ? b.budget : `Rs. ${Number(b.budget.replace(/[^0-9]/g, '') || 0).toLocaleString()}`) : 'Budget Open';
+            const waGreeting = encodeURIComponent(`Assalam-o-Alaikum ${clientName}, this is Gear Up Gadgets regarding your ${tier} build request (${id}).`);
+
+            const container = document.getElementById('pc-build-detail-body');
+            container.innerHTML = `
+                <div class="d-flex align-items-center justify-content-between pb-3 border-bottom mb-4">
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <h4 class="fw-bold text-dark mb-0">${clientName}</h4>
+                            <span class="badge bg-danger">${tier}</span>
+                        </div>
+                        <small class="text-secondary">Request ID: <code class="text-danger fw-bold">${id}</code> &bull; Submitted: ${b.date ? new Date(b.date).toLocaleString() : 'Recent'}</small>
+                    </div>
+                    <div class="text-end">
+                        <span class="text-secondary small fw-bold text-uppercase d-block">Target Budget</span>
+                        <h4 class="fw-bold text-success mb-0">${budgetVal}</h4>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <!-- Customer Contact Info -->
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded border h-100">
+                            <strong class="text-dark d-block mb-2"><i class="fas fa-address-card text-danger me-2"></i> Customer Contact & Logistics</strong>
+                            <div class="small text-dark mb-1"><i class="fas fa-phone text-secondary me-2"></i> <strong>Mobile:</strong> ${phone}</div>
+                            <div class="small text-dark mb-1"><i class="fab fa-whatsapp text-success me-2"></i> <strong>WhatsApp:</strong> ${b.whatsappNumber || b.whatsapp || phone}</div>
+                            <div class="small text-dark mb-1"><i class="fas fa-envelope text-secondary me-2"></i> <strong>Email:</strong> ${email}</div>
+                            <div class="small text-dark mb-1"><i class="fas fa-map-marker-alt text-danger me-2"></i> <strong>City / Delivery:</strong> ${city}</div>
+                            ${officeAddr ? `<div class="small text-dark"><i class="fas fa-building text-primary me-2"></i> <strong>Office:</strong> ${officeAddr}</div>` : ''}
+                        </div>
+                    </div>
+
+                    <!-- Hardware Specifications -->
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded border h-100">
+                            <strong class="text-dark d-block mb-2"><i class="fas fa-microchip text-danger me-2"></i> Requested Hardware Specs</strong>
+                            <div class="small text-dark mb-1"><strong>Processor (CPU):</strong> ${b.cpu || 'Customer requested recommendation'}</div>
+                            <div class="small text-dark mb-1"><strong>Graphics (GPU):</strong> ${b.gpu || 'Integrated / Dedicated as per budget'}</div>
+                            <div class="small text-dark mb-1"><strong>System Memory (RAM):</strong> ${b.ram || '16GB / Optimal for tier'}</div>
+                            <div class="small text-dark mb-1"><strong>Primary Storage (SSD):</strong> ${b.storage || '1TB NVMe / High speed'}</div>
+                            <div class="small text-dark"><strong>Target Budget:</strong> <span class="text-success fw-bold">${budgetVal}</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Specific Use Case Notes -->
+                <div class="p-3 bg-white border rounded mb-4">
+                    <strong class="text-dark d-block mb-1"><i class="fas fa-comment-dots text-primary me-2"></i> Customer Specific Requirements & Use-Case Notes</strong>
+                    <div class="p-3 bg-light rounded text-dark small" style="white-space: pre-wrap; font-style: italic;">
+                        ${b.notes ? `"${b.notes}"` : 'No additional custom notes provided by customer.'}
+                    </div>
+                </div>
+
+                <!-- Sales Status & Internal Technical Notes -->
+                <div class="p-3 bg-light rounded border">
+                    <strong class="text-dark d-block mb-3"><i class="fas fa-sliders text-danger me-2"></i> Sales Pipeline & Quotation Status</strong>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Update Lead Status</label>
+                            <select id="modal-pcbuild-status" class="form-select">
+                                <option value="New Lead" ${b.status === 'New Lead' ? 'selected' : ''}>New Lead (Pending Review)</option>
+                                <option value="Contacted" ${b.status === 'Contacted' ? 'selected' : ''}>Contacted / In Discussion</option>
+                                <option value="Quoted" ${b.status === 'Quoted' ? 'selected' : ''}>Quotation Sent</option>
+                                <option value="In Build" ${b.status === 'In Build' ? 'selected' : ''}>In Assembly / Stress-Testing</option>
+                                <option value="Completed" ${b.status === 'Completed' ? 'selected' : ''}>Completed & Dispatched</option>
+                                <option value="Cancelled" ${b.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Quick Contact Actions</label>
+                            <div class="d-flex gap-2">
+                                ${wa ? `<a href="https://wa.me/${wa}?text=${waGreeting}" target="_blank" class="btn btn-success btn-sm w-100"><i class="fab fa-whatsapp me-1"></i> WhatsApp</a>` : ''}
+                                ${email && email !== 'N/A' ? `<a href="mailto:${email}?subject=Quotation for ${encodeURIComponent(tier + ' ' + id)}" class="btn btn-primary btn-sm w-100"><i class="fas fa-envelope me-1"></i> Email</a>` : ''}
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Internal Sales / Technician Notes</label>
+                            <textarea id="modal-pcbuild-notes" class="form-control" rows="2" placeholder="e.g. Quoted Core i5-13400F + RTX 4060 build at Rs. 215,000. Customer requested black case with ARGB fans.">${b.salesNotes || ''}</textarea>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Wire up Save and Delete buttons in modal
+            const saveBtn = document.getElementById('pc-build-save-modal-btn');
+            if (saveBtn) {
+                saveBtn.onclick = () => savePcBuildDetailModal(id);
+            }
+            const delBtn = document.getElementById('pc-build-delete-modal-btn');
+            if (delBtn) {
+                delBtn.onclick = () => {
+                    if (pcBuildDetailModalInstance) pcBuildDetailModalInstance.hide();
+                    deletePcBuildLead(id);
+                };
+            }
+
+            pcBuildDetailModalInstance = new bootstrap.Modal(document.getElementById('pcBuildDetailModal'));
+            pcBuildDetailModalInstance.show();
+        }
+
+        function savePcBuildDetailModal(id) {
+            const targetId = id || activePcBuildId;
+            if (!targetId) return;
+
+            const newStatus = document.getElementById('modal-pcbuild-status')?.value || 'New Lead';
+            const salesNotes = document.getElementById('modal-pcbuild-notes')?.value || '';
+
+            // Update local GugErpCore
+            if (window.GUG_DB && typeof window.GUG_DB.updatePcBuildStatus === 'function') {
+                window.GUG_DB.updatePcBuildStatus(targetId, newStatus, salesNotes);
+            } else {
+                let builds = getPcBuildsData();
+                let b = builds.find(item => item.buildId === targetId || item.id === targetId);
+                if (b) {
+                    b.status = newStatus;
+                    b.salesNotes = salesNotes;
+                    localStorage.setItem('admin_pc_build_requests', JSON.stringify(builds));
+                }
+            }
+
+            // Sync with Firebase Cloud
+            if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.updatePcBuildStatus === 'function') {
+                window.GUG_FIREBASE.updatePcBuildStatus(targetId, newStatus, salesNotes);
+            }
+
+            if (pcBuildDetailModalInstance) pcBuildDetailModalInstance.hide();
+            renderPcBuildsTable();
+            if (window.GUG_DB && window.GUG_DB.showToast) {
+                window.GUG_DB.showToast(`PC Build Request ${targetId} updated to [${newStatus}]!`, 'success', 'Status Updated');
+            }
+        }
+
+        function deletePcBuildLead(id) {
+            if (!confirm(`Are you sure you want to delete PC Build Lead #${id}? This action cannot be undone.`)) return;
+
+            if (window.GUG_DB && typeof window.GUG_DB.deletePcBuild === 'function') {
+                window.GUG_DB.deletePcBuild(id);
+            } else {
+                let builds = getPcBuildsData().filter(item => item.buildId !== id && item.id !== id);
+                localStorage.setItem('admin_pc_build_requests', JSON.stringify(builds));
+            }
+
+            if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.deletePcBuild === 'function') {
+                window.GUG_FIREBASE.deletePcBuild(id);
+            }
+
+            renderPcBuildsTable();
+            if (window.GUG_DB && window.GUG_DB.showToast) {
+                window.GUG_DB.showToast(`PC Build Request ${id} deleted successfully.`, 'info', 'Lead Deleted');
+            }
+        }
+
+        let cancelOrderModalInstance = null;
+
+        function renderCrmOrdersTable(items = null) {
+            const orders = items || GUG_DB.getOrders();
+            const tbody = document.getElementById('crm-orders-tbody');
+            const badge = document.getElementById('stat-crm-orders-badge');
+            const totalBadge = document.getElementById('crm-orders-total-badge');
+
+            if (badge) badge.innerText = orders.length;
+            if (totalBadge) totalBadge.innerText = `${orders.length} Orders Logged`;
+            if (!tbody) return;
+
+            tbody.innerHTML = '';
+
+            if (orders.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <i class="fas fa-boxes-packing fs-1 mb-3 text-secondary d-block"></i>
+                            <h6 class="fw-bold text-dark">No Customer Orders Found</h6>
+                            <p class="small text-secondary mb-0">No storefront orders matched your filter criteria.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            orders.forEach(o => {
+                const custName = o.customer ? o.customer.name : (o.name || 'Walk-in Buyer');
+                const custPhone = o.customer ? o.customer.phone : (o.phone || 'N/A');
+                const custCity = o.customer ? (o.customer.city || 'Pakistan') : (o.city || 'Pakistan');
+                const custId = o.customer?.id || o.customerId || '';
+                
+                let itemsSummary = 'Gear Up Hardware';
+                let itemCount = 1;
+                if (Array.isArray(o.items) && o.items.length > 0) {
+                    itemCount = o.items.length;
+                    itemsSummary = o.items.map(it => it.title || it.name).join(', ');
+                } else if (o.product || o.title) {
+                    itemsSummary = o.product || o.title;
+                }
+
+                let statusBadge = '<span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i> Processing</span>';
+                if (o.orderStatus === 'Dispatched') statusBadge = '<span class="badge bg-primary"><i class="fas fa-truck me-1"></i> Dispatched</span>';
+                else if (o.orderStatus === 'Delivered') statusBadge = '<span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Delivered</span>';
+                else if (o.orderStatus === 'Cancelled') statusBadge = '<span class="badge bg-danger"><i class="fas fa-ban me-1"></i> Cancelled</span>';
+                else if (o.orderStatus === 'Pending') statusBadge = '<span class="badge bg-secondary"><i class="fas fa-hourglass-start me-1"></i> Pending Approval</span>';
+
+                const isCancelled = o.orderStatus === 'Cancelled';
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="ps-4">
+                        <strong class="text-dark d-block"><code>${escapeHtml(o.id)}</code></strong>
+                        <small class="text-secondary"><i class="fas fa-calendar-alt small me-1"></i> ${(o.date || '').split('T')[0] || 'Recent'}</small>
+                    </td>
+                    <td>
+                        <strong class="text-dark d-block">${escapeHtml(custName)}</strong>
+                        <small class="text-secondary"><i class="fas fa-phone small me-1"></i> ${escapeHtml(custPhone)} &bull; <i class="fas fa-map-marker-alt small text-danger me-1"></i> ${escapeHtml(custCity)}</small>
+                    </td>
+                    <td>
+                        <span class="badge bg-light text-dark border"><i class="fas fa-box-open me-1 text-danger"></i>${itemCount} item(s)</span>
+                        <div class="text-truncate text-secondary small mt-1" style="max-width: 200px;" title="${escapeHtml(itemsSummary)}">
+                            ${escapeHtml(itemsSummary)}
+                        </div>
+                    </td>
+                    <td>
+                        <strong class="text-success fs-6">Rs. ${(Number(o.total || 0)).toLocaleString()}</strong>
+                    </td>
+                    <td>
+                        <small class="badge bg-light text-dark border">${escapeHtml(o.paymentMethod || 'Cash on Delivery')}</small>
+                    </td>
+                    <td>
+                        ${statusBadge}
+                        ${o.cancelReason ? `<div class="text-danger small mt-1" style="font-size: 10.5px;" title="${escapeHtml(o.cancelReason)}"><i class="fas fa-info-circle me-1"></i>${escapeHtml(o.cancelReason.substring(0, 30))}${o.cancelReason.length > 30 ? '...' : ''}</div>` : ''}
+                    </td>
+                    <td class="text-end pe-4">
+                        <div class="btn-group btn-group-sm">
+                            ${custId ? `<button type="button" class="btn btn-outline-dark" onclick="viewCustomer360('${escapeHtml(custId)}')" title="View Customer 360 Profile"><i class="fas fa-user-circle me-1"></i> Profile</button>` : ''}
+                            ${isCancelled ? `
+                                <button type="button" class="btn btn-outline-secondary disabled" title="Order already cancelled"><i class="fas fa-ban me-1"></i> Cancelled</button>
+                            ` : `
+                                <button type="button" class="btn btn-danger fw-bold" onclick="promptCancelOrder('${escapeHtml(o.id)}', '${escapeHtml(custId)}')" title="Cancel this Order"><i class="fas fa-times-circle me-1"></i> Cancel Order</button>
+                            `}
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterCrmOrders() {
+            const q = (document.getElementById('crm-order-search').value || '').toLowerCase().trim();
+            const stat = document.getElementById('crm-order-status-filter').value;
+            const pay = document.getElementById('crm-order-payment-filter').value;
+            const orders = GUG_DB.getOrders();
+
+            const filtered = orders.filter(o => {
+                const custName = o.customer ? (o.customer.name || '').toLowerCase() : (o.name || '').toLowerCase();
+                const phone = o.customer ? (o.customer.phone || '') : (o.phone || '');
+                const city = o.customer ? (o.customer.city || '').toLowerCase() : (o.city || '').toLowerCase();
+                const orderId = (o.id || '').toLowerCase();
+                let prodNames = '';
+                if (Array.isArray(o.items)) prodNames = o.items.map(it => (it.title || it.name || '')).join(' ').toLowerCase();
+
+                const matchQ = !q || orderId.includes(q) || custName.includes(q) || phone.includes(q) || city.includes(q) || prodNames.includes(q);
+                const matchStat = !stat || o.orderStatus === stat;
+                const matchPay = !pay || (o.paymentMethod || 'Cash on Delivery').toLowerCase().includes(pay.toLowerCase());
+
+                return matchQ && matchStat && matchPay;
+            });
+
+            renderCrmOrdersTable(filtered);
+        }
+
+        function resetCrmOrderFilters() {
+            document.getElementById('crm-order-search').value = '';
+            document.getElementById('crm-order-status-filter').value = '';
+            document.getElementById('crm-order-payment-filter').value = '';
+            renderCrmOrdersTable();
+        }
+
+        function promptCancelOrder(orderId, customerId = null) {
+            document.getElementById('cancel-modal-order-id').value = orderId || '';
+            document.getElementById('cancel-modal-customer-id').value = customerId || '';
+            document.getElementById('cancel-modal-order-label').innerText = `#${orderId}`;
+            document.getElementById('cancel-order-reason-select').value = 'Customer requested cancellation';
+            const customInput = document.getElementById('cancel-order-custom-reason');
+            customInput.classList.add('d-none');
+            customInput.value = '';
+
+            cancelOrderModalInstance = new bootstrap.Modal(document.getElementById('cancelOrderModal'));
+            cancelOrderModalInstance.show();
+        }
+
+        function handleCancelReasonSelect(selectEl) {
+            const customInput = document.getElementById('cancel-order-custom-reason');
+            if (selectEl.value.includes('Other')) {
+                customInput.classList.remove('d-none');
+                customInput.focus();
+            } else {
+                customInput.classList.add('d-none');
+            }
+        }
+
+        function executeCancelOrder() {
+            const orderId = document.getElementById('cancel-modal-order-id').value;
+            const customerId = document.getElementById('cancel-modal-customer-id').value;
+            if (!orderId) return;
+
+            const selectEl = document.getElementById('cancel-order-reason-select');
+            const customInput = document.getElementById('cancel-order-custom-reason');
+            let reason = selectEl.value;
+            if (selectEl.value.includes('Other') && customInput.value.trim()) {
+                reason = customInput.value.trim();
+            }
+
+            const res = GUG_DB.cancelOrder(orderId, reason);
+            if (cancelOrderModalInstance) {
+                cancelOrderModalInstance.hide();
+            }
+
+            if (res && res.success) {
+                if (window.GUG_DB && window.GUG_DB.showToast) {
+                    window.GUG_DB.showToast(`Order #${orderId} has been successfully cancelled!`, 'success', 'Order Cancelled');
+                }
+                renderCrmOrdersTable();
+                updateCRMStats();
+                // If customer 360 is currently open, refresh it
+                if (customerId) {
+                    viewCustomer360(customerId);
+                }
+            } else {
+                alert(res?.message || 'Failed to cancel order.');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initCRMPage();
+            renderInquiriesTable();
+            renderPcBuildsTable();
+            window.addEventListener('gugContactsUpdated', () => renderInquiriesTable());
+            window.addEventListener('gugPcBuildsUpdated', () => renderPcBuildsTable());
+            window.addEventListener('pcBuildsReady', () => renderPcBuildsTable());
+            window.addEventListener('gugOrdersUpdated', () => {
+                renderCrmOrdersTable();
+                updateCRMStats();
+            });
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'admin_contact_inquiries') renderInquiriesTable();
+                if (e.key === 'admin_pc_build_requests') renderPcBuildsTable();
+                if (e.key === 'gug_erp_orders' || e.key === 'admin_orders') {
+                    renderCrmOrdersTable();
+                    updateCRMStats();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
+

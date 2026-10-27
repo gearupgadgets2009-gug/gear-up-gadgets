@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B2B Dealer Statement & Ledger | GearUp Gadgets ERP</title>    
+    <!-- Favicon & Device Web Icons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/images/favicon-64x64.png">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/fonts/font-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <style>
+        body {
+            background-color: var(--gug-bg-color, #07090d) !important;
+            background-image: var(--gug-bg-image) !important;
+            background-attachment: var(--gug-bg-attachment, fixed) !important;
+            background-size: var(--gug-bg-size, cover, cover, 28px 49px) !important;
+            background-position: var(--gug-bg-position, center top) !important;
+            background-repeat: var(--gug-bg-repeat, no-repeat, no-repeat, repeat) !important;
+            color: #ffffff !important;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+        .portal-header {
+            background: rgba(10, 10, 15, 0.55);
+            backdrop-filter: blur(24px) saturate(200%);
+            -webkit-backdrop-filter: blur(24px) saturate(200%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 14px 24px;
+            position: sticky;
+            top: 0;
+            z-index: 1020;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+        }
+        .portal-card {
+            background: rgba(10, 10, 15, 0.45);
+            backdrop-filter: blur(24px) saturate(200%);
+            -webkit-backdrop-filter: blur(24px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+        }
+        .table {
+            color: #ffffff;
+            vertical-align: middle;
+            background-color: transparent;
+        }
+        .table th {
+            background-color: rgba(255, 255, 255, 0.06);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .table td {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 13.5px;
+            color: #ffffff;
+        }
+        .nav-pills-dealer {
+            gap: 8px;
+        }
+        .nav-pills-dealer .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 600;
+            font-size: 13px;
+            padding: 9px 16px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            transition: all 0.2s;
+        }
+        .nav-pills-dealer .nav-link:hover {
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.12);
+        }
+        .nav-pills-dealer .nav-link.active {
+            background-color: var(--accent-red) !important;
+            color: #ffffff !important;
+            border-color: var(--accent-red);
+            box-shadow: 0 4px 14px rgba(229, 3, 3, 0.4);
+        }
+        .stat-card {
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(10, 10, 15, 0.45);
+            backdrop-filter: blur(24px) saturate(200%);
+            -webkit-backdrop-filter: blur(24px) saturate(200%);
+            padding: 20px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+            transition: transform 0.2s, box-shadow 0.2s;
+            color: #ffffff;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 22px 50px rgba(0, 0, 0, 0.7), 0 0 25px rgba(229, 3, 3, 0.25);
+            border-color: rgba(229, 3, 3, 0.55);
+        }
+        .statement-paper {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            border-radius: 8px;
+            padding: 36px;
+        }
+        @media print {
+            body { background: #ffffff !important; color: #000000 !important; }
+            .portal-header, .nav-pills-dealer, .no-print { display: none !important; }
+            .statement-paper { border: none !important; box-shadow: none !important; padding: 0 !important; }
+            .container-fluid { width: 100% !important; padding: 0 !important; margin: 0 !important; }
+        }
+
+        /* ==========================================================================
+           Ultra-Compact Mobile Card Grid Engine (max-width: 768px)
+           Strict 2-Column Grid Layout, Zero Hidden Data, Full Action Button Visibility
+           ========================================================================== */
+        @media screen and (max-width: 768px) {
+            html, body, .container-fluid, .portal-wrapper, .portal-card, .table-responsive {
+                overflow-x: hidden !important;
+                max-width: 100vw !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            .container-fluid {
+                padding-left: 8px !important;
+                padding-right: 8px !important;
+            }
+            table, .table, tbody {
+                display: block !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                box-sizing: border-box !important;
+            }
+            thead, thead tr, th {
+                display: none !important;
+                visibility: hidden !important;
+                height: 0 !important;
+                width: 0 !important;
+                opacity: 0 !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                border: none !important;
+            }
+            /* 1. Ultra-Compact Grid Card (display: grid; grid-template-columns: 1fr 1fr; gap: 6px;) */
+            tbody tr,
+            .table tbody tr {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 6px !important;
+                align-items: center !important;
+                width: 100% !important;
+                background: rgba(14, 18, 25, 0.94) !important;
+                backdrop-filter: blur(16px) !important;
+                -webkit-backdrop-filter: blur(16px) !important;
+                border: 1px solid rgba(255, 255, 255, 0.16) !important;
+                border-radius: 10px !important;
+                padding: 8px !important;
+                margin-bottom: 10px !important;
+                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45) !important;
+                box-sizing: border-box !important;
+                overflow: visible !important;
+            }
+
+            /* 2. Compact Grid Cells */
+            tbody td,
+            .table tbody td {
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: center !important;
+                align-items: flex-start !important;
+                width: 100% !important;
+                min-width: 0 !important;
+                padding: 4px 6px !important;
+                border: none !important;
+                border-radius: 6px !important;
+                background: rgba(255, 255, 255, 0.03) !important;
+                font-size: 11.5px !important;
+                line-height: 1.35 !important;
+                min-height: auto !important;
+                box-sizing: border-box !important;
+                white-space: normal !important;
+                word-wrap: break-word !important;
+                word-break: break-word !important;
+                overflow: visible !important;
+                text-align: left !important;
+            }
+
+            /* 3. Injected Column Labels */
+            tbody td::before,
+            .table tbody td::before {
+                content: attr(data-label);
+                font-weight: 700;
+                text-transform: uppercase;
+                font-size: 9px;
+                color: rgba(255, 255, 255, 0.55);
+                letter-spacing: 0.5px;
+                display: block !important;
+                margin-bottom: 2px !important;
+                width: 100% !important;
+                text-align: left !important;
+                flex: 0 0 auto !important;
+            }
+
+            /* 4. Full-Width Grid Elements (spanning both columns) */
+            tbody td:first-child,
+            .table tbody td:first-child,
+            tbody td[colspan],
+            .table tbody td[colspan],
+            tbody td[data-label="Description & Details"],
+            tbody td[data-label="Product Description"],
+            tbody td[data-label="Transaction Details"],
+            tbody td[data-label="Product Title / Specs"],
+            tbody td[data-label="Product"],
+            tbody td[data-label="Balance"],
+            tbody td[data-label="BALANCE"],
+            tbody td[data-label="Balance (Rs. )"],
+            .table tbody td[data-label="Balance (Rs. )"],
+            tbody td[data-label="Details"],
+            tbody td:last-child,
+            .table tbody td:last-child {
+                grid-column: 1 / -1 !important;
+                width: 100% !important;
+            }
+
+            /* Colspan empty states */
+            tbody td[colspan]::before,
+            .table tbody td[colspan]::before {
+                display: none !important;
+            }
+            tbody td[colspan],
+            .table tbody td[colspan] {
+                display: block !important;
+                text-align: center !important;
+                padding: 14px 6px !important;
+                background: transparent !important;
+                font-size: 12px !important;
+            }
+
+            /* 5. Action / Details cell at bottom */
+            tbody td:last-child,
+            .table tbody td:last-child,
+            tbody td[data-label="Details"] {
+                background: rgba(255, 255, 255, 0.02) !important;
+                border-top: 1px dashed rgba(255, 255, 255, 0.16) !important;
+                padding: 6px 2px 2px 2px !important;
+                margin-top: 2px !important;
+            }
+
+            tbody td:last-child .btn,
+            tbody td[data-label="Details"] .btn {
+                width: 100% !important;
+                min-height: 32px !important;
+                font-size: 11.5px !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                border-radius: 6px !important;
+            }
+
+            /* Statement Paper light view */
+            .statement-paper {
+                padding: 12px !important;
+            }
+            .statement-paper tbody tr {
+                background: #f8fafc !important;
+                border: 1px solid #cbd5e1 !important;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+            }
+            .statement-paper tbody td {
+                background: #ffffff !important;
+                color: #0f172a !important;
+            }
+            .statement-paper tbody td::before {
+                color: #64748b !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Security Session Enforcer -->
+    <script>
+        (function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const queryDealerId = urlParams.get('dealerId') || urlParams.get('id');
+            const isDealer = localStorage.getItem('dealer_logged_in') === 'true';
+            if (!isDealer && !queryDealerId) {
+                window.location.href = 'dealer-login.html';
+            }
+        })();
+    </script>
+
+    <!-- Header -->
+    <header class="portal-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-3">
+            <div class="rounded-circle bg-danger bg-opacity-20 p-2 d-flex align-items-center justify-content-center border border-danger border-opacity-50" style="width: 40px; height: 40px;">
+                <i class="fas fa-handshake text-danger fs-5"></i>
+            </div>
+            <div>
+                <h6 class="m-0 fw-bold text-white">GearUp Gadgets &bull; B2B Dealer Portal</h6>
+                <small class="text-secondary" style="font-size: 11px;">Official Real-Time Wholesale Ledger & Statement</small>
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="badge bg-dark border border-secondary text-light px-3 py-2 font-monospace" id="header-dealer-id">
+                <i class="fas fa-store text-danger me-1"></i> <span id="header-shop-name">Loading...</span>
+            </span>
+
+            <button class="btn btn-outline-light btn-sm fw-bold px-3 d-flex align-items-center gap-2" onclick="printStatement()">
+                <i class="fas fa-print"></i> <span>Print Statement</span>
+            </button>
+
+            <a href="index.html" class="btn btn-light btn-sm fw-bold px-3 d-flex align-items-center gap-2 border text-dark text-decoration-none" target="_blank">
+                <i class="fas fa-external-link-alt text-dark"></i> <span>Storefront</span>
+            </a>
+
+            <button class="btn btn-danger btn-sm px-3 fw-bold" onclick="window.GUG_DB.dealerLogout()">
+                <i class="fas fa-sign-out-alt me-1"></i> Logout
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <div class="container-fluid py-4 px-lg-4">
+
+        <!-- Top Profile Banner -->
+        <div class="portal-card mb-4">
+            <div class="row align-items-center g-3">
+                <div class="col-lg-7">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle bg-danger bg-opacity-10 border border-danger border-opacity-30 p-3 text-center d-flex align-items-center justify-content-center shadow-sm" style="width: 68px; height: 68px;">
+                            <i class="fas fa-building text-danger fs-2"></i>
+                        </div>
+                        <div>
+                            <div class="d-flex align-items-center gap-2">
+                                <h4 class="text-dark fw-bold m-0" id="profile-shop-name">Loading Shop...</h4>
+                                <span class="badge bg-success" id="profile-status-badge">Active Dealer</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-3 mt-1 flex-wrap text-secondary small">
+                                <span><i class="fas fa-user-tie text-danger me-1"></i> <strong class="text-dark" id="profile-owner-name">-</strong></span>
+                                <span><i class="fas fa-id-card text-primary me-1"></i> CNIC: <code id="profile-cnic">-</code></span>
+                                <span><i class="fas fa-phone text-success me-1"></i> <span id="profile-phone">-</span></span>
+                                <span><i class="fab fa-whatsapp text-success me-1"></i> <a href="#" id="profile-whatsapp-link" target="_blank" class="text-decoration-none text-success fw-bold">WhatsApp Direct</a></span>
+                            </div>
+                            <div class="mt-1 text-muted small">
+                                <i class="fas fa-map-marker-alt text-danger me-1"></i> <span id="profile-shop-address">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-5 text-lg-end">
+                    <div class="d-inline-flex flex-column align-items-lg-end gap-1 p-3 bg-light rounded-3 border">
+                        <small class="text-secondary fw-bold text-uppercase" style="font-size: 11px;">B2B Credit Limit Assigned</small>
+                        <h4 class="text-dark fw-bold m-0 font-monospace" id="profile-credit-limit">Rs.  0</h4>
+                        <small class="text-muted" style="font-size: 11.5px;">Account Code: <code id="profile-dealer-code">DLR-000</code> &bull; Since <span id="profile-created-at">-</span></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4 Key Financial Metrics -->
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-lg-3">
+                <div class="stat-card border-start border-4 border-danger">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-secondary small fw-bold text-uppercase">Current Net Balance</span>
+                            <h3 class="fw-bold text-danger m-0 mt-1 font-monospace" id="kpi-net-balance">Rs.  0</h3>
+                            <small class="text-muted" id="kpi-balance-status">Outstanding Payable</small>
+                        </div>
+                        <div class="bg-danger bg-opacity-10 text-danger rounded-circle p-3 fs-4">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6 col-lg-3">
+                <div class="stat-card border-start border-4 border-primary">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-secondary small fw-bold text-uppercase">Total Stock Purchased</span>
+                            <h3 class="fw-bold text-primary m-0 mt-1 font-monospace" id="kpi-total-stock">Rs.  0</h3>
+                            <small class="text-muted">Total Wholesale Dispatches</small>
+                        </div>
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 fs-4">
+                            <i class="fas fa-boxes-stacked"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6 col-lg-3">
+                <div class="stat-card border-start border-4 border-success">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-secondary small fw-bold text-uppercase">Total Payments Made</span>
+                            <h3 class="fw-bold text-success m-0 mt-1 font-monospace" id="kpi-total-payments">Rs.  0</h3>
+                            <small class="text-muted">Cleared Bank & Cash Deposits</small>
+                        </div>
+                        <div class="bg-success bg-opacity-10 text-success rounded-circle p-3 fs-4">
+                            <i class="fas fa-receipt"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6 col-lg-3">
+                <div class="stat-card border-start border-4 border-info">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-secondary small fw-bold text-uppercase">Available Credit</span>
+                            <h3 class="fw-bold text-info m-0 mt-1 font-monospace" id="kpi-available-credit">Rs.  0</h3>
+                            <small class="text-muted">Remaining Credit Window</small>
+                        </div>
+                        <div class="bg-info bg-opacity-10 text-info rounded-circle p-3 fs-4">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Pills -->
+        <ul class="nav nav-pills nav-pills-dealer mb-4" id="dealerTab" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" id="ledger-tab" data-bs-toggle="pill" data-bs-target="#tab-ledger" type="button">
+                    <i class="fas fa-list-check me-2"></i> Account Ledger & Transactions (<span id="count-transactions">0</span>)
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="items-tab" data-bs-toggle="pill" data-bs-target="#tab-items" type="button">
+                    <i class="fas fa-box-open me-2"></i> Stock Dispatches & Hardware (<span id="count-dispatches">0</span>)
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="statement-tab" data-bs-toggle="pill" data-bs-target="#tab-statement" type="button">
+                    <i class="fas fa-file-contract me-2"></i> Official Printable Statement
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Contents -->
+        <div class="tab-content" id="dealerTabContent">
+
+            <!-- TAB 1: LEDGER TABLE -->
+            <div class="tab-pane fade show active" id="tab-ledger" role="tabpanel">
+                <div class="portal-card">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <input type="text" id="ledger-search" class="form-control form-control-sm" placeholder="Search ref, notes, description..." style="width: 260px;" oninput="filterLedger()">
+                            <select id="ledger-type-filter" class="form-select form-select-sm" style="width: 180px;" onchange="filterLedger()">
+                                <option value="ALL">All Transaction Types</option>
+                                <option value="STOCK_ISSUED">Stock Dispatches (Debit)</option>
+                                <option value="PAYMENT_RECEIVED">Payments (Credit)</option>
+                                <option value="ADVANCE_PAYMENT">Advance Payments</option>
+                                <option value="STOCK_RETURNED">Stock Returns</option>
+                            </select>
+                        </div>
+                        <div class="small text-secondary">
+                            <i class="fas fa-info-circle text-primary me-1"></i> Running Balance calculated automatically in real-time.
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Date & Time</th>
+                                    <th>Ref / Invoice #</th>
+                                    <th>Type</th>
+                                    <th>Description & Details</th>
+                                    <th>TOTAL AMOUNT</th>
+                                    <th>PAID AMOUNT</th>
+                                    <th>BALANCE</th>
+                                    <th class="text-center">Details</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ledger-table-body">
+                                <tr>
+                                    <td colspan="8" class="text-center py-4 text-muted">Loading ledger entries...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: STOCK DISPATCHES -->
+            <div class="tab-pane fade" id="tab-items" role="tabpanel">
+                <div class="portal-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold m-0 text-dark"><i class="fas fa-microchip text-danger me-2"></i> Hardware Units Received by Dealer</h6>
+                        <span class="badge bg-light text-dark border" id="total-units-received">0 Units Total</span>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Ref Invoice</th>
+                                    <th>Item SKU</th>
+                                    <th>Product Description</th>
+                                    <th>Quantity</th>
+                                    <th>Wholesale Rate</th>
+                                    <th>Total Value</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dispatches-table-body">
+                                <tr>
+                                    <td colspan="7" class="text-center py-4 text-muted">No stock dispatches found.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: OFFICIAL PRINTABLE STATEMENT -->
+            <div class="tab-pane fade" id="tab-statement" role="tabpanel">
+                <div class="d-flex justify-content-end mb-3 no-print">
+                    <button class="btn btn-danger btn-sm fw-bold px-4" onclick="printStatement()">
+                        <i class="fas fa-print me-2"></i> Print Official B2B Statement
+                    </button>
+                </div>
+
+                <div class="statement-paper">
+                    <!-- Letterhead Header -->
+                    <div class="row align-items-center pb-4 border-bottom mb-4">
+                        <div class="col-7">
+                            <h3 class="fw-bold text-danger m-0">GEAR UP GADGETS</h3>
+                            <p class="text-secondary small mb-1 fw-bold">Gaming Rigs, High-End Hardware & Enterprise IT Distribution</p>
+                            <div class="text-muted small">
+                                <div><i class="fas fa-map-marker-alt me-1 text-danger"></i> D-5, 4th Floor, Osif Center, Block 13 A, University Road, Gulshan-e-Iqbal, Karachi, Pakistan</div>
+                                <div><i class="fas fa-phone me-1 text-danger"></i> +92 312 8921820 &bull; <i class="fas fa-envelope me-1 text-danger"></i> b2b@gearupgadgets.pk</div>
+                                <div><i class="fas fa-globe me-1 text-danger"></i> www.gearupgadgets.pk &bull; NTN: 9482104-7</div>
+                            </div>
+                        </div>
+                        <div class="col-5 text-end">
+                            <h4 class="fw-bold text-dark text-uppercase mb-1">B2B Account Statement</h4>
+                            <div class="text-secondary small">Generated Date: <strong class="text-dark" id="stmt-date">-</strong></div>
+                            <div class="text-secondary small">Statement Code: <strong class="text-dark" id="stmt-code">-</strong></div>
+                        </div>
+                    </div>
+
+                    <!-- Dealer Information Box -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded border">
+                                <h6 class="fw-bold text-danger mb-2"><i class="fas fa-store me-1"></i> B2B Partner / Dealer</h6>
+                                <div class="fw-bold text-dark fs-6" id="stmt-shop-name">-</div>
+                                <div class="text-secondary small mt-1">
+                                    <div><strong>Attn:</strong> <span id="stmt-owner-name">-</span> (CNIC: <span id="stmt-cnic">-</span>)</div>
+                                    <div><strong>Phone:</strong> <span id="stmt-phone">-</span></div>
+                                    <div><strong>Shop Address:</strong> <span id="stmt-address">-</span></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded border h-100 d-flex flex-column justify-content-between">
+                                <div>
+                                    <h6 class="fw-bold text-dark mb-2"><i class="fas fa-wallet me-1 text-success"></i> Financial Summary</h6>
+                                    <div class="d-flex justify-content-between small text-secondary mb-1">
+                                        <span>Opening Balance:</span>
+                                        <strong class="text-dark font-monospace" id="stmt-opening-balance">Rs.  0</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between small text-secondary mb-1">
+                                        <span>Total Invoiced Stock:</span>
+                                        <strong class="text-primary font-monospace" id="stmt-total-stock">Rs.  0</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between small text-secondary mb-1">
+                                        <span>Total Payments Cleared:</span>
+                                        <strong class="text-success font-monospace" id="stmt-total-payments">Rs.  0</strong>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                    <span class="fw-bold text-dark">Current Balance Due:</span>
+                                    <h5 class="fw-bold text-danger m-0 font-monospace" id="stmt-net-balance">Rs.  0</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Statement Ledger Items -->
+                    <h6 class="fw-bold text-dark mb-2">Itemized Ledger Activity</h6>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-bordered table-sm align-middle" style="font-size: 12.5px;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Ref #</th>
+                                    <th>Transaction Details</th>
+                                    <th class="text-end">TOTAL AMOUNT</th>
+                                    <th class="text-end">PAID AMOUNT</th>
+                                    <th class="text-end">Balance (Rs. )</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stmt-ledger-rows">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Payment Bank Details & Signature -->
+                    <div class="row mt-4 pt-3 border-top g-3">
+                        <div class="col-7">
+                            <div class="p-3 rounded border bg-light small" id="stmt-remittance-container">
+                                <strong class="text-dark d-block mb-1"><i class="fas fa-university text-danger me-1"></i> Remittance & Bank Transfer Details:</strong>
+                                <div class="text-secondary">Bank: <strong>Meezan Bank Ltd (Gulshan Branch)</strong></div>
+                                <div class="text-secondary">Account Title: <strong>Gear Up Gadgets Pakistan</strong></div>
+                                <div class="text-secondary">IBAN: <strong>PK82MEZN0001092837192801</strong></div>
+                                <div class="text-secondary mt-1"><small>Please share bank deposit slip / receipt on WhatsApp: +92 312 8921820 for prompt reconciliation.</small></div>
+                            </div>
+                        </div>
+
+                        <div class="col-5 text-end d-flex flex-column justify-content-end">
+                            <div class="mb-4">
+                                <div class="text-muted small">For Gear Up Gadgets Accounts</div>
+                                <div class="fw-bold text-dark">Authorized Signatory & Stamp</div>
+                            </div>
+                            <div class="text-secondary" style="font-size: 11px;">This is a computer-generated official B2B statement.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Line Items Inspection Modal -->
+    <div class="modal fade" id="lineItemsModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header border-bottom">
+                    <h6 class="modal-title fw-bold text-dark"><i class="fas fa-boxes text-danger me-2"></i> Stock Dispatch Itemized Details</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded mb-3 border">
+                        <div>
+                            <div class="small text-secondary">Reference Invoice</div>
+                            <strong class="text-dark fs-6" id="modal-ref-no">-</strong>
+                        </div>
+                        <div>
+                            <div class="small text-secondary">Dispatch Date</div>
+                            <strong class="text-dark" id="modal-date">-</strong>
+                        </div>
+                        <div>
+                            <div class="small text-secondary">Total Value</div>
+                            <strong class="text-danger font-monospace fs-6" id="modal-total-value">Rs.  0</strong>
+                        </div>
+                    </div>
+
+                    <h6 class="fw-bold text-dark small mb-2">Dispatched Hardware Units:</h6>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Item SKU</th>
+                                    <th>Product Title / Specs</th>
+                                    <th class="text-center">Qty</th>
+                                    <th class="text-end">Wholesale Rate</th>
+                                    <th class="text-end">Total Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="modal-items-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="mt-3 p-2 bg-light rounded text-secondary small border" id="modal-notes-container">
+                        <strong>Notes / Remarks:</strong> <span id="modal-notes-text">None</span>
+                    </div>
+                </div>
+                <div class="modal-footer border-top">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/products-data.js"></script>
+    <!-- Firebase Compat SDKs & Cloud Sync -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/firebase-sync.js"></script>
+    <script src="assets/js/gug-erp-core.js"></script>
+    <script>
+        let currentDealer = null;
+        let currentSummary = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDealerData();
+            window.addEventListener('gugDealersUpdated', () => loadDealerData());
+            window.addEventListener('dealersReady', () => loadDealerData());
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'gug_erp_dealers' || e.key === 'gug_erp_dealer_ledger') loadDealerData();
+            });
+        });
+
+        function loadDealerData() {
+            // 1. Fetch by Dealer ID: support URL query params (?dealerId=DLR-105 or ?id=DLR-105), active session, or localStorage
+            const urlParams = new URLSearchParams(window.location.search);
+            const queryDealerId = urlParams.get('dealerId') || urlParams.get('id');
+            const sessionDealer = (window.GUG_DB && typeof window.GUG_DB.getDealerSession === 'function') 
+                ? window.GUG_DB.getDealerSession() 
+                : null;
+            
+            const targetDealerId = queryDealerId || (sessionDealer ? sessionDealer.id : (localStorage.getItem('dealer_id') || localStorage.getItem('dealer_username')));
+
+            if (!targetDealerId) {
+                window.location.href = 'dealer-login.html';
+                return;
+            }
+
+            // Always fetch the freshest dealer record by Dealer ID directly from GUG_DB or localStorage['gug_erp_dealers']
+            let freshDealer = null;
+            if (window.GUG_DB && typeof window.GUG_DB.getDealerById === 'function') {
+                freshDealer = window.GUG_DB.getDealerById(targetDealerId);
+            }
+            if (!freshDealer && window.GUG_DB && typeof window.GUG_DB.getDealerByUsername === 'function') {
+                freshDealer = window.GUG_DB.getDealerByUsername(targetDealerId);
+            }
+            if (!freshDealer) {
+                const allDealers = JSON.parse(localStorage.getItem('gug_erp_dealers') || '[]');
+                freshDealer = allDealers.find(d => d.id === targetDealerId || d.username === targetDealerId);
+            }
+            if (!freshDealer && sessionDealer) {
+                freshDealer = sessionDealer;
+            }
+
+            if (!freshDealer) {
+                console.error(`Unable to find dealer record for ID: ${targetDealerId}`);
+                window.location.href = 'dealer-login.html';
+                return;
+            }
+
+            currentDealer = freshDealer;
+
+            // Sanitize currentDealer.paymentHistory on load: strictly ensure final payment clearing the balance is recorded ONLY ONCE
+            if (currentDealer && Array.isArray(currentDealer.paymentHistory)) {
+                const clean = [];
+                let seenZero = false;
+                let hadDupes = false;
+                for (let i = 0; i < currentDealer.paymentHistory.length; i++) {
+                    const p = currentDealer.paymentHistory[i];
+                    const isZero = (p.balanceAfter !== undefined && Number(p.balanceAfter) <= 0);
+                    if (seenZero && isZero) {
+                        hadDupes = true;
+                        continue;
+                    }
+                    clean.push(p);
+                    if (isZero) seenZero = true;
+                }
+                if (hadDupes) {
+                    currentDealer.paymentHistory = clean;
+                    if (window.GUG_DB && typeof window.GUG_DB.saveDealer === 'function') {
+                        window.GUG_DB.saveDealer(currentDealer);
+                    }
+                }
+            }
+
+            // 2. Fetch/Calculate Ledger Summary connected to Admin State
+            currentSummary = (window.GUG_DB && typeof window.GUG_DB.calculateDealerSummary === 'function')
+                ? window.GUG_DB.calculateDealerSummary(currentDealer.id)
+                : null;
+
+            if (!currentSummary) {
+                const totalAmt = Number(currentDealer.totalAmount !== undefined ? currentDealer.totalAmount : (currentDealer.creditLimit || 0));
+                const payments = Array.isArray(currentDealer.paymentHistory) ? currentDealer.paymentHistory : [];
+                const paidAmt = Number(currentDealer.paidAmount !== undefined ? currentDealer.paidAmount : payments.reduce((acc, p) => acc + Number(p.amount || 0), 0));
+                const balAmt = Number(currentDealer.balanceAmount !== undefined ? currentDealer.balanceAmount : Math.max(0, totalAmt - paidAmt));
+                currentSummary = {
+                    dealer: currentDealer,
+                    totalAmount: totalAmt,
+                    paidAmount: paidAmt,
+                    balanceAmount: balAmt,
+                    totalStockIssued: totalAmt,
+                    totalPayments: paidAmt,
+                    openingBalance: Number(currentDealer.openingBalance || 0),
+                    currentBalance: balAmt,
+                    availableCredit: Math.max(0, (currentDealer.creditLimit || totalAmt) - balAmt),
+                    ledgerEntries: [],
+                    paymentHistory: payments
+                };
+            }
+
+            renderProfileHeader();
+            renderKPICards();
+            renderLedgerTable();
+            renderDispatchesTable();
+            renderStatement();
+        }
+
+        function renderProfileHeader() {
+            document.getElementById('header-shop-name').innerText = currentDealer.shopName || currentDealer.name;
+            document.getElementById('header-dealer-id').innerHTML = `<i class="fas fa-store text-danger me-1"></i> ${currentDealer.id}`;
+
+            document.getElementById('profile-shop-name').innerText = currentDealer.shopName || currentDealer.name;
+            document.getElementById('profile-owner-name').innerText = currentDealer.name || '-';
+            document.getElementById('profile-cnic').innerText = currentDealer.cnic || '-';
+            document.getElementById('profile-phone').innerText = currentDealer.phone || '-';
+            document.getElementById('profile-shop-address').innerText = currentDealer.shopAddress || currentDealer.residentialAddress || 'Address not listed';
+            document.getElementById('profile-dealer-code').innerText = currentDealer.id;
+            document.getElementById('profile-created-at').innerText = (currentDealer.createdAt || '').split('T')[0] || '-';
+            
+            const totalDeal = Number(currentDealer.totalAmount !== undefined ? currentDealer.totalAmount : (currentDealer.creditLimit || 0));
+            document.getElementById('profile-credit-limit').innerText = 'Rs.  ' + totalDeal.toLocaleString();
+
+            const statusBadge = document.getElementById('profile-status-badge');
+            if (currentDealer.status === 'Active') {
+                statusBadge.className = 'badge bg-success';
+                statusBadge.innerText = 'Active Partner';
+            } else {
+                statusBadge.className = 'badge bg-danger';
+                statusBadge.innerText = 'Suspended';
+            }
+
+            const waBtn = document.getElementById('profile-whatsapp-link');
+            if (currentDealer.whatsapp) {
+                const cleanPhone = currentDealer.whatsapp.replace(/[^0-9]/g, '');
+                waBtn.href = `https://wa.me/${cleanPhone}`;
+            } else {
+                waBtn.style.display = 'none';
+            }
+        }
+
+        function renderKPICards() {
+            // Map Admin's Total Deal Amount, Total Paid Amount & Remaining Balance to Dealer Dashboard
+            const totalDealAmount = Number(currentDealer.totalAmount !== undefined ? currentDealer.totalAmount : (currentSummary.totalAmount || currentSummary.totalStockIssued || 0));
+            const payments = Array.isArray(currentDealer.paymentHistory) ? currentDealer.paymentHistory : [];
+            const totalPaidAmount = Number(currentDealer.paidAmount !== undefined ? currentDealer.paidAmount : (currentSummary.paidAmount || currentSummary.totalPayments || payments.reduce((sum, p) => sum + Number(p.amount || 0), 0)));
+            const remainingBalance = Number(currentDealer.balanceAmount !== undefined ? currentDealer.balanceAmount : (currentSummary.balanceAmount !== undefined ? currentSummary.balanceAmount : (currentSummary.currentBalance !== undefined ? currentSummary.currentBalance : Math.max(0, totalDealAmount - totalPaidAmount))));
+
+            const balanceEl = document.getElementById('kpi-net-balance');
+            const balanceStatusEl = document.getElementById('kpi-balance-status');
+
+            if (remainingBalance > 0) {
+                balanceEl.className = 'fw-bold text-danger m-0 mt-1 font-monospace';
+                balanceEl.innerText = 'Rs.  ' + remainingBalance.toLocaleString();
+                balanceStatusEl.innerText = 'Outstanding Payable Due';
+            } else if (remainingBalance < 0) {
+                balanceEl.className = 'fw-bold text-success m-0 mt-1 font-monospace';
+                balanceEl.innerText = 'Rs.  ' + Math.abs(remainingBalance).toLocaleString();
+                balanceStatusEl.innerText = 'Surplus Advance Credit';
+            } else {
+                balanceEl.className = 'fw-bold text-success m-0 mt-1 font-monospace';
+                balanceEl.innerText = 'Rs. 0';
+                balanceStatusEl.innerText = 'Amount Clear (Fully Paid)';
+            }
+
+            // Map Total Invoiced Stock & Total Payments Cleared
+            document.getElementById('kpi-total-stock').innerText = 'Rs.  ' + totalDealAmount.toLocaleString();
+            document.getElementById('kpi-total-payments').innerText = 'Rs.  ' + totalPaidAmount.toLocaleString();
+            
+            const creditWindow = Math.max(0, totalDealAmount - remainingBalance);
+            document.getElementById('kpi-available-credit').innerText = 'Rs.  ' + creditWindow.toLocaleString();
+
+            const countTrans = (currentSummary.ledgerEntries && currentSummary.ledgerEntries.length > 0)
+                ? currentSummary.ledgerEntries.length
+                : (payments.length > 0 ? payments.length : (totalDealAmount > 0 ? 1 : 0));
+            document.getElementById('count-transactions').innerText = countTrans;
+        }
+
+        function renderLedgerTable(entries = null) {
+            const tbody = document.getElementById('ledger-table-body');
+            if (!tbody) return;
+
+            let list = entries;
+            if (!list) {
+                const payments = Array.isArray(currentDealer && currentDealer.paymentHistory) ? currentDealer.paymentHistory : [];
+                const totalAmt = Number(currentDealer && (currentDealer.totalAmount !== undefined ? currentDealer.totalAmount : (currentSummary && currentSummary.totalAmount !== undefined ? currentSummary.totalAmount : (currentDealer.creditLimit || 0))));
+
+                // Strictly deduplicate payments: ensure zero-balance / Amount Clear entry is logged/mapped ONLY ONCE
+                const cleanPayments = [];
+                let seenZeroBalance = false;
+                for (let i = 0; i < payments.length; i++) {
+                    const p = payments[i];
+                    const isZero = (p.balanceAfter !== undefined && Number(p.balanceAfter) <= 0);
+                    if (seenZeroBalance && isZero) {
+                        continue; // Skip duplicate zero-balance entry
+                    }
+                    cleanPayments.push(p);
+                    if (isZero) {
+                        seenZeroBalance = true;
+                    }
+                }
+
+                if (cleanPayments.length > 0) {
+                    let runBal = totalAmt;
+                    const ords = ['th', 'st', 'nd', 'rd'];
+                    list = cleanPayments.map((p, idx) => {
+                        const v = (idx + 1) % 100;
+                        const schedTitle = (idx + 1) + (ords[(v - 20) % 10] || ords[v] || ords[0]) + ' Payment Schedule';
+                        const amt = Number(p.amount || 0);
+                        runBal = Math.max(0, runBal - amt);
+                        const balAfter = (p.balanceAfter !== undefined) ? Number(p.balanceAfter) : runBal;
+                        return {
+                            id: p.id || `PAY-${idx + 1}`,
+                            referenceNo: p.id || `PAY-${idx + 1}`,
+                            date: p.date || (p.createdAt ? p.createdAt.split('T')[0] : (currentDealer.createdAt || '-')),
+                            day: p.day || '',
+                            time: p.time || '',
+                            type: 'PAYMENT_RECEIVED',
+                            description: schedTitle,
+                            debit: (idx === 0 ? totalAmt : 0),
+                            credit: amt,
+                            runningBalance: balAfter,
+                            paymentMethod: p.notes || 'Payment Schedule',
+                            notes: p.notes || ''
+                        };
+                    });
+                } else if (currentSummary && Array.isArray(currentSummary.ledgerEntries) && currentSummary.ledgerEntries.length > 0) {
+                    const cleanEntries = [];
+                    let seenZero = false;
+                    for (let i = 0; i < currentSummary.ledgerEntries.length; i++) {
+                        const e = currentSummary.ledgerEntries[i];
+                        const isZero = (e.runningBalance !== undefined && Number(e.runningBalance) <= 0);
+                        if (seenZero && isZero) continue;
+                        cleanEntries.push(e);
+                        if (isZero) seenZero = true;
+                    }
+                    list = cleanEntries;
+                } else {
+                    list = [];
+                }
+            } else {
+                const cleanEntries = [];
+                let seenZero = false;
+                for (let i = 0; i < list.length; i++) {
+                    const e = list[i];
+                    const isZero = (e.runningBalance !== undefined && Number(e.runningBalance) <= 0);
+                    if (seenZero && isZero) continue;
+                    cleanEntries.push(e);
+                    if (isZero) seenZero = true;
+                }
+                list = cleanEntries;
+            }
+
+            if (!list || list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-muted"><i class="fas fa-receipt me-2"></i> No transactions found matching criteria.</td></tr>`;
+                return;
+            }
+
+            // Normal chronological sorting (Ascending order): 1st Payment Schedule on top, newest at bottom
+            const displayList = [...list];
+
+            tbody.innerHTML = displayList.map(entry => {
+                let badgeClass = 'bg-secondary';
+                let typeLabel = entry.type;
+                if (entry.type === 'STOCK_ISSUED') { badgeClass = 'bg-primary'; typeLabel = 'Stock Dispatch'; }
+                else if (entry.type === 'PAYMENT_RECEIVED') { badgeClass = 'bg-success'; typeLabel = 'Payment Received'; }
+                else if (entry.type === 'ADVANCE_PAYMENT') { badgeClass = 'bg-info text-dark'; typeLabel = 'Advance Deposit'; }
+                else if (entry.type === 'STOCK_RETURNED') { badgeClass = 'bg-warning text-dark'; typeLabel = 'Stock Return'; }
+
+                const formattedDate = (entry.date || '').replace('T', ' ').slice(0, 16);
+                const debitDisplay = entry.debit ? `<strong class="text-danger font-monospace">Rs.  ${Number(entry.debit).toLocaleString()}</strong>` : '<span class="text-muted">-</span>';
+                const creditDisplay = entry.credit ? `<strong class="text-success font-monospace">Rs.  ${Number(entry.credit).toLocaleString()}</strong>` : '<span class="text-muted">-</span>';
+
+                const bal = Number(entry.runningBalance || 0);
+                const balClass = bal > 0 ? 'text-danger fw-bold' : (bal < 0 ? 'text-success fw-bold' : 'text-dark');
+                const balDisplay = `<span class="${balClass} font-monospace">Rs.  ${bal.toLocaleString()}</span>`;
+
+                const hasItems = Array.isArray(entry.items) && entry.items.length > 0;
+                const viewBtn = hasItems 
+                    ? `<button class="btn btn-outline-primary btn-sm py-0 px-2" onclick="viewEntryItems('${entry.id}')" title="View Dispatched Items"><i class="fas fa-boxes me-1"></i> ${entry.items.length} items</button>`
+                    : `<span class="text-muted small">-</span>`;
+
+                return `
+                    <tr>
+                        <td data-label="Date & Time" class="small text-secondary">${formattedDate}</td>
+                        <td data-label="Ref / Invoice #"><code>#${entry.referenceNo || entry.id}</code></td>
+                        <td data-label="Type"><span class="badge ${badgeClass}">${typeLabel}</span></td>
+                        <td data-label="Description & Details">
+                            <strong class="text-white">${entry.description || '-'}</strong>
+                            ${entry.paymentMethod ? `<div class="text-secondary small"><i class="fas fa-money-check-alt me-1"></i> ${entry.paymentMethod}</div>` : ''}
+                        </td>
+                        <td data-label="TOTAL AMOUNT">${debitDisplay}</td>
+                        <td data-label="PAID AMOUNT">${creditDisplay}</td>
+                        <td data-label="BALANCE">${balDisplay}</td>
+                        <td data-label="Details" class="text-center">${viewBtn}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function filterLedger() {
+            const query = (document.getElementById('ledger-search').value || '').toLowerCase();
+            const type = document.getElementById('ledger-type-filter').value;
+
+            if (!currentSummary) return;
+
+            // Base list in ascending chronological order
+            let baseList = [];
+            const payments = Array.isArray(currentDealer && currentDealer.paymentHistory) ? currentDealer.paymentHistory : [];
+            const totalAmt = Number(currentDealer && (currentDealer.totalAmount !== undefined ? currentDealer.totalAmount : (currentSummary && currentSummary.totalAmount !== undefined ? currentSummary.totalAmount : 0)));
+
+            const cleanPayments = [];
+            let seenZero = false;
+            for (let i = 0; i < payments.length; i++) {
+                const p = payments[i];
+                const isZero = (p.balanceAfter !== undefined && Number(p.balanceAfter) <= 0);
+                if (seenZero && isZero) continue;
+                cleanPayments.push(p);
+                if (isZero) seenZero = true;
+            }
+
+            if (cleanPayments.length > 0) {
+                let runBal = totalAmt;
+                const ords = ['th', 'st', 'nd', 'rd'];
+                baseList = cleanPayments.map((p, idx) => {
+                    const v = (idx + 1) % 100;
+                    const schedTitle = (idx + 1) + (ords[(v - 20) % 10] || ords[v] || ords[0]) + ' Payment Schedule';
+                    const amt = Number(p.amount || 0);
+                    runBal = Math.max(0, runBal - amt);
+                    const balAfter = (p.balanceAfter !== undefined) ? Number(p.balanceAfter) : runBal;
+                    return {
+                        id: p.id || `PAY-${idx + 1}`,
+                        referenceNo: p.id || `PAY-${idx + 1}`,
+                        date: p.date || currentDealer.createdAt || '-',
+                        day: p.day || '',
+                        time: p.time || '',
+                        type: 'PAYMENT_RECEIVED',
+                        description: schedTitle,
+                        debit: (idx === 0 ? totalAmt : 0),
+                        credit: amt,
+                        runningBalance: balAfter,
+                        paymentMethod: p.notes || 'Payment Schedule',
+                        notes: p.notes || ''
+                    };
+                });
+            } else if (currentSummary.ledgerEntries && currentSummary.ledgerEntries.length > 0) {
+                baseList = currentSummary.ledgerEntries;
+            }
+
+            let filtered = baseList.filter(entry => {
+                const matchQuery = !query || 
+                    (entry.referenceNo && entry.referenceNo.toLowerCase().includes(query)) ||
+                    (entry.description && entry.description.toLowerCase().includes(query)) ||
+                    (entry.paymentMethod && entry.paymentMethod.toLowerCase().includes(query)) ||
+                    (entry.notes && entry.notes.toLowerCase().includes(query));
+
+                const matchType = (type === 'ALL') || (entry.type === type);
+                return matchQuery && matchType;
+            });
+
+            renderLedgerTable(filtered);
+        }
+
+        function renderDispatchesTable() {
+            const tbody = document.getElementById('dispatches-table-body');
+            const entries = currentSummary ? currentSummary.ledgerEntries : [];
+            const dispatches = [];
+
+            entries.forEach(e => {
+                if (Array.isArray(e.items) && e.items.length > 0) {
+                    e.items.forEach(it => {
+                        dispatches.push({
+                            date: e.date,
+                            refNo: e.referenceNo || e.id,
+                            sku: it.sku || 'SKU-GENERIC',
+                            name: it.name || it.title || 'Hardware Item',
+                            qty: Number(it.quantity || it.qty || 1),
+                            rate: Number(it.rate || it.price || 0),
+                            total: Number(it.total || (Number(it.quantity || 1) * Number(it.rate || 0)))
+                        });
+                    });
+                }
+            });
+
+            document.getElementById('count-dispatches').innerText = dispatches.length;
+            const totalUnits = dispatches.reduce((acc, d) => acc + d.qty, 0);
+            document.getElementById('total-units-received').innerText = `${totalUnits} Units Total`;
+
+            if (dispatches.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted"><i class="fas fa-box-open me-2"></i> No hardware dispatch line items recorded yet.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = dispatches.reverse().map(d => `
+                <tr>
+                    <td data-label="Date" class="small text-secondary">${(d.date || '').split('T')[0]}</td>
+                    <td data-label="Ref Invoice"><code>#${d.refNo}</code></td>
+                    <td data-label="Item SKU"><span class="badge bg-light text-dark border font-monospace">${d.sku}</span></td>
+                    <td data-label="Product Description"><strong class="text-white">${d.name}</strong></td>
+                    <td data-label="Quantity" class="fw-bold">${d.qty}</td>
+                    <td data-label="Wholesale Rate" class="font-monospace text-secondary">Rs.  ${d.rate.toLocaleString()}</td>
+                    <td data-label="Total Value" class="font-monospace fw-bold text-danger">Rs.  ${d.total.toLocaleString()}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderStatement() {
+            const now = new Date();
+            document.getElementById('stmt-date').innerText = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+            document.getElementById('stmt-code').innerText = `STMT-${currentDealer.id}-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+            document.getElementById('stmt-shop-name').innerText = currentDealer.shopName || currentDealer.name;
+            document.getElementById('stmt-owner-name').innerText = currentDealer.name || '-';
+            document.getElementById('stmt-cnic').innerText = currentDealer.cnic || '-';
+            document.getElementById('stmt-phone').innerText = currentDealer.phone || '-';
+            document.getElementById('stmt-address').innerText = currentDealer.shopAddress || currentDealer.residentialAddress || currentDealer.shopNumber || 'Karachi, Pakistan';
+
+            // 1. Map Admin's Total Deal Amount to Dealer's Total Invoiced Stock
+            const totalDealAmount = Number(currentDealer.totalAmount !== undefined ? currentDealer.totalAmount : (currentSummary && currentSummary.totalAmount !== undefined ? currentSummary.totalAmount : (currentDealer.creditLimit || 0)));
+            document.getElementById('stmt-total-stock').innerText = 'Rs.  ' + totalDealAmount.toLocaleString();
+
+            // 2. Map Admin's Total Paid Amount to Dealer's Total Payments Cleared
+            const payments = Array.isArray(currentDealer.paymentHistory) ? currentDealer.paymentHistory : [];
+            const totalPaidAmount = Number(currentDealer.paidAmount !== undefined ? currentDealer.paidAmount : (currentSummary && currentSummary.paidAmount !== undefined ? currentSummary.paidAmount : payments.reduce((sum, p) => sum + Number(p.amount || 0), 0)));
+            document.getElementById('stmt-total-payments').innerText = 'Rs.  ' + totalPaidAmount.toLocaleString();
+
+            // 3. Ensure large red text displays current Remaining Balance
+            const remainingBalance = Number(currentDealer.balanceAmount !== undefined ? currentDealer.balanceAmount : (currentSummary && currentSummary.balanceAmount !== undefined ? currentSummary.balanceAmount : Math.max(0, totalDealAmount - totalPaidAmount)));
+            const netBalEl = document.getElementById('stmt-net-balance');
+            netBalEl.className = 'fw-bold text-danger m-0 font-monospace';
+            netBalEl.innerText = 'Rs.  ' + remainingBalance.toLocaleString();
+
+            document.getElementById('stmt-opening-balance').innerText = 'Rs.  ' + Number(currentDealer.openingBalance || 0).toLocaleString();
+
+            // 4. Populate Itemized Ledger Table directly from Admin's Payment Schedule Array
+            const rowsTbody = document.getElementById('stmt-ledger-rows');
+            if (!rowsTbody) return;
+
+            // Ordinal naming helper (1 -> 1st Payment Schedule, 2 -> 2nd Payment Schedule, etc.)
+            const getOrdinalScheduleTitle = (idx) => {
+                const s = ['th', 'st', 'nd', 'rd'];
+                const v = (idx + 1) % 100;
+                return (idx + 1) + (s[(v - 20) % 10] || s[v] || s[0]) + ' Payment Schedule';
+            };
+
+            // Deduplicate zero-balance / Amount Clear duplicate entries
+            const cleanPayments = [];
+            let seenZero = false;
+            for (let i = 0; i < payments.length; i++) {
+                const p = payments[i];
+                const isZero = (p.balanceAfter !== undefined && Number(p.balanceAfter) <= 0);
+                if (seenZero && isZero) continue;
+                cleanPayments.push(p);
+                if (isZero) seenZero = true;
+            }
+
+            // Case A: No payment schedules logged yet
+            if (cleanPayments.length === 0) {
+                if (totalDealAmount > 0) {
+                    rowsTbody.innerHTML = `
+                        <tr>
+                            <td data-label="Date">${(currentDealer.createdAt || '').split('T')[0] || now.toLocaleDateString('en-GB')}</td>
+                            <td data-label="Ref #"><code>#DEAL-${currentDealer.id}</code></td>
+                            <td data-label="Transaction Details">
+                                <strong class="text-dark">1st Payment Schedule</strong>
+                                <div class="text-muted small">Initial Deal Agreement (Wholesale Invoiced)</div>
+                            </td>
+                            <td data-label="TOTAL AMOUNT" class="text-end font-monospace text-danger">Rs.  ${totalDealAmount.toLocaleString()}</td>
+                            <td data-label="PAID AMOUNT" class="text-end font-monospace text-muted">-</td>
+                            <td data-label="Balance (Rs. )" class="text-end font-monospace fw-bold text-danger">Rs.  ${totalDealAmount.toLocaleString()}</td>
+                        </tr>
+                    `;
+                } else {
+                    rowsTbody.innerHTML = `<tr><td colspan="6" class="text-center py-3 text-muted">No transactions recorded in this period.</td></tr>`;
+                }
+                updateStatementPaymentFooter(cleanPayments);
+                return;
+            }
+
+            // Case B: Map each payment/installment row with DATE, TRANSACTION DETAILS, TOTAL AMOUNT, PAID AMOUNT & BALANCE
+            let runningBalance = totalDealAmount;
+            rowsTbody.innerHTML = cleanPayments.map((p, idx) => {
+                const schedTitle = getOrdinalScheduleTitle(idx);
+                const pAmt = Number(p.amount || 0);
+                runningBalance = Math.max(0, runningBalance - pAmt);
+                const balAfter = (p.balanceAfter !== undefined) ? Number(p.balanceAfter) : runningBalance;
+
+                // Formatted Date, Day & Time
+                const formattedDate = p.date || (p.createdAt ? p.createdAt.split('T')[0] : now.toLocaleDateString('en-GB'));
+                const refNo = p.id || ('PAY-' + (idx + 1));
+                const dayBadge = p.day ? `<span class="badge bg-light text-dark border ms-1" style="font-size: 10px;">${p.day}</span>` : '';
+                const timeBadge = p.time ? `<small class="text-muted ms-1">${p.time}</small>` : '';
+
+                // Total Amount: Total Deal Amount on 1st installment, '-' on subsequent rows
+                const debitDisplay = (idx === 0 && totalDealAmount > 0)
+                    ? `<strong class="text-danger font-monospace">Rs.  ${totalDealAmount.toLocaleString()}</strong>`
+                    : '<span class="text-muted">-</span>';
+
+                // Paid Amount: Credit
+                const creditDisplay = `<strong class="text-success font-monospace">+ Rs.  ${pAmt.toLocaleString()}</strong>`;
+
+                // Updated Balance
+                const balColor = balAfter <= 0 ? 'text-success' : 'text-danger';
+                const balDisplay = `<strong class="${balColor} font-monospace">Rs.  ${balAfter.toLocaleString()}</strong>`;
+
+                const detailsDisplay = `
+                    <div>
+                        <strong class="text-dark">${schedTitle}</strong>
+                        ${dayBadge} ${timeBadge}
+                        ${p.notes ? `<div class="text-secondary small mt-0">${p.notes}</div>` : ''}
+                    </div>
+                `;
+
+                return `
+                    <tr>
+                        <td data-label="Date">${formattedDate}</td>
+                        <td data-label="Ref #"><code>#${refNo}</code></td>
+                        <td data-label="Transaction Details">${detailsDisplay}</td>
+                        <td data-label="TOTAL AMOUNT" class="text-end">${debitDisplay}</td>
+                        <td data-label="PAID AMOUNT" class="text-end">${creditDisplay}</td>
+                        <td data-label="Balance (Rs. )" class="text-end">${balDisplay}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            // 5. Update Dynamic Payment Method Footer (Cash vs Bank Transfer)
+            updateStatementPaymentFooter(cleanPayments);
+        }
+
+        function updateStatementPaymentFooter(cleanPayments = []) {
+            const remittanceContainer = document.getElementById('stmt-remittance-container');
+            if (!remittanceContainer) return;
+
+            // Detect payment method across dealer profile, payment history, and ledger summary
+            let detectedMethod = (currentDealer && (currentDealer.paymentMethod || currentDealer.preferredPayment)) || '';
+            if (!detectedMethod && Array.isArray(cleanPayments) && cleanPayments.length > 0) {
+                // Check latest payment entry or any payment note mentioning method
+                for (let i = cleanPayments.length - 1; i >= 0; i--) {
+                    const p = cleanPayments[i];
+                    const candidate = p.paymentMethod || p.method || p.mode || p.notes || '';
+                    if (/cash/i.test(candidate)) {
+                        detectedMethod = 'Cash';
+                        break;
+                    } else if (/bank|transfer|meezan|online/i.test(candidate)) {
+                        detectedMethod = 'Bank Transfer';
+                        break;
+                    } else if (candidate) {
+                        detectedMethod = candidate;
+                    }
+                }
+            }
+
+            if (!detectedMethod && currentSummary && currentSummary.paymentMethod) {
+                detectedMethod = currentSummary.paymentMethod;
+            }
+
+            if (!detectedMethod && currentSummary && Array.isArray(currentSummary.ledgerEntries)) {
+                for (let i = currentSummary.ledgerEntries.length - 1; i >= 0; i--) {
+                    const e = currentSummary.ledgerEntries[i];
+                    const candidate = e.paymentMethod || e.notes || '';
+                    if (/cash/i.test(candidate)) {
+                        detectedMethod = 'Cash';
+                        break;
+                    } else if (/bank|transfer|meezan/i.test(candidate)) {
+                        detectedMethod = 'Bank Transfer';
+                        break;
+                    }
+                }
+            }
+
+            const isCash = /cash/i.test(detectedMethod);
+
+            if (isCash) {
+                // Cash mode: Completely hide bank details (IBAN, Account Title) and show Payment Mode: Cash Payment
+                remittanceContainer.innerHTML = `
+                    <strong class="text-dark d-block mb-1"><i class="fas fa-money-bill-wave text-success me-1"></i> Payment Settlement Details:</strong>
+                    <div class="text-dark fs-6 mt-1"><strong>Payment Mode:</strong> Cash Payment</div>
+                    <div class="text-secondary mt-1"><small>Official cash payment received and reconciled by authorized cashier.</small></div>
+                `;
+            } else {
+                // Bank Transfer / Bank mode (or default): Show standard Meezan Bank details
+                remittanceContainer.innerHTML = `
+                    <strong class="text-dark d-block mb-1"><i class="fas fa-university text-danger me-1"></i> Remittance & Bank Transfer Details:</strong>
+                    <div class="text-secondary">Bank: <strong>Meezan Bank Ltd (Gulshan Branch)</strong></div>
+                    <div class="text-secondary">Account Title: <strong>Gear Up Gadgets Pakistan</strong></div>
+                    <div class="text-secondary">IBAN: <strong>PK82MEZN0001092837192801</strong></div>
+                    <div class="text-secondary mt-1"><small>Please share bank deposit slip / receipt on WhatsApp: +92 312 8921820 for prompt reconciliation.</small></div>
+                `;
+            }
+        }
+
+        function viewEntryItems(entryId) {
+            const entry = currentSummary.ledgerEntries.find(e => e.id === entryId);
+            if (!entry) return;
+
+            document.getElementById('modal-ref-no').innerText = `#${entry.referenceNo || entry.id}`;
+            document.getElementById('modal-date').innerText = (entry.date || '').replace('T', ' ').slice(0, 16);
+            document.getElementById('modal-total-value').innerText = 'Rs.  ' + Number(entry.debit || entry.credit || 0).toLocaleString();
+
+            const itemsTbody = document.getElementById('modal-items-tbody');
+            if (Array.isArray(entry.items) && entry.items.length > 0) {
+                itemsTbody.innerHTML = entry.items.map((it, idx) => `
+                    <tr>
+                        <td data-label="#">${idx + 1}</td>
+                        <td data-label="Item SKU"><code>${it.sku || '-'}</code></td>
+                        <td data-label="Product"><strong>${it.name || it.title || 'Hardware Item'}</strong></td>
+                        <td data-label="Qty" class="text-center fw-bold">${it.quantity || it.qty || 1}</td>
+                        <td data-label="Wholesale Rate" class="text-end font-monospace">Rs.  ${Number(it.rate || it.price || 0).toLocaleString()}</td>
+                        <td data-label="Total Amount" class="text-end font-monospace fw-bold text-danger">Rs.  ${Number(it.total || 0).toLocaleString()}</td>
+                    </tr>
+                `).join('');
+            } else {
+                itemsTbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No line items breakdown available.</td></tr>`;
+            }
+
+            document.getElementById('modal-notes-text').innerText = entry.notes || 'None recorded.';
+
+            const modal = new bootstrap.Modal(document.getElementById('lineItemsModal'));
+            modal.show();
+        }
+
+        function printStatement() {
+            // Activate statement tab if not already
+            const tabBtn = document.getElementById('statement-tab');
+            const tab = new bootstrap.Tab(tabBtn);
+            tab.show();
+            setTimeout(() => {
+                window.print();
+            }, 300);
+        }
+    </script>
+</body>
+</html>
+
+
+

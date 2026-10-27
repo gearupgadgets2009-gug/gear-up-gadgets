@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html><head></head><body>
+<script>
+    localStorage.setItem('staff_logged_in', 'true');
+    localStorage.setItem('staff_user_id', 'EMP-010');
+    localStorage.setItem('staff_username', 'ahsaan');
+    localStorage.setItem('staff_name', 'Ahsaan');
+    localStorage.setItem('staff_role', 'Sales & Order Executive');
+    localStorage.setItem('staff_department', 'Sales & CRM');
+    localStorage.setItem('staff_permissions', JSON.stringify(['products', 'crm', 'orders']));
+</script>
+
+
+</body></html>

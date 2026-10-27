@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Returns, RMA & Warranty Diagnostics | GearUp Gadgets ERP</title>    
+    <!-- Favicon & Device Web Icons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/images/favicon-64x64.png">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/fonts/font-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <style>
+        body { background-color: var(--gug-bg-color, #07090d) !important; background-image: var(--gug-bg-image) !important; background-attachment: var(--gug-bg-attachment, fixed) !important; background-size: var(--gug-bg-size, cover, cover, 28px 49px) !important; background-position: var(--gug-bg-position, center top) !important; background-repeat: var(--gug-bg-repeat, no-repeat, no-repeat, repeat) !important; min-height: 100vh; color: #ffffff !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .admin-sidebar { width: 260px; background: rgba(10, 10, 15, 0.6) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; height: 100vh; position: fixed; left: 0; top: 0; padding: 20px 15px; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; overflow-y: auto; z-index: 1000; }
+        .admin-main { margin-left: 260px; padding: 25px 30px; min-height: 100vh; background-color: transparent !important; color: #ffffff !important; }
+        .admin-nav-link { display: flex; align-items: center; padding: 9px 13px; color: #94a3b8; text-decoration: none; border-radius: 8px; margin-bottom: 3px; font-size: 13px; font-weight: 500; transition: all 0.2s ease; }
+        .admin-nav-link:hover { background-color: rgba(219, 39, 36, 0.15); color: #fff; }
+        .admin-nav-link.active { background-color: var(--accent-red); color: #fff !important; font-weight: 600; box-shadow: 0 4px 12px rgba(219, 39, 36, 0.3); }
+        .sidebar-section-heading { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #64748b; margin-top: 15px; margin-bottom: 6px; padding-left: 10px; }
+        
+        .admin-card { background: rgba(10, 10, 15, 0.45) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 16px !important; padding: 20px; margin-bottom: 20px; color: #ffffff !important; box-shadow: 0 16px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important; }
+        .table { color: #ffffff !important; background-color: transparent !important; vertical-align: middle; }
+        .table th { background-color: rgba(255, 255, 255, 0.06) !important; border-bottom: 2px solid rgba(255, 255, 255, 0.15) !important; color: #ffffff !important; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .table td { border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important; font-size: 13.5px; color: #ffffff !important; }
+    </style>
+</head>
+<body>
+        <!-- Enterprise Sidebar Navigation -->
+    <div class="admin-sidebar">
+        <div class="d-flex align-items-center mb-3 px-2">
+            <i class="fas fa-shield-alt text-danger fs-4 me-2"></i>
+            <div>
+                <h6 class="text-white m-0 fw-bold">GearUp ERP</h6>
+                <small class="text-secondary" style="font-size: 11px;">Enterprise Operating System</small>
+            </div>
+        </div>
+
+        <a href="dashboard.html" class="admin-nav-link" id="nav-dashboard"><i class="fas fa-chart-pie me-2"></i> Executive Dashboard</a>
+        
+        <!-- Accordion 1: Catalog & E-Commerce -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-catalog">
+                <span><i class="fas fa-shopping-bag text-danger me-2"></i> Catalog & E-Commerce</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-catalog">
+                <a href="products.html" class="admin-nav-link" id="nav-products"><i class="fas fa-boxes-stacked me-2"></i> Products & Catalog</a>
+                <a href="admin-crm.html" class="admin-nav-link" id="nav-crm"><i class="fas fa-users-viewfinder me-2"></i> Customers (CRM)</a>
+                <a href="admin-marketing.html" class="admin-nav-link" id="nav-marketing"><i class="fas fa-tags me-2"></i> Coupons & Marketing</a>
+            </div>
+        </div>
+
+        <!-- Accordion 2: Supply Chain & Operations -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-supply">
+                <span><i class="fas fa-truck-ramp-box text-primary me-2"></i> Supply Chain & Operations</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-supply">
+                <a href="admin-inventory.html" class="admin-nav-link" id="nav-inventory"><i class="fas fa-warehouse me-2"></i> Multi-Warehouse Stock</a>
+                <a href="admin-purchasing.html" class="admin-nav-link" id="nav-purchasing"><i class="fas fa-dolly me-2"></i> Purchasing & Suppliers</a>
+                <a href="orders.html" class="admin-nav-link" id="nav-orders"><i class="fas fa-cart-shopping me-2"></i> Sales Orders Pipeline</a>
+                <a href="admin-logistics.html" class="admin-nav-link" id="nav-logistics"><i class="fas fa-truck-fast me-2"></i> Logistics & Courier COD</a>
+                <a href="admin-returns.html" class="admin-nav-link" id="nav-returns"><i class="fas fa-rotate-left me-2"></i> Returns & Warranty (RMA)</a>
+            </div>
+        </div>
+
+        <!-- Accordion 3: Finance & B2B Wholesale -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-finance">
+                <span><i class="fas fa-coins text-warning me-2"></i> Finance & B2B Wholesale</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-finance">
+                <a href="admin-dealers.html" class="admin-nav-link" id="nav-dealers"><i class="fas fa-handshake me-2"></i> B2B Dealers & Ledger</a>
+                <a href="admin-finance.html" class="admin-nav-link" id="nav-finance"><i class="fas fa-file-invoice-dollar me-2"></i> Finance & P&L Ledger</a>
+                <a href="admin-staff.html" class="admin-nav-link" id="nav-staff"><i class="fas fa-user-tie me-2"></i> HR & Employee Payroll</a>
+                <a href="admin-tasks.html" class="admin-nav-link" id="nav-tasks"><i class="fas fa-list-check me-2"></i> Task Kanban & Workflow</a>
+                <a href="admin-reports.html" class="admin-nav-link" id="nav-reports"><i class="fas fa-chart-column me-2"></i> Business Reports</a>
+                <a href="admin-audit.html" class="admin-nav-link" id="nav-audit"><i class="fas fa-fingerprint me-2"></i> Security & Audit Logs</a>
+            </div>
+        </div>
+
+        <!-- Standalone Section: System Settings & Store Customization -->
+        <div class="mt-3 pt-3 border-top border-secondary border-opacity-25">
+            <div class="px-3 text-secondary text-uppercase fw-bold mb-2" style="font-size: 11px; letter-spacing: 0.6px;">System & Settings</div>
+            <a href="admin-settings.html" class="admin-nav-link" id="nav-settings"><i class="fas fa-sliders text-danger me-2"></i> System Settings & APIs</a>
+            <a href="admin-sales.html" class="admin-nav-link" id="nav-sales"><i class="fas fa-palette text-warning me-2"></i> Banner & Theme</a>
+        </div>
+        
+        <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
+            <a href="dealer-portal.html" target="_blank" class="admin-nav-link text-warning"><i class="fas fa-store-alt me-2"></i> Dealer Portal View</a>
+            <a href="employee-portal.html" class="admin-nav-link text-info"><i class="fas fa-id-badge me-2"></i> Employee Workspace</a>
+            <a href="index.html" target="_blank" class="admin-nav-link text-success"><i class="fas fa-store me-2"></i> Customer Storefront</a>
+            <a href="#" class="admin-nav-link text-danger mt-2" onclick="localStorage.removeItem('admin_logged_in'); localStorage.removeItem('admin_role'); localStorage.removeItem('admin_username'); window.location.href = 'admin.html'; return false;"><i class="fas fa-sign-out-alt me-2"></i> Sign Out</a>
+        </div>
+    </div>
+    <script>try{var _s=sessionStorage.getItem('gug_admin_sidebar_scroll');if(_s!==null){var _sb=document.querySelector('.admin-sidebar');if(_sb)_sb.scrollTop=parseFloat(_s);}}catch(e){}</script>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Global Header -->
+        <div id="gug-global-header-container"></div>
+
+        <!-- Beginner Help Banner -->
+        <div id="gug-beginner-help-container"></div>
+
+        <!-- RMA Metrics KPI Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="admin-card p-3 mb-0">
+                    <span class="text-secondary small fw-bold text-uppercase">Under Diagnostic</span>
+                    <h3 class="fw-bold text-warning mb-0 mt-1" id="stat-rma-pending">0</h3>
+                    <small class="text-muted">Awaiting inspection</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="admin-card p-3 mb-0">
+                    <span class="text-secondary small fw-bold text-uppercase">Approved Replacements</span>
+                    <h3 class="fw-bold text-primary mb-0 mt-1" id="stat-rma-approved">0</h3>
+                    <small class="text-muted">Unit swap issued</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="admin-card p-3 mb-0">
+                    <span class="text-secondary small fw-bold text-uppercase">Processed Refunds</span>
+                    <h3 class="fw-bold text-success mb-0 mt-1" id="stat-rma-refunded">0</h3>
+                    <small class="text-muted">Funds credited to customer</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="admin-card p-3 mb-0">
+                    <span class="text-secondary small fw-bold text-uppercase">Rejected / Void</span>
+                    <h3 class="fw-bold text-danger mb-0 mt-1" id="stat-rma-rejected">0</h3>
+                    <small class="text-muted">Physical/Water damage</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Serial Number & Hardware Warranty Lookup Bar -->
+        <div class="admin-card mb-4 bg-light border-danger border-opacity-25">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-8">
+                    <h6 class="fw-bold text-dark mb-1"><i class="fas fa-barcode text-danger me-2"></i> Hardware Serial Number & Warranty Verification</h6>
+                    <small class="text-secondary">Scan or type hardware serial number to verify original PO, sale date, customer, and active warranty status.</small>
+                    <div class="input-group mt-2">
+                        <input type="text" id="serial-search-input" class="form-control" placeholder="e.g. SN-SWP-90214-01, SN-ROG-8812-01...">
+                        <button class="btn btn-dark px-4" onclick="lookupSerial()"><i class="fas fa-search me-1"></i> Verify Serial</button>
+                    </div>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <button class="btn btn-danger" onclick="openNewRMAModal()"><i class="fas fa-plus-circle me-1"></i> Create RMA Claim</button>
+                </div>
+            </div>
+            <!-- Serial verification result container -->
+            <div id="serial-result-container" class="mt-3" style="display: none;"></div>
+        </div>
+
+        <!-- Navigation Tabs: RMA Warranty Claims vs Online Customer Repair Requests vs Data Recovery Requests -->
+        <ul class="nav nav-pills mb-3 gap-2" id="returns-tabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active fw-bold" id="tab-rma-btn" data-bs-toggle="pill" data-bs-target="#pane-rma" type="button" role="tab">
+                    <i class="fas fa-rotate-left me-1"></i> RMA Warranty Claims
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link fw-bold" id="tab-repairs-btn" data-bs-toggle="pill" data-bs-target="#pane-repairs" type="button" role="tab" onclick="renderRepairsTable()">
+                    <i class="fas fa-screwdriver-wrench me-1"></i> Repairing Requests 
+                    <span class="badge bg-danger ms-1" id="stat-repairs-badge">0</span>
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link fw-bold" id="tab-recovery-btn" data-bs-toggle="pill" data-bs-target="#pane-recovery" type="button" role="tab" onclick="renderRecoveryTable()">
+                    <i class="fas fa-database me-1"></i> Data Recovery Requests 
+                    <span class="badge bg-primary ms-1" id="stat-recovery-badge">0</span>
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="returnsTabContent">
+            <!-- Tab Pane 1: RMA Claims -->
+            <div class="tab-pane fade show active" id="pane-rma" role="tabpanel">
+                <div class="admin-card p-0">
+                    <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                        <h6 class="fw-bold text-dark mb-0"><i class="fas fa-list-check text-danger me-2"></i> Active RMA Claims Pipeline</h6>
+                        <div class="d-flex gap-2">
+                            <select id="rma-status-filter" class="form-select form-select-sm" onchange="renderRMATable()">
+                                <option value="">All RMA Statuses</option>
+                                <option value="Under Diagnostic">Under Diagnostic</option>
+                                <option value="Approved">Approved</option>
+                                <option value="Rejected">Rejected</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="ps-4">RMA # & Date</th>
+                                    <th>Product & Serial</th>
+                                    <th>Customer Contact</th>
+                                    <th>Reported Defect</th>
+                                    <th>Diagnostic Status</th>
+                                    <th>Settlement</th>
+                                    <th class="text-end pe-4">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rma-tbody">
+                                <!-- Populated via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Pane 2: Online Customer Repair Requests -->
+            <div class="tab-pane fade" id="pane-repairs" role="tabpanel">
+                <div class="admin-card p-0">
+                    <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="fw-bold text-dark mb-0"><i class="fas fa-screwdriver-wrench text-danger me-2"></i> Repairing Requests Pipeline</h6>
+                            <small class="text-secondary">Submitted live by customers via the Repairing Form.</small>
+                        </div>
+                        <span class="badge bg-warning text-dark px-3 py-2 fw-bold" id="repairs-total-badge">0 Requests</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="ps-4">Diagnose ID & Date</th>
+                                    <th>Customer Information</th>
+                                    <th>Reported Device Issue</th>
+                                    <th>Repair Status</th>
+                                    <th>Technician Diagnosis Notes</th>
+                                    <th class="text-end pe-4">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="repairs-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Pane 3: Online Customer Data Recovery Requests -->
+            <div class="tab-pane fade" id="pane-recovery" role="tabpanel">
+                <div class="admin-card p-0">
+                    <div class="p-3 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div>
+                            <h6 class="fw-bold text-dark mb-0"><i class="fas fa-database text-primary me-2"></i> Data Recovery Requests Pipeline</h6>
+                            <small class="text-secondary">Submitted live by customers via the Data Recovery Form.</small>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <select id="recovery-status-filter" class="form-select form-select-sm" onchange="renderRecoveryTable()" style="width: auto;">
+                                <option value="">All Recovery Statuses</option>
+                                <option value="Pending Inspection">Pending Inspection</option>
+                                <option value="Media Received">Media Received</option>
+                                <option value="Diagnostic / Hex Scan">Diagnostic / Hex Scan</option>
+                                <option value="Recovery in Progress">Recovery in Progress</option>
+                                <option value="Data Cloned / Verified">Data Cloned / Verified</option>
+                                <option value="Ready for Delivery">Ready for Delivery</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Unrecoverable">Unrecoverable</option>
+                            </select>
+                            <span class="badge bg-primary px-3 py-2 fw-bold" id="recovery-total-badge">0 Cases</span>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="ps-4">Case ID & Date</th>
+                                    <th>Customer Information</th>
+                                    <th>Recovery Details & Symptoms</th>
+                                    <th>Recovery Status</th>
+                                    <th>Lab Notes & Quoted Cost</th>
+                                    <th class="text-end pe-4">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recovery-tbody">
+                                <!-- Populated dynamically via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Diagnostic & Settlement Modal -->
+    <div class="modal fade" id="rmaModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content shadow-lg border-0">
+                <div class="modal-header border-bottom p-3">
+                    <h5 class="modal-title fw-bold text-dark"><i class="fas fa-microscope text-danger me-2"></i> Technical Diagnostic & RMA Resolution</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="rmaForm" onsubmit="event.preventDefault(); saveRMAForm();">
+                        <input type="hidden" id="rma-id">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Customer Name <span class="text-danger">*</span></label>
+                                <input type="text" id="rma-cust-name" class="form-control" placeholder="e.g. Asad Malik" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Customer Phone <span class="text-danger">*</span></label>
+                                <input type="text" id="rma-cust-phone" class="form-control" placeholder="+92 321 9876543" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Product Name <span class="text-danger">*</span></label>
+                                <input type="text" id="rma-prod-name" class="form-control" list="rma-prod-datalist" placeholder="Type or select product..." required>
+                                <datalist id="rma-prod-datalist"></datalist>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Serial Number</label>
+                                <input type="text" id="rma-serial" class="form-control text-uppercase" placeholder="SN-...">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Customer Reported Issue / Defect</label>
+                                <textarea id="rma-reason" class="form-control" rows="2" placeholder="e.g. Battery not charging, display flickering, intermittent USB disconnects..."></textarea>
+                            </div>
+
+                            <!-- Lower Section: Universal Manual Inspection -->
+                            <div class="col-12">
+                                <h6 class="fw-bold text-dark border-bottom pb-2 mt-2"><i class="fas fa-screwdriver-wrench text-danger me-2"></i> Technical Inspection & Findings</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Diagnostic Status / Verdict <span class="text-danger">*</span></label>
+                                <input type="text" id="rma-status" class="form-control" list="rma-status-datalist" placeholder="Type custom verdict e.g. Under Diagnostic, Approved, Rejected, Repaired..." required>
+                                <datalist id="rma-status-datalist">
+                                    <option value="Under Diagnostic">
+                                    <option value="Approved">
+                                    <option value="Rejected">
+                                    <option value="Inspection Passed">
+                                    <option value="Component Failure Confirmed">
+                                    <option value="Warranty Void (Physical / Liquid Damage)">
+                                    <option value="Re-testing Required">
+                                </datalist>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Technician Name / Diagnostic Bench</label>
+                                <input type="text" id="rma-technician" class="form-control" placeholder="e.g. Engr. Hamza - Lab Bench 2">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Technician Lab Inspection Notes & Diagnosis</label>
+                                <textarea id="rma-notes" class="form-control" rows="2" placeholder="Physically type detailed inspection findings, PCB microscope check, voltage rail measurements, test results..."></textarea>
+                            </div>
+
+                            <!-- Lower Section: Universal Manual Settlement Actions -->
+                            <div class="col-12">
+                                <h6 class="fw-bold text-dark border-bottom pb-2 mt-2"><i class="fas fa-handshake-angle text-danger me-2"></i> Settlement & Resolution Actions</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Settlement Action <span class="text-danger">*</span></label>
+                                <input type="text" id="rma-action" class="form-control" list="rma-action-datalist" placeholder="Type custom action e.g. Dispatch Replacement Unit, Full Cash Refund..." required>
+                                <datalist id="rma-action-datalist">
+                                    <option value="Replacement Unit">
+                                    <option value="Cash Refund">
+                                    <option value="Bank Transfer Refund">
+                                    <option value="Store Credit Voucher">
+                                    <option value="Component Repaired & Restored">
+                                    <option value="Free Board Repair & Recalibration">
+                                    <option value="Warranty Extended by 6 Months">
+                                    <option value="Return to Customer (Claim Denied)">
+                                </datalist>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Settlement / Refund Amount (PKR)</label>
+                                <input type="number" id="rma-settlement-amount" class="form-control" placeholder="Optional amount e.g. 15000" min="0">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Resolution / Target Turnaround Date</label>
+                                <input type="date" id="rma-resolution-date" class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Replacement Tracking / Dispatch Courier</label>
+                                <input type="text" id="rma-courier-tracking" class="form-control" placeholder="e.g. Leopard Express TRK-99214">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Custom Settlement Terms & Handover Notes</label>
+                                <textarea id="rma-settlement-details" class="form-control" rows="2" placeholder="Physically type custom settlement conditions, customer compensation notes, replacement serial swapped, etc."></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-top p-3 bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger px-4" onclick="saveRMAForm()"><i class="fas fa-save me-1"></i> Save Resolution</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/products-data.js"></script>
+    <script src="assets/js/gug-erp-core.js"></script>
+    <!-- Firebase Compat SDKs & Cloud Sync -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/firebase-sync.js"></script>
+    <script src="assets/js/admin.js"></script>
+    <script>
+        let rmaModalInstance = null;
+
+        function initReturnsPage() {
+            GUG_DB.renderGlobalHeader('gug-global-header-container', 'Returns, RMA & Warranty Diagnostics');
+            GUG_DB.renderBeginnerHelpBanner('gug-beginner-help-container', {
+                whereAmI: 'RMA Returns & Warranty Quality Control Lab',
+                whatCanIDo: 'Lookup hardware serial numbers to verify warranty authenticity, log customer return claims, and approve replacements or refunds.',
+                whatNext: 'Type a serial number in the verification bar or click "Inspect / Settle" on any active claim below.'
+            });
+
+            renderRMATable();
+            updateRMAStats();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('serial')) {
+                document.getElementById('serial-search-input').value = urlParams.get('serial');
+                lookupSerial();
+            }
+        }
+
+        function updateRMAStats() {
+            const returns = GUG_DB.getReturns();
+            const pending = returns.filter(r => r.status === 'Under Diagnostic' || r.status === 'Requested').length;
+            const approved = returns.filter(r => r.status === 'Approved' && r.action !== 'Cash Refund').length;
+            const refunded = returns.filter(r => r.status === 'Approved' && r.action === 'Cash Refund').length;
+            const rejected = returns.filter(r => r.status === 'Rejected').length;
+
+            document.getElementById('stat-rma-pending').innerText = pending;
+            document.getElementById('stat-rma-approved').innerText = approved;
+            document.getElementById('stat-rma-refunded').innerText = refunded;
+            document.getElementById('stat-rma-rejected').innerText = rejected;
+        }
+
+        function renderRMATable() {
+            const returns = GUG_DB.getReturns();
+            const filter = document.getElementById('rma-status-filter').value;
+            const tbody = document.getElementById('rma-tbody');
+            tbody.innerHTML = '';
+
+            const filtered = returns.filter(r => !filter || r.status === filter);
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <i class="fas fa-clipboard-check fs-1 mb-3 text-secondary d-block"></i>
+                            <h6 class="fw-bold text-dark">No RMA Claims Found</h6>
+                            <p class="small text-secondary mb-3">All incoming warranty and return claims have been resolved.</p>
+                            <button class="btn btn-sm btn-danger" onclick="openNewRMAModal()"><i class="fas fa-plus me-1"></i> Log New RMA</button>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            filtered.forEach(r => {
+                let badgeClass = 'bg-secondary';
+                const st = (r.status || '').toLowerCase();
+                if (st.includes('approved') || st.includes('passed') || st.includes('valid') || st.includes('repair')) {
+                    badgeClass = 'bg-success';
+                } else if (st.includes('diagnostic') || st.includes('pending') || st.includes('test')) {
+                    badgeClass = 'bg-warning text-dark';
+                } else if (st.includes('reject') || st.includes('void') || st.includes('denied')) {
+                    badgeClass = 'bg-danger';
+                } else {
+                    badgeClass = 'bg-info text-dark';
+                }
+
+                let settlementDisplay = `<span class="badge bg-light text-dark border">${r.action || 'Pending Diagnostic'}</span>`;
+                if (r.settlementAmount && Number(r.settlementAmount) > 0) {
+                    settlementDisplay += `<div class="small text-success fw-bold mt-1">Rs. ${Number(r.settlementAmount).toLocaleString()}</div>`;
+                }
+                if (r.courierTracking) {
+                    settlementDisplay += `<div class="small text-muted mt-1"><i class="fas fa-truck text-danger me-1"></i><code>${r.courierTracking}</code></div>`;
+                }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="ps-4">
+                        <strong class="text-dark d-block"><code>${r.id}</code></strong>
+                        <small class="text-secondary">${r.date || 'Recent'}</small>
+                    </td>
+                    <td>
+                        <strong class="text-dark d-block">${r.productName || 'Hardware Product'}</strong>
+                        <small class="text-secondary">SN: <code>${r.serialNumber || 'N/A'}</code></small>
+                    </td>
+                    <td>
+                        <div class="text-dark fw-semibold">${r.customerName}</div>
+                        <small class="text-secondary">${r.phone || 'N/A'}</small>
+                    </td>
+                    <td>
+                        <span class="small text-dark">${r.reason || 'Not specified'}</span>
+                        ${r.diagnosticNotes ? `<div class="small text-muted fst-italic mt-1 border-top pt-1"><i class="fas fa-microscope text-danger me-1"></i>${r.diagnosticNotes}</div>` : ''}
+                    </td>
+                    <td>
+                        <span class="badge ${badgeClass}">${r.status || 'Under Diagnostic'}</span>
+                        ${r.technician ? `<div class="small text-secondary mt-1"><i class="fas fa-user-gear me-1"></i>${r.technician}</div>` : ''}
+                    </td>
+                    <td>
+                        ${settlementDisplay}
+                        ${r.settlementDetails ? `<div class="small text-muted mt-1">${r.settlementDetails}</div>` : ''}
+                    </td>
+                    <td class="text-end pe-4">
+                        <button class="btn btn-sm btn-outline-dark" onclick="editRMA('${r.id}')"><i class="fas fa-stethoscope me-1"></i> Inspect / Settle</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function lookupSerial() {
+            const sn = document.getElementById('serial-search-input').value.trim().toUpperCase();
+            if (!sn) return;
+
+            const serials = GUG_DB.getSerials();
+            const s = serials.find(item => item.serial.toUpperCase() === sn);
+            const container = document.getElementById('serial-result-container');
+            container.style.display = 'block';
+
+            if (!s) {
+                container.innerHTML = `
+                    <div class="alert alert-warning border d-flex align-items-center gap-2 mb-0">
+                        <i class="fas fa-exclamation-triangle fs-4 text-warning"></i>
+                        <div>
+                            <strong class="d-block text-dark">Serial Number Not Found in GearUp Database (${sn})</strong>
+                            <small class="text-secondary">This hardware unit was not recorded through official Purchasing POs or has an unregistered serial.</small>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="p-3 bg-white rounded border shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <span class="badge bg-success me-2">Verified Authentic</span>
+                            <strong class="text-dark fs-6">${s.productName}</strong>
+                            <code class="ms-2 text-danger fw-bold">${s.serial}</code>
+                        </div>
+                        <span class="badge ${s.status === 'Sold' ? 'bg-primary' : 'bg-secondary'}">${s.status}</span>
+                    </div>
+                    <div class="row g-2 small text-secondary">
+                        <div class="col-md-3"><strong>PO ID:</strong> ${s.poId || 'PO-2024-001'}</div>
+                        <div class="col-md-3"><strong>Warehouse:</strong> ${s.warehouseId || 'WH-01'}</div>
+                        <div class="col-md-3"><strong>Sold In Order:</strong> ${s.orderId || 'Direct Stock'}</div>
+                        <div class="col-md-3"><strong>Customer:</strong> ${s.customerName || 'In Stock'}</div>
+                        <div class="col-md-6"><strong>Sale Date:</strong> ${s.soldDate || 'Active Warehouse Inventory'}</div>
+                        <div class="col-md-6"><strong>Warranty Duration:</strong> <span class="text-success fw-bold">${s.warrantyMonths || 12} Months Official Warranty</span></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function populateRMAProductsDatalist() {
+            const products = (window.GUG_DB && window.GUG_DB.getProducts) ? window.GUG_DB.getProducts() : [];
+            const dl = document.getElementById('rma-prod-datalist');
+            if (dl) {
+                dl.innerHTML = '';
+                products.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.title;
+                    dl.appendChild(opt);
+                });
+            }
+        }
+
+        function openNewRMAModal() {
+            const form = document.getElementById('rmaForm');
+            if (form) form.reset();
+            document.getElementById('rma-id').value = '';
+            document.getElementById('rma-status').value = 'Under Diagnostic';
+            document.getElementById('rma-action').value = 'Replacement Unit';
+            document.getElementById('rma-settlement-amount').value = '';
+            document.getElementById('rma-technician').value = '';
+            document.getElementById('rma-courier-tracking').value = '';
+            document.getElementById('rma-settlement-details').value = '';
+            
+            // Set default turnaround date to 3 days from now
+            const targetDate = new Date();
+            targetDate.setDate(targetDate.getDate() + 3);
+            document.getElementById('rma-resolution-date').value = targetDate.toISOString().split('T')[0];
+
+            populateRMAProductsDatalist();
+
+            const modalEl = document.getElementById('rmaModal');
+            if (modalEl) {
+                rmaModalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+                rmaModalInstance.show();
+            }
+        }
+
+        function editRMA(id) {
+            const returns = (window.GUG_DB && window.GUG_DB.getReturns) ? window.GUG_DB.getReturns() : [];
+            const r = returns.find(item => item.id === id);
+            if (!r) return;
+
+            populateRMAProductsDatalist();
+
+            document.getElementById('rma-id').value = r.id;
+            document.getElementById('rma-cust-name').value = r.customerName || '';
+            document.getElementById('rma-cust-phone').value = r.phone || '';
+            document.getElementById('rma-prod-name').value = r.productName || '';
+            document.getElementById('rma-serial').value = r.serialNumber || '';
+            document.getElementById('rma-reason').value = r.reason || '';
+            document.getElementById('rma-status').value = r.status || 'Under Diagnostic';
+            document.getElementById('rma-technician').value = r.technician || '';
+            document.getElementById('rma-notes').value = r.diagnosticNotes || '';
+            document.getElementById('rma-action').value = r.action || 'Replacement Unit';
+            document.getElementById('rma-settlement-amount').value = r.settlementAmount || '';
+            document.getElementById('rma-resolution-date').value = r.resolutionDate || '';
+            document.getElementById('rma-courier-tracking').value = r.courierTracking || '';
+            document.getElementById('rma-settlement-details').value = r.settlementDetails || '';
+
+            const modalEl = document.getElementById('rmaModal');
+            if (modalEl) {
+                rmaModalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+                rmaModalInstance.show();
+            }
+        }
+
+        function saveRMAForm() {
+            const custName = document.getElementById('rma-cust-name').value.trim();
+            const prodName = document.getElementById('rma-prod-name').value.trim();
+            const statusVal = document.getElementById('rma-status').value.trim();
+            const actionVal = document.getElementById('rma-action').value.trim();
+
+            if (!custName || !prodName || !statusVal || !actionVal) {
+                if (window.GUG_DB && window.GUG_DB.showToast) {
+                    window.GUG_DB.showToast('Please fill in Customer Name, Product Name, Diagnostic Status, and Settlement Action.', 'warning', 'Missing Details');
+                } else {
+                    alert('Please fill in Customer Name, Product Name, Diagnostic Status, and Settlement Action.');
+                }
+                return;
+            }
+
+            const rmaData = {
+                id: document.getElementById('rma-id').value || undefined,
+                customerName: custName,
+                phone: document.getElementById('rma-cust-phone').value.trim(),
+                productName: prodName,
+                serialNumber: document.getElementById('rma-serial').value.trim().toUpperCase(),
+                reason: document.getElementById('rma-reason').value.trim(),
+                status: statusVal,
+                technician: document.getElementById('rma-technician').value.trim(),
+                diagnosticNotes: document.getElementById('rma-notes').value.trim(),
+                action: actionVal,
+                settlementAmount: parseFloat(document.getElementById('rma-settlement-amount').value) || 0,
+                resolutionDate: document.getElementById('rma-resolution-date').value,
+                courierTracking: document.getElementById('rma-courier-tracking').value.trim(),
+                settlementDetails: document.getElementById('rma-settlement-details').value.trim(),
+                date: new Date().toISOString().split('T')[0]
+            };
+
+            if (window.GUG_DB && window.GUG_DB.saveReturn) {
+                window.GUG_DB.saveReturn(rmaData);
+            } else {
+                const returns = JSON.parse(localStorage.getItem('gug_erp_returns') || '[]');
+                const idx = returns.findIndex(r => r.id === rmaData.id);
+                if (idx !== -1) {
+                    returns[idx] = rmaData;
+                } else {
+                    rmaData.id = 'RMA-' + Math.floor(500 + Math.random() * 500);
+                    returns.unshift(rmaData);
+                }
+                localStorage.setItem('gug_erp_returns', JSON.stringify(returns));
+            }
+
+            const modalEl = document.getElementById('rmaModal');
+            if (modalEl) {
+                const modal = bootstrap.Modal.getInstance(modalEl) || rmaModalInstance;
+                if (modal) modal.hide();
+            }
+
+            renderRMATable();
+            updateRMAStats();
+            if (window.GUG_DB && window.GUG_DB.showToast) {
+                window.GUG_DB.showToast(`RMA case for "${prodName}" (${custName}) saved successfully!`, 'success', 'RMA Recorded');
+            }
+        }
+
+        function renderRepairsTable() {
+            const repairs = JSON.parse(localStorage.getItem('admin_repair_requests') || '[]');
+            const tbody = document.getElementById('repairs-tbody');
+            const badge = document.getElementById('stat-repairs-badge');
+            const totalBadge = document.getElementById('repairs-total-badge');
+
+            if (badge) badge.innerText = repairs.length;
+            if (totalBadge) totalBadge.innerText = `${repairs.length} Requests`;
+            if (!tbody) return;
+
+            if (repairs.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <i class="fas fa-tools fs-1 mb-3 text-secondary d-block"></i>
+                            <h6 class="fw-bold text-dark">No Customer Repair Requests Found</h6>
+                            <p class="small text-secondary mb-0">Customer requests submitted via the 'Repair Request' page will automatically show up here in real time.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = repairs.map((r, idx) => {
+                const diagId = r.diagnoseId || r.id || 'N/A';
+                const phone = r.phone || r.mobileNumber || '';
+                const wa = (r.whatsapp || r.whatsappNumber || phone).replace(/[^0-9]/g, '');
+                return `
+                    <tr>
+                        <td class="ps-4">
+                            <code class="text-danger fw-bold fs-6">${diagId}</code>
+                            <div class="small text-secondary mt-1">${r.date ? new Date(r.date).toLocaleDateString() : 'Recent'}</div>
+                        </td>
+                        <td>
+                            <strong class="text-dark d-block">${r.name || r.fullName || 'Customer'}</strong>
+                            <div class="small text-secondary"><i class="fas fa-phone me-1"></i> ${phone || 'N/A'}</div>
+                            ${r.email ? `<div class="small text-muted"><i class="fas fa-envelope me-1"></i> ${r.email}</div>` : ''}
+                            ${r.address ? `<div class="small text-muted"><i class="fas fa-home me-1 text-danger"></i> <strong>Res:</strong> ${r.address}</div>` : ''}
+                            ${r.officeAddress ? `<div class="small text-muted"><i class="fas fa-building me-1 text-primary"></i> <strong>Office:</strong> ${r.officeAddress}</div>` : ''}
+                        </td>
+                        <td style="max-width: 250px;">
+                            <div class="small text-dark" style="white-space: pre-wrap;" title="${r.details || ''}">${r.details || 'No details provided'}</div>
+                        </td>
+                        <td>
+                            <select class="form-select form-select-sm" onchange="updateOnlineRepairStatus('${diagId}', this.value)">
+                                <option value="Pending" ${r.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                <option value="Device Received" ${r.status === 'Device Received' ? 'selected' : ''}>Device Received</option>
+                                <option value="Diagnosing" ${r.status === 'Diagnosing' ? 'selected' : ''}>Diagnosing</option>
+                                <option value="Waiting for Parts" ${r.status === 'Waiting for Parts' ? 'selected' : ''}>Waiting for Parts</option>
+                                <option value="Repair in Progress" ${r.status === 'Repair in Progress' ? 'selected' : ''}>Repair in Progress</option>
+                                <option value="Ready for Collection" ${r.status === 'Ready for Collection' ? 'selected' : ''}>Ready for Collection</option>
+                                <option value="Completed" ${r.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                            </select>
+                        </td>
+                        <td>
+                            <textarea class="form-control form-control-sm" rows="2" placeholder="Lab diagnosis notes..." onblur="updateOnlineRepairNotes('${diagId}', this.value)" style="font-size: 12px; resize: none;">${r.diagnosisNotes || ''}</textarea>
+                        </td>
+                        <td class="text-end pe-4">
+                            <div class="d-flex justify-content-end gap-1">
+                                ${wa ? `
+                                    <a href="https://wa.me/${wa}?text=Hello%20${encodeURIComponent(r.name || 'Customer')},%20regarding%20your%20Gear%20Up%20Gadgets%20repair%20request%20(${diagId})..." target="_blank" class="btn btn-sm btn-outline-success" title="Chat on WhatsApp">
+                                        <i class="fab fa-whatsapp"></i>
+                                    </a>
+                                ` : ''}
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteOnlineRepair('${diagId}')" title="Delete Request">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateOnlineRepairStatus(diagId, newStatus) {
+            let repairs = JSON.parse(localStorage.getItem('admin_repair_requests') || '[]');
+            let target = repairs.find(r => (r.diagnoseId || r.id) === diagId);
+            if (target) {
+                target.status = newStatus;
+                localStorage.setItem('admin_repair_requests', JSON.stringify(repairs));
+                if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.updateRepairStatus === 'function') {
+                    window.GUG_FIREBASE.updateRepairStatus(diagId, newStatus, target.diagnosisNotes);
+                }
+                if (window.GUG_DB && window.GUG_DB.showToast) {
+                    window.GUG_DB.showToast(`Repair ${diagId} status updated to ${newStatus}`, 'success', 'Status Updated');
+                }
+            }
+        }
+
+        function updateOnlineRepairNotes(diagId, notes) {
+            let repairs = JSON.parse(localStorage.getItem('admin_repair_requests') || '[]');
+            let target = repairs.find(r => (r.diagnoseId || r.id) === diagId);
+            if (target) {
+                target.diagnosisNotes = notes;
+                localStorage.setItem('admin_repair_requests', JSON.stringify(repairs));
+                if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.updateRepairStatus === 'function') {
+                    window.GUG_FIREBASE.updateRepairStatus(diagId, target.status, notes);
+                }
+            }
+        }
+
+        function deleteOnlineRepair(diagId) {
+            if (!confirm('Permanently delete this repair request?')) return;
+            let repairs = JSON.parse(localStorage.getItem('admin_repair_requests') || '[]');
+            repairs = repairs.filter(r => (r.diagnoseId || r.id) !== diagId);
+            localStorage.setItem('admin_repair_requests', JSON.stringify(repairs));
+            if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.deleteRepair === 'function') {
+                window.GUG_FIREBASE.deleteRepair(diagId);
+            }
+            renderRepairsTable();
+        }
+
+        // =========================================================
+        // DATA RECOVERY REQUESTS MANAGEMENT
+        // =========================================================
+        function renderRecoveryTable() {
+            const allRecoveries = JSON.parse(localStorage.getItem('admin_recovery_requests') || '[]');
+            const filterEl = document.getElementById('recovery-status-filter');
+            const filterVal = filterEl ? filterEl.value : '';
+
+            const recoveries = filterVal ? allRecoveries.filter(r => (r.status || 'Pending Inspection') === filterVal) : allRecoveries;
+
+            const tbody = document.getElementById('recovery-tbody');
+            const badge = document.getElementById('stat-recovery-badge');
+            const totalBadge = document.getElementById('recovery-total-badge');
+
+            if (badge) badge.innerText = allRecoveries.length;
+            if (totalBadge) totalBadge.innerText = `${allRecoveries.length} Cases`;
+            if (!tbody) return;
+
+            if (recoveries.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <i class="fas fa-database fs-1 mb-3 text-secondary d-block"></i>
+                            <h6 class="fw-bold text-dark">No Data Recovery Requests Found</h6>
+                            <p class="small text-secondary mb-0">Customer requests submitted via the 'Data Recovery' form will automatically appear here in real time.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = recoveries.map(r => {
+                const caseId = r.caseId || r.id || 'N/A';
+                const phone = r.phone || r.mobileNumber || '';
+                const wa = (r.whatsapp || r.whatsappNumber || phone).replace(/[^0-9]/g, '');
+                const currentStatus = r.status || 'Pending Inspection';
+
+                let urgencyBadge = '<span class="badge bg-secondary">Standard</span>';
+                if ((r.urgency || '').includes('Emergency')) {
+                    urgencyBadge = '<span class="badge bg-danger bg-opacity-10 text-danger border border-danger">Emergency 24h</span>';
+                } else if ((r.urgency || '').includes('Priority')) {
+                    urgencyBadge = '<span class="badge bg-warning bg-opacity-10 text-dark border border-warning">Priority 48h</span>';
+                }
+
+                return `
+                    <tr>
+                        <td class="ps-4">
+                            <code class="text-primary fw-bold fs-6">${caseId}</code>
+                            <div class="small text-secondary mt-1">${r.date ? new Date(r.date).toLocaleDateString() : 'Recent'}</div>
+                            <div class="mt-1">${urgencyBadge}</div>
+                        </td>
+                        <td>
+                            <strong class="text-dark d-block">${r.name || r.fullName || 'Customer'}</strong>
+                            <div class="small text-secondary"><i class="fas fa-phone me-1"></i> ${phone || 'N/A'}</div>
+                            ${r.email ? `<div class="small text-muted"><i class="fas fa-envelope me-1"></i> ${r.email}</div>` : ''}
+                            ${r.address ? `<div class="small text-muted"><i class="fas fa-home me-1 text-danger"></i> <strong>Res:</strong> ${r.address}</div>` : ''}
+                            ${r.officeAddress ? `<div class="small text-muted"><i class="fas fa-building me-1 text-primary"></i> <strong>Office:</strong> ${r.officeAddress}</div>` : ''}
+                        </td>
+                        <td style="max-width: 260px;">
+                            ${r.mediaType ? `<span class="badge bg-light text-dark border fw-bold mb-1"><i class="fas fa-hard-drive text-primary me-1"></i> ${r.mediaType}</span> ` : ''}
+                            ${r.failureType ? `<span class="badge bg-danger bg-opacity-10 text-danger border border-danger mb-1">${r.failureType}</span>` : ''}
+                            <div class="small text-dark" style="white-space: pre-wrap;" title="${r.details || ''}">${r.details || 'No recovery details provided'}</div>
+                        </td>
+                        <td>
+                            <select class="form-select form-select-sm" onchange="updateOnlineRecoveryStatus('${caseId}', this.value)" style="font-size: 13px;">
+                                <option value="Pending Inspection" ${currentStatus === 'Pending Inspection' ? 'selected' : ''}>Pending Inspection</option>
+                                <option value="Media Received" ${currentStatus === 'Media Received' ? 'selected' : ''}>Media Received</option>
+                                <option value="Diagnostic / Hex Scan" ${currentStatus === 'Diagnostic / Hex Scan' ? 'selected' : ''}>Diagnostic / Hex Scan</option>
+                                <option value="Recovery in Progress" ${currentStatus === 'Recovery in Progress' ? 'selected' : ''}>Recovery in Progress</option>
+                                <option value="Data Cloned / Verified" ${currentStatus === 'Data Cloned / Verified' ? 'selected' : ''}>Data Cloned / Verified</option>
+                                <option value="Ready for Delivery" ${currentStatus === 'Ready for Delivery' ? 'selected' : ''}>Ready for Delivery</option>
+                                <option value="Completed" ${currentStatus === 'Completed' ? 'selected' : ''}>Completed</option>
+                                <option value="Unrecoverable" ${currentStatus === 'Unrecoverable' ? 'selected' : ''}>Unrecoverable</option>
+                            </select>
+                        </td>
+                        <td>
+                            <textarea class="form-control form-control-sm mb-1" rows="2" placeholder="Lab diagnostics / hex notes..." onblur="updateOnlineRecoveryNotes('${caseId}', this.value)" style="font-size: 12px; resize: none;">${r.labNotes || ''}</textarea>
+                            <input type="text" class="form-control form-control-sm" placeholder="Quoted Rs..." value="${r.estimatedCost || ''}" onblur="updateOnlineRecoveryCost('${caseId}', this.value)" style="font-size: 11px;">
+                        </td>
+                        <td class="text-end pe-4">
+                            <div class="d-flex justify-content-end gap-1">
+                                ${wa ? `
+                                    <a href="https://wa.me/${wa}?text=Hello%20${encodeURIComponent(r.name || 'Customer')},%20regarding%20your%20Gear%20Up%20Gadgets%20Data%20Recovery%20case%20(${caseId})..." target="_blank" class="btn btn-sm btn-outline-success" title="Chat on WhatsApp">
+                                        <i class="fab fa-whatsapp"></i>
+                                    </a>
+                                ` : ''}
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteOnlineRecovery('${caseId}')" title="Delete Case">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateOnlineRecoveryStatus(caseId, newStatus) {
+            let recoveries = JSON.parse(localStorage.getItem('admin_recovery_requests') || '[]');
+            let target = recoveries.find(r => (r.caseId || r.id) === caseId);
+            if (target) {
+                target.status = newStatus;
+                localStorage.setItem('admin_recovery_requests', JSON.stringify(recoveries));
+                if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.updateRecoveryStatus === 'function') {
+                    window.GUG_FIREBASE.updateRecoveryStatus(caseId, newStatus, target.labNotes, target.estimatedCost);
+                }
+                if (window.GUG_DB && window.GUG_DB.showToast) {
+                    window.GUG_DB.showToast(`Data Recovery ${caseId} status updated to ${newStatus}`, 'success', 'Status Updated');
+                }
+            }
+        }
+
+        function updateOnlineRecoveryNotes(caseId, notes) {
+            let recoveries = JSON.parse(localStorage.getItem('admin_recovery_requests') || '[]');
+            let target = recoveries.find(r => (r.caseId || r.id) === caseId);
+            if (target) {
+                target.labNotes = notes;
+                localStorage.setItem('admin_recovery_requests', JSON.stringify(recoveries));
+                if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.updateRecoveryStatus === 'function') {
+                    window.GUG_FIREBASE.updateRecoveryStatus(caseId, target.status, notes, target.estimatedCost);
+                }
+            }
+        }
+
+        function updateOnlineRecoveryCost(caseId, cost) {
+            let recoveries = JSON.parse(localStorage.getItem('admin_recovery_requests') || '[]');
+            let target = recoveries.find(r => (r.caseId || r.id) === caseId);
+            if (target) {
+                target.estimatedCost = cost;
+                localStorage.setItem('admin_recovery_requests', JSON.stringify(recoveries));
+                if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.updateRecoveryStatus === 'function') {
+                    window.GUG_FIREBASE.updateRecoveryStatus(caseId, target.status, target.labNotes, cost);
+                }
+            }
+        }
+
+        function deleteOnlineRecovery(caseId) {
+            if (!confirm('Permanently delete this Data Recovery case?')) return;
+            let recoveries = JSON.parse(localStorage.getItem('admin_recovery_requests') || '[]');
+            recoveries = recoveries.filter(r => (r.caseId || r.id) !== caseId);
+            localStorage.setItem('admin_recovery_requests', JSON.stringify(recoveries));
+            if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.deleteRecovery === 'function') {
+                window.GUG_FIREBASE.deleteRecovery(caseId);
+            }
+            renderRecoveryTable();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initReturnsPage();
+            renderRepairsTable();
+            renderRecoveryTable();
+            window.addEventListener('gugRepairsUpdated', () => renderRepairsTable());
+            window.addEventListener('gugRecoveryUpdated', () => renderRecoveryTable());
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'admin_repair_requests') renderRepairsTable();
+                if (e.key === 'admin_recovery_requests') renderRecoveryTable();
+            });
+
+            // Check URL parameters / hash to activate specific tab
+            const urlParams = new URLSearchParams(window.location.search);
+            const hash = (window.location.hash || '').toLowerCase();
+            if (urlParams.get('tab') === 'recovery' || hash.includes('recovery')) {
+                const recoveryBtn = document.getElementById('tab-recovery-btn');
+                if (recoveryBtn && typeof bootstrap !== 'undefined') {
+                    const tab = new bootstrap.Tab(recoveryBtn);
+                    tab.show();
+                    renderRecoveryTable();
+                }
+            } else if (urlParams.get('tab') === 'repairs' || urlParams.get('tab') === 'repair' || hash.includes('repair')) {
+                const repairsBtn = document.getElementById('tab-repairs-btn');
+                if (repairsBtn && typeof bootstrap !== 'undefined') {
+                    const tab = new bootstrap.Tab(repairsBtn);
+                    tab.show();
+                    renderRepairsTable();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+
+

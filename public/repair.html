@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="utf-8">
+    <title>Repairing &amp; Data Recovery | Gear Up Gadgets</title>    
+    <!-- Favicon & Device Web Icons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/images/favicon-64x64.png">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <!-- CSS libraries from template -->
+    <link rel="stylesheet" href="assets/fonts/fonts.css">
+    <link rel="stylesheet" href="assets/icon/icomoon/style.css">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <!-- Custom styling overriding everything -->
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <style>
+        .service-pill-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            transition: all 0.25s ease;
+            user-select: none;
+        }
+        .service-pill-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        .form-section-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+        }
+        .repair-form-input,
+        .recovery-form-input,
+        #panel-repair input,
+        #panel-repair textarea,
+        #panel-repair select,
+        #panel-recovery input,
+        #panel-recovery textarea,
+        #panel-recovery select,
+        #hardware-repair-form .form-control,
+        #data-recovery-form .form-control,
+        .form-section-card .form-control {
+            background-color: var(--bg-main) !important;
+            color: #FFFFFF !important;
+            -webkit-text-fill-color: #FFFFFF !important;
+            padding: 10px 15px;
+            border-radius: 6px;
+        }
+        .repair-form-input {
+            border-color: var(--border-color) !important;
+        }
+        .repair-form-input:focus,
+        #panel-repair .form-control:focus,
+        #hardware-repair-form .form-control:focus {
+            color: #FFFFFF !important;
+            -webkit-text-fill-color: #FFFFFF !important;
+            border-color: var(--accent-red) !important;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.25) !important;
+        }
+        .recovery-form-input {
+            border-color: #1e293b !important;
+        }
+        .recovery-form-input:focus,
+        #panel-recovery .form-control:focus,
+        #data-recovery-form .form-control:focus {
+            color: #FFFFFF !important;
+            -webkit-text-fill-color: #FFFFFF !important;
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25) !important;
+        }
+        .repair-form-input::placeholder,
+        .recovery-form-input::placeholder,
+        #panel-repair .form-control::placeholder,
+        #panel-recovery .form-control::placeholder {
+            color: #64748b !important;
+            -webkit-text-fill-color: #64748b !important;
+            opacity: 1 !important;
+        }
+    </style>
+</head>
+
+<body class="counter-scroll" style="background-color: var(--bg-main);">
+
+    <div id="wrapper">
+        <!-- Header placeholder -->
+        <div id="header-placeholder"></div>
+
+        <!-- Banner breadcrumbs -->
+        <div class="py-4" style="background: rgba(10, 10, 15, 0.45); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+            <div class="gug-container d-flex justify-content-between align-items-center flex-wrap">
+                <div>
+                    <h1 class="h3 text-white fw-bold m-0"><i class="fas fa-screwdriver-wrench text-danger me-2"></i>REPAIRING &amp; DATA RECOVERY</h1>
+                    <small class="text-secondary">Official Hardware Maintenance Lab &amp; Certified Cleanroom Recovery</small>
+                </div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb m-0" style="background: none; padding: 0;">
+                        <li class="breadcrumb-item"><a href="index.html" class="text-secondary">Home</a></li>
+                        <li class="breadcrumb-item text-white active" aria-current="page">Repairing &amp; Data Recovery</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Services & Forms Section -->
+        <div class="py-5">
+            <div class="gug-container">
+                <!-- Service Selector Tabs: Repairing vs Data Recovery -->
+                <div class="row g-3 mb-4" id="service-switcher">
+                    <div class="col-md-6">
+                        <div id="btn-switch-repair" class="service-pill-card p-3 rounded-3 d-flex align-items-center justify-content-between border" style="cursor: pointer; border-color: var(--accent-red) !important;" onclick="showServiceTab('repair')">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="p-3 rounded-circle" style="background-color: rgba(220, 53, 69, 0.15); color: var(--accent-red); font-size: 24px;">
+                                    <i class="fas fa-wrench"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-white fw-bold m-0">Repairing</h5>
+                                </div>
+                            </div>
+                            <span class="badge bg-danger px-3 py-2" id="badge-switch-repair"><i class="fas fa-check me-1"></i> Active Form</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div id="btn-switch-recovery" class="service-pill-card p-3 rounded-3 d-flex align-items-center justify-content-between border" style="cursor: pointer; border-color: rgba(30, 58, 138, 0.6) !important;" onclick="showServiceTab('recovery')">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="p-3 rounded-circle" style="background-color: rgba(37, 99, 235, 0.15); color: #3b82f6; font-size: 24px;">
+                                    <i class="fas fa-database"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-white fw-bold m-0">Data Recovery</h5>
+                                </div>
+                            </div>
+                            <span class="badge bg-secondary px-3 py-2" id="badge-switch-recovery">Click to Switch</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================================= -->
+                <!-- 1. REPAIRING FORM PANEL                                   -->
+                <!-- ========================================================= -->
+                <div id="panel-repair" style="display: block;">
+                    <div class="mb-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div>
+                            <h4 class="text-white fw-bold m-0"><i class="fas fa-wrench text-danger me-2"></i> Repairing</h4>
+                            <small class="text-secondary">Submit your computer, laptop, or hardware repair request below.</small>
+                        </div>
+                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger px-3 py-2">
+                            <i class="fas fa-tag me-1"></i> Generates GUG-REP Tracking ID
+                        </span>
+                    </div>
+
+                    <form id="hardware-repair-form" onsubmit="event.preventDefault(); submitHardwareRepairForm();">
+                        <div class="row g-4">
+                            <!-- Left Column: Customer Information -->
+                            <div class="col-lg-5 col-md-12">
+                                <div class="p-4 rounded-3 h-100 form-section-card">
+                                    <h5 class="text-white fw-bold mb-3 border-bottom pb-2" style="border-color: var(--border-color) !important;">
+                                        <i class="fas fa-user text-danger me-2"></i> Your Information
+                                    </h5>
+                                    <div class="mb-3">
+                                        <label class="text-secondary mb-1 small">Full Name *</label>
+                                        <input type="text" id="r-name" class="form-control text-white repair-form-input" required placeholder="Enter your full name">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="text-secondary mb-1 small">Phone Number *</label>
+                                        <input type="tel" id="r-phone" class="form-control text-white repair-form-input" required placeholder="03XXXXXXXXX">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="text-secondary mb-1 small">WhatsApp Number *</label>
+                                        <input type="tel" id="r-whatsapp" class="form-control text-white repair-form-input" required placeholder="03XXXXXXXXX">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="text-secondary mb-1 small">Email Address *</label>
+                                        <input type="email" id="r-email" class="form-control text-white repair-form-input" required placeholder="you@example.com">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="text-secondary mb-1 small">Residential Address *</label>
+                                        <input type="text" id="r-address" class="form-control text-white repair-form-input" required placeholder="Complete residential address">
+                                    </div>
+                                    <div class="mb-0">
+                                        <label class="text-secondary mb-1 small">Office Address (Optional)</label>
+                                        <input type="text" id="r-office-address" class="form-control text-white repair-form-input" placeholder="Complete office / work address (optional)">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Column: Issue Details -->
+                            <div class="col-lg-7 col-md-12">
+                                <div class="p-4 rounded-3 h-100 form-section-card d-flex flex-column">
+                                    <h5 class="text-white fw-bold mb-3 border-bottom pb-2" style="border-color: var(--border-color) !important;">
+                                        <i class="fas fa-laptop-medical text-danger me-2"></i> Repair Details &amp; Symptoms
+                                    </h5>
+                                    <div class="mb-4 d-flex flex-column flex-grow-1">
+                                        <label class="text-secondary mb-1 small">Describe your issue in depth *</label>
+                                        <textarea id="r-details" class="form-control text-white repair-form-input mb-4 flex-grow-1" required placeholder="e.g. Laptop display flickering, motherboard not powering on after power surge, fan making rattling noise..." style="min-height: 220px;"></textarea>
+                                        <button type="submit" class="btn btn-danger py-3 fw-bold mt-auto" style="background-color: var(--accent-red); border: none; border-radius: 6px; width: 100%; font-size: 15px; letter-spacing: 0.5px;">
+                                            <i class="fas fa-paper-plane me-2"></i> SUBMIT REPAIR REQUEST
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- ========================================================= -->
+                <!-- 2. DATA RECOVERY FORM PANEL                               -->
+                <!-- ========================================================= -->
+                <div id="panel-recovery" style="display: none;">
+                    <div class="mb-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div>
+                            <h4 class="text-white fw-bold m-0"><i class="fas fa-database text-primary me-2"></i> Data Recovery</h4>
+                            <small class="text-secondary">Submit your hard drive, SSD, flash media, or server recovery request below.</small>
+                        </div>
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-3 py-2">
+                            <i class="fas fa-shield-alt me-1"></i> Generates GUG-REC Case ID
+                        </span>
+                    </div>
+
+                    <form id="data-recovery-form" onsubmit="event.preventDefault(); submitDataRecoveryForm();">
+                        <div class="row g-4">
+                            <!-- Left Column: Customer Information -->
+                            <div class="col-lg-5 col-md-12">
+                                <div class="p-4 rounded-3 h-100 form-section-card" style="border-color: rgba(30, 58, 138, 0.6);">
+                                    <h5 class="text-white fw-bold mb-3 border-bottom pb-2" style="border-color: #1e293b !important;">
+                                        <i class="fas fa-user-shield text-primary me-2"></i> Your Information
+                                    </h5>
+                                    <div class="mb-3">
+                                        <label class="text-secondary mb-1 small">Full Name *</label>
+                                        <input type="text" id="rec-name" class="form-control text-white recovery-form-input" required placeholder="Enter your full name">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="text-secondary mb-1 small">Phone Number *</label>
+                                        <input type="tel" id="rec-phone" class="form-control text-white recovery-form-input" required placeholder="03XXXXXXXXX">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="text-secondary mb-1 small">WhatsApp Number *</label>
+                                        <input type="tel" id="rec-whatsapp" class="form-control text-white recovery-form-input" required placeholder="03XXXXXXXXX">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="text-secondary mb-1 small">Email Address *</label>
+                                        <input type="email" id="rec-email" class="form-control text-white recovery-form-input" required placeholder="you@example.com">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="text-secondary mb-1 small">Residential Address *</label>
+                                        <input type="text" id="rec-address" class="form-control text-white recovery-form-input" required placeholder="Complete residential address">
+                                    </div>
+                                    <div class="mb-0">
+                                        <label class="text-secondary mb-1 small">Office Address (Optional)</label>
+                                        <input type="text" id="rec-office-address" class="form-control text-white recovery-form-input" placeholder="Complete office / work address (optional)">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Column: Recovery Details -->
+                            <div class="col-lg-7 col-md-12">
+                                <div class="p-4 rounded-3 h-100 form-section-card d-flex flex-column" style="background-color: #0c121c; border-color: #1e3a8a;">
+                                    <h5 class="text-white fw-bold mb-3 border-bottom pb-2" style="border-color: #1e293b !important;">
+                                        <i class="fas fa-database text-primary me-2"></i> Recovery Details &amp; Symptoms
+                                    </h5>
+                                    <div class="mb-4 d-flex flex-column flex-grow-1">
+                                        <label class="text-secondary mb-1 small">Describe your issue in depth *</label>
+                                        <textarea id="rec-details" class="form-control text-white recovery-form-input mb-4 flex-grow-1" required placeholder="e.g. Storage media brand and capacity, failure symptoms (clicking noises, dead drive, formatted partition, liquid damage), critical files needed..." style="min-height: 220px;"></textarea>
+                                        <button type="submit" class="btn w-100 py-3 fw-bold text-white mt-auto shadow" style="background: linear-gradient(135deg, #1d4ed8, #2563eb); border: none; border-radius: 6px; font-size: 15px; letter-spacing: 0.5px;">
+                                            <i class="fas fa-paper-plane me-2"></i> SUBMIT DATA RECOVERY REQUEST
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer placeholder -->
+        <div id="footer-placeholder"></div>
+    </div>
+
+    <!-- Core Scripts -->
+    <script src="assets/js/products-data.js"></script>
+    <script src="assets/js/gug-erp-core.js"></script>
+    <script src="assets/js/common.js"></script>
+    <!-- Firebase Compat SDKs & Cloud Sync -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/firebase-sync.js"></script>
+
+    <script>
+        // Tab switcher
+        function showServiceTab(type) {
+            const panelRepair = document.getElementById('panel-repair');
+            const panelRecovery = document.getElementById('panel-recovery');
+            const btnRepair = document.getElementById('btn-switch-repair');
+            const btnRecovery = document.getElementById('btn-switch-recovery');
+            const badgeRepair = document.getElementById('badge-switch-repair');
+            const badgeRecovery = document.getElementById('badge-switch-recovery');
+
+            if (type === 'recovery') {
+                if (panelRepair) panelRepair.style.display = 'none';
+                if (panelRecovery) panelRecovery.style.display = 'block';
+
+                if (btnRepair) {
+                    btnRepair.style.backgroundColor = 'var(--bg-card)';
+                    btnRepair.style.borderColor = 'var(--border-color)';
+                }
+                if (btnRecovery) {
+                    btnRecovery.style.backgroundColor = '#0b1320';
+                    btnRecovery.style.borderColor = '#2563eb';
+                }
+                if (badgeRepair) {
+                    badgeRepair.className = 'badge bg-secondary px-3 py-2';
+                    badgeRepair.innerHTML = 'Switch to Repair';
+                }
+                if (badgeRecovery) {
+                    badgeRecovery.className = 'badge bg-primary px-3 py-2';
+                    badgeRecovery.innerHTML = '<i class="fas fa-check me-1"></i> Active Form';
+                }
+            } else {
+                if (panelRepair) panelRepair.style.display = 'block';
+                if (panelRecovery) panelRecovery.style.display = 'none';
+
+                if (btnRepair) {
+                    btnRepair.style.backgroundColor = 'var(--bg-card)';
+                    btnRepair.style.borderColor = 'var(--accent-red)';
+                }
+                if (btnRecovery) {
+                    btnRecovery.style.backgroundColor = '#0b1320';
+                    btnRecovery.style.borderColor = '#1e3a8a';
+                }
+                if (badgeRepair) {
+                    badgeRepair.className = 'badge bg-danger px-3 py-2';
+                    badgeRepair.innerHTML = '<i class="fas fa-check me-1"></i> Active Form';
+                }
+                if (badgeRecovery) {
+                    badgeRecovery.className = 'badge bg-secondary px-3 py-2';
+                    badgeRecovery.innerHTML = 'Switch to Recovery';
+                }
+            }
+        }
+
+        // 1. Submit Repairing Request
+        function submitHardwareRepairForm() {
+            const diagId = 'GUG-REP-' + Math.floor(100000 + Math.random() * 900000);
+            const repairData = {
+                diagnoseId: diagId,
+                id: diagId,
+                name: document.getElementById('r-name').value.trim(),
+                phone: document.getElementById('r-phone').value.trim(),
+                whatsapp: document.getElementById('r-whatsapp').value.trim(),
+                email: document.getElementById('r-email').value.trim(),
+                address: document.getElementById('r-address').value.trim(),
+                officeAddress: (document.getElementById('r-office-address') ? document.getElementById('r-office-address').value.trim() : ''),
+                details: document.getElementById('r-details').value.trim(),
+                status: 'Pending',
+                diagnosisNotes: '',
+                archived: false,
+                date: new Date().toISOString()
+            };
+
+            // Local cache
+            let arr = JSON.parse(localStorage.getItem('admin_repair_requests')) || [];
+            arr.unshift(repairData);
+            localStorage.setItem('admin_repair_requests', JSON.stringify(arr));
+
+            // Sync to Firestore collection repair_requests
+            if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.saveRepairRequest === 'function') {
+                window.GUG_FIREBASE.saveRepairRequest(repairData);
+            }
+            
+            const msg = 'Your Repairing request has been submitted successfully!\n\nYour Diagnose ID is: ' + diagId + '\n\nPlease save this ID to track your repair status on the Track page.';
+            if (typeof showToast === 'function') {
+                showToast('Submitted! Diagnose ID: ' + diagId, 'success');
+            }
+            alert(msg);
+            document.getElementById('hardware-repair-form').reset();
+        }
+
+        // 2. Submit Data Recovery Request
+        function submitDataRecoveryForm() {
+            const caseId = 'GUG-REC-' + Math.floor(100000 + Math.random() * 900000);
+            const recoveryData = {
+                caseId: caseId,
+                id: caseId,
+                name: document.getElementById('rec-name').value.trim(),
+                fullName: document.getElementById('rec-name').value.trim(),
+                phone: document.getElementById('rec-phone').value.trim(),
+                mobileNumber: document.getElementById('rec-phone').value.trim(),
+                whatsapp: document.getElementById('rec-whatsapp').value.trim(),
+                whatsappNumber: document.getElementById('rec-whatsapp').value.trim(),
+                email: document.getElementById('rec-email').value.trim(),
+                address: document.getElementById('rec-address').value.trim(),
+                officeAddress: (document.getElementById('rec-office-address') ? document.getElementById('rec-office-address').value.trim() : ''),
+                details: document.getElementById('rec-details').value.trim() || 'Submitted via online Data Recovery form',
+                status: 'Pending Inspection',
+                labNotes: '',
+                estimatedCost: '',
+                archived: false,
+                date: new Date().toISOString()
+            };
+
+            // Local cache
+            let arr = JSON.parse(localStorage.getItem('admin_recovery_requests')) || [];
+            arr.unshift(recoveryData);
+            localStorage.setItem('admin_recovery_requests', JSON.stringify(arr));
+
+            // Sync to Firestore collection data_recovery_requests
+            if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.saveRecoveryRequest === 'function') {
+                window.GUG_FIREBASE.saveRecoveryRequest(recoveryData);
+            }
+
+            const msg = 'Your Data Recovery request has been submitted successfully!\n\nYour Case ID is: ' + caseId + '\n\nPlease save this Case ID to track your diagnostics and recovery progress.';
+            if (typeof showToast === 'function') {
+                showToast('Case Submitted! Case ID: ' + caseId, 'success');
+            }
+            alert(msg);
+            document.getElementById('data-recovery-form').reset();
+        }
+
+        // URL query or hash check
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const hash = (window.location.hash || '').toLowerCase();
+            if (params.get('tab') === 'recovery' || params.get('service') === 'recovery' || hash.includes('recovery')) {
+                showServiceTab('recovery');
+            } else {
+                showServiceTab('repair');
+            }
+        });
+    </script>
+</body>
+</html>

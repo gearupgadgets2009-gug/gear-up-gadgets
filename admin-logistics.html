@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logistics & Courier COD Reconciliation | GearUp Gadgets ERP</title>    
+    <!-- Favicon & Device Web Icons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/images/favicon-64x64.png">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/fonts/font-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <style>
+        body { background-color: var(--gug-bg-color, #07090d) !important; background-image: var(--gug-bg-image) !important; background-attachment: var(--gug-bg-attachment, fixed) !important; background-size: var(--gug-bg-size, cover, cover, 28px 49px) !important; background-position: var(--gug-bg-position, center top) !important; background-repeat: var(--gug-bg-repeat, no-repeat, no-repeat, repeat) !important; min-height: 100vh; color: #ffffff !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .admin-sidebar { width: 260px; background: rgba(10, 10, 15, 0.6) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; height: 100vh; position: fixed; left: 0; top: 0; padding: 20px 15px; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; overflow-y: auto; z-index: 1000; }
+        .admin-main { margin-left: 260px; padding: 25px 30px; min-height: 100vh; background-color: transparent !important; color: #ffffff !important; }
+        .admin-nav-link { display: flex; align-items: center; padding: 9px 13px; color: #94a3b8; text-decoration: none; border-radius: 8px; margin-bottom: 3px; font-size: 13px; font-weight: 500; transition: all 0.2s ease; }
+        .admin-nav-link:hover { background-color: rgba(219, 39, 36, 0.15); color: #fff; }
+        .admin-nav-link.active { background-color: var(--accent-red); color: #fff !important; font-weight: 600; box-shadow: 0 4px 12px rgba(219, 39, 36, 0.3); }
+        .sidebar-section-heading { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #64748b; margin-top: 15px; margin-bottom: 6px; padding-left: 10px; }
+        
+        .admin-card { background: rgba(10, 10, 15, 0.45) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 16px !important; padding: 20px; margin-bottom: 20px; color: #ffffff !important; box-shadow: 0 16px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important; }
+        .table { color: #ffffff !important; background-color: transparent !important; vertical-align: middle; }
+        .table th { background-color: rgba(255, 255, 255, 0.06) !important; border-bottom: 2px solid rgba(255, 255, 255, 0.15) !important; color: #ffffff !important; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .table td { border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important; font-size: 13.5px; color: #ffffff !important; }
+        
+        .nav-tabs-erp { border-bottom: 2px solid #e2e8f0; gap: 8px; }
+        .nav-tabs-erp .nav-link { color: #64748b; border: none; border-bottom: 2px solid transparent; padding: 10px 18px; font-weight: 600; font-size: 13.5px; background: transparent; transition: all 0.2s; }
+        .nav-tabs-erp .nav-link:hover { color: #ffffff; }
+        .nav-tabs-erp .nav-link.active { color: var(--accent-red); border-bottom-color: var(--accent-red); background: transparent; }
+    </style>
+</head>
+<body>
+        <!-- Enterprise Sidebar Navigation -->
+    <div class="admin-sidebar">
+        <div class="d-flex align-items-center mb-3 px-2">
+            <i class="fas fa-shield-alt text-danger fs-4 me-2"></i>
+            <div>
+                <h6 class="text-white m-0 fw-bold">GearUp ERP</h6>
+                <small class="text-secondary" style="font-size: 11px;">Enterprise Operating System</small>
+            </div>
+        </div>
+
+        <a href="dashboard.html" class="admin-nav-link" id="nav-dashboard"><i class="fas fa-chart-pie me-2"></i> Executive Dashboard</a>
+        
+        <!-- Accordion 1: Catalog & E-Commerce -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-catalog">
+                <span><i class="fas fa-shopping-bag text-danger me-2"></i> Catalog & E-Commerce</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-catalog">
+                <a href="products.html" class="admin-nav-link" id="nav-products"><i class="fas fa-boxes-stacked me-2"></i> Products & Catalog</a>
+                <a href="admin-crm.html" class="admin-nav-link" id="nav-crm"><i class="fas fa-users-viewfinder me-2"></i> Customers (CRM)</a>
+                <a href="admin-marketing.html" class="admin-nav-link" id="nav-marketing"><i class="fas fa-tags me-2"></i> Coupons & Marketing</a>
+            </div>
+        </div>
+
+        <!-- Accordion 2: Supply Chain & Operations -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-supply">
+                <span><i class="fas fa-truck-ramp-box text-primary me-2"></i> Supply Chain & Operations</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-supply">
+                <a href="admin-inventory.html" class="admin-nav-link" id="nav-inventory"><i class="fas fa-warehouse me-2"></i> Multi-Warehouse Stock</a>
+                <a href="admin-purchasing.html" class="admin-nav-link" id="nav-purchasing"><i class="fas fa-dolly me-2"></i> Purchasing & Suppliers</a>
+                <a href="orders.html" class="admin-nav-link" id="nav-orders"><i class="fas fa-cart-shopping me-2"></i> Sales Orders Pipeline</a>
+                <a href="admin-logistics.html" class="admin-nav-link" id="nav-logistics"><i class="fas fa-truck-fast me-2"></i> Logistics & Courier COD</a>
+                <a href="admin-returns.html" class="admin-nav-link" id="nav-returns"><i class="fas fa-rotate-left me-2"></i> Returns & Warranty (RMA)</a>
+            </div>
+        </div>
+
+        <!-- Accordion 3: Finance & B2B Wholesale -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-finance">
+                <span><i class="fas fa-coins text-warning me-2"></i> Finance & B2B Wholesale</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-finance">
+                <a href="admin-dealers.html" class="admin-nav-link" id="nav-dealers"><i class="fas fa-handshake me-2"></i> B2B Dealers & Ledger</a>
+                <a href="admin-finance.html" class="admin-nav-link" id="nav-finance"><i class="fas fa-file-invoice-dollar me-2"></i> Finance & P&L Ledger</a>
+                <a href="admin-staff.html" class="admin-nav-link" id="nav-staff"><i class="fas fa-user-tie me-2"></i> HR & Employee Payroll</a>
+                <a href="admin-tasks.html" class="admin-nav-link" id="nav-tasks"><i class="fas fa-list-check me-2"></i> Task Kanban & Workflow</a>
+                <a href="admin-reports.html" class="admin-nav-link" id="nav-reports"><i class="fas fa-chart-column me-2"></i> Business Reports</a>
+                <a href="admin-audit.html" class="admin-nav-link" id="nav-audit"><i class="fas fa-fingerprint me-2"></i> Security & Audit Logs</a>
+            </div>
+        </div>
+
+        <!-- Standalone Section: System Settings & Store Customization -->
+        <div class="mt-3 pt-3 border-top border-secondary border-opacity-25">
+            <div class="px-3 text-secondary text-uppercase fw-bold mb-2" style="font-size: 11px; letter-spacing: 0.6px;">System & Settings</div>
+            <a href="admin-settings.html" class="admin-nav-link" id="nav-settings"><i class="fas fa-sliders text-danger me-2"></i> System Settings & APIs</a>
+            <a href="admin-sales.html" class="admin-nav-link" id="nav-sales"><i class="fas fa-palette text-warning me-2"></i> Banner & Theme</a>
+        </div>
+        
+        <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
+            <a href="dealer-portal.html" target="_blank" class="admin-nav-link text-warning"><i class="fas fa-store-alt me-2"></i> Dealer Portal View</a>
+            <a href="employee-portal.html" class="admin-nav-link text-info"><i class="fas fa-id-badge me-2"></i> Employee Workspace</a>
+            <a href="index.html" target="_blank" class="admin-nav-link text-success"><i class="fas fa-store me-2"></i> Customer Storefront</a>
+            <a href="#" class="admin-nav-link text-danger mt-2" onclick="localStorage.removeItem('admin_logged_in'); localStorage.removeItem('admin_role'); localStorage.removeItem('admin_username'); window.location.href = 'admin.html'; return false;"><i class="fas fa-sign-out-alt me-2"></i> Sign Out</a>
+        </div>
+    </div>
+    <script>try{var _s=sessionStorage.getItem('gug_admin_sidebar_scroll');if(_s!==null){var _sb=document.querySelector('.admin-sidebar');if(_sb)_sb.scrollTop=parseFloat(_s);}}catch(e){}</script>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Global Header -->
+        <div id="gug-global-header-container"></div>
+
+        <!-- Beginner Help Banner -->
+        <div id="gug-beginner-help-container"></div>
+
+        <!-- Metric KPI Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="admin-card p-3 mb-0">
+                    <span class="text-secondary small fw-bold text-uppercase">Pending Courier COD</span>
+                    <h3 class="fw-bold text-warning mt-1 mb-0" id="stat-pending-cod">Rs.  0</h3>
+                    <small class="text-secondary" style="font-size: 11.5px;">In transit with couriers</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="admin-card p-3 mb-0">
+                    <span class="text-secondary small fw-bold text-uppercase">Settled COD Revenue</span>
+                    <h3 class="fw-bold text-success mt-1 mb-0" id="stat-reconciled-cod">Rs.  0</h3>
+                    <small class="text-success" style="font-size: 11.5px;"><i class="fas fa-check me-1"></i> Remitted to Bank Account</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="admin-card p-3 mb-0">
+                    <span class="text-secondary small fw-bold text-uppercase">Active Courier Dispatches</span>
+                    <h3 class="fw-bold text-primary mt-1 mb-0" id="stat-active-shipments">0</h3>
+                    <small class="text-secondary" style="font-size: 11.5px;">Leopard, TCS, Trax</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="admin-card p-3 mb-0">
+                    <span class="text-secondary small fw-bold text-uppercase">Delivery Success Rate</span>
+                    <h3 class="fw-bold text-dark mt-1 mb-0">96.8%</h3>
+                    <small class="text-success" style="font-size: 11.5px;"><i class="fas fa-check-circle me-1"></i> High fulfillment ratio</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Shipping Rate Control Card -->
+        <div class="admin-card mb-4" style="border-top: 4px solid var(--accent-red) !important;">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <div>
+                    <h5 class="fw-bold text-dark mb-0"><i class="fas fa-sliders text-danger me-2"></i> E-Commerce Delivery & Shipping Rate Control</h5>
+                    <small class="text-secondary">Configure the nationwide flat shipping fee charged to customers at cart and checkout.</small>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2" id="live-shipping-badge">
+                        <i class="fas fa-satellite-dish me-1"></i> Live Storefront Rate: <strong id="badge-shipping-rate">Rs.  350</strong>
+                    </span>
+                </div>
+            </div>
+
+            <form id="shipping-rate-form" onsubmit="handleSaveShippingRate(event)">
+                <div class="row g-3 align-items-end">
+                    <div class="col-lg-3 col-md-6">
+                        <label class="form-label text-dark small fw-bold mb-1">
+                            Flat Shipping Fee (PKR) <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light fw-bold">Rs. </span>
+                            <input type="number" id="cfg-shipping-rate" class="form-control fw-bold text-dark" min="0" step="10" placeholder="350" required>
+                        </div>
+                        <small class="text-secondary" style="font-size: 11px;">Default flat fee added to orders</small>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <label class="form-label text-dark small fw-bold mb-1">
+                            Free Shipping Threshold (PKR)
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light fw-bold">Rs. </span>
+                            <input type="number" id="cfg-free-threshold" class="form-control" min="0" step="500" placeholder="0 (Disabled)">
+                        </div>
+                        <small class="text-secondary" style="font-size: 11px;">Set 0 to always charge flat fee unless coupon used</small>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <label class="form-label text-dark small fw-bold mb-1">
+                            Estimated Delivery Time
+                        </label>
+                        <input type="text" id="cfg-delivery-time" class="form-control" placeholder="2-4 Business Days">
+                        <small class="text-secondary" style="font-size: 11px;">Shown on product & checkout pages</small>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <button type="submit" class="btn btn-danger w-100 fw-bold py-2 shadow-sm">
+                            <i class="fas fa-save me-1"></i> Update Shipping Rate
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="p-3 bg-light rounded-3 border mt-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-danger bg-opacity-10 text-danger p-2 rounded-circle">
+                        <i class="fas fa-ticket text-danger"></i>
+                    </span>
+                    <div>
+                        <strong class="text-dark small d-block">Free Shipping Coupon Integration Active</strong>
+                        <span class="text-secondary small">Coupons configured with 'Free Shipping' benefit (such as <code class="text-danger fw-bold">FREESHIP</code>) will automatically waive this shipping fee at cart and checkout.</span>
+                    </div>
+                </div>
+                <a href="admin-marketing.html" class="btn btn-sm btn-outline-dark"><i class="fas fa-tags me-1"></i> Manage Coupons</a>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs nav-tabs-erp mb-4" id="logisticsTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" id="manifest-tab" data-bs-toggle="tab" data-bs-target="#tab-manifest" type="button"><i class="fas fa-boxes me-2"></i> Shipment Tracking & Manifests</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="cod-tab" data-bs-toggle="tab" data-bs-target="#tab-cod" type="button"><i class="fas fa-money-check-alt me-2"></i> COD Payment Reconciliation</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="logisticsTabsContent">
+            <!-- TAB 1: SHIPMENTS -->
+            <div class="tab-pane fade show active" id="tab-manifest" role="tabpanel">
+                <div class="admin-card p-0">
+                    <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                        <h6 class="text-dark fw-bold mb-0"><i class="fas fa-truck text-danger me-2"></i> Live Courier Shipments & Manifests</h6>
+                        <button class="btn btn-sm btn-outline-dark" onclick="window.GUG_DB.showToast('Courier dispatch manifest exported to CSV format.', 'success', 'Export Complete')"><i class="fas fa-file-export me-1"></i> Export Manifest</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Customer & City</th>
+                                    <th>Courier Partner</th>
+                                    <th>Tracking Number</th>
+                                    <th>Dispatched From</th>
+                                    <th>Order Amount</th>
+                                    <th>Status</th>
+                                    <th>Update Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="shipments-table-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: COD RECONCILIATION -->
+            <div class="tab-pane fade" id="tab-cod" role="tabpanel">
+                <div class="erp-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="text-white fw-bold m-0"><i class="fas fa-hand-holding-usd text-danger me-2"></i> Cash on Delivery Ledger & Bank Settlement</h5>
+                        <span class="badge bg-success">Automated Audit Match Active</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Customer</th>
+                                    <th>Courier</th>
+                                    <th>COD Amount</th>
+                                    <th>Courier Fee (PKR)</th>
+                                    <th>Net Payout</th>
+                                    <th>Reconciliation Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cod-table-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: RMA RETURNS -->
+            <div class="tab-pane fade" id="tab-rma" role="tabpanel">
+                <div class="erp-card">
+                    <h5 class="text-white fw-bold mb-3"><i class="fas fa-clipboard-check text-danger me-2"></i> Return Merchandise Authorizations (RMA) & Inspection</h5>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>RMA ID</th>
+                                    <th>Original Order</th>
+                                    <th>Product Item</th>
+                                    <th>Customer Reason</th>
+                                    <th>Inspection Status</th>
+                                    <th>Action Taken</th>
+                                    <th>Resolution</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>RMA-502</code></td>
+                                    <td><strong>GUG-8790</strong></td>
+                                    <td>GearUp Ultra Smartwatch Pro Max</td>
+                                    <td>Battery not holding charge past 6 hours</td>
+                                    <td><span class="badge bg-warning text-dark">Under Diagnostic</span></td>
+                                    <td>Lab test at Karachi Central Hub</td>
+                                    <td><span class="badge bg-info">Replacement Approved</span></td>
+                                </tr>
+                                <tr>
+                                    <td><code>RMA-501</code></td>
+                                    <td><strong>GUG-8742</strong></td>
+                                    <td>PulseANC Wireless Studio Headphones</td>
+                                    <td>Ordered wrong color (wanted Midnight Black)</td>
+                                    <td><span class="badge bg-success">Sealed Box Verified</span></td>
+                                    <td>Returned to North Hub Inventory</td>
+                                    <td><span class="badge bg-success">Exchanged & Restocked</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/products-data.js"></script>
+    <script src="assets/js/gug-erp-core.js"></script>
+    <!-- Firebase Compat SDKs & Cloud Sync -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/firebase-sync.js"></script>
+    <script src="assets/js/admin.js"></script>
+    <script>
+        function renderLogistics() {
+            const orders = GUG_DB.getOrders();
+            let pendingCod = 0;
+            let reconciledCod = 0;
+            let activeShipments = 0;
+
+            const shipTbody = document.getElementById('shipments-table-body');
+            const codTbody = document.getElementById('cod-table-body');
+            shipTbody.innerHTML = '';
+            codTbody.innerHTML = '';
+
+            orders.forEach(o => {
+                const isCod = (o.paymentMethod || '').includes('COD') || (o.paymentMethod || '').includes('Cash on Delivery');
+                const isDelivered = o.orderStatus === 'Delivered';
+
+                if (isCod) {
+                    if (isDelivered || o.paymentStatus === 'Paid') {
+                        reconciledCod += Number(o.total || 0);
+                    } else if (o.orderStatus !== 'Cancelled') {
+                        pendingCod += Number(o.total || 0);
+                    }
+                }
+
+                if (o.orderStatus === 'Shipped' || o.orderStatus === 'Processing' || o.orderStatus === 'Packed') {
+                    activeShipments++;
+                }
+
+                let statusBadge = '<span class="badge bg-secondary">' + (o.orderStatus || 'New') + '</span>';
+                if (o.orderStatus === 'Shipped') statusBadge = '<span class="badge bg-info">In Transit</span>';
+                else if (o.orderStatus === 'Delivered') statusBadge = '<span class="badge bg-success">Delivered</span>';
+                else if (o.orderStatus === 'Cancelled') statusBadge = '<span class="badge bg-danger">Cancelled</span>';
+
+                // Render shipment
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong class="text-dark">${o.id}</strong></td>
+                    <td>
+                        <div class="text-dark fw-bold">${o.customer.name}</div>
+                        <small class="text-secondary">${o.customer.city || 'Karachi'}</small>
+                    </td>
+                    <td><span class="badge bg-light text-dark border border-secondary">${o.courier || 'Leopard Express'}</span></td>
+                    <td><code>${o.trackingNumber || 'TRK-8822019'}</code></td>
+                    <td><span class="badge bg-light text-dark border border-secondary">${o.warehouse || 'WH-01'}</span></td>
+                    <td class="fw-bold text-dark">Rs ${(o.total || 0).toLocaleString()}</td>
+                    <td>${statusBadge}</td>
+                    <td>
+                        <select class="form-select form-select-sm" style="width: 140px;" onchange="updateShipmentStatus('${o.id}', this.value)">
+                            <option value="Processing" ${o.orderStatus === 'Processing' ? 'selected' : ''}>Processing</option>
+                            <option value="Packed" ${o.orderStatus === 'Packed' ? 'selected' : ''}>Packed</option>
+                            <option value="Shipped" ${o.orderStatus === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                            <option value="Delivered" ${o.orderStatus === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                            <option value="Cancelled" ${o.orderStatus === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                        </select>
+                    </td>
+                `;
+                shipTbody.appendChild(tr);
+
+                // Render COD row if COD order
+                if (isCod) {
+                    const courierFee = 250;
+                    const netPayout = Math.max(0, (o.total || 0) - courierFee);
+                    const isReconciled = o.paymentStatus === 'Paid' || isDelivered;
+
+                    const codTr = document.createElement('tr');
+                    codTr.innerHTML = `
+                        <td><strong class="text-dark">${o.id}</strong></td>
+                        <td class="text-dark">${o.customer.name}</td>
+                        <td><span class="badge bg-light text-dark border border-secondary">${o.courier || 'Leopard Express'}</span></td>
+                        <td class="fw-bold text-dark">Rs ${(o.total || 0).toLocaleString()}</td>
+                        <td class="text-danger">Rs ${courierFee}</td>
+                        <td class="fw-bold text-success">Rs ${netPayout.toLocaleString()}</td>
+                        <td>${isReconciled ? '<span class="badge bg-success">Settled in Bank</span>' : '<span class="badge bg-warning text-dark">Pending Remittance</span>'}</td>
+                        <td>
+                            ${!isReconciled ? `<button class="btn btn-sm btn-outline-success py-0 px-2" onclick="reconcileSingleOrder('${o.id}')"><i class="fas fa-check"></i> Settle</button>` : `<span class="text-secondary small">Reconciled</span>`}
+                        </td>
+                    `;
+                    codTbody.appendChild(codTr);
+                }
+            });
+
+            document.getElementById('stat-pending-cod').innerText = 'Rs ' + pendingCod.toLocaleString();
+            document.getElementById('stat-reconciled-cod').innerText = 'Rs ' + reconciledCod.toLocaleString();
+            document.getElementById('stat-active-shipments').innerText = activeShipments;
+        }
+
+        function updateShipmentStatus(orderId, newStatus) {
+            GUG_DB.updateOrderStatus(orderId, newStatus, `Logistics updated delivery status to ${newStatus}`);
+            renderLogistics();
+        }
+
+        function reconcileSingleOrder(orderId) {
+            const orders = GUG_DB.getOrders();
+            const ord = orders.find(o => o.id === orderId);
+            if (ord) {
+                ord.paymentStatus = 'Paid';
+                ord.orderStatus = 'Delivered';
+                localStorage.setItem('admin_orders', JSON.stringify(orders));
+
+                GUG_DB.logAudit({
+                    action: 'COD_RECONCILIATION',
+                    entity: 'ORDER',
+                    entityId: orderId,
+                    newValue: `Settled Rs ${ord.total} to Bank`,
+                    reason: 'Courier remittance matched and deposited'
+                });
+
+                window.GUG_DB.showToast(`Order #${orderId} COD payout settled and marked as Paid!`, 'success', 'COD Reconciled');
+                renderLogistics();
+            }
+        }
+
+        function reconcileAllCod() {
+            if (confirm('Reconcile all delivered and in-transit COD orders against courier bank remittance?')) {
+                const orders = GUG_DB.getOrders();
+                orders.forEach(o => {
+                    if (o.orderStatus === 'Delivered') {
+                        o.paymentStatus = 'Paid';
+                    }
+                });
+                localStorage.setItem('admin_orders', JSON.stringify(orders));
+
+                GUG_DB.logAudit({
+                    action: 'BULK_COD_RECONCILIATION',
+                    entity: 'FINANCE',
+                    entityId: 'ALL-COURIERS',
+                    newValue: 'All delivered COD payouts reconciled',
+                    reason: 'Weekly courier payout ledger run'
+                });
+
+                window.GUG_DB.showToast('All delivered COD payments have been reconciled successfully!', 'success', 'Bulk Reconciliation Complete');
+                renderLogistics();
+            }
+        }
+
+        function renderShippingRateConfig() {
+            const cfg = GUG_DB.getShippingConfig();
+            document.getElementById('cfg-shipping-rate').value = cfg.rate;
+            document.getElementById('cfg-free-threshold').value = cfg.freeThreshold || 0;
+            document.getElementById('cfg-delivery-time').value = cfg.deliveryTime || '2-4 Business Days';
+            document.getElementById('badge-shipping-rate').innerText = `Rs.  ${Number(cfg.rate).toLocaleString()}`;
+        }
+
+        function handleSaveShippingRate(e) {
+            e.preventDefault();
+            const rate = Number(document.getElementById('cfg-shipping-rate').value);
+            const freeThreshold = Number(document.getElementById('cfg-free-threshold').value || 0);
+            const deliveryTime = document.getElementById('cfg-delivery-time').value.trim() || '2-4 Business Days';
+
+            const updatedCfg = GUG_DB.saveShippingConfig({
+                rate,
+                freeThreshold,
+                deliveryTime
+            });
+
+            document.getElementById('badge-shipping-rate').innerText = `Rs.  ${rate.toLocaleString()}`;
+            window.GUG_DB.showToast(`Flat delivery fee of Rs.  ${rate.toLocaleString()} is now active across the customer shopping cart & checkout.`, 'success', 'Shipping Rate Updated');
+            renderShippingRateConfig();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            GUG_DB.renderGlobalHeader('gug-global-header-container', 'Logistics & Courier COD Reconciliation');
+            GUG_DB.renderBeginnerHelpBanner('gug-beginner-help-container', {
+                whereAmI: 'Logistics, Courier Manifests & COD Settlement Ledger',
+                whatCanIDo: 'Track dispatched parcels across Leopard, TCS, and Trax, verify tracking airway bills (AWB), and reconcile cash-on-delivery remittances against bank accounts.',
+                whatNext: 'Click "Auto-Reconcile COD Payouts" to settle delivered courier payments into your finance cash ledger or click "Mark Delivered" when courier payout arrives.'
+            });
+            renderShippingRateConfig();
+            renderLogistics();
+        });
+    </script>
+</body>
+</html>
+
+
+

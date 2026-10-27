@@ -1,0 +1,219 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Connection Diagnostic - Gear Up Gadgets</title>    
+    <!-- Favicon & Device Web Icons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/images/favicon-64x64.png">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: #0f172a; color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .card-diagnostic { background: #1e293b; border: 1px solid #334155; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); max-width: 650px; width: 100%; }
+        .status-badge { font-size: 13px; font-weight: 700; padding: 6px 12px; border-radius: 6px; }
+        .log-box { background: #090d16; border: 1px solid #1e293b; border-radius: 8px; font-family: monospace; font-size: 13px; color: #38bdf8; max-height: 220px; overflow-y: auto; padding: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container py-4">
+    <div class="card-diagnostic p-4 mx-auto">
+        <div class="d-flex align-items-center justify-content-between border-bottom border-secondary pb-3 mb-4">
+            <div class="d-flex align-items-center gap-3">
+                <i class="fas fa-fire text-warning fa-2x"></i>
+                <div>
+                    <h5 class="mb-0 fw-bold">Firebase Connection Diagnostic</h5>
+                    <small class="text-secondary">Project: <span class="text-info fw-bold" id="diag-proj">gear-up-gadgets</span></small>
+                </div>
+            </div>
+            <span id="overall-status" class="status-badge bg-secondary">Checking...</span>
+        </div>
+
+        <div class="list-group list-group-flush mb-4">
+            <div class="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center px-0 py-2">
+                <span><i class="fas fa-code me-2 text-primary"></i> Firebase SDK Loaded</span>
+                <span id="test-sdk" class="badge bg-secondary">Testing...</span>
+            </div>
+            <div class="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center px-0 py-2">
+                <span><i class="fas fa-database me-2 text-warning"></i> Cloud Firestore Initialized</span>
+                <span id="test-firestore" class="badge bg-secondary">Testing...</span>
+            </div>
+            <div class="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center px-0 py-2">
+                <span><i class="fas fa-cloud-arrow-up me-2 text-success"></i> Cloud Ping & Write Test</span>
+                <span id="test-write" class="badge bg-secondary">Testing...</span>
+            </div>
+            <div class="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center px-0 py-2">
+                <span><i class="fas fa-boxes-stacked me-2 text-info"></i> Cloud Products Found</span>
+                <span id="test-products-count" class="badge bg-secondary">0 items</span>
+            </div>
+            <div class="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center px-0 py-2">
+                <span><i class="fas fa-cart-shopping me-2 text-danger"></i> Cloud Customer Orders</span>
+                <span id="test-orders-count" class="badge bg-secondary">0 items</span>
+            </div>
+            <div class="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center px-0 py-2">
+                <span><i class="fas fa-screwdriver-wrench me-2 text-warning"></i> Cloud Repair Requests</span>
+                <span id="test-repairs-count" class="badge bg-secondary">0 items</span>
+            </div>
+            <div class="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center px-0 py-2">
+                <span><i class="fas fa-envelope-open-text me-2 text-primary"></i> Cloud Contact Inquiries</span>
+                <span id="test-contacts-count" class="badge bg-secondary">0 items</span>
+            </div>
+            <div class="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center px-0 py-2">
+                <span><i class="fas fa-database me-2 text-info"></i> Cloud Data Recovery Cases</span>
+                <span id="test-recovery-count" class="badge bg-secondary">0 items</span>
+            </div>
+            <div class="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center px-0 py-2">
+                <span><i class="fas fa-users-gear me-2 text-warning"></i> Cloud Employees (HR Sync)</span>
+                <span id="test-employees-count" class="badge bg-secondary">0 staff</span>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 mb-3">
+            <button class="btn btn-primary btn-sm px-3" onclick="runDiagnostic()"><i class="fas fa-rotate me-1"></i> Re-test Connection</button>
+            <button class="btn btn-warning btn-sm px-3" onclick="if(window.GUG_FIREBASE) window.GUG_FIREBASE.uploadLocalCatalogToFirebase();"><i class="fas fa-cloud-arrow-up me-1"></i> Sync Local Products to Cloud</button>
+            <a href="products.html" class="btn btn-outline-light btn-sm px-3 ms-auto">Open Admin</a>
+        </div>
+
+        <h6 class="small text-secondary mb-2">Live Connection Console:</h6>
+        <div class="log-box" id="log-output">
+            Initializing diagnostic engine...
+        </div>
+    </div>
+</div>
+
+<!-- Firebase Compat SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+<!-- App Firebase Config & Sync -->
+<script src="assets/js/firebase-config.js"></script>
+<script src="assets/js/firebase-sync.js"></script>
+
+<script>
+function log(msg, type = 'info') {
+    const box = document.getElementById('log-output');
+    const time = new Date().toLocaleTimeString();
+    const color = type === 'success' ? '#4ade80' : (type === 'error' ? '#f87171' : '#38bdf8');
+    box.innerHTML += `<div style="color:${color};">[${time}] ${msg}</div>`;
+    box.scrollTop = box.scrollHeight;
+}
+
+async function runDiagnostic() {
+    log("Starting diagnostic test...", "info");
+
+    // 1. SDK Check
+    if (typeof firebase !== 'undefined') {
+        document.getElementById('test-sdk').className = 'badge bg-success';
+        document.getElementById('test-sdk').innerText = 'PASS (v' + firebase.SDK_VERSION + ')';
+        log("✅ Firebase SDK is active.", "success");
+    } else {
+        document.getElementById('test-sdk').className = 'badge bg-danger';
+        document.getElementById('test-sdk').innerText = 'FAILED';
+        log("❌ Firebase SDK not detected.", "error");
+        return;
+    }
+
+    // 2. Firestore Initialized Check
+    if (window.db) {
+        document.getElementById('test-firestore').className = 'badge bg-success';
+        document.getElementById('test-firestore').innerText = 'CONNECTED';
+        log("✅ Cloud Firestore instance verified.", "success");
+    } else {
+        document.getElementById('test-firestore').className = 'badge bg-danger';
+        document.getElementById('test-firestore').innerText = 'FAILED';
+        log("❌ Cloud Firestore not initialized. Check firebase-config.js.", "error");
+        return;
+    }
+
+    // 3. Ping / Write / Read Test
+    try {
+        log("Pinging Cloud Firestore with test handshake...", "info");
+        const pingRef = window.db.collection('_connection_test').doc('handshake');
+        
+        const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error("Connection timed out (10s). If you just created the database, Google Cloud can take 1-2 minutes to deploy it.")), 10000)
+        );
+
+        await Promise.race([
+            pingRef.set({
+                ping: true,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                device: navigator.userAgent
+            }),
+            timeoutPromise
+        ]);
+        document.getElementById('test-write').className = 'badge bg-success';
+        document.getElementById('test-write').innerText = 'PASS (Read/Write Active)';
+        log("✅ Handshake successful! Cloud Firestore is accepting reads and writes.", "success");
+
+        // 4. Collections Counts Check
+        const snapshot = await window.db.collection('products').get();
+        const count = snapshot.size;
+        document.getElementById('test-products-count').className = count > 0 ? 'badge bg-success' : 'badge bg-secondary';
+        document.getElementById('test-products-count').innerText = `${count} Cloud Products`;
+        log(`📊 Found ${count} products currently stored in your Firebase cloud.`, "info");
+
+        // Orders check
+        const ordSnap = await window.db.collection('orders').get();
+        const ordCount = ordSnap.size;
+        document.getElementById('test-orders-count').className = ordCount > 0 ? 'badge bg-success' : 'badge bg-secondary';
+        document.getElementById('test-orders-count').innerText = `${ordCount} Orders`;
+        log(`🛒 Found ${ordCount} orders stored in Firestore cloud.`, "info");
+
+        // Repairs check
+        const repSnap = await window.db.collection('repair_requests').get();
+        const repCount = repSnap.size;
+        document.getElementById('test-repairs-count').className = repCount > 0 ? 'badge bg-success' : 'badge bg-secondary';
+        document.getElementById('test-repairs-count').innerText = `${repCount} Repairs`;
+        log(`🔧 Found ${repCount} repair requests stored in Firestore cloud.`, "info");
+
+        // Contacts check
+        const inqSnap = await window.db.collection('contact_inquiries').get();
+        const inqCount = inqSnap.size;
+        document.getElementById('test-contacts-count').className = inqCount > 0 ? 'badge bg-success' : 'badge bg-secondary';
+        document.getElementById('test-contacts-count').innerText = `${inqCount} Inquiries`;
+        log(`📩 Found ${inqCount} contact inquiries stored in Firestore cloud.`, "info");
+
+        // Data Recovery check
+        const recSnap = await window.db.collection('data_recovery_requests').get();
+        const recCount = recSnap.size;
+        document.getElementById('test-recovery-count').className = recCount > 0 ? 'badge bg-success' : 'badge bg-secondary';
+        document.getElementById('test-recovery-count').innerText = `${recCount} Cases`;
+        log(`💾 Found ${recCount} data recovery cases stored in Firestore cloud.`, "info");
+
+        // Employees check
+        const empSnap = await window.db.collection('employees').get();
+        const empCount = empSnap.size;
+        document.getElementById('test-employees-count').className = empCount > 0 ? 'badge bg-success' : 'badge bg-secondary';
+        document.getElementById('test-employees-count').innerText = `${empCount} Staff`;
+        log(`👥 Found ${empCount} employees stored in Firestore cloud.`, "info");
+
+        // Overall status
+        document.getElementById('overall-status').className = 'status-badge bg-success';
+        document.getElementById('overall-status').innerHTML = '<i class="fas fa-check-circle me-1"></i> CONNECTED & LIVE';
+
+    } catch (err) {
+        document.getElementById('test-write').className = 'badge bg-danger';
+        document.getElementById('test-write').innerText = 'PERMISSION / NETWORK ERROR';
+        document.getElementById('overall-status').className = 'status-badge bg-danger';
+        document.getElementById('overall-status').innerText = 'ERROR';
+        log(`❌ Connection test failed: ${err.message}`, "error");
+        log("💡 TIP: Did you enable Firestore in Firebase Console under 'Databases and storage' -> 'Create database'?", "info");
+    }
+}
+
+// Auto-run on load
+window.addEventListener('DOMContentLoaded', () => {
+    setTimeout(runDiagnostic, 500);
+});
+</script>
+
+</body>
+</html>

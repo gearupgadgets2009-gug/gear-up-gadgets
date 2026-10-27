@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Immediate Zero-Delay Embedded View Detection (Prevents Duplicate Sidebar & Layout Snap) -->
+    <script>if(window.self!==window.top||(typeof location!=='undefined'&&location.search.indexOf('staff_view=1')!==-1)){document.documentElement.classList.add('is-embedded');}</script>
+    <style>
+        html.is-embedded .admin-sidebar, html.is-embedded aside.admin-sidebar, body.is-embedded .admin-sidebar { display: none !important; visibility: hidden !important; width: 0 !important; height: 0 !important; position: absolute !important; left: -9999px !important; opacity: 0 !important; pointer-events: none !important; animation: none !important; -webkit-animation: none !important; transition: none !important; transform: none !important; }
+        html.is-embedded .admin-main, body.is-embedded .admin-main { margin-left: 0 !important; width: 100% !important; padding: 15px 20px !important; animation: none !important; transition: none !important; }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banners & Themes | GearUp Gadgets ERP</title>    
+    <!-- Favicon & Device Web Icons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/images/favicon-64x64.png">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/fonts/font-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <style>
+        body { background-color: var(--gug-bg-color, #07090d) !important; background-image: var(--gug-bg-image) !important; background-attachment: var(--gug-bg-attachment, fixed) !important; background-size: var(--gug-bg-size, cover, cover, 28px 49px) !important; background-position: var(--gug-bg-position, center top) !important; background-repeat: var(--gug-bg-repeat, no-repeat, no-repeat, repeat) !important; min-height: 100vh; color: #ffffff !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .admin-sidebar { width: 260px; background: rgba(10, 10, 15, 0.6) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; height: 100vh; position: fixed; left: 0; top: 0; padding: 20px 15px; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; overflow-y: auto; z-index: 1000; }
+        .admin-main { margin-left: 260px; padding: 25px 30px; min-height: 100vh; background-color: transparent !important; color: #ffffff !important; }
+        .admin-nav-link { display: flex; align-items: center; padding: 9px 13px; color: #94a3b8; text-decoration: none; border-radius: 8px; margin-bottom: 3px; font-size: 13px; font-weight: 500; transition: all 0.2s ease; }
+        .admin-nav-link:hover { background-color: rgba(219, 39, 36, 0.15); color: #fff; }
+        .admin-nav-link.active { background-color: var(--accent-red); color: #fff !important; font-weight: 600; box-shadow: 0 4px 12px rgba(219, 39, 36, 0.3); }
+        .sidebar-section-heading { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #64748b; margin-top: 15px; margin-bottom: 6px; padding-left: 10px; }
+        
+        .admin-card { background: rgba(10, 10, 15, 0.45) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 16px !important; padding: 20px; margin-bottom: 20px; color: #ffffff !important; box-shadow: 0 16px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important; }
+        .theme-color-card { background: rgba(18, 24, 34, 0.85) !important; backdrop-filter: blur(20px) !important; border: 1px solid rgba(255, 255, 255, 0.12) !important; border-radius: 12px; padding: 12px; color: #ffffff !important; transition: all 0.2s ease; text-shadow: none !important; }
+        .theme-color-card:hover { border-color: rgba(229, 3, 3, 0.5) !important; box-shadow: 0 4px 14px rgba(0,0,0,0.4); }
+        .preset-badge { cursor: pointer; padding: 8px 14px; border-radius: 20px; font-weight: 600; font-size: 12px; transition: all 0.2s ease; border: 1px solid transparent; display: inline-flex; align-items: center; gap: 6px; }
+        .preset-badge:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .theme-live-preview-box { border-radius: 10px; border: 1px solid #334155; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.25); }
+
+        /* Dark Grey Theme for Theme Customizer Cards & Footer Settings */
+        #tab-theme-customizer .card,
+        .admin-dark-card {
+            background: rgba(16, 21, 30, 0.85) !important;
+            background-color: #10151e !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-radius: 14px !important;
+            color: #ffffff !important;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5) !important;
+            text-shadow: none !important;
+        }
+        #tab-theme-customizer .card-header,
+        .admin-dark-card .card-header {
+            background: rgba(22, 29, 41, 0.95) !important;
+            background-color: #161d29 !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: #ffffff !important;
+            border-top-left-radius: 14px !important;
+            border-top-right-radius: 14px !important;
+            text-shadow: none !important;
+        }
+        #tab-theme-customizer .card-body,
+        .admin-dark-card .card-body {
+            background: transparent !important;
+            color: #ffffff !important;
+            text-shadow: none !important;
+        }
+
+        /* Dark Subsection Box Styling */
+        .theme-section-box {
+            background: rgba(22, 28, 40, 0.75) !important;
+            background-color: #141b27 !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 10px !important;
+            color: #ffffff !important;
+            text-shadow: none !important;
+        }
+
+        /* Complete Elimination of Text-Shadow across Theme Customizer */
+        #tab-theme-customizer *,
+        .theme-section-box *,
+        .admin-dark-card * {
+            text-shadow: none !important;
+        }
+
+        /* Crisp Solid White Text */
+        #tab-theme-customizer h5,
+        #tab-theme-customizer h6,
+        #tab-theme-customizer label,
+        #tab-theme-customizer .form-label,
+        #tab-theme-customizer .form-check-label,
+        .theme-section-box h5,
+        .theme-section-box h6,
+        .theme-section-box label,
+        .admin-dark-card h5,
+        .admin-dark-card h6,
+        .admin-dark-card label {
+            color: #ffffff !important;
+            text-shadow: none !important;
+        }
+        #tab-theme-customizer .text-secondary,
+        #tab-theme-customizer .text-muted,
+        .theme-section-box .text-secondary,
+        .theme-section-box .text-muted {
+            color: #94a3b8 !important;
+            text-shadow: none !important;
+        }
+
+        /* Dark Form Inputs & Textareas */
+        #tab-theme-customizer .form-control,
+        #tab-theme-customizer .form-select,
+        #tab-theme-customizer textarea,
+        .theme-section-box .form-control,
+        .theme-section-box .form-select,
+        .theme-section-box textarea {
+            background: rgba(10, 14, 22, 0.85) !important;
+            background-color: #0a0e16 !important;
+            border: 1px solid rgba(255, 255, 255, 0.18) !important;
+            color: #ffffff !important;
+            -webkit-text-fill-color: #ffffff !important;
+            text-shadow: none !important;
+            border-radius: 8px !important;
+        }
+        #tab-theme-customizer .form-control:focus,
+        #tab-theme-customizer .form-select:focus,
+        #tab-theme-customizer textarea:focus,
+        .theme-section-box .form-control:focus,
+        .theme-section-box .form-select:focus,
+        .theme-section-box textarea:focus {
+            background-color: #0e1420 !important;
+            border-color: var(--accent-red, #E50303) !important;
+            box-shadow: 0 0 12px rgba(229, 3, 3, 0.35) !important;
+            color: #ffffff !important;
+            -webkit-text-fill-color: #ffffff !important;
+            text-shadow: none !important;
+        }
+        #tab-theme-customizer .form-control::placeholder,
+        #tab-theme-customizer textarea::placeholder,
+        .theme-section-box .form-control::placeholder,
+        .theme-section-box textarea::placeholder {
+            color: rgba(255, 255, 255, 0.45) !important;
+            -webkit-text-fill-color: rgba(255, 255, 255, 0.45) !important;
+            text-shadow: none !important;
+        }
+
+        /* Dark Input Group Prepend/Append */
+        #tab-theme-customizer .input-group-text,
+        .theme-section-box .input-group-text {
+            background: rgba(26, 34, 48, 0.95) !important;
+            background-color: #1a2230 !important;
+            border: 1px solid rgba(255, 255, 255, 0.18) !important;
+            color: #ffffff !important;
+            text-shadow: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Enterprise Sidebar Navigation -->
+    <div class="admin-sidebar">
+        <div class="d-flex align-items-center mb-3 px-2">
+            <i class="fas fa-shield-alt text-danger fs-4 me-2"></i>
+            <div>
+                <h6 class="text-white m-0 fw-bold">GearUp ERP</h6>
+                <small class="text-secondary" style="font-size: 11px;">Enterprise Operating System</small>
+            </div>
+        </div>
+
+        <a href="dashboard.html" class="admin-nav-link" id="nav-dashboard"><i class="fas fa-chart-pie me-2"></i> Executive Dashboard</a>
+        
+        <!-- Accordion 1: Catalog & E-Commerce -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-catalog">
+                <span><i class="fas fa-shopping-bag text-danger me-2"></i> Catalog & E-Commerce</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-catalog">
+                <a href="products.html" class="admin-nav-link" id="nav-products"><i class="fas fa-boxes-stacked me-2"></i> Products & Catalog</a>
+                <a href="admin-crm.html" class="admin-nav-link" id="nav-crm"><i class="fas fa-users-viewfinder me-2"></i> Customers (CRM)</a>
+                <a href="admin-marketing.html" class="admin-nav-link" id="nav-marketing"><i class="fas fa-tags me-2"></i> Coupons & Marketing</a>
+            </div>
+        </div>
+
+        <!-- Accordion 2: Supply Chain & Operations -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-supply">
+                <span><i class="fas fa-truck-ramp-box text-primary me-2"></i> Supply Chain & Operations</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-supply">
+                <a href="admin-inventory.html" class="admin-nav-link" id="nav-inventory"><i class="fas fa-warehouse me-2"></i> Multi-Warehouse Stock</a>
+                <a href="admin-purchasing.html" class="admin-nav-link" id="nav-purchasing"><i class="fas fa-dolly me-2"></i> Purchasing & Suppliers</a>
+                <a href="orders.html" class="admin-nav-link" id="nav-orders"><i class="fas fa-cart-shopping me-2"></i> Sales Orders Pipeline</a>
+                <a href="admin-logistics.html" class="admin-nav-link" id="nav-logistics"><i class="fas fa-truck-fast me-2"></i> Logistics & Courier COD</a>
+                <a href="admin-returns.html" class="admin-nav-link" id="nav-returns"><i class="fas fa-rotate-left me-2"></i> Returns & Warranty (RMA)</a>
+            </div>
+        </div>
+
+        <!-- Accordion 3: Finance & B2B Wholesale -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-finance">
+                <span><i class="fas fa-coins text-warning me-2"></i> Finance & B2B Wholesale</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-finance">
+                <a href="admin-dealers.html" class="admin-nav-link" id="nav-dealers"><i class="fas fa-handshake me-2"></i> B2B Dealers & Ledger</a>
+                <a href="admin-finance.html" class="admin-nav-link" id="nav-finance"><i class="fas fa-file-invoice-dollar me-2"></i> Finance & P&L Ledger</a>
+                <a href="admin-staff.html" class="admin-nav-link" id="nav-staff"><i class="fas fa-user-tie me-2"></i> HR & Employee Payroll</a>
+                <a href="admin-tasks.html" class="admin-nav-link" id="nav-tasks"><i class="fas fa-list-check me-2"></i> Task Kanban & Workflow</a>
+                <a href="admin-reports.html" class="admin-nav-link" id="nav-reports"><i class="fas fa-chart-column me-2"></i> Business Reports</a>
+                <a href="admin-audit.html" class="admin-nav-link" id="nav-audit"><i class="fas fa-fingerprint me-2"></i> Security & Audit Logs</a>
+            </div>
+        </div>
+        
+        <!-- Standalone Section: System Settings & Store Customization -->
+        <div class="mt-3 pt-3 border-top border-secondary border-opacity-25">
+            <div class="px-3 text-secondary text-uppercase fw-bold mb-2" style="font-size: 11px; letter-spacing: 0.6px;">System & Settings</div>
+            <a href="admin-settings.html" class="admin-nav-link" id="nav-settings"><i class="fas fa-sliders text-danger me-2"></i> System Settings & APIs</a>
+            <a href="admin-sales.html" class="admin-nav-link active" id="nav-sales"><i class="fas fa-palette text-warning me-2"></i> Banner & Theme</a>
+        </div>
+        
+        <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
+            <a href="dealer-portal.html" target="_blank" class="admin-nav-link text-warning"><i class="fas fa-store-alt me-2"></i> Dealer Portal View</a>
+            <a href="employee-portal.html" class="admin-nav-link text-info"><i class="fas fa-id-badge me-2"></i> Employee Workspace</a>
+            <a href="index.html" target="_blank" class="admin-nav-link text-success"><i class="fas fa-store me-2"></i> Customer Storefront</a>
+            <a href="#" class="admin-nav-link text-danger mt-2" onclick="localStorage.removeItem('admin_logged_in'); localStorage.removeItem('admin_role'); localStorage.removeItem('admin_username'); window.location.href = 'admin.html'; return false;"><i class="fas fa-sign-out-alt me-2"></i> Sign Out</a>
+        </div>
+    </div>
+    <script>try{var _s=sessionStorage.getItem('gug_admin_sidebar_scroll');if(_s!==null){var _sb=document.querySelector('.admin-sidebar');if(_sb)_sb.scrollTop=parseFloat(_s);}}catch(e){}</script>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Global Header -->
+        <div id="gug-global-header-container"></div>
+
+        <!-- Beginner Help Banner -->
+        <div id="gug-beginner-help-container"></div>
+
+        <!-- Tabs Navigation -->
+        <ul class="nav nav-tabs nav-tabs-erp mb-4" id="bannerThemeTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active fw-bold" id="hero-slider-tab" data-bs-toggle="tab" data-bs-target="#tab-hero-slider" type="button">
+                    <i class="fas fa-sliders text-danger me-2"></i> Homepage Hero Slider
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link fw-bold" id="homepage-banners-tab" data-bs-toggle="tab" data-bs-target="#tab-homepage-banners" type="button">
+                    <i class="fas fa-images text-primary me-2"></i> Category & Promo Banners
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link fw-bold" id="theme-customizer-tab" data-bs-toggle="tab" data-bs-target="#tab-theme-customizer" type="button">
+                    <i class="fas fa-palette text-success me-2"></i> Global Theme & Navbar/Footer
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="bannerThemeTabsContent">
+            <!-- ======================================================== -->
+            <!-- TAB 1: HOMEPAGE HERO SWIPER SLIDER                       -->
+            <!-- ======================================================== -->
+            <div class="tab-pane fade show active" id="tab-hero-slider" role="tabpanel">
+                <div class="admin-card">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25 gap-3">
+                        <div>
+                            <h5 class="text-white fw-bold mb-1"><i class="fas fa-sliders text-danger me-2"></i> Homepage Hero Swiper Carousel</h5>
+                            <p class="text-secondary small mb-0">Control hero carousel visibility, reorder slides, customize titles/subtitles/CTAs, and upload physical slide images.</p>
+                        </div>
+                        <div class="d-flex flex-wrap align-items-center gap-3">
+                            <!-- Master Hero Slider ON/OFF Toggle -->
+                            <div class="d-flex align-items-center p-2 px-3 rounded-pill" style="background: rgba(10, 14, 22, 0.85); border: 1px solid rgba(255, 255, 255, 0.18);">
+                                <span class="text-white small fw-bold me-2"><i class="fas fa-power-off text-danger me-1"></i> Slider Display:</span>
+                                <div class="form-check form-switch m-0" style="font-size: 1.15rem;">
+                                    <input class="form-check-input" type="checkbox" id="master-hero-slider-toggle" style="cursor: pointer;" onchange="toggleMasterHeroSlider(this.checked)">
+                                    <label class="form-check-label small ms-1 text-white" for="master-hero-slider-toggle" id="master-hero-slider-label">ON</label>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline-secondary btn-sm fw-bold text-white border-secondary" onclick="resetHeroSlides()">
+                                <i class="fas fa-undo me-1"></i> Reset to Defaults
+                            </button>
+                            <button class="btn btn-danger btn-sm fw-bold shadow-sm" onclick="openHeroSlideModal()">
+                                <i class="fas fa-plus me-1"></i> Add New Slide
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Hero Slides Cards Grid -->
+                    <div id="hero-slides-list-container" class="row">
+                        <!-- Rendered dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- TAB 2: HOMEPAGE CATEGORY & PROMO BANNERS                 -->
+            <!-- ======================================================== -->
+            <div class="tab-pane fade" id="tab-homepage-banners" role="tabpanel">
+                <div class="admin-card">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25 gap-3">
+                        <div>
+                            <h5 class="text-white fw-bold mb-1"><i class="fas fa-images text-primary me-2"></i> Category Strips & Promotional 4-Grid Cards</h5>
+                            <p class="text-secondary small mb-0">Individually toggle, replace images, and configure target URLs for all category strips and promotional cards.</p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-secondary btn-sm fw-bold text-white border-secondary" onclick="resetHomepageBanners()">
+                                <i class="fas fa-undo me-1"></i> Reset to Defaults
+                            </button>
+                            <button class="btn btn-primary btn-sm fw-bold px-3 shadow-sm" onclick="saveAllHomepageBanners()">
+                                <i class="fas fa-save me-1"></i> Save All Banners
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Section 1: Category Strip Banners -->
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <h6 class="text-white fw-bold mb-0"><i class="fas fa-layer-group text-danger me-2"></i> Category Section Strip Banners</h6>
+                            <button class="btn btn-outline-danger btn-sm fw-bold" onclick="addNewCategoryBanner()"><i class="fas fa-plus me-1"></i> Add Custom Banner Strip</button>
+                        </div>
+                        <div class="d-flex align-items-center p-1 px-3 rounded-pill" style="background: rgba(10, 14, 22, 0.85); border: 1px solid rgba(255, 255, 255, 0.18);">
+                            <span class="text-white small fw-bold me-2">Strip Banners:</span>
+                            <div class="form-check form-switch m-0">
+                                <input class="form-check-input" type="checkbox" id="master-category-banners-toggle" checked style="cursor: pointer;" onchange="toggleCategoryBannersSection(this.checked)">
+                                <label class="form-check-label small ms-1 text-white" for="master-category-banners-toggle" id="master-category-banners-label">ON</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-4 mb-4" id="category-banners-grid-wrapper">
+                        <!-- Monitors Banner -->
+                        <div class="col-lg-4">
+                            <div class="card h-100 border p-3 shadow-sm position-relative">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="badge bg-primary">Featured Monitors</span>
+                                    <div class="form-check form-switch m-0">
+                                        <input class="form-check-input" type="checkbox" id="bm-monitors-active" checked style="cursor: pointer;">
+                                        <label class="form-check-label small fw-bold" for="bm-monitors-active">ON</label>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small fw-bold text-dark mb-1">Media Type</label>
+                                    <select id="bm-monitors-media-type" class="form-select form-select-sm" onchange="updateBannerCardPreview('bm-monitors', document.getElementById('bm-monitors-img-url').value, this.value)">
+                                        <option value="image">Image (JPG/PNG/GIF/WebP)</option>
+                                        <option value="video">Video (MP4/WebM)</option>
+                                    </select>
+                                </div>
+                                <div id="bm-monitors-preview-box" class="bg-dark rounded p-2 text-center mb-3" style="min-height: 100px; display: flex; align-items: center; justify-content: center;">
+                                    <img id="bm-monitors-preview" src="assets/images/banner1.png" class="img-fluid rounded" style="max-height: 90px; object-fit: cover;" alt="Monitors Banner">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small fw-bold text-dark mb-1">Upload File (Image or Video)</label>
+                                    <input type="file" accept="image/*,video/*" class="form-control form-control-sm" onchange="handleBannerFileUpload(this, 'bm-monitors-preview-box', 'bm-monitors-img-url', 'bm-monitors-media-type')">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small fw-bold text-dark mb-1">Media URL / Path</label>
+                                    <input type="text" id="bm-monitors-img-url" class="form-control form-control-sm" value="assets/images/banner1.png" oninput="updateBannerCardPreview('bm-monitors', this.value, document.getElementById('bm-monitors-media-type').value)">
+                                </div>
+                                <div class="mb-0">
+                                    <label class="form-label small fw-bold text-dark mb-1">Target Shop Link</label>
+                                    <input type="text" id="bm-monitors-link" class="form-control form-control-sm" value="shop.html?category=monitors">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Laptops Banner -->
+                        <div class="col-lg-4">
+                            <div class="card h-100 border p-3 shadow-sm position-relative">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="badge bg-primary">Featured Laptops</span>
+                                    <div class="form-check form-switch m-0">
+                                        <input class="form-check-input" type="checkbox" id="bm-laptops-active" checked style="cursor: pointer;">
+                                        <label class="form-check-label small fw-bold" for="bm-laptops-active">ON</label>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small fw-bold text-dark mb-1">Media Type</label>
+                                    <select id="bm-laptops-media-type" class="form-select form-select-sm" onchange="updateBannerCardPreview('bm-laptops', document.getElementById('bm-laptops-img-url').value, this.value)">
+                                        <option value="image">Image (JPG/PNG/GIF/WebP)</option>
+                                        <option value="video">Video (MP4/WebM)</option>
+                                    </select>
+                                </div>
+                                <div id="bm-laptops-preview-box" class="bg-dark rounded p-2 text-center mb-3" style="min-height: 100px; display: flex; align-items: center; justify-content: center;">
+                                    <img id="bm-laptops-preview" src="assets/images/laptops-banner.png" class="img-fluid rounded" style="max-height: 90px; object-fit: cover;" alt="Laptops Banner">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small fw-bold text-dark mb-1">Upload File (Image or Video)</label>
+                                    <input type="file" accept="image/*,video/*" class="form-control form-control-sm" onchange="handleBannerFileUpload(this, 'bm-laptops-preview-box', 'bm-laptops-img-url', 'bm-laptops-media-type')">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small fw-bold text-dark mb-1">Media URL / Path</label>
+                                    <input type="text" id="bm-laptops-img-url" class="form-control form-control-sm" value="assets/images/laptops-banner.png" oninput="updateBannerCardPreview('bm-laptops', this.value, document.getElementById('bm-laptops-media-type').value)">
+                                </div>
+                                <div class="mb-0">
+                                    <label class="form-label small fw-bold text-dark mb-1">Target Shop Link</label>
+                                    <input type="text" id="bm-laptops-link" class="form-control form-control-sm" value="shop.html?category=laptops">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PC Components Banner -->
+                        <div class="col-lg-4">
+                            <div class="card h-100 border p-3 shadow-sm position-relative">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="badge bg-primary">PC Components</span>
+                                    <div class="form-check form-switch m-0">
+                                        <input class="form-check-input" type="checkbox" id="bm-processors-active" checked style="cursor: pointer;">
+                                        <label class="form-check-label small fw-bold" for="bm-processors-active">ON</label>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small fw-bold text-dark mb-1">Media Type</label>
+                                    <select id="bm-processors-media-type" class="form-select form-select-sm" onchange="updateBannerCardPreview('bm-processors', document.getElementById('bm-processors-img-url').value, this.value)">
+                                        <option value="image">Image (JPG/PNG/GIF/WebP)</option>
+                                        <option value="video">Video (MP4/WebM)</option>
+                                    </select>
+                                </div>
+                                <div id="bm-processors-preview-box" class="bg-dark rounded p-2 text-center mb-3" style="min-height: 100px; display: flex; align-items: center; justify-content: center;">
+                                    <img id="bm-processors-preview" src="assets/images/components-banner.png" class="img-fluid rounded" style="max-height: 90px; object-fit: cover;" alt="PC Components Banner">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small fw-bold text-dark mb-1">Upload File (Image or Video)</label>
+                                    <input type="file" accept="image/*,video/*" class="form-control form-control-sm" onchange="handleBannerFileUpload(this, 'bm-processors-preview-box', 'bm-processors-img-url', 'bm-processors-media-type')">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small fw-bold text-dark mb-1">Media URL / Path</label>
+                                    <input type="text" id="bm-processors-img-url" class="form-control form-control-sm" value="assets/images/components-banner.png" oninput="updateBannerCardPreview('bm-processors', this.value, document.getElementById('bm-processors-media-type').value)">
+                                </div>
+                                <div class="mb-0">
+                                    <label class="form-label small fw-bold text-dark mb-1">Target Shop Link</label>
+                                    <input type="text" id="bm-processors-link" class="form-control form-control-sm" value="shop.html?category=processors">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Custom Dynamic Strip Banners -->
+                    <div id="custom-category-banners-container" class="row g-4 mb-4"></div>
+
+                    <!-- Section 2: Promotional 4-Grid Cards -->
+                    <div class="d-flex justify-content-between align-items-center mb-3 pt-3 border-top flex-wrap gap-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <h6 class="text-dark fw-bold mb-0"><i class="fas fa-th-large text-warning me-2"></i> Promotional 4-Grid Cards</h6>
+                            <button class="btn btn-outline-danger btn-sm fw-bold" onclick="addNewPromoCard()"><i class="fas fa-plus me-1"></i> Add Custom Promo Box</button>
+                        </div>
+                        <div class="d-flex align-items-center bg-light p-1 px-3 rounded-pill border">
+                            <span class="text-dark small fw-bold me-2">Promo Cards:</span>
+                            <div class="form-check form-switch m-0">
+                                <input class="form-check-input" type="checkbox" id="master-promo-cards-toggle" checked style="cursor: pointer;" onchange="togglePromoCardsSection(this.checked)">
+                                <label class="form-check-label small ms-1" for="master-promo-cards-toggle" id="master-promo-cards-label">ON</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4" id="promo-cards-grid-wrapper">
+                        <!-- Promo 1 -->
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card h-100 border p-3 shadow-sm">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="badge bg-info text-dark">Promo 1 (Laptops)</span>
+                                    <div class="form-check form-switch m-0">
+                                        <input class="form-check-input" type="checkbox" id="bm-promo1-active" checked style="cursor: pointer;">
+                                        <label class="form-check-label small fw-bold" for="bm-promo1-active">ON</label>
+                                    </div>
+                                </div>
+                                <select id="bm-promo1-media-type" class="form-select form-select-sm mb-2" onchange="updateBannerCardPreview('bm-promo1', document.getElementById('bm-promo1-img-url').value, this.value)">
+                                    <option value="image">Image (JPG/PNG/GIF)</option>
+                                    <option value="video">Video (MP4/WebM)</option>
+                                </select>
+                                <div id="bm-promo1-preview-box" class="bg-dark rounded p-2 text-center mb-2" style="height: 100px; display:flex; align-items:center; justify-content:center;">
+                                    <img id="bm-promo1-preview" src="assets/images/promo-laptops.jpg" class="img-fluid rounded" style="max-height: 85px; object-fit: cover;">
+                                </div>
+                                <input type="file" accept="image/*,video/*" class="form-control form-control-sm mb-2" onchange="handleBannerFileUpload(this, 'bm-promo1-preview-box', 'bm-promo1-img-url', 'bm-promo1-media-type')">
+                                <input type="text" id="bm-promo1-img-url" class="form-control form-control-sm mb-2" placeholder="Media URL / Path" oninput="updateBannerCardPreview('bm-promo1', this.value, document.getElementById('bm-promo1-media-type').value)">
+                                <input type="text" id="bm-promo1-link" class="form-control form-control-sm" placeholder="Link URL" value="shop.html?category=laptops">
+                            </div>
+                        </div>
+
+                        <!-- Promo 2 -->
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card h-100 border p-3 shadow-sm">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="badge bg-info text-dark">Promo 2 (PC Cases)</span>
+                                    <div class="form-check form-switch m-0">
+                                        <input class="form-check-input" type="checkbox" id="bm-promo2-active" checked style="cursor: pointer;">
+                                        <label class="form-check-label small fw-bold" for="bm-promo2-active">ON</label>
+                                    </div>
+                                </div>
+                                <select id="bm-promo2-media-type" class="form-select form-select-sm mb-2" onchange="updateBannerCardPreview('bm-promo2', document.getElementById('bm-promo2-img-url').value, this.value)">
+                                    <option value="image">Image (JPG/PNG/GIF)</option>
+                                    <option value="video">Video (MP4/WebM)</option>
+                                </select>
+                                <div id="bm-promo2-preview-box" class="bg-dark rounded p-2 text-center mb-2" style="height: 100px; display:flex; align-items:center; justify-content:center;">
+                                    <img id="bm-promo2-preview" src="assets/images/promo-cases.png" class="img-fluid rounded" style="max-height: 85px; object-fit: cover;">
+                                </div>
+                                <input type="file" accept="image/*,video/*" class="form-control form-control-sm mb-2" onchange="handleBannerFileUpload(this, 'bm-promo2-preview-box', 'bm-promo2-img-url', 'bm-promo2-media-type')">
+                                <input type="text" id="bm-promo2-img-url" class="form-control form-control-sm mb-2" placeholder="Media URL / Path" oninput="updateBannerCardPreview('bm-promo2', this.value, document.getElementById('bm-promo2-media-type').value)">
+                                <input type="text" id="bm-promo2-link" class="form-control form-control-sm" placeholder="Link URL" value="shop.html?category=components">
+                            </div>
+                        </div>
+
+                        <!-- Promo 3 -->
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card h-100 border p-3 shadow-sm">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="badge bg-info text-dark">Promo 3 (Peripherals)</span>
+                                    <div class="form-check form-switch m-0">
+                                        <input class="form-check-input" type="checkbox" id="bm-promo3-active" checked style="cursor: pointer;">
+                                        <label class="form-check-label small fw-bold" for="bm-promo3-active">ON</label>
+                                    </div>
+                                </div>
+                                <select id="bm-promo3-media-type" class="form-select form-select-sm mb-2" onchange="updateBannerCardPreview('bm-promo3', document.getElementById('bm-promo3-img-url').value, this.value)">
+                                    <option value="image">Image (JPG/PNG/GIF)</option>
+                                    <option value="video">Video (MP4/WebM)</option>
+                                </select>
+                                <div id="bm-promo3-preview-box" class="bg-dark rounded p-2 text-center mb-2" style="height: 100px; display:flex; align-items:center; justify-content:center;">
+                                    <img id="bm-promo3-preview" src="assets/images/promo-peripherals.png" class="img-fluid rounded" style="max-height: 85px; object-fit: cover;">
+                                </div>
+                                <input type="file" accept="image/*,video/*" class="form-control form-control-sm mb-2" onchange="handleBannerFileUpload(this, 'bm-promo3-preview-box', 'bm-promo3-img-url', 'bm-promo3-media-type')">
+                                <input type="text" id="bm-promo3-img-url" class="form-control form-control-sm mb-2" placeholder="Media URL / Path" oninput="updateBannerCardPreview('bm-promo3', this.value, document.getElementById('bm-promo3-media-type').value)">
+                                <input type="text" id="bm-promo3-link" class="form-control form-control-sm" placeholder="Link URL" value="shop.html?category=accessories">
+                            </div>
+                        </div>
+
+                        <!-- Promo 4 -->
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card h-100 border p-3 shadow-sm">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="badge bg-info text-dark">Promo 4 (Apple Lineup)</span>
+                                    <div class="form-check form-switch m-0">
+                                        <input class="form-check-input" type="checkbox" id="bm-promo4-active" checked style="cursor: pointer;">
+                                        <label class="form-check-label small fw-bold" for="bm-promo4-active">ON</label>
+                                    </div>
+                                </div>
+                                <select id="bm-promo4-media-type" class="form-select form-select-sm mb-2" onchange="updateBannerCardPreview('bm-promo4', document.getElementById('bm-promo4-img-url').value, this.value)">
+                                    <option value="image">Image (JPG/PNG/GIF)</option>
+                                    <option value="video">Video (MP4/WebM)</option>
+                                </select>
+                                <div id="bm-promo4-preview-box" class="bg-dark rounded p-2 text-center mb-2" style="height: 100px; display:flex; align-items:center; justify-content:center;">
+                                    <img id="bm-promo4-preview" src="assets/images/promo-apple.png" class="img-fluid rounded" style="max-height: 85px; object-fit: cover;">
+                                </div>
+                                <input type="file" accept="image/*,video/*" class="form-control form-control-sm mb-2" onchange="handleBannerFileUpload(this, 'bm-promo4-preview-box', 'bm-promo4-img-url', 'bm-promo4-media-type')">
+                                <input type="text" id="bm-promo4-img-url" class="form-control form-control-sm mb-2" placeholder="Media URL / Path" oninput="updateBannerCardPreview('bm-promo4', this.value, document.getElementById('bm-promo4-media-type').value)">
+                                <input type="text" id="bm-promo4-link" class="form-control form-control-sm" placeholder="Link URL" value="shop.html?brand=apple">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Custom Dynamic Promo Boxes -->
+                    <div id="custom-promo-cards-container" class="row g-3 mb-4"></div>
+
+                    <div class="text-end">
+                        <button class="btn btn-primary fw-bold px-4" onclick="saveAllHomepageBanners()">
+                            <i class="fas fa-save me-2"></i> Save All Homepage Banners
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- TAB 3: GLOBAL VISUAL THEME & NAVBAR / FOOTER             -->
+            <!-- ======================================================== -->
+            <div class="tab-pane fade" id="tab-theme-customizer" role="tabpanel">
+                <div class="admin-card">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25 gap-3">
+                        <div>
+                            <h5 class="text-white fw-bold mb-1"><i class="fas fa-palette text-danger me-2"></i> Global Storefront Theme & Layout Builder</h5>
+                            <p class="text-secondary small mb-0">Custom styling for Navbar, Topbar, Footer, Product Cards, Page Backgrounds, Brand Accent Colors, and live contact info.</p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-secondary btn-sm fw-bold text-white border-secondary" onclick="resetGlobalTheme()">
+                                <i class="fas fa-undo me-1"></i> Reset to Factory Theme
+                            </button>
+                            <button class="btn btn-success btn-sm fw-bold px-3 shadow-sm" onclick="saveGlobalThemeConfig()">
+                                <i class="fas fa-save me-1"></i> Save & Apply Theme
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Theme Preset Palettes -->
+                    <div class="mb-4 p-3 rounded-3 theme-section-box">
+                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                            <label class="text-white fw-bold small m-0"><i class="fas fa-swatchbook text-danger me-2"></i>One-Click Theme Presets:</label>
+                            <small class="text-secondary">Click any preset to auto-populate color palettes.</small>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="preset-badge bg-dark text-white border-danger" onclick="applyThemePreset('gear_dark')">
+                                <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#E50303;"></span> Gear Up Gadget Dark (Default)
+                            </span>
+                            <span class="preset-badge bg-black text-info border-info" onclick="applyThemePreset('midnight_oled')">
+                                <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#00d2ff;"></span> Deep Midnight OLED
+                            </span>
+                            <span class="preset-badge text-white" style="background:#0f172a; border-color:#ff385c;" onclick="applyThemePreset('cyber_red')">
+                                <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#ff385c;"></span> Cyber Stealth Red
+                            </span>
+                            <span class="preset-badge text-white" style="background:#07140f; border-color:#10b981;" onclick="applyThemePreset('emerald')">
+                                <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#10b981;"></span> Emerald Gaming Edition
+                            </span>
+                            <span class="preset-badge text-white" style="background:#1e293b; border-color:#64748b;" onclick="applyThemePreset('clean_slate')">
+                                <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#2563eb;"></span> Slate Minimal
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="row g-4">
+                        <!-- LEFT COLUMN: COLOR & COMPONENT SETTINGS -->
+                        <div class="col-lg-8">
+                            
+                            <!-- 1. Navbar & Topbar Customization -->
+                            <div class="card admin-dark-card mb-4 shadow-sm">
+                                <div class="card-header py-2 d-flex justify-content-between align-items-center">
+                                    <h6 class="fw-bold text-white m-0"><i class="fas fa-bars text-danger me-2"></i> Navbar & Topbar Styling</h6>
+                                    <div class="form-check form-switch m-0">
+                                        <input class="form-check-input" type="checkbox" id="theme-sticky-navbar" checked style="cursor: pointer;">
+                                        <label class="form-check-label small fw-bold text-white" for="theme-sticky-navbar">Sticky Header</label>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3 mb-3">
+                                        <!-- Navbar BG -->
+                                        <div class="col-md-4">
+                                            <div class="theme-color-card">
+                                                <label class="small text-secondary fw-bold mb-1 d-block">Navbar Background</label>
+                                                <div class="d-flex align-items-center gap-2 mb-2">
+                                                    <input type="color" id="theme-navbar" value="#070a0d" class="form-control form-control-color" style="width:38px;height:38px;padding:2px;">
+                                                    <input type="text" id="theme-navbar-hex" value="#070a0d" maxlength="7" class="form-control form-control-sm font-monospace" placeholder="#070a0d">
+                                                </div>
+                                                <div id="theme-navbar-swatch" style="height:6px;border-radius:3px;background:#070a0d;"></div>
+                                            </div>
+                                        </div>
+                                        <!-- Topbar BG -->
+                                        <div class="col-md-4">
+                                            <div class="theme-color-card">
+                                                <label class="small text-secondary fw-bold mb-1 d-block">Topbar Background</label>
+                                                <div class="d-flex align-items-center gap-2 mb-2">
+                                                    <input type="color" id="theme-topbar" value="#050709" class="form-control form-control-color" style="width:38px;height:38px;padding:2px;">
+                                                    <input type="text" id="theme-topbar-hex" value="#050709" maxlength="7" class="form-control form-control-sm font-monospace" placeholder="#050709">
+                                                </div>
+                                                <div id="theme-topbar-swatch" style="height:6px;border-radius:3px;background:#050709;"></div>
+                                            </div>
+                                        </div>
+                                        <!-- Navbar Text/Link Color -->
+                                        <div class="col-md-4">
+                                            <div class="theme-color-card">
+                                                <label class="small text-secondary fw-bold mb-1 d-block">Nav Links & Text</label>
+                                                <div class="d-flex align-items-center gap-2 mb-2">
+                                                    <input type="color" id="theme-navbar-text" value="#f0f6fc" class="form-control form-control-color" style="width:38px;height:38px;padding:2px;">
+                                                    <input type="text" id="theme-navbar-text-hex" value="#f0f6fc" maxlength="7" class="form-control form-control-sm font-monospace" placeholder="#f0f6fc">
+                                                </div>
+                                                <div id="theme-navbar-text-swatch" style="height:6px;border-radius:3px;background:#f0f6fc;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Editable Topbar Info -->
+                                    <div class="row g-2 pt-2 border-top border-secondary border-opacity-25">
+                                        <div class="col-md-4">
+                                            <label class="small fw-bold text-white mb-1">Queries Contact Number</label>
+                                            <input type="text" id="theme-topbar-phone" class="form-control form-control-sm" value="021 34832214" placeholder="021 34832214">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="small fw-bold text-white mb-1">Topbar Email</label>
+                                            <input type="text" id="theme-topbar-email" class="form-control form-control-sm" value="sales@gearupgadget.com" placeholder="sales@gearupgadget.com">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="small fw-bold text-white mb-1">Topbar Address / Notice</label>
+                                            <input type="text" id="theme-topbar-address" class="form-control form-control-sm" value="F6 Technocity Mall" placeholder="F6 Technocity Mall">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 2. Product & UI Cards Customization -->
+                            <div class="card admin-dark-card mb-4 shadow-sm">
+                                <div class="card-header py-2">
+                                    <h6 class="fw-bold text-white m-0"><i class="fas fa-th-large text-primary me-2"></i> Product & UI Cards Styling</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <!-- Card BG -->
+                                        <div class="col-md-4">
+                                            <div class="theme-color-card">
+                                                <label class="small text-secondary fw-bold mb-1 d-block">Card Background</label>
+                                                <div class="d-flex align-items-center gap-2 mb-2">
+                                                    <input type="color" id="theme-bg-card" value="#14191f" class="form-control form-control-color" style="width:38px;height:38px;padding:2px;">
+                                                    <input type="text" id="theme-bg-card-hex" value="#14191f" maxlength="7" class="form-control form-control-sm font-monospace" placeholder="#14191f">
+                                                </div>
+                                                <div id="theme-bg-card-swatch" style="height:6px;border-radius:3px;background:#14191f;"></div>
+                                            </div>
+                                        </div>
+                                        <!-- Card Border -->
+                                        <div class="col-md-4">
+                                            <div class="theme-color-card">
+                                                <label class="small text-secondary fw-bold mb-1 d-block">Card Border Color</label>
+                                                <div class="d-flex align-items-center gap-2 mb-2">
+                                                    <input type="color" id="theme-card-border" value="#1f262e" class="form-control form-control-color" style="width:38px;height:38px;padding:2px;">
+                                                    <input type="text" id="theme-card-border-hex" value="#1f262e" maxlength="7" class="form-control form-control-sm font-monospace" placeholder="#1f262e">
+                                                </div>
+                                                <div id="theme-card-border-swatch" style="height:6px;border-radius:3px;background:#1f262e;"></div>
+                                            </div>
+                                        </div>
+                                        <!-- Brand Accent Color -->
+                                        <div class="col-md-4">
+                                            <div class="theme-color-card">
+                                                <label class="small text-secondary fw-bold mb-1 d-block">Brand Accent (Red)</label>
+                                                <div class="d-flex align-items-center gap-2 mb-2">
+                                                    <input type="color" id="theme-accent-color" value="#E50303" class="form-control form-control-color" style="width:38px;height:38px;padding:2px;">
+                                                    <input type="text" id="theme-accent-color-hex" value="#E50303" maxlength="7" class="form-control form-control-sm font-monospace" placeholder="#E50303">
+                                                </div>
+                                                <div id="theme-accent-color-swatch" style="height:6px;border-radius:3px;background:#E50303;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 3. Page Background & Layout Styling -->
+                            <div class="card admin-dark-card mb-4 shadow-sm">
+                                <div class="card-header py-2">
+                                    <h6 class="fw-bold text-white m-0"><i class="fas fa-desktop text-warning me-2"></i> Page Background & Wallpaper</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3 mb-3">
+                                        <!-- Body BG Color -->
+                                        <div class="col-md-6">
+                                            <div class="theme-color-card">
+                                                <label class="small text-secondary fw-bold mb-1 d-block">Body Background Color</label>
+                                                <div class="d-flex align-items-center gap-2 mb-2">
+                                                    <input type="color" id="theme-bg-main" value="#0b0f13" class="form-control form-control-color" style="width:38px;height:38px;padding:2px;">
+                                                    <input type="text" id="theme-bg-main-hex" value="#0b0f13" maxlength="7" class="form-control form-control-sm font-monospace" placeholder="#0b0f13">
+                                                </div>
+                                                <div id="theme-bg-main-swatch" style="height:6px;border-radius:3px;background:#0b0f13;"></div>
+                                            </div>
+                                        </div>
+                                        <!-- Wallpaper Overlay Attachment -->
+                                        <div class="col-md-6">
+                                            <div class="theme-color-card">
+                                                <label class="small text-secondary fw-bold mb-1 d-block">Background Attachment</label>
+                                                <select id="theme-bg-attachment" class="form-select form-select-sm mb-2">
+                                                    <option value="fixed" selected>Fixed Parallax (Recommended)</option>
+                                                    <option value="scroll">Normal Scroll</option>
+                                                </select>
+                                                <label class="small text-secondary fw-bold mb-1 d-block">Overlay Opacity (%)</label>
+                                                <input type="range" id="theme-bg-opacity" class="form-range" min="0" max="100" value="85" oninput="document.getElementById('theme-bg-opacity-val').innerText = this.value + '%'">
+                                                <small class="text-secondary d-block text-end" id="theme-bg-opacity-val">85%</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Background Media Type Selector -->
+                                    <div class="p-3 rounded-3 theme-section-box mb-2">
+                                        <label class="small fw-bold text-white mb-2 d-block"><i class="fas fa-photo-video text-danger me-1"></i> Custom Background Media (Image or Video)</label>
+                                        <div class="mb-3" style="max-width: 320px;">
+                                            <select id="theme-bg-type" class="form-select form-select-sm" onchange="switchBgType(this.value)">
+                                                <option value="none">No Custom Media (Solid Color / Default)</option>
+                                                <option value="image">Custom Background Image (JPG/PNG/WebP)</option>
+                                                <option value="video">Custom Background Video (MP4/WebM)</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Image Section -->
+                                        <div id="theme-bg-image-section" style="display:none;" class="p-3 theme-section-box rounded-3 mb-2">
+                                            <label class="small fw-bold text-white mb-2 d-block"><i class="fas fa-image text-danger me-1"></i> Background Image Setup</label>
+                                            <div class="row g-2 align-items-center mb-2">
+                                                <div class="col-md-6">
+                                                    <label class="small text-secondary mb-1">Upload Image File</label>
+                                                    <input type="file" id="theme-bg-image-input" accept="image/*,video/*" onchange="previewBgImage(this)" class="form-control form-control-sm">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="small text-secondary mb-1">Image URL or Relative Path</label>
+                                                    <input type="text" id="theme-bg-image-url" placeholder="assets/images/background.jpg" oninput="const val = this.value.trim(); const prev = document.getElementById('theme-bg-preview'); const wrap = document.getElementById('theme-bg-preview-wrapper'); if (prev) prev.src = val; if (wrap) wrap.style.display = val ? 'block' : 'none'; if (val) { const t = document.getElementById('theme-bg-type'); if (t && t.value !== 'image') { t.value = 'image'; switchBgType('image'); } } updateLiveThemePreview();" class="form-control form-control-sm">
+                                                </div>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-3">
+                                                <button class="btn btn-outline-danger btn-sm fw-bold" type="button" onclick="clearBgImage()">
+                                                    <i class="fas fa-times me-1"></i> Clear Image
+                                                </button>
+                                                <div id="theme-bg-preview-wrapper" style="display:none;">
+                                                    <img id="theme-bg-preview" src="" style="height:48px;border-radius:6px;border:1px solid #444;object-fit:cover;">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Video Section -->
+                                        <div id="theme-bg-video-section" style="display:none;" class="p-3 theme-section-box rounded-3 mb-2">
+                                            <label class="small fw-bold text-white mb-2 d-block"><i class="fas fa-video text-warning me-1"></i> Background Video Setup</label>
+                                            <div class="row g-2 align-items-center mb-2">
+                                                <div class="col-md-6">
+                                                    <label class="small text-secondary mb-1">Upload Video File</label>
+                                                    <input type="file" id="theme-bg-video-input" accept="image/*,video/*" onchange="previewBgVideo(this)" class="form-control form-control-sm">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="small text-secondary mb-1">Video URL or Relative Path (Recommended)</label>
+                                                    <input type="text" id="theme-bg-video-url" placeholder="assets/videos/tech-bg.mp4" oninput="const p = document.getElementById('theme-bg-video-preview'); p.src = this.value; p.load(); p.play().catch(()=>{}); document.getElementById('theme-bg-video-preview-wrapper').style.display = this.value ? 'block' : 'none'; updateLiveThemePreview();" class="form-control form-control-sm">
+                                                </div>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-3">
+                                                <button class="btn btn-outline-danger btn-sm fw-bold" type="button" onclick="clearBgVideo()">
+                                                    <i class="fas fa-times me-1"></i> Clear Video
+                                                </button>
+                                                <div id="theme-bg-video-preview-wrapper" style="display:none;">
+                                                    <video id="theme-bg-video-preview" src="" autoplay muted loop playsinline style="height:48px;border-radius:6px;border:1px solid #444;object-fit:cover;"></video>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 4. Global Footer, Top Bar & Contact Configuration -->
+                            <div class="card admin-dark-card mb-4 shadow-sm">
+                                <div class="card-header py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                    <div>
+                                        <h6 class="fw-bold text-white m-0"><i class="fas fa-align-justify text-danger me-2"></i> Global Footer & Pre-Footer Top Bar Customizer</h6>
+                                        <p class="text-secondary small m-0">Live dynamic management for phone numbers, store hours, retail addresses, about text, trust badges & partners marquee.</p>
+                                    </div>
+                                    <span class="badge bg-danger px-2 py-1"><i class="fas fa-bolt me-1"></i> Realtime Live Sync</span>
+                                </div>
+                                <div class="card-body">
+
+                                    <!-- Subsection A: Pre-Footer Top Bar (Above Footer) -->
+                                    <div class="p-3 rounded-3 mb-3 theme-section-box">
+                                        <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2 border-bottom border-secondary border-opacity-25 pb-2">
+                                            <div>
+                                                <span class="fw-bold text-white small"><i class="fas fa-window-maximize text-primary me-1"></i> Pre-Footer Top Bar Section (Above Footer)</span>
+                                                <p class="text-secondary small m-0" style="font-size: 11px;">The promotional highlight & brand partners bar situated immediately above the main footer.</p>
+                                            </div>
+                                            <div class="form-check form-switch m-0">
+                                                <input class="form-check-input" type="checkbox" id="theme-footer-topbar-toggle" checked style="cursor: pointer;" onchange="updateLiveThemePreview()">
+                                                <label class="form-check-label small fw-bold text-white" for="theme-footer-topbar-toggle">Show Pre-Footer Section</label>
+                                            </div>
+                                        </div>
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-md-6">
+                                                <label class="small fw-bold text-white mb-1">Pre-Footer Top Bar Title</label>
+                                                <input type="text" id="theme-footer-topbar-title" class="form-control form-control-sm" value="Our Official Partners" placeholder="e.g. Our Official Partners" oninput="updateLiveThemePreview()">
+                                                <span class="text-secondary" style="font-size: 11px;">(Last word is automatically highlighted with red accent color)</span>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="small fw-bold text-white mb-1">Top Bar Subtitle / Tagline</label>
+                                                <input type="text" id="theme-footer-topbar-subtitle" class="form-control form-control-sm" value="Authorized hardware distributors and certified premium brands in Pakistan" placeholder="e.g. Authorized hardware distributors and certified premium brands" oninput="updateLiveThemePreview()">
+                                            </div>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-4 flex-wrap pt-2">
+                                            <div class="form-check form-switch m-0">
+                                                <input class="form-check-input" type="checkbox" id="theme-footer-features-toggle" checked style="cursor: pointer;" onchange="updateLiveThemePreview()">
+                                                <label class="form-check-label small fw-bold text-white" for="theme-footer-features-toggle">Show Trust Badges Strip (Genuine / Warranty / Shipping / Support)</label>
+                                            </div>
+                                            <div class="form-check form-switch m-0">
+                                                <input class="form-check-input" type="checkbox" id="theme-footer-partners" checked style="cursor: pointer;" onchange="updateLiveThemePreview()">
+                                                <label class="form-check-label small fw-bold text-white" for="theme-footer-partners">Show Brand Partners Marquee</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Subsection B: Contact Numbers & Communication -->
+                                    <div class="p-3 rounded-3 mb-3 theme-section-box">
+                                        <div class="mb-3 border-bottom border-secondary border-opacity-25 pb-2 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                            <div>
+                                                <span class="fw-bold text-white small"><i class="fas fa-phone-volume text-success me-1"></i> Contact Numbers & Communication</span>
+                                                <p class="text-secondary small m-0" style="font-size: 11px;">Directly controls phone numbers, WhatsApp, and emails across the topbar, mobile menu, and footer.</p>
+                                            </div>
+                                            <span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-50" style="font-size: 11px;">
+                                                <i class="fas fa-layer-group me-1"></i> Dynamic Multi-Contact Lists Active
+                                            </span>
+                                        </div>
+                                        <div class="row g-3">
+                                            <!-- Category 1: Queries Phone Numbers -->
+                                            <div class="col-md-6">
+                                                <div class="p-3 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-25 h-100">
+                                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                                        <label class="small fw-bold text-white mb-0"><i class="fas fa-headset text-danger me-1"></i> Queries Phone Numbers</label>
+                                                        <span class="text-secondary" style="font-size: 10.5px;">Header & Footer</span>
+                                                    </div>
+                                                    <div id="queries-phones-list" class="dynamic-contact-container mb-2"></div>
+                                                    <button type="button" class="btn btn-outline-danger btn-sm w-100 fw-bold" onclick="window.addContactField('queries')">
+                                                        <i class="fas fa-plus me-1"></i> + Add Another Query Phone
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Category 2: WhatsApp Numbers -->
+                                            <div class="col-md-6">
+                                                <div class="p-3 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-25 h-100">
+                                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                                        <label class="small fw-bold text-white mb-0"><i class="fab fa-whatsapp text-success me-1"></i> WhatsApp Numbers</label>
+                                                        <span class="text-secondary" style="font-size: 10.5px;">Direct Chat Support</span>
+                                                    </div>
+                                                    <div id="whatsapp-numbers-list" class="dynamic-contact-container mb-2"></div>
+                                                    <button type="button" class="btn btn-outline-success btn-sm w-100 fw-bold" onclick="window.addContactField('whatsapp')">
+                                                        <i class="fab fa-whatsapp me-1"></i> + Add Another WhatsApp
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Category 3: Official Support Emails -->
+                                            <div class="col-md-6">
+                                                <div class="p-3 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-25 h-100">
+                                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                                        <label class="small fw-bold text-white mb-0"><i class="fas fa-envelope text-primary me-1"></i> Official Support Emails</label>
+                                                        <span class="text-secondary" style="font-size: 10.5px;">Queries & Invoicing</span>
+                                                    </div>
+                                                    <div id="support-emails-list" class="dynamic-contact-container mb-2"></div>
+                                                    <button type="button" class="btn btn-outline-primary btn-sm w-100 fw-bold" onclick="window.addContactField('email')">
+                                                        <i class="fas fa-plus me-1"></i> + Add Another Support Email
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Category 4: General / Landline Phones -->
+                                            <div class="col-md-6">
+                                                <div class="p-3 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-25 h-100">
+                                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                                        <label class="small fw-bold text-white mb-0"><i class="fas fa-phone-volume text-warning me-1"></i> General / Store Phone Numbers</label>
+                                                        <span class="text-secondary" style="font-size: 10.5px;">Landline & Office</span>
+                                                    </div>
+                                                    <div id="general-phones-list" class="dynamic-contact-container mb-2"></div>
+                                                    <button type="button" class="btn btn-outline-warning btn-sm w-100 fw-bold text-white" onclick="window.addContactField('phone')">
+                                                        <i class="fas fa-plus me-1"></i> + Add Another General Phone
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Additional Meta Controls -->
+                                            <div class="col-md-6">
+                                                <label class="small fw-bold text-white mb-1">Phone Display Label</label>
+                                                <input type="text" id="theme-footer-phone-label" class="form-control form-control-sm" value="Queries:" placeholder="e.g. Queries:" oninput="updateLiveThemePreview()">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="small fw-bold text-white mb-1">Topbar Header Mall Tag / Address</label>
+                                                <div class="input-group input-group-sm">
+                                                    <span class="input-group-text"><i class="fas fa-location-dot text-danger"></i></span>
+                                                    <input type="text" id="theme-footer-topbar-address" class="form-control" value="F6 Technocity Mall" placeholder="F6 Technocity Mall">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Subsection C: Store Operating Hours & Schedule -->
+                                    <div class="p-3 rounded-3 mb-3 theme-section-box">
+                                        <div class="mb-2 border-bottom border-secondary border-opacity-25 pb-2">
+                                            <span class="fw-bold text-white small"><i class="fas fa-clock text-warning me-1"></i> Store Hours & Operating Schedule</span>
+                                            <p class="text-secondary small m-0" style="font-size: 11px;">Displayed in header top bar, mobile menu, and under 'Contact Us' in the footer.</p>
+                                        </div>
+                                        <div class="row g-2">
+                                            <div class="col-md-6">
+                                                <label class="small fw-bold text-white mb-1">Operating Hours</label>
+                                                <div class="input-group input-group-sm">
+                                                    <span class="input-group-text"><i class="fas fa-business-time text-warning"></i></span>
+                                                    <input type="text" id="theme-footer-hours" class="form-control" value="12:00 PM - 8:00 PM" placeholder="12:00 PM - 8:00 PM" oninput="updateLiveThemePreview()">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="small fw-bold text-white mb-1">Operating Days / Schedule Note</label>
+                                                <input type="text" id="theme-footer-days" class="form-control form-control-sm" value="Monday - Saturday (Sunday Closed)" placeholder="e.g. Monday - Saturday (Sunday Closed)">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Subsection D: Store Locations & Company Bio -->
+                                    <div class="p-3 rounded-3 mb-3 theme-section-box">
+                                        <div class="mb-2 border-bottom border-secondary border-opacity-25 pb-2">
+                                            <span class="fw-bold text-white small"><i class="fas fa-map-marked-alt text-info me-1"></i> Store Addresses & Company Bio</span>
+                                            <p class="text-secondary small m-0" style="font-size: 11px;">Footer Column 1 addresses and company introduction blurb.</p>
+                                        </div>
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-md-6">
+                                                <label class="small fw-bold text-white mb-1">Shop Address (Retail Outlet)</label>
+                                                <input type="text" id="theme-footer-shop-addr" class="form-control form-control-sm" value="FA-06, 1st floor, Techno City Mall, Karachi." oninput="updateLiveThemePreview()">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="small fw-bold text-white mb-1">Head Office Address (Corporate)</label>
+                                                <input type="text" id="theme-footer-office-addr" class="form-control form-control-sm" value="D-5, 4th floor, Osif Center, Block 13 A, University Road Gulshan-e-Iqbal, Karachi-Pakistan.">
+                                            </div>
+                                            <div class="col-12 mt-2">
+                                                <label class="small fw-bold text-white mb-1">Footer About / Company Introduction</label>
+                                                <textarea id="theme-footer-about" class="form-control form-control-sm" rows="2" placeholder="Brief company summary displayed under the footer logo...">Pakistan's premier high-end computer store. Servicing tech enthusiasts, gaming communities, and rendering professionals since 2012 with premium hardware, graphics cards, custom PC assembly, and unmatched support.</textarea>
+                                            </div>
+                                            <div class="col-12 mt-2">
+                                                <label class="small fw-bold text-white mb-1">Copyright Line</label>
+                                                <input type="text" id="theme-footer-copyright" class="form-control form-control-sm" value="Copyright &copy; 2021 to 2026 GEAR UP GADGETS. All rights reserved." oninput="updateLiveThemePreview()">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Subsection E: Footer Colors & Styling -->
+                                    <div class="p-3 rounded-3 theme-section-box">
+                                        <div class="mb-2 border-bottom border-secondary border-opacity-25 pb-2">
+                                            <span class="fw-bold text-white small"><i class="fas fa-palette text-secondary me-1"></i> Footer Color Styling</span>
+                                        </div>
+                                        <div class="row g-3">
+                                            <!-- Footer BG -->
+                                            <div class="col-md-6">
+                                                <div class="theme-color-card">
+                                                    <label class="small text-secondary fw-bold mb-1 d-block">Footer Background Color</label>
+                                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                                        <input type="color" id="theme-footer" value="#070a0d" class="form-control form-control-color" style="width:38px;height:38px;padding:2px;">
+                                                        <input type="text" id="theme-footer-hex" value="#070a0d" maxlength="7" class="form-control form-control-sm font-monospace" placeholder="#070a0d">
+                                                    </div>
+                                                    <div id="theme-footer-swatch" style="height:6px;border-radius:3px;background:#070a0d;"></div>
+                                                </div>
+                                            </div>
+                                            <!-- Footer Text Color -->
+                                            <div class="col-md-6">
+                                                <div class="theme-color-card">
+                                                    <label class="small text-secondary fw-bold mb-1 d-block">Footer Secondary Text</label>
+                                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                                        <input type="color" id="theme-footer-text" value="#8b949e" class="form-control form-control-color" style="width:38px;height:38px;padding:2px;">
+                                                        <input type="text" id="theme-footer-text-hex" value="#8b949e" maxlength="7" class="form-control form-control-sm font-monospace" placeholder="#8b949e">
+                                                    </div>
+                                                    <div id="theme-footer-text-swatch" style="height:6px;border-radius:3px;background:#8b949e;"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- RIGHT COLUMN: LIVE REALTIME THEME MINI-PREVIEW -->
+                        <div class="col-lg-4">
+                            <div class="sticky-top" style="top: 20px;">
+                                <div class="card admin-dark-card border shadow-sm mb-3">
+                                    <div class="card-header py-2 d-flex justify-content-between align-items-center">
+                                        <span class="small fw-bold text-white"><i class="fas fa-eye text-danger me-1"></i> Live Realtime Preview</span>
+                                        <span class="badge bg-success" style="font-size:10px;">Synced</span>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <div id="live-theme-preview-box" class="p-3" style="background:#0b0f13; min-height:380px; transition:all 0.3s ease;">
+                                            <!-- Mini Topbar -->
+                                            <div id="prev-topbar" style="background:#050709; padding:4px 8px; font-size:10px; color:#8b949e; border-radius:4px 4px 0 0;" class="d-flex justify-content-between align-items-center">
+                                                <span id="prev-topbar-phone"><i class="fas fa-phone text-danger me-1"></i> Queries: 021 34832214</span>
+                                                <span id="prev-topbar-hours">12:00 PM - 8:00 PM</span>
+                                            </div>
+                                            <!-- Mini Navbar -->
+                                            <div id="prev-navbar" style="background:#070a0d; padding:8px 10px; border-bottom:1px solid #1f262e; display:flex; justify-content:space-between; align-items:center;">
+                                                <span class="fw-bold" style="color:#ffffff; font-size:11px;"><span style="color:#E50303;">GEAR UP</span> GADGETS</span>
+                                                <div class="d-flex gap-2" style="font-size:9px;">
+                                                    <span id="prev-nav-link1" style="color:#f0f6fc; font-weight:bold;">Home</span>
+                                                    <span id="prev-nav-link2" style="color:#f0f6fc;">Shop</span>
+                                                    <span id="prev-nav-link3" style="color:#E50303; font-weight:bold;">Sales</span>
+                                                </div>
+                                            </div>
+                                            <!-- Mini Hero / Banner -->
+                                            <div class="my-3 p-3 text-center rounded" style="background:rgba(255,255,255,0.03); border:1px dashed #334155;">
+                                                <span class="badge bg-danger mb-1" style="font-size:8px;">HERO SLIDER</span>
+                                                <div class="text-white fw-bold" style="font-size:12px;">NEXT-GEN GAMING LAPTOPS</div>
+                                                <button class="btn btn-sm btn-danger mt-2 py-0 px-2" id="prev-cta-btn" style="font-size:9px; background:#E50303; border:none;">SHOP NOW</button>
+                                            </div>
+                                            <!-- Mini Product Card -->
+                                            <div id="prev-card" class="p-2 rounded mb-3" style="background:#14191f; border:1px solid #1f262e;">
+                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                    <span class="badge bg-secondary" style="font-size:8px;">PERIPHERAL</span>
+                                                    <span id="prev-badge-sale" class="badge" style="background:#E50303; font-size:8px;">20% OFF</span>
+                                                </div>
+                                                <div class="text-white fw-bold" style="font-size:10px;">Bloody W95 Max Gaming Mouse</div>
+                                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                                    <span id="prev-price" class="fw-bold" style="color:#E50303; font-size:11px;">Rs. 4,850</span>
+                                                    <button class="btn btn-sm btn-dark py-0 px-2" style="font-size:8px;">+ Add</button>
+                                                </div>
+                                            </div>
+                                            <!-- Mini Footer -->
+                                            <div id="prev-footer" class="p-2 rounded text-center" style="background:#070a0d; font-size:9px; color:#8b949e; border-top:1px solid #1f262e;">
+                                                <div id="prev-footer-topbar" class="mb-1 pb-1 border-bottom border-secondary border-opacity-25 fw-bold" style="color:#ffffff; font-size:9px;">Our Official Partners</div>
+                                                <div id="prev-footer-phone" class="mb-1" style="font-size:9px; color:#f0f6fc;">Queries: 021 34832214</div>
+                                                <div id="prev-footer-addr" class="text-truncate mb-1" style="font-size:8px; opacity:0.8;">Techno City Mall, Karachi</div>
+                                                <p class="m-0" id="prev-footer-copy" style="font-size:8px;">&copy; 2026 Gear Up Gadgets</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer p-3" style="background: rgba(22, 29, 41, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                                        <button class="btn btn-success w-100 fw-bold py-2 shadow-sm" onclick="saveGlobalThemeConfig()">
+                                            <i class="fas fa-save me-2"></i> Save & Apply Global Theme
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- HERO SLIDE MODAL (ADD / EDIT)                            -->
+    <!-- ======================================================== -->
+    <div class="modal fade" id="heroSlideModal" tabindex="-1" aria-labelledby="heroSlideModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content shadow-lg border-0">
+                <form onsubmit="saveHeroSlideForm(event)">
+                    <div class="modal-header bg-dark text-white p-3">
+                        <h5 class="modal-title fw-bold" id="heroSlideModalLabel"><i class="fas fa-sliders text-danger me-2"></i> Hero Swiper Slide</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onclick="closeHeroSlideModal()"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <input type="hidden" id="slide-form-id">
+                        
+                        <!-- Slide Active Switch -->
+                        <div class="p-2 px-3 bg-light rounded border mb-3 d-flex justify-content-between align-items-center">
+                            <span class="small fw-bold text-dark"><i class="fas fa-toggle-on text-success me-1"></i> Slide Status:</span>
+                            <div class="form-check form-switch m-0">
+                                <input class="form-check-input" type="checkbox" id="slide-form-active" checked style="cursor: pointer;" onchange="document.getElementById('slide-form-active-label').textContent = this.checked ? 'ACTIVE / VISIBLE' : 'DISABLED / HIDDEN'">
+                                <label class="form-check-label small fw-bold" for="slide-form-active" id="slide-form-active-label">ACTIVE / VISIBLE</label>
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-dark">Slide Subtitle (Top Badge)</label>
+                                <input type="text" id="slide-form-subtitle" class="form-control" placeholder="e.g. ULTIMATE PORTABILITY & POWER">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-dark">Highlight Text (Accent Red)</label>
+                                <input type="text" id="slide-form-highlight" class="form-control" placeholder="e.g. GAMING LAPTOPS">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold small text-dark">Main Slide Heading / Title <span class="text-danger">*</span></label>
+                                <input type="text" id="slide-form-title" class="form-control" required placeholder="e.g. NEXT-GEN HIGH-PERFORMANCE GAMING LAPTOPS">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold small text-dark">Slide Description</label>
+                                <textarea id="slide-form-desc" class="form-control" rows="3" placeholder="Enter engaging hardware description..."></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-dark">Action Button Label</label>
+                                <input type="text" id="slide-form-btn-text" class="form-control" placeholder="e.g. SHOP LAPTOPS">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-dark">Action Button Link</label>
+                                <input type="text" id="slide-form-btn-link" class="form-control" placeholder="e.g. shop.html?category=laptops">
+                            </div>
+                            <div class="col-12 border-top pt-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <label class="form-label fw-bold small text-dark m-0"><i class="fas fa-photo-video text-danger me-1"></i> Slide Media (Image or Video)</label>
+                                    <div style="width: 200px;">
+                                        <select id="slide-form-media-type" class="form-select form-select-sm" onchange="window.updateSlideModalPreview(document.getElementById('slide-form-image-url').value, this.value)">
+                                            <option value="image">Image (PNG / JPG / GIF)</option>
+                                            <option value="video">Video (MP4 / WebM)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row g-3 align-items-center">
+                                    <div class="col-md-4 text-center">
+                                        <div id="slide-form-media-preview-container" class="bg-dark rounded p-2 d-flex align-items-center justify-content-center" style="height: 120px;">
+                                            <img id="slide-form-image-preview" src="assets/images/slider/laptop.png" style="max-height: 100px; max-width: 100%; object-fit: contain;">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="mb-2">
+                                            <label class="form-label small text-secondary mb-1">Upload File (from PC / Mobile)</label>
+                                            <input type="file" id="slide-form-image-file" accept="image/*,video/*" class="form-control form-control-sm" onchange="handleSlideFileUpload(this)">
+                                        </div>
+                                        <div>
+                                            <label class="form-label small text-secondary mb-1">Media URL / Relative Path</label>
+                                            <input type="text" id="slide-form-image-url" class="form-control form-control-sm" placeholder="assets/images/slider/... or assets/videos/..." oninput="window.updateSlideModalPreview(this.value, document.getElementById('slide-form-media-type').value)">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light p-3">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="closeHeroSlideModal()">Cancel</button>
+                        <button type="submit" class="btn btn-danger fw-bold px-4"><i class="fas fa-save me-1"></i> Save Hero Slide</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/products-data.js"></script>
+    <script src="assets/js/gug-erp-core.js"></script>
+    <!-- Firebase Compat SDKs & Cloud Sync -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/firebase-sync.js"></script>
+    <script src="assets/js/admin.js"></script>
+    <script>
+        // ========================================================
+        // DYNAMIC MULTI-CONTACT MANAGEMENT ENGINE
+        // ========================================================
+        window.renderContactFieldRow = function(category, value) {
+            const val = (value || '').replace(/"/g, '&quot;');
+            let iconClass = 'fas fa-phone text-danger';
+            let placeholder = 'e.g. 021 34832214';
+            let inputType = 'text';
+            let itemClass = 'contact-query-phone';
+
+            if (category === 'whatsapp') {
+                iconClass = 'fab fa-whatsapp text-success';
+                placeholder = 'e.g. 0300 1234567';
+                itemClass = 'contact-whatsapp-number';
+            } else if (category === 'email') {
+                iconClass = 'fas fa-envelope text-primary';
+                placeholder = 'e.g. sales@gearupgadget.com';
+                inputType = 'email';
+                itemClass = 'contact-support-email';
+            } else if (category === 'phone') {
+                iconClass = 'fas fa-phone-volume text-warning';
+                placeholder = 'e.g. 021 34832215';
+                itemClass = 'contact-general-phone';
+            }
+
+            const row = document.createElement('div');
+            row.className = 'input-group input-group-sm mb-2 contact-dynamic-row';
+            row.innerHTML = `
+                <span class="input-group-text" style="background: rgba(26, 34, 48, 0.95); border-color: rgba(255, 255, 255, 0.18);"><i class="${iconClass}"></i></span>
+                <input type="${inputType}" class="form-control ${itemClass}" value="${val}" placeholder="${placeholder}" oninput="if(typeof updateLiveThemePreview==='function') updateLiveThemePreview()">
+                <button type="button" class="btn btn-outline-danger btn-sm" onclick="window.removeContactField(this, '${category}')" title="Remove Entry"><i class="fas fa-trash-alt"></i></button>
+            `;
+            return row;
+        };
+
+        window.addContactField = function(category, value = '') {
+            let containerId = 'queries-phones-list';
+            if (category === 'whatsapp') containerId = 'whatsapp-numbers-list';
+            else if (category === 'email') containerId = 'support-emails-list';
+            else if (category === 'phone') containerId = 'general-phones-list';
+
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            const row = window.renderContactFieldRow(category, value);
+            container.appendChild(row);
+            if (!value) {
+                const input = row.querySelector('input');
+                if (input) input.focus();
+            }
+            if (typeof window.updateLiveThemePreview === 'function') {
+                window.updateLiveThemePreview();
+            }
+        };
+
+        window.removeContactField = function(buttonEl, category) {
+            const row = buttonEl ? buttonEl.closest('.contact-dynamic-row') : null;
+            if (!row) return;
+            const container = row.parentElement;
+            row.remove();
+            // If all rows removed, restore 1 empty input row so admin always has an input
+            if (container && container.querySelectorAll('.contact-dynamic-row').length === 0) {
+                window.addContactField(category, '');
+            }
+            if (typeof window.updateLiveThemePreview === 'function') {
+                window.updateLiveThemePreview();
+            }
+        };
+
+        window.getDynamicContacts = function(category) {
+            let selector = '.contact-query-phone';
+            if (category === 'whatsapp') selector = '.contact-whatsapp-number';
+            else if (category === 'email') selector = '.contact-support-email';
+            else if (category === 'phone') selector = '.contact-general-phone';
+
+            const inputs = document.querySelectorAll(selector);
+            const result = [];
+            inputs.forEach(i => {
+                const v = (i.value || '').trim();
+                if (v) result.push(v);
+            });
+            return result;
+        };
+
+        window.populateDynamicContacts = function(cfg) {
+            const qList = document.getElementById('queries-phones-list');
+            const waList = document.getElementById('whatsapp-numbers-list');
+            const emList = document.getElementById('support-emails-list');
+            const phList = document.getElementById('general-phones-list');
+
+            if (qList) qList.innerHTML = '';
+            if (waList) waList.innerHTML = '';
+            if (emList) emList.innerHTML = '';
+            if (phList) phList.innerHTML = '';
+
+            // 1. Queries Phones
+            let queries = (cfg && Array.isArray(cfg.queriesPhones) && cfg.queriesPhones.length > 0)
+                ? cfg.queriesPhones
+                : [(cfg && (cfg.footerPhone || cfg.topbarPhone)) || '021 34832214'];
+            queries.forEach(q => window.addContactField('queries', q));
+
+            // 2. WhatsApp Numbers
+            let whatsapps = (cfg && Array.isArray(cfg.whatsappNumbers) && cfg.whatsappNumbers.length > 0)
+                ? cfg.whatsappNumbers
+                : ((cfg && cfg.footerWhatsapp) ? [cfg.footerWhatsapp] : []);
+            if (whatsapps.length === 0) {
+                window.addContactField('whatsapp', '');
+            } else {
+                whatsapps.forEach(w => window.addContactField('whatsapp', w));
+            }
+
+            // 3. Support Emails
+            let emails = (cfg && Array.isArray(cfg.supportEmails) && cfg.supportEmails.length > 0)
+                ? cfg.supportEmails
+                : [(cfg && (cfg.footerEmail || cfg.topbarEmail)) || 'sales@gearupgadget.com'];
+            emails.forEach(e => window.addContactField('email', e));
+
+            // 4. General / Landline Phones
+            let phones = (cfg && Array.isArray(cfg.generalPhones) && cfg.generalPhones.length > 0)
+                ? cfg.generalPhones
+                : [(cfg && (cfg.topbarPhone || cfg.footerPhone)) || '021 34832214'];
+            phones.forEach(p => window.addContactField('phone', p));
+        };
+
+        // ========================================================
+        // ENTERPRISE SIDEBAR ROUTING & TAB NAVIGATION ENGINE
+        // ========================================================
+        function initAdminSidebarRouting() {
+            const sidebar = document.querySelector('.admin-sidebar');
+            if (!sidebar) return;
+
+            // Direct Click Routing for all Sidebar Links
+            sidebar.querySelectorAll('.admin-nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    if (this.getAttribute('target') === '_blank') return;
+                    if (this.getAttribute('onclick')) return;
+
+                    if (href && href !== '#' && !href.startsWith('javascript:')) {
+                        e.preventDefault();
+                        sessionStorage.setItem('gug_admin_sidebar_scroll', sidebar.scrollTop);
+                        window.location.href = href;
+                    }
+                });
+            });
+
+            // Collapsible Accordion Group Headers
+            sidebar.querySelectorAll('.sidebar-accordion-header').forEach(header => {
+                header.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const targetId = this.getAttribute('data-target');
+                    const body = targetId ? document.getElementById(targetId) : this.nextElementSibling;
+                    if (body) {
+                        const isOpen = body.classList.contains('open');
+                        body.classList.toggle('open', !isOpen);
+                        this.classList.toggle('open', !isOpen);
+                        
+                        const savedStates = JSON.parse(sessionStorage.getItem('gug_admin_accordion_states') || '{}');
+                        if (targetId) savedStates[targetId] = !isOpen;
+                        sessionStorage.setItem('gug_admin_accordion_states', JSON.stringify(savedStates));
+                    }
+                });
+            });
+        }
+
+        function initBannerThemeTabs() {
+            const tabButtons = document.querySelectorAll('#bannerThemeTabs button[data-bs-toggle="tab"]');
+            
+            function switchTab(targetSelector) {
+                if (!targetSelector) return;
+                tabButtons.forEach(btn => {
+                    if (btn.getAttribute('data-bs-target') === targetSelector) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+                document.querySelectorAll('#bannerThemeTabsContent .tab-pane').forEach(p => {
+                    p.classList.remove('show', 'active');
+                });
+                const targetPane = document.querySelector(targetSelector);
+                if (targetPane) {
+                    targetPane.classList.add('show', 'active');
+                }
+                try {
+                    sessionStorage.setItem('gug_active_banner_tab', targetSelector);
+                    if (window.location.hash !== targetSelector) {
+                        history.replaceState(null, '', targetSelector);
+                    }
+                } catch(e) {}
+            }
+
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetSelector = this.getAttribute('data-bs-target');
+                    switchTab(targetSelector);
+                });
+            });
+
+            // Restore tab from hash or sessionStorage
+            const hash = window.location.hash;
+            const savedTab = sessionStorage.getItem('gug_active_banner_tab');
+            if (hash && document.querySelector(hash)) {
+                switchTab(hash);
+            } else if (savedTab && document.querySelector(savedTab)) {
+                switchTab(savedTab);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.GUG_DB) {
+                GUG_DB.renderGlobalHeader('gug-global-header-container', 'Banners & Themes Customizer');
+                GUG_DB.renderBeginnerHelpBanner('gug-beginner-help-container', {
+                    whereAmI: 'Storefront Campaign & Visual Theme Customizer',
+                    whatCanIDo: 'Toggle hero carousel slides, strip banners, 4-grid promo cards, customize full website colors (Navbar, Footer, Product Cards, Page Background), and configure sales events.',
+                    whatNext: 'Use the ON/OFF switches to toggle components or click preset palettes to instantly apply modern themes to your storefront.'
+                });
+            }
+
+            initAdminSidebarRouting();
+            initBannerThemeTabs();
+
+            // Populate contacts from stored config
+            try {
+                const savedConfig = JSON.parse(localStorage.getItem('gug_event_theme_config') || '{}');
+                const cfg = Object.assign({}, (typeof DEFAULT_THEME !== 'undefined' ? DEFAULT_THEME : {}), savedConfig);
+                window.populateDynamicContacts(cfg);
+            } catch(e) {
+                console.warn('[Contacts Init] Fallback load:', e);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+﻿{
+  "name": "gear-up-gadgets",
+  "version": "1.0.0",
+  "description": "Gear Up Gadgets E-Commerce & ERP Operating System",
+  "main": "index.html",
+  "scripts": {
+    "build": "powershell -ExecutionPolicy Bypass -File build.ps1",
+    "deploy": "firebase deploy --only hosting"
+  },
+  "keywords": ["ecommerce", "erp", "hardware", "gadgets"],
+  "author": "Gear Up Gadgets",
+  "license": "ISC"
+}

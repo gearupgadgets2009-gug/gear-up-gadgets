@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="utf-8">
+    <title>Sales & Campaign Deals | Gear Up Gadgets</title>    
+    <!-- Favicon & Device Web Icons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/images/favicon-64x64.png">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <link rel="stylesheet" href="assets/css/swiper-bundle.min.css">
+    <link rel="stylesheet" href="assets/icon/icomoon/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important; }
+        .list-group-item:hover a { color: var(--accent-red) !important; padding-left: 5px; transition: 0.3s; }
+        h4.section-title { border-bottom: 2px solid var(--accent-red); padding-bottom: 10px; margin-bottom: 20px; display: inline-block; color: white; font-weight: bold; }
+        .sidebar-cat-btn { background: none; border: none; padding: 0; width: 100%; text-align: left; font-size: 14px; }
+        .sidebar-cat-btn.active { color: var(--accent-red) !important; font-weight: bold; }
+        
+        /* Pagination Styling */
+        nav[aria-label="Shop Pagination"],
+        .shop-pagination-nav {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            width: 100% !important;
+            margin-top: 50px !important;
+            margin-bottom: 30px !important;
+            clear: both !important;
+        }
+
+        ul.pagination#pagination-controls,
+        .pagination {
+            display: inline-flex !important;
+            flex-direction: row !important;
+            flex-wrap: wrap !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 8px !important;
+            margin: 0 auto !important;
+            padding: 0 !important;
+            list-style: none !important;
+            border: none !important;
+            background: transparent !important;
+        }
+
+        .pagination .page-item {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            list-style: none !important;
+            border: none !important;
+            background: transparent !important;
+        }
+
+        .pagination .page-item .page-link {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-width: 42px !important;
+            height: 42px !important;
+            padding: 0 14px !important;
+            margin: 0 !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            color: var(--text-primary, #ffffff) !important;
+            background-color: var(--bg-card, #121820) !important;
+            border: 1px solid var(--border-color, #232b36) !important;
+            border-radius: 8px !important;
+            text-decoration: none !important;
+            cursor: pointer !important;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25) !important;
+            user-select: none !important;
+            line-height: 1 !important;
+            box-sizing: border-box !important;
+        }
+
+        .pagination .page-item .page-link:hover {
+            background-color: rgba(219, 39, 36, 0.15) !important;
+            border-color: var(--accent-red, #db2724) !important;
+            color: var(--accent-red, #db2724) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(219, 39, 36, 0.3) !important;
+        }
+
+        .pagination .page-item.active .page-link {
+            background: linear-gradient(135deg, var(--accent-red, #db2724), #ff3b38) !important;
+            border-color: var(--accent-red, #db2724) !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
+            box-shadow: 0 4px 16px rgba(219, 39, 36, 0.5) !important;
+            pointer-events: none !important;
+            transform: translateY(-1px);
+        }
+
+        .pagination .page-item.disabled .page-link {
+            background-color: rgba(255, 255, 255, 0.02) !important;
+            border-color: rgba(255, 255, 255, 0.07) !important;
+            color: rgba(255, 255, 255, 0.25) !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+            box-shadow: none !important;
+            transform: none !important;
+        }
+
+        .pagination .page-item.dots .page-link {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            color: var(--text-secondary, #94a3b8) !important;
+            min-width: 28px !important;
+            padding: 0 !important;
+            cursor: default !important;
+            pointer-events: none !important;
+            font-size: 16px !important;
+            letter-spacing: 2px !important;
+        }
+    </style>
+    
+    <style id="elite-cargo-styles">
+        .btn-cargo-expert.is-processing { pointer-events: none; }
+        .btn-cargo-expert.is-processing .cart-text { opacity: 0 !important; }
+        .btn-cargo-expert.is-processing .conveyor-line { opacity: 1 !important; animation: eliteMoveLine 1.5s 0.3s linear; }
+        .btn-cargo-expert.is-processing .box-item { animation: eliteBoxDrop 2.5s forwards cubic-bezier(0.4, 0, 0.2, 1); }
+        .btn-cargo-expert.is-processing .cart-vehicle { animation: eliteCartDrive 2.5s forwards cubic-bezier(0.4, 0, 0.2, 1); }
+        .btn-cargo-expert.is-processing .success-text { animation: eliteTextFade 0.5s 2.2s forwards; }
+
+        @keyframes eliteMoveLine {
+            0% { background-position: 0 0; }
+            100% { background-position: 100px 0; }
+        }
+
+        @keyframes eliteBoxDrop {
+            0% { top: -30px; left: 30px; opacity: 0; transform: scale(0.5); }
+            10% { top: 20px; left: 30px; opacity: 1; transform: scale(1); } 
+            15% { top: 20px; left: 30px; opacity: 1; transform: scale(1); }
+            40% { top: 20px; left: calc(100% - 60px); opacity: 1; transform: scale(1); } 
+            45% { top: 24px; left: calc(100% - 50px); opacity: 1; transform: rotate(45deg) scale(0.5); } 
+            50% { top: 30px; left: calc(100% - 50px); opacity: 0; transform: scale(0); } 
+            100% { top: 30px; left: calc(100% - 50px); opacity: 0; transform: scale(0); }
+        }
+
+        @keyframes eliteCartDrive {
+            0% { right: -40px; transform: translateX(0); }
+            20% { right: -40px; transform: translateX(0); }
+            40% { right: 30px; transform: translateX(0); } 
+            45% { right: 30px; transform: translateY(4px); } 
+            50% { right: 30px; transform: translateY(0); }
+            60% { right: 30px; transform: translateY(0); }
+            90% { right: 30px; transform: translateX(100px); } 
+            100% { right: 30px; transform: translateX(100px); }
+        }
+
+        @keyframes eliteTextFade {
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div id="wrapper">
+        <!-- ISOLATED NAVBAR CONTAINER -->
+        <div id="header-placeholder"></div>
+        
+        <!-- SALES PROMOTIONAL CAMPAIGN BANNER CONTAINER -->
+        <div id="sales-banner-slider-container" style="display: none; width: 100%; margin-top: 85px;">
+            <!-- Dynamically injected as single hero banner or multi-slide carousel -->
+        </div>
+        
+        <!-- MAIN SALES CONTENT WRAPPER -->
+        <div class="gug-container py-4" id="main-content-wrapper" style="margin-top: 100px;">
+            <div class="row">
+                <!-- Main Content Area -->
+                <div class="col-12">
+                    <!-- Dynamic Product Container -->
+                    <div class="mb-5">
+                        <div class="d-flex justify-content-between align-items-end border-bottom mb-4 pb-3" style="border-color: rgba(255,255,255,0.1) !important;">
+                            <h4 class="section-title mb-0" id="shop-title">Promotional Sale Deals</h4>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-danger px-3 py-2 fw-bold text-uppercase" id="sales-status-badge">
+                                    <i class="fas fa-bolt me-1"></i> Flash Deals Active
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Main Products Grid -->
+                        <div class="row g-2 g-md-4 mt-2" id="main-shop-grid">
+                            <!-- Populated dynamically -->
+                        </div>
+                        
+                        <!-- Pagination Container -->
+                        <nav class="mt-5" aria-label="Shop Pagination" id="shop-pagination-wrapper">
+                            <ul class="pagination justify-content-center" id="pagination-controls">
+                                <!-- Pagination injected dynamically -->
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ISOLATED FOOTER CONTAINER -->
+        <div id="footer-placeholder"></div>
+    </div>
+    
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/products-data.js"></script>
+    <script src="assets/js/gug-erp-core.js"></script>
+    <script src="assets/js/common.js"></script>
+    <script src="assets/js/swiper-bundle.min.js"></script>
+    
+    <script>
+        // Ensure global products array is available
+        window.PRODUCTS_DATA = (typeof productDatabase !== 'undefined' && Array.isArray(productDatabase)) 
+            ? productDatabase 
+            : (window.PRODUCTS_DATA || []);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. ISOLATE AND GUARANTEE LAYOUT RENDERING (Navbar & Footer)
+            try {
+                if (typeof window.injectHeader === 'function') window.injectHeader();
+                if (typeof window.injectFooter === 'function') window.injectFooter();
+            } catch (err) {
+                console.warn('Navbar/Footer layout initialization notice:', err);
+            }
+
+            // 2. DOM Elements
+            const mainGrid = document.getElementById('main-shop-grid');
+            const shopTitle = document.getElementById('shop-title');
+            const statusBadge = document.getElementById('sales-status-badge');
+            const paginationControls = document.getElementById('pagination-controls');
+            const paginationWrapper = document.getElementById('shop-pagination-wrapper');
+
+            // 3. Routing & Filter Parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            let currentCategory = (urlParams.get('category') || 'all').toLowerCase().trim();
+            let currentSearch = (urlParams.get('search') || '').trim();
+            let currentBrand = (urlParams.get('brand') || '').trim();
+            let currentPage = 1;
+            const itemsPerPage = 16;
+            let activeProducts = [];
+
+            // 4. Safe Catalog Retrieval
+            function getCatalog() {
+                let prods = [];
+                try {
+                    if (window.GUG_DB && typeof window.GUG_DB.getStorefrontProducts === 'function') {
+                        prods = window.GUG_DB.getStorefrontProducts();
+                    } else if (window.GUG_DB && typeof window.GUG_DB.getProducts === 'function') {
+                        prods = window.GUG_DB.getProducts();
+                    } else if (typeof productDatabase !== 'undefined' && Array.isArray(productDatabase)) {
+                        prods = productDatabase;
+                    } else if (window.PRODUCTS_DATA && Array.isArray(window.PRODUCTS_DATA)) {
+                        prods = window.PRODUCTS_DATA;
+                    }
+                } catch (e) {
+                    console.error('Error fetching catalog in sales.html:', e);
+                    prods = (typeof productDatabase !== 'undefined' && Array.isArray(productDatabase)) ? productDatabase : [];
+                }
+                return Array.isArray(prods) ? prods : [];
+            }
+
+            // 5. Robust Product On-Sale Predicate
+            function isProductOnSale(p) {
+                if (!p || typeof p !== 'object') return false;
+                if (p?.onSale === true || p?.isOnSale === true) return true;
+                if (typeof p?.saleDiscountPercent === 'number' && p.saleDiscountPercent > 0) return true;
+                if (p?.saleDiscountPercent && parseInt(p.saleDiscountPercent, 10) > 0) return true;
+                
+                const orig = parseFloat(String(p?.originalPrice || '').replace(/[^0-9.]/g, ''));
+                const curr = parseFloat(String(p?.sellingPrice || p?.price || '').replace(/[^0-9.]/g, ''));
+                if (!isNaN(orig) && !isNaN(curr) && orig > curr && curr > 0) {
+                    return true;
+                }
+                return false;
+            }
+
+            // 6. Safe Product Card Generator
+            function renderCard(p, index) {
+                if (!p || typeof p !== 'object') return '';
+
+                const pId = p?.id || p?.numericId || ('P-' + index);
+                const pName = p?.name || p?.title || 'Gear Up Product';
+                const pCategory = p?.category || 'Hardware & Gadgets';
+                const pImage = p?.image || 'assets/images/logo.png';
+                
+                // Price formatting
+                let rawPrice = String(p?.sellingPrice || p?.price || '0').replace(/[^0-9.]/g, '');
+                let formattedPrice = parseFloat(rawPrice || '0').toLocaleString('en-US');
+                
+                let priceHtml = `<span class="fw-bold" style="font-size: 16px; color: var(--accent-red);">Rs. ${formattedPrice}</span>`;
+                
+                const rawOrig = String(p?.originalPrice || '').replace(/[^0-9.]/g, '');
+                const origVal = parseFloat(rawOrig);
+                if (!isNaN(origVal) && origVal > 0) {
+                    priceHtml = `
+                        <div class="d-flex flex-column">
+                            <span class="text-secondary text-decoration-line-through" style="font-size: 12px;">Rs. ${origVal.toLocaleString('en-US')}</span>
+                            <span class="fw-bold" style="font-size: 16px; color: var(--accent-red);">Rs. ${formattedPrice}</span>
+                        </div>
+                    `;
+                }
+
+                // Badges
+                let leftBadges = [];
+                if (p?.isNew) {
+                    leftBadges.push(`<div style="background: #28a745; color: white; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: bold; margin-bottom: 5px;">NEW</div>`);
+                }
+
+                const eventName = (localStorage.getItem("gug_sales_event_name") || 'SPECIAL SALE').trim();
+                leftBadges.push(`<div style="background: #E50303; color: white; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: bold; margin-bottom: 5px;">${eventName.toUpperCase()}</div>`);
+                const badgeHtml = leftBadges.length > 0 ? `<div style="position: absolute; top: 10px; left: 10px; z-index: 10; display: flex; flex-direction: column;">${leftBadges.join("")}</div>` : "";
+
+                // Right discount badge
+                let saleText = "SALE";
+                if (p?.saleDiscountPercent) {
+                    saleText = `${p.saleDiscountPercent}% OFF`;
+                } else if (!isNaN(origVal) && origVal > parseFloat(rawPrice || '0')) {
+                    const perc = Math.round(((origVal - parseFloat(rawPrice)) / origVal) * 100);
+                    if (perc > 0) saleText = `${perc}% OFF`;
+                }
+                const discountBadge = `<div style="position: absolute; top: 10px; right: 10px; background: #E50303; color: white; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: bold; z-index: 10;">${saleText}</div>`;
+
+                const slideDir = (index % 2 === 0) ? 'left' : 'right';
+                const stockQty = typeof window.getProductStockNumber === 'function' 
+                    ? window.getProductStockNumber(p) 
+                    : (p?.totalStock || p?.stockQuantity || 0);
+                
+                const stockBadge = typeof window.formatProductStockBadge === 'function' 
+                    ? window.formatProductStockBadge(p, true) 
+                    : (stockQty > 5 
+                        ? `<span class="stock-badge in-stock" style="font-size:10px;font-weight:700;color:#10b981;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);padding:2px 6px;border-radius:4px;white-space:nowrap;"><i class="fas fa-boxes-stacked"></i> ${stockQty} stocks available</span>` 
+                        : (stockQty > 0 
+                            ? `<span class="stock-badge low-stock" style="font-size:10px;font-weight:700;color:#f59e0b;background:rgba(245,158,11,0.14);border:1px solid rgba(245,158,11,0.35);padding:2px 6px;border-radius:4px;white-space:nowrap;"><i class="fas fa-fire"></i> Only ${stockQty} left</span>` 
+                            : `<span class="stock-badge out-of-stock" style="font-size:10px;font-weight:700;color:#ef4444;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);padding:2px 6px;border-radius:4px;white-space:nowrap;"><i class="fas fa-circle-xmark"></i> Out of stock</span>`));
+                
+                const isOutOfStock = stockQty <= 0;
+
+                return `
+                <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-3 mb-md-4 slide-hidden" data-slide-direction="${slideDir}">
+                    <div class="card overflow-hidden transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-2xl h-100 border-0 shadow-sm" style="background-color: var(--bg-card); cursor: pointer;" onclick="if (!event.target.closest('.add-to-cart-btn') && typeof window.showQuickViewModal === 'function') window.showQuickViewModal('${pId}')">
+                        ${badgeHtml}
+                        ${discountBadge}
+                        <div class="rounded-t-lg" style="height: 180px; display: flex; align-items: center; justify-content: center; background-color: #fff; padding: 10px;">
+                            ${(window.isMediaVideo && window.isMediaVideo(pImage)) ? `<video src="${pImage}" autoplay loop muted playsinline style="max-width: 100%; max-height: 100%; object-fit: contain;"></video>` : `<img src="${pImage}" alt="${pName}" loading="lazy" decoding="async" onerror="this.src='assets/images/logo.png'" style="max-width: 100%; max-height: 100%; object-fit: contain;">`}
+                        </div>
+                        <div class="card-body d-flex flex-column" style="padding: 15px;">
+                            <div class="d-flex justify-content-between align-items-center mb-1 flex-wrap gap-1">
+                                <span class="text-secondary fw-semibold tracking-wide" style="font-size: 11px; text-transform: uppercase;">${pCategory}</span>
+                                ${stockBadge}
+                            </div>
+                            <h6 class="card-title text-white mb-2" style="font-size: 13px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; flex-grow: 1;">${pName}</h6>
+                            <div class="mt-auto pt-2 border-top" style="border-color: rgba(255,255,255,0.1) !important;">
+                                ${priceHtml}
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-3">
+                            ${isOutOfStock ? `
+                                <button class="btn w-100 btn-sm fw-bold" style="background-color: #2a2a2a; border-color: #3a3a3a; color: #777; cursor: not-allowed; padding: 8px 12px; border-radius: 4px;" disabled>
+                                    <i class="fas fa-circle-xmark me-1"></i> Out of Stock
+                                </button>
+                            ` : `
+                                <button class="btn btn-danger w-100 btn-sm fw-bold add-to-cart-btn" onclick="event.stopPropagation(); if (typeof window.handleAddToCart === 'function') { window.handleAddToCart(event, '${pId}'); } else if (typeof window.addToCart === 'function') { window.addToCart('${pId}', 1); }" style="padding: 8px 12px; border-radius: 4px; box-shadow: 0 4px 12px rgba(229, 3, 3, 0.3);">
+                                    <i class="fas fa-shopping-cart me-1"></i> Add to Cart
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                </div>`;
+            }
+
+            // 7. Pagination Renderer
+            function renderPagination(totalPages) {
+                if (!paginationControls) return;
+                if (totalPages <= 1) {
+                    paginationControls.innerHTML = '';
+                    if (paginationWrapper) paginationWrapper.classList.add('d-none');
+                    return;
+                }
+                if (paginationWrapper) paginationWrapper.classList.remove('d-none');
+
+                let html = '';
+                
+                // Prev button
+                html += `
+                    <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                        <a class="page-link" data-page="${currentPage - 1}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo; Prev</span>
+                        </a>
+                    </li>
+                `;
+                
+                let startPage = 1;
+                let endPage = totalPages;
+
+                if (totalPages > 7) {
+                    if (currentPage <= 4) {
+                        startPage = 1;
+                        endPage = 5;
+                    } else if (currentPage >= totalPages - 3) {
+                        startPage = totalPages - 4;
+                        endPage = totalPages;
+                    } else {
+                        startPage = currentPage - 1;
+                        endPage = currentPage + 1;
+                    }
+                }
+
+                if (startPage > 1) {
+                    html += `
+                        <li class="page-item ${currentPage === 1 ? 'active' : ''}">
+                            <a class="page-link" data-page="1">1</a>
+                        </li>
+                    `;
+                    if (startPage > 2) {
+                        html += `
+                            <li class="page-item dots disabled">
+                                <span class="page-link">&hellip;</span>
+                            </li>
+                        `;
+                    }
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    html += `
+                        <li class="page-item ${currentPage === i ? 'active' : ''}">
+                            <a class="page-link" data-page="${i}">${i}</a>
+                        </li>
+                    `;
+                }
+
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) {
+                        html += `
+                            <li class="page-item dots disabled">
+                                <span class="page-link">&hellip;</span>
+                            </li>
+                        `;
+                    }
+                    html += `
+                        <li class="page-item ${currentPage === totalPages ? 'active' : ''}">
+                            <a class="page-link" data-page="${totalPages}">${totalPages}</a>
+                        </li>
+                    `;
+                }
+
+                // Next button
+                html += `
+                    <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                        <a class="page-link" data-page="${currentPage + 1}" aria-label="Next">
+                            <span aria-hidden="true">Next &raquo;</span>
+                        </a>
+                    </li>
+                `;
+
+                paginationControls.innerHTML = html;
+
+                paginationControls.querySelectorAll('.page-link').forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const parent = this.closest('.page-item');
+                        if (parent?.classList.contains('disabled') || parent?.classList.contains('active')) return;
+                        
+                        const newPage = parseInt(this.getAttribute('data-page'), 10);
+                        if (newPage >= 1 && newPage <= totalPages) {
+                            currentPage = newPage;
+                            updateGridView();
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }
+                    });
+                });
+            }
+
+            // 8. Grid View Updater with Empty State Fallback
+            function updateGridView() {
+                if (!mainGrid) return;
+
+                const isSalesActive = localStorage.getItem('gug_sales_page_active') !== 'false';
+                const eventName = (localStorage.getItem('gug_sales_event_name') || 'Seasonal Campaign').trim();
+
+                // If sale was deactivated from admin, show friendly campaign message instead of breaking
+                if (!isSalesActive) {
+                    if (statusBadge) {
+                        statusBadge.className = 'badge bg-secondary px-3 py-2 fw-bold text-uppercase';
+                        statusBadge.innerHTML = '<i class="fas fa-pause me-1"></i> Campaign Paused';
+                    }
+                    if (shopTitle) shopTitle.innerText = `${eventName.toUpperCase()} (Paused)`;
+                    mainGrid.innerHTML = `
+                        <div class="col-12 text-center py-5">
+                            <div class="p-5 rounded-4 shadow-sm" style="background: rgba(20, 25, 31, 0.45); border: 1px solid rgba(255, 255, 255, 0.1);">
+                                <i class="fas fa-bullhorn text-danger mb-3" style="font-size: 3rem;"></i>
+                                <h3 class="text-white fw-bold mb-2">Promotional Campaign Paused</h3>
+                                <p class="text-secondary mx-auto mb-4" style="max-width: 520px; font-size: 14px; line-height: 1.6;">
+                                    This sales campaign is currently paused in the Admin Panel. Explore our standard catalog with verified warranty and fast shipping across Pakistan.
+                                </p>
+                                <a href="shop.html" class="btn btn-danger px-4 py-2 rounded-pill fw-bold">
+                                    <i class="fas fa-boxes-stacked me-2"></i> Browse All Products
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    if (paginationControls) paginationControls.innerHTML = '';
+                    if (paginationWrapper) paginationWrapper.classList.add('d-none');
+                    return;
+                }
+
+                if (activeProducts.length === 0) {
+                    mainGrid.innerHTML = `
+                        <div class="col-12 text-center py-5">
+                            <div class="p-5 rounded-4 shadow-sm" style="background: rgba(20, 25, 31, 0.45); border: 1px solid rgba(255, 255, 255, 0.1);">
+                                <i class="fas fa-tags text-danger mb-3" style="font-size: 3rem;"></i>
+                                <h3 class="text-white fw-bold mb-2">${eventName.toUpperCase()}</h3>
+                                <h6 class="text-secondary mb-3">No Products Currently Marked for Promotional Sale</h6>
+                                <p class="text-secondary mx-auto mb-4" style="max-width: 520px; font-size: 14px; line-height: 1.6;">
+                                    Discounted products can be configured directly from the Admin Panel under the Products & Catalog section. Check back shortly for updated deals!
+                                </p>
+                                <div class="d-flex align-items-center justify-content-center gap-3 flex-wrap">
+                                    <a href="shop.html" class="btn btn-danger px-4 py-2 rounded-pill fw-bold">
+                                        <i class="fas fa-boxes-stacked me-2"></i> View Full Store Catalog
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    if (paginationControls) paginationControls.innerHTML = '';
+                    if (paginationWrapper) paginationWrapper.classList.add('d-none');
+                    return;
+                }
+
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+                const paginatedItems = activeProducts.slice(startIndex, endIndex);
+
+                mainGrid.innerHTML = paginatedItems.map((p, index) => renderCard(p, index)).join('');
+                
+                mainGrid.querySelectorAll('.slide-hidden').forEach(el => {
+                    if (window.gugScrollObserver) {
+                        window.gugScrollObserver.observe(el);
+                    }
+                });
+                
+                const totalPages = Math.ceil(activeProducts.length / itemsPerPage);
+                renderPagination(totalPages);
+            }
+
+            // 9. Filtering Engine
+            function applyFilters() {
+                try {
+                    let filtered = getCatalog();
+                    
+                    // Filter strictly for products on sale
+                    filtered = filtered.filter(p => isProductOnSale(p));
+                    
+                    if (currentCategory && currentCategory !== 'all') {
+                        filtered = filtered.filter(p => (p?.category || '').toLowerCase().includes(currentCategory));
+                    }
+                    
+                    if (currentBrand) {
+                        const b = currentBrand.toLowerCase();
+                        filtered = filtered.filter(p => 
+                            (p?.brand || '').toLowerCase().includes(b) || 
+                            (p?.name || p?.title || '').toLowerCase().includes(b)
+                        );
+                    }
+
+                    if (currentSearch) {
+                        const s = currentSearch.toLowerCase();
+                        filtered = filtered.filter(p => 
+                            (p?.name || p?.title || '').toLowerCase().includes(s) || 
+                            (p?.category || '').toLowerCase().includes(s) ||
+                            (p?.brand || '').toLowerCase().includes(s) ||
+                            (p?.description || '').toLowerCase().includes(s) ||
+                            (p?.sku || '').toLowerCase().includes(s)
+                        );
+                    }
+                    
+                    activeProducts = filtered;
+                    
+                    // Update Title
+                    const eventName = (localStorage.getItem('gug_sales_event_name') || 'SPECIAL PROMOTIONAL SALE').trim();
+                    let titleParts = [eventName.toUpperCase()];
+                    if (currentSearch) titleParts.push(`Search: "${currentSearch}"`);
+                    if (currentBrand) titleParts.push(currentBrand.toUpperCase());
+                    if (currentCategory !== 'all') titleParts.push(currentCategory.toUpperCase());
+                    titleParts.push(`(${filtered.length} Items)`);
+                    
+                    if (shopTitle) shopTitle.innerText = titleParts.join(" | ");
+                    updateGridView();
+                } catch (err) {
+                    console.error('applyFilters error:', err);
+                }
+            }
+
+            // 10. Initial Run & Event Sync
+            applyFilters();
+            window.addEventListener('productsReady', applyFilters);
+            window.addEventListener('gugProductsUpdated', applyFilters);
+            window.addEventListener('storage', function(e) {
+                if (!e || !e.key || e.key.includes('sales') || e.key.includes('products')) {
+                    applyFilters();
+                }
+            });
+        });
+    </script>
+
+    <!-- Robust Storefront Promotional Banner Fetch & Render Script -->
+    <script>
+        (function() {
+            let salesSwiperInstance = null;
+
+            // Persistent Media DB accessor for large videos & unlimited images
+            const GUG_MEDIA_DB = window.GUG_MEDIA_DB || {
+                dbName: 'GearUpGadgets_MediaDB',
+                storeName: 'sales_banners',
+                version: 1,
+                _db: null,
+
+                async open() {
+                    if (this._db) return this._db;
+                    return new Promise((resolve) => {
+                        if (typeof indexedDB === 'undefined') return resolve(null);
+                        try {
+                            const req = indexedDB.open(this.dbName, this.version);
+                            req.onupgradeneeded = (e) => {
+                                const db = e.target.result;
+                                if (!db.objectStoreNames.contains(this.storeName)) {
+                                    db.createObjectStore(this.storeName, { keyPath: 'id' });
+                                }
+                            };
+                            req.onsuccess = (e) => {
+                                this._db = e.target.result;
+                                resolve(this._db);
+                            };
+                            req.onerror = () => resolve(null);
+                        } catch(err) {
+                            resolve(null);
+                        }
+                    });
+                },
+
+                async getBanners() {
+                    try {
+                        const db = await this.open();
+                        if (!db) return null;
+                        return new Promise((resolve) => {
+                            const tx = db.transaction(this.storeName, 'readonly');
+                            const store = tx.objectStore(this.storeName);
+                            const req = store.get('primary_sales_banners');
+                            req.onsuccess = () => {
+                                if (req.result && Array.isArray(req.result.data)) {
+                                    resolve(req.result.data);
+                                } else {
+                                    resolve(null);
+                                }
+                            };
+                            req.onerror = () => resolve(null);
+                        });
+                    } catch(e) {
+                        return null;
+                    }
+                }
+            };
+
+            // Comprehensive Media Type Checker (Supports Objects, File Extensions, and Data URIs)
+            function checkIsVideo(mediaItem, explicitType) {
+                if (explicitType === 'video') return true;
+                if (explicitType === 'image') return false;
+                if (!mediaItem) return false;
+                if (typeof mediaItem === 'object') {
+                    if (mediaItem.type === 'video' || mediaItem.mediaType === 'video') return true;
+                    if (mediaItem.type === 'image' || mediaItem.mediaType === 'image') return false;
+                }
+                const src = typeof mediaItem === 'string' ? mediaItem : (mediaItem.url || mediaItem.src || mediaItem.image || '');
+                if (!src) return false;
+                const str = String(src).trim().toLowerCase();
+                if (str.startsWith('data:video/')) return true;
+                const clean = str.split('?')[0].split('#')[0];
+                return clean.endsWith('.mp4') || clean.endsWith('.webm') || clean.endsWith('.mov') || 
+                       clean.endsWith('.ogg') || clean.endsWith('.mkv') || clean.endsWith('.m4v') || clean.endsWith('.avi');
+            }
+
+            // Safe Banner Data Fetcher from LocalStorage
+            function fetchSalesBannersFromStorage() {
+                let banners = [];
+                try {
+                    const raw = localStorage.getItem('gug_sales_banners');
+                    if (raw) {
+                        const parsed = JSON.parse(raw);
+                        if (Array.isArray(parsed)) {
+                            banners = parsed;
+                        } else if (typeof parsed === 'string' && parsed.trim()) {
+                            banners = [parsed.trim()];
+                        } else if (typeof parsed === 'object' && parsed !== null) {
+                            banners = [parsed];
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Error reading gug_sales_banners from localStorage:', e);
+                }
+
+                // Fallback keys if primary key is empty
+                if (banners.length === 0) {
+                    try {
+                        const single = localStorage.getItem('gug_sales_hero_banner') || localStorage.getItem('gug_sales_banner');
+                        if (single && single.trim()) banners = [single.trim()];
+                    } catch (e) {}
+                }
+
+                if (banners.length === 0 && window.GUG_DB && typeof window.GUG_DB.getSetting === 'function') {
+                    try {
+                        const dbBanners = window.GUG_DB.getSetting('gug_sales_banners');
+                        if (Array.isArray(dbBanners) && dbBanners.length > 0) banners = dbBanners;
+                    } catch (e) {}
+                }
+
+                return banners;
+            }
+
+            // Safe Banner Display Engine
+            async function renderSalesBanners(customBanners) {
+                try {
+                    const container = document.getElementById('sales-banner-slider-container');
+                    const mainWrapper = document.getElementById('main-content-wrapper');
+                    if (!container) return;
+
+                    const isEnabled = localStorage.getItem('gug_sales_banners_enabled') !== 'false';
+                    let banners = Array.isArray(customBanners) ? customBanners : fetchSalesBannersFromStorage();
+
+                    // If banners array is empty or contains IndexedDB references, check IndexedDB
+                    const hasIdbReferences = (banners || []).some(b => b && typeof b === 'object' && b.isIndexedDB && !b.url);
+                    if ((!banners || banners.length === 0 || hasIdbReferences) && GUG_MEDIA_DB) {
+                        try {
+                            const idbBanners = await GUG_MEDIA_DB.getBanners();
+                            if (Array.isArray(idbBanners) && idbBanners.length > 0) {
+                                banners = idbBanners;
+                            }
+                        } catch(e) {}
+                    }
+
+                    // Filter valid banner entries
+                    const validBanners = (banners || []).filter(b => {
+                        if (!b) return false;
+                        if (typeof b === 'string' && b.trim()) return true;
+                        if (typeof b === 'object' && (b.url || b.src || b.image)) return true;
+                        return false;
+                    });
+
+                    // If banners are disabled or empty, cleanly collapse the container
+                    if (!isEnabled || validBanners.length === 0) {
+                        container.style.display = 'none';
+                        container.innerHTML = '';
+                        if (salesSwiperInstance) {
+                            try { salesSwiperInstance.destroy(true, true); } catch(e) {}
+                            salesSwiperInstance = null;
+                        }
+                        if (mainWrapper) mainWrapper.style.marginTop = '100px';
+                        return;
+                    }
+
+                    // Adjust main content spacing when banners are active directly below the Navbar
+                    if (mainWrapper) mainWrapper.style.marginTop = '24px';
+                    container.style.display = 'block';
+
+                    // Case A: Exactly 1 Promotional Banner -> Render high-performance hero container (no carousel overhead)
+                    if (validBanners.length === 1) {
+                        if (salesSwiperInstance) {
+                            try { salesSwiperInstance.destroy(true, true); } catch(e) {}
+                            salesSwiperInstance = null;
+                        }
+
+                        const b = validBanners[0];
+                        const src = typeof b === 'string' ? b : (b?.url || b?.src || b?.image || '');
+                        const isVid = checkIsVideo(b, b?.type);
+
+                        container.innerHTML = `
+                            <div class="gug-container mb-4">
+                                <div class="sales-single-hero-banner overflow-hidden shadow-lg position-relative" style="border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.12); background: #000;">
+                                    ${isVid ? 
+                                        `<video src="${src}" autoplay loop muted playsinline class="d-block w-100" style="max-height: 440px; object-fit: cover;"></video>` : 
+                                        `<img src="${src}" alt="Promotional Campaign Banner" class="d-block w-100" style="max-height: 440px; object-fit: cover;" onerror="this.src='assets/images/logo.png'">`
+                                    }
+                                </div>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    // Case B: 2 or more Promotional Banners -> Render Swiper Carousel Slider
+                    const slidesHtml = validBanners.map(b => {
+                        const src = typeof b === 'string' ? b : (b?.url || b?.src || b?.image || '');
+                        const isVid = checkIsVideo(b, b?.type);
+
+                        return `
+                        <div class="swiper-slide">
+                            ${isVid ? 
+                                `<video src="${src}" autoplay loop muted playsinline class="d-block w-100" style="max-height: 440px; object-fit: cover;"></video>` : 
+                                `<img src="${src}" alt="Promotional Campaign Banner" loading="lazy" class="d-block w-100" style="max-height: 440px; object-fit: cover;" onerror="this.src='assets/images/logo.png'">`
+                            }
+                        </div>`;
+                    }).join('');
+
+                    container.innerHTML = `
+                        <div class="gug-container mb-4">
+                            <div class="swiper sales-swiper overflow-hidden shadow-lg position-relative" style="border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.12); background: #000;">
+                                <div class="swiper-wrapper">
+                                    ${slidesHtml}
+                                </div>
+                                <div class="swiper-pagination"></div>
+                                <div class="swiper-button-next" style="color: var(--accent-red);"></div>
+                                <div class="swiper-button-prev" style="color: var(--accent-red);"></div>
+                            </div>
+                        </div>
+                    `;
+
+                    // Safely destroy existing instance before re-initializing
+                    if (salesSwiperInstance) {
+                        try { salesSwiperInstance.destroy(true, true); } catch(e) {}
+                        salesSwiperInstance = null;
+                    }
+
+                    if (typeof Swiper !== 'undefined') {
+                        try {
+                            salesSwiperInstance = new Swiper('.sales-swiper', {
+                                loop: true,
+                                autoplay: {
+                                    delay: 3800,
+                                    disableOnInteraction: false,
+                                },
+                                pagination: {
+                                    el: '.swiper-pagination',
+                                    clickable: true,
+                                },
+                                navigation: {
+                                    nextEl: '.swiper-button-next',
+                                    prevEl: '.swiper-button-prev',
+                                },
+                            });
+                        } catch (swErr) {
+                            console.warn('Swiper carousel initialization notice:', swErr);
+                        }
+                    }
+                } catch (err) {
+                    console.error('renderSalesBanners fatal caught:', err);
+                }
+            }
+
+            // Expose globally
+            window.renderSalesBanners = renderSalesBanners;
+
+            // Initial Execution - synchronous and reactive
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => renderSalesBanners());
+            } else {
+                renderSalesBanners();
+            }
+
+            // Asynchronously check IndexedDB for any rich media/videos after page load
+            if (GUG_MEDIA_DB) {
+                GUG_MEDIA_DB.getBanners().then((idbBanners) => {
+                    if (Array.isArray(idbBanners) && idbBanners.length > 0) {
+                        renderSalesBanners(idbBanners);
+                    }
+                });
+            }
+
+            // Cross-tab and live window state synchronization
+            window.addEventListener('storage', function(e) {
+                if (!e || !e.key || e.key === 'gug_sales_banners' || e.key === 'gug_sales_banners_enabled') {
+                    renderSalesBanners();
+                }
+            });
+            window.addEventListener('gugSalesBannersSaved', function(e) {
+                renderSalesBanners(e.detail ? e.detail.banners : null);
+            });
+            window.addEventListener('pageshow', () => renderSalesBanners());
+            window.addEventListener('focus', () => renderSalesBanners());
+        })();
+    </script>
+</body>
+</html>

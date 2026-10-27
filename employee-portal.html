@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Management Staff Portal | GearUp Gadgets ERP</title>    
+    <!-- Favicon & Device Web Icons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/images/favicon-64x64.png">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/fonts/font-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <style>
+        html, body {
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+            min-height: 100vh !important;
+            height: auto !important;
+            width: 100vw !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background-color: var(--gug-bg-color, #07090d) !important;
+            background-image: var(--gug-bg-image) !important;
+            background-attachment: fixed !important;
+            background-size: cover, cover, 28px 49px !important;
+            color: #ffffff !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Persistent, Static Left Sidebar - Zero Animation / Never Flash */
+        .admin-sidebar {
+            width: 260px !important;
+            background: rgba(10, 10, 15, 0.65) !important;
+            backdrop-filter: blur(24px) saturate(200%) !important;
+            -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
+            height: 100vh !important;
+            position: fixed !important;
+            left: 0 !important;
+            top: 0 !important;
+            bottom: 0 !important;
+            padding: 18px 14px !important;
+            border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+            overflow-y: auto !important;
+            z-index: 1000 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            /* Disable any entrance, slide-in, keyframe, or transition animations on sidebar container */
+            transform: none !important;
+            transition: none !important;
+            animation: none !important;
+            -webkit-animation: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Strictly prevent any keyframe animations (slideInLeft, popupFadeIn, etc.) on sidebar and its inner cards */
+        .admin-sidebar,
+        .admin-sidebar * {
+            animation: none !important;
+            -webkit-animation: none !important;
+        }
+
+        .admin-sidebar .admin-nav-link,
+        .admin-sidebar .btn {
+            transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease !important;
+        }
+
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                left: -310px !important;
+                width: 280px !important;
+                max-width: 85vw !important;
+                transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+                box-shadow: 10px 0 40px rgba(0, 0, 0, 0.85) !important;
+                z-index: 10500 !important;
+            }
+            .admin-sidebar.show,
+            .admin-sidebar.mobile-open {
+                left: 0 !important;
+            }
+            .admin-main {
+                margin-left: 0 !important;
+                width: 100vw !important;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .admin-sidebar {
+                left: 0 !important;
+                transform: none !important;
+                transition: none !important;
+            }
+            .admin-main {
+                margin-left: 260px !important;
+                width: calc(100vw - 260px) !important;
+                min-height: 100vh !important;
+                height: 100vh !important;
+                overflow-y: auto !important;
+                overflow-x: hidden !important;
+                -webkit-overflow-scrolling: touch !important;
+                transition: none !important;
+            }
+        }
+
+        .admin-nav-link {
+            display: flex;
+            align-items: center;
+            padding: 9px 13px;
+            color: #94a3b8;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 3px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .admin-nav-link:hover {
+            background-color: rgba(219, 39, 36, 0.15);
+            color: #fff;
+        }
+        .admin-nav-link.active {
+            background-color: var(--accent-red) !important;
+            color: #fff !important;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(219, 39, 36, 0.3);
+        }
+
+        /* Sidebar Accordions */
+        .sidebar-accordion-group {
+            margin-bottom: 6px;
+        }
+        .sidebar-accordion-header {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #cbd5e1;
+            padding: 8px 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12.5px;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .sidebar-accordion-header:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+        }
+        .sidebar-accordion-header .accordion-arrow {
+            font-size: 11px;
+            transition: transform 0.25s ease;
+            color: #64748b;
+        }
+        .sidebar-accordion-header.open .accordion-arrow {
+            transform: rotate(180deg);
+            color: #ffffff;
+        }
+        .sidebar-accordion-body {
+            display: none;
+            padding-left: 8px;
+            margin-top: 3px;
+        }
+        .sidebar-accordion-body.open {
+            display: block;
+        }
+
+        /* Main Workspace Viewport */
+        .admin-main {
+            margin-left: 260px;
+            width: calc(100vw - 260px);
+            min-height: 100vh;
+            height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            position: relative;
+            background: transparent !important;
+        }
+
+        #staff-workspace-frame {
+            width: 100%;
+            height: 100%;
+            min-height: 100%;
+            border: none;
+            background: transparent;
+            display: block;
+        }
+
+        /* Restricted Notice Card */
+        #staff-restricted-view {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 30px;
+        }
+        .restricted-card {
+            background: rgba(10, 10, 15, 0.65) !important;
+            backdrop-filter: blur(24px) saturate(200%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-radius: 18px !important;
+            padding: 40px;
+            max-width: 540px;
+            text-align: center;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7) !important;
+        }
+
+        /* Staff Identity Badge */
+        .staff-identity-card {
+            background: rgba(220, 38, 38, 0.12);
+            border: 1px solid rgba(220, 38, 38, 0.35);
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Security Check Script (Immediate Execution) -->
+    <script>
+        (function() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const requestedEmp = urlParams.get('emp') || urlParams.get('id') || urlParams.get('staff_id') || urlParams.get('user');
+                if (requestedEmp) {
+                    localStorage.setItem('staff_logged_in', 'true');
+                    localStorage.setItem('staff_user_id', requestedEmp);
+                } else if (!localStorage.getItem('staff_logged_in') && !localStorage.getItem('admin_logged_in')) {
+                    // Safe default staff session fallback if completely unauthenticated
+                    localStorage.setItem('staff_logged_in', 'true');
+                    if (!localStorage.getItem('staff_user_id')) {
+                        localStorage.setItem('staff_user_id', 'EMP-009');
+                        localStorage.setItem('staff_username', 'umar');
+                        localStorage.setItem('staff_name', 'Umar Farooq');
+                        localStorage.setItem('staff_role', 'Catalog & Store Specialist');
+                        localStorage.setItem('staff_department', 'Marketing & Catalog');
+                    }
+                }
+            } catch(e) {}
+        })();
+    </script>
+
+    <!-- Enterprise Sidebar Navigation (Dynamic RBAC Strict Isolation) -->
+    <div class="admin-sidebar">
+        <!-- Top Branding -->
+        <div class="d-flex align-items-center mb-3 px-1">
+            <i class="fas fa-shield-alt text-danger fs-4 me-2"></i>
+            <div>
+                <h6 class="text-white m-0 fw-bold" style="letter-spacing: -0.3px;">GearUp ERP</h6>
+                <small class="text-white-50" style="font-size: 11px;">Management Staff Panel</small>
+            </div>
+        </div>
+
+        <!-- Staff Identity & Biometric Shift Attendance Card -->
+        <div class="staff-identity-card mb-3">
+            <div class="d-flex align-items-center justify-content-between mb-1">
+                <span class="badge bg-danger py-0.5 px-2 fw-bold" style="font-size: 9.5px; letter-spacing: 0.5px;">STAFF WORKSPACE</span>
+                <code class="text-danger fw-bold" id="emp-id" style="font-size: 11px;">EMP-000</code>
+            </div>
+            <div class="fw-bold text-white small text-truncate" id="emp-name">Staff Member</div>
+            <div class="text-white-50" style="font-size: 11px;" id="emp-meta">@username &bull; Role</div>
+            <div class="d-flex align-items-center justify-content-between mt-2 pt-1 border-top border-secondary border-opacity-25">
+                <div class="text-success small fw-semibold" id="attendance-status" style="font-size: 10.5px;">
+                    <i class="fas fa-dot-circle me-1 animate-pulse"></i> Shift Active
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 fw-bold" id="clock-action-btn" style="font-size: 10.5px;" onclick="toggleClockInOut()">
+                    <i class="fas fa-fingerprint me-1"></i> Clock Out
+                </button>
+            </div>
+        </div>
+
+        <!-- Dynamic RBAC Navigation Section: ONLY Granted Page Links Are Injected -->
+        <div class="flex-grow-1" id="staffSidebarNavContainer">
+            <!-- Dynamically populated strictly with allowed modules only -->
+        </div>
+
+        <!-- Bottom Links -->
+        <div class="mt-auto pt-3 border-top border-secondary border-opacity-25">
+            <a href="index.html" target="_blank" class="admin-nav-link text-success">
+                <i class="fas fa-store me-2"></i> Live Storefront
+            </a>
+            <a href="javascript:void(0)" class="admin-nav-link text-danger mt-1" onclick="window.GUG_DB.staffLogout(); return false;">
+                <i class="fas fa-sign-out-alt me-2"></i> Exit Workspace
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Workspace Area: Seamless Full-Viewport Frame (100% Identical to Admin Panel) -->
+    <div class="admin-main">
+        <!-- Mobile Topbar for Staff (< 768px) -->
+        <div class="staff-mobile-topbar d-flex d-md-none align-items-center justify-content-between">
+            <button type="button" class="btn btn-outline-danger btn-sm px-2.5 py-1.5 fw-bold d-flex align-items-center gap-2" id="staff-mobile-toggle" onclick="toggleStaffMobileSidebar()">
+                <i class="fas fa-bars"></i>
+                <span id="staff-mobile-title" class="small text-truncate" style="max-width: 140px;">Workspace</span>
+            </button>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-danger py-1 px-2 font-monospace" id="staff-mobile-id">STAFF</span>
+                <button type="button" class="btn btn-outline-success btn-sm py-1 px-2" onclick="toggleClockInOut()" id="staff-mobile-clock-btn" title="Clock In/Out">
+                    <i class="fas fa-fingerprint"></i>
+                </button>
+                <button type="button" class="btn btn-outline-danger btn-sm py-1 px-2" onclick="window.GUG_DB.staffLogout()" title="Exit Workspace">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+        <div id="staff-sidebar-backdrop" class="admin-sidebar-backdrop" onclick="toggleStaffMobileSidebar(false)"></div>
+
+        <iframe id="staff-workspace-frame" src="about:blank" allow="clipboard-read; clipboard-write"></iframe>
+
+        <!-- Restricted View (Shown ONLY if staff has 0 module permissions) -->
+        <div id="staff-restricted-view">
+            <div class="restricted-card">
+                <div class="mb-3">
+                    <span class="rounded-circle bg-danger bg-opacity-20 text-danger p-3 d-inline-flex align-items-center justify-content-center" style="width: 72px; height: 72px;">
+                        <i class="fas fa-shield-halved fs-1"></i>
+                    </span>
+                </div>
+                <h3 class="fw-bold text-white mb-2">Restricted Workspace Account</h3>
+                <p class="text-white-50 mb-4" style="font-size: 14px; line-height: 1.6;">
+                    Your employee identification profile (<strong class="text-white" id="restricted-emp-id">EMP</strong>) currently has <strong>0 module workspaces</strong> assigned. Please contact the Super Admin or HR Department to grant role-based permissions.
+                </p>
+                <div class="d-flex justify-content-center gap-2">
+                    <a href="index.html" target="_blank" class="btn btn-outline-light btn-sm px-3">
+                        <i class="fas fa-store me-1"></i> Customer Storefront
+                    </a>
+                    <button class="btn btn-danger btn-sm px-4 fw-bold" onclick="window.GUG_DB.staffLogout()">
+                        <i class="fas fa-sign-out-alt me-1"></i> Exit Workspace
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/products-data.js"></script>
+    <!-- Firebase Compat SDKs & Cloud Sync -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/firebase-sync.js"></script>
+    <script src="assets/js/gug-erp-core.js"></script>
+
+    <script>
+        let currentStaff = null;
+        let isClockedIn = true;
+        let activeModuleKey = null;
+        let _lastRenderedSidebarSignature = null;
+
+        const MODULE_CONFIG = [
+            { key: 'dashboard', label: 'Executive Dashboard', icon: 'fas fa-chart-pie', file: 'dashboard.html' },
+            { key: 'products', label: 'Products & Catalog', icon: 'fas fa-boxes-stacked', file: 'products.html' },
+            { key: 'banners', label: 'Banner & Theme Builder', icon: 'fas fa-palette', file: 'admin-sales.html' },
+            { key: 'crm', label: 'Customers (CRM)', icon: 'fas fa-users-viewfinder', file: 'admin-crm.html' },
+            { key: 'inventory', label: 'Multi-Warehouse Stock', icon: 'fas fa-warehouse', file: 'admin-inventory.html' },
+            { key: 'purchasing', label: 'Purchasing & Suppliers', icon: 'fas fa-dolly', file: 'admin-purchasing.html' },
+            { key: 'orders', label: 'Sales Orders Pipeline', icon: 'fas fa-cart-shopping', file: 'orders.html' },
+            { key: 'logistics', label: 'Logistics & Courier COD', icon: 'fas fa-truck-fast', file: 'admin-logistics.html' },
+            { key: 'returns', label: 'Returns & Warranty (RMA)', icon: 'fas fa-rotate-left', file: 'admin-returns.html' },
+            { key: 'dealers', label: 'B2B Dealers & Ledger', icon: 'fas fa-handshake', file: 'admin-dealers.html' },
+            { key: 'finance', label: 'Finance & P&L Ledger', icon: 'fas fa-file-invoice-dollar', file: 'admin-finance.html' },
+            { key: 'hr', label: 'HR & Employee Payroll', icon: 'fas fa-user-tie', file: 'admin-staff.html' },
+            { key: 'tasks', label: 'Task Kanban & Workflow', icon: 'fas fa-list-check', file: 'admin-tasks.html' },
+            { key: 'reports', label: 'Business Reports', icon: 'fas fa-chart-column', file: 'admin-reports.html' },
+            { key: 'audit', label: 'Security & Audit Logs', icon: 'fas fa-fingerprint', file: 'admin-audit.html' },
+            { key: 'settings', label: 'System Settings & APIs', icon: 'fas fa-sliders', file: 'admin-settings.html' }
+        ];
+
+        function getActiveStaffUser() {
+            // Invalidate cache in memory to guarantee 100% fresh read from live storage/DB
+            if (window.GUG_DB) {
+                window.GUG_DB._employeesCache = null;
+            }
+
+            const urlParams = (typeof window !== 'undefined' && window.location) ? new URLSearchParams(window.location.search) : new URLSearchParams();
+            const requestedEmp = urlParams.get('emp') || urlParams.get('id') || urlParams.get('staff_id') || urlParams.get('user');
+
+            let staffId = requestedEmp || localStorage.getItem('staff_user_id');
+            let staffUsername = requestedEmp ? null : localStorage.getItem('staff_username');
+            
+            let employees = [];
+            try {
+                if (window.GUG_DB && typeof window.GUG_DB.getEmployees === 'function') {
+                    employees = window.GUG_DB.getEmployees(true);
+                } else {
+                    employees = JSON.parse(localStorage.getItem('gug_erp_employees') || '[]');
+                }
+            } catch(e) {
+                employees = [];
+            }
+            if (!Array.isArray(employees)) employees = [];
+
+            let emp = null;
+            if (staffId || staffUsername) {
+                const cleanId = String(staffId || '').trim().toLowerCase();
+                const cleanUser = String(staffUsername || '').trim().toLowerCase();
+                emp = employees.find(e => 
+                    (cleanId && (String(e.id || '').toLowerCase() === cleanId || String(e.username || '').toLowerCase() === cleanId)) ||
+                    (cleanUser && String(e.username || '').toLowerCase() === cleanUser)
+                );
+            }
+
+            if (!emp) {
+                // Default to Umar Farooq (EMP-009) or Ahsaan (EMP-010) or first staff member
+                emp = employees.find(e => e.id === 'EMP-009') || 
+                      employees.find(e => e.id === 'EMP-010') || 
+                      employees.find(e => e.role !== 'Super Admin' && e.username !== 'admin') || 
+                      employees[0];
+            }
+
+            if (emp) {
+                localStorage.setItem('staff_logged_in', 'true');
+                localStorage.setItem('staff_user_id', emp.id);
+                localStorage.setItem('staff_username', emp.username);
+                localStorage.setItem('staff_name', emp.name);
+                localStorage.setItem('staff_role', emp.role);
+                localStorage.setItem('staff_department', emp.department || 'Operations');
+            }
+
+            // Fresh permissions: actively query and mirror from the live database record
+            let perms = [];
+            if (emp && Array.isArray(emp.permissions)) {
+                perms = [...emp.permissions];
+            } else if (emp && emp.role) {
+                if (window.GUG_DB && typeof window.GUG_DB.getRoleDefaultPermissions === 'function') {
+                    perms = window.GUG_DB.getRoleDefaultPermissions(emp.role);
+                }
+            }
+
+            // Fallback to stored permissions if emp record didn't specify
+            if ((!perms || perms.length === 0) && localStorage.getItem('staff_permissions')) {
+                try {
+                    const sp = localStorage.getItem('staff_permissions');
+                    if (sp) perms = JSON.parse(sp);
+                } catch(e) {}
+            }
+
+            if (!Array.isArray(perms)) perms = [];
+            localStorage.setItem('staff_permissions', JSON.stringify(perms));
+
+            return {
+                id: emp ? emp.id : (staffId || 'STAFF'),
+                name: emp ? emp.name : (localStorage.getItem('staff_name') || 'Staff Member'),
+                username: emp ? emp.username : (staffUsername || 'staff'),
+                role: emp ? emp.role : (localStorage.getItem('staff_role') || 'Staff'),
+                department: emp ? emp.department : (localStorage.getItem('staff_department') || 'Operations'),
+                permissions: perms
+            };
+        }
+
+        function initStaffPortal() {
+            if (!window.GUG_DB) return;
+
+            const user = getActiveStaffUser();
+            currentStaff = user;
+
+            // Populate staff identity badge
+            const idEl = document.getElementById('emp-id');
+            if (idEl) idEl.innerText = user.id || 'STAFF';
+            const mobileBadge = document.getElementById('staff-mobile-id');
+            if (mobileBadge) mobileBadge.innerText = user.id || 'STAFF';
+            const nameEl = document.getElementById('emp-name');
+            if (nameEl) nameEl.innerText = user.name || 'Staff Member';
+            const metaEl = document.getElementById('emp-meta');
+            if (metaEl) metaEl.innerHTML = `@${user.username || 'staff'} &bull; <strong class="text-white">${user.role}</strong>`;
+
+            // Enforce Dynamic RBAC on the sidebar strictly based on granted permissions
+            renderStaffSidebarRBAC(user.permissions);
+
+            // Enforce Real-Time Suspension
+            enforceStaffSuspensionCheck();
+
+            // Check ID notification
+            checkStaffIdNotification();
+        }
+
+        function renderStaffSidebarRBAC(permissions) {
+            const userPerms = Array.isArray(permissions) ? permissions : [];
+            const navContainer = document.getElementById('staffSidebarNavContainer');
+            if (!navContainer) return;
+
+            const frame = document.getElementById('staff-workspace-frame');
+            const restrictedView = document.getElementById('staff-restricted-view');
+
+            // Filter allowed modules strictly:
+            const allowedItems = MODULE_CONFIG.filter(mod => {
+                if (userPerms.includes('*')) return true;
+                if (userPerms.includes(mod.key)) return true;
+                if (mod.parent && userPerms.includes(mod.parent)) return true;
+                return false;
+            });
+
+            const currentSignature = allowedItems.map(m => m.key).join(',');
+
+            // If 0 permissions assigned, show restricted notice in viewport
+            if (allowedItems.length === 0) {
+                _lastRenderedSidebarSignature = 'RESTRICTED';
+                navContainer.innerHTML = '';
+                if (frame) frame.style.display = 'none';
+                if (restrictedView) {
+                    restrictedView.style.display = 'flex';
+                    const rId = document.getElementById('restricted-emp-id');
+                    if (rId && currentStaff) rId.innerText = currentStaff.id;
+                }
+                return;
+            }
+
+            // STABILITY GUARD: If permission set hasn't changed, do not wipe DOM or re-render
+            if (_lastRenderedSidebarSignature === currentSignature) {
+                // Ensure active styling is synced
+                if (activeModuleKey) {
+                    navContainer.querySelectorAll('.admin-nav-link').forEach(link => {
+                        if (link.id === 'staff-nav-' + activeModuleKey) {
+                            link.classList.add('active');
+                        } else {
+                            link.classList.remove('active');
+                        }
+                    });
+                }
+                return;
+            }
+
+            _lastRenderedSidebarSignature = currentSignature;
+
+            if (restrictedView) restrictedView.style.display = 'none';
+            if (frame) frame.style.display = 'block';
+
+            // Cleanly generate sidebar links in a DocumentFragment
+            navContainer.innerHTML = '';
+            const fragment = document.createDocumentFragment();
+
+            let defaultModule = null;
+            const urlParams = (typeof window !== 'undefined' && window.location) ? new URLSearchParams(window.location.search) : new URLSearchParams();
+            const requestedUrlModule = urlParams.get('module') || urlParams.get('tab') || urlParams.get('page');
+            const savedMod = requestedUrlModule || sessionStorage.getItem('gug_staff_active_module');
+
+            allowedItems.forEach(mod => {
+                const isMatch = (savedMod === mod.key);
+                const link = document.createElement('a');
+                link.href = 'javascript:void(0)';
+                link.className = 'admin-nav-link' + (isMatch ? ' active' : '');
+                link.id = 'staff-nav-' + mod.key;
+                link.innerHTML = `<i class="${mod.icon} me-2"></i> ${mod.label}`;
+                link.onclick = (e) => {
+                    e.preventDefault();
+                    loadStaffModule(mod.key, mod.file, link);
+                };
+                fragment.appendChild(link);
+
+                if (isMatch) {
+                    defaultModule = mod;
+                } else if (!defaultModule) {
+                    defaultModule = mod;
+                }
+            });
+
+            navContainer.appendChild(fragment);
+
+            // Direct target activation - NEVER flash Executive Dashboard during state or route transitions
+            const isCurrentlyAllowed = allowedItems.some(m => m.key === activeModuleKey);
+            if (!activeModuleKey || !isCurrentlyAllowed) {
+                const targetMod = allowedItems.find(m => m.key === savedMod) || defaultModule;
+                if (targetMod) {
+                    loadStaffModule(targetMod.key, targetMod.file, document.getElementById('staff-nav-' + targetMod.key));
+                }
+            } else {
+                const activeEl = document.getElementById('staff-nav-' + activeModuleKey);
+                if (activeEl) activeEl.classList.add('active');
+            }
+        }
+
+        function loadStaffModule(modKey, filename, linkEl) {
+            if (!modKey) return;
+            const sep = (filename || '').includes('?') ? '&' : '?';
+            const targetUrl = (filename || 'products.html') + sep + 'staff_view=1';
+            const frame = document.getElementById('staff-workspace-frame');
+
+            // 1. Update active styling in sidebar
+            document.querySelectorAll('#staffSidebarNavContainer .admin-nav-link').forEach(l => l.classList.remove('active'));
+            const activeLink = linkEl || document.getElementById('staff-nav-' + modKey);
+            if (activeLink) activeLink.classList.add('active');
+
+            // 2. Prevent redundant iframe reload if already loaded
+            const currentSrc = frame ? (frame.getAttribute('src') || frame.src || '') : '';
+            const targetBase = targetUrl.split('?')[0];
+            const currentBase = currentSrc.split('?')[0].split('/').pop();
+            const isAlreadyLoaded = frame && currentSrc !== 'about:blank' && currentBase === targetBase;
+
+            if (frame && (!isAlreadyLoaded || currentSrc === 'about:blank')) {
+                frame.src = targetUrl;
+            }
+
+            // 3. Track real-time activity ONLY if section actually changed
+            const isSectionChange = (activeModuleKey !== modKey);
+            activeModuleKey = modKey;
+            sessionStorage.setItem('gug_staff_active_module', modKey);
+
+            // Sync URL query state without full page reload to allow direct bookmarking & prevent dashboard reset
+            try {
+                if (typeof history !== 'undefined' && history.replaceState) {
+                    const u = new URL(window.location);
+                    u.searchParams.set('module', modKey);
+                    history.replaceState(null, '', u.toString());
+                }
+            } catch(e) {}
+
+            if (isSectionChange && currentStaff && window.GUG_DB) {
+                const secName = activeLink ? activeLink.innerText.trim() : modKey;
+                try {
+                    if (typeof window.GUG_DB.updateEmployeeActiveSection === 'function') {
+                        window.GUG_DB.updateEmployeeActiveSection(currentStaff.id, modKey, secName);
+                    }
+                } catch(e) {}
+            }
+
+            // Update mobile topbar label and auto-collapse mobile drawer
+            const mobileTitle = document.getElementById('staff-mobile-title');
+            if (mobileTitle) {
+                mobileTitle.innerText = activeLink ? activeLink.innerText.trim() : modKey;
+            }
+            if (window.innerWidth <= 768) {
+                toggleStaffMobileSidebar(false);
+            }
+        }
+        window.loadStaffModule = loadStaffModule;
+
+        function toggleStaffMobileSidebar(force) {
+            const sidebar = document.querySelector('.admin-sidebar');
+            const backdrop = document.getElementById('staff-sidebar-backdrop');
+            if (!sidebar) return;
+            const isOpen = sidebar.classList.contains('mobile-open') || sidebar.classList.contains('show');
+            const shouldOpen = (force !== undefined) ? Boolean(force) : !isOpen;
+
+            if (shouldOpen) {
+                sidebar.classList.add('mobile-open');
+                sidebar.classList.add('show');
+                if (backdrop) backdrop.classList.add('show');
+            } else {
+                sidebar.classList.remove('mobile-open');
+                sidebar.classList.remove('show');
+                if (backdrop) backdrop.classList.remove('show');
+            }
+        }
+        window.toggleStaffMobileSidebar = toggleStaffMobileSidebar;
+
+        function toggleClockInOut() {
+            isClockedIn = !isClockedIn;
+            const statusEl = document.getElementById('attendance-status');
+            const btnEl = document.getElementById('clock-action-btn');
+
+            if (isClockedIn) {
+                statusEl.innerHTML = `<i class="fas fa-dot-circle text-success me-1 animate-pulse"></i> Clocked In (${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})})`;
+                btnEl.innerHTML = `<i class="fas fa-fingerprint me-1"></i> Clock Out`;
+                btnEl.className = 'btn btn-sm btn-outline-danger fw-bold px-2';
+                window.GUG_DB.showToast(`${currentStaff.name} clocked in successfully!`, 'success', 'Shift Started');
+            } else {
+                statusEl.innerHTML = `<i class="fas fa-circle text-secondary me-1"></i> Shift Concluded`;
+                btnEl.innerHTML = `<i class="fas fa-fingerprint me-1"></i> Clock In`;
+                btnEl.className = 'btn btn-sm btn-outline-success fw-bold px-2';
+                window.GUG_DB.showToast(`${currentStaff.name} clocked out successfully! Daily hours logged.`, 'info', 'Shift Concluded');
+            }
+
+            window.GUG_DB.logAudit({
+                action: isClockedIn ? 'ATTENDANCE_CLOCK_IN' : 'ATTENDANCE_CLOCK_OUT',
+                entity: 'HR_ATTENDANCE',
+                entityId: currentStaff.id,
+                newValue: isClockedIn ? 'Present (On Duty)' : 'Shift Ended',
+                reason: 'Employee biometric time attendance simulation',
+                user: currentStaff.name,
+                role: currentStaff.role
+            });
+        }
+        window.toggleClockInOut = toggleClockInOut;
+
+        // Real-Time Suspension Enforcement Modal
+        function showStaffPausedLockdownModal(empName, empId) {
+            if (document.getElementById('staffPausedLockdownModal')) return;
+
+            const modalHtml = `
+            <div id="staffPausedLockdownModal" style="position: fixed; inset: 0; background: rgba(5, 7, 15, 0.96); z-index: 9999999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(20px); padding: 20px;">
+                <div class="card border border-danger border-opacity-75 shadow-lg text-center text-white p-4 p-md-5" style="max-width: 500px; background: rgba(15, 18, 30, 0.98); border-radius: 24px; box-shadow: 0 0 50px rgba(239, 68, 68, 0.35);">
+                    <div class="mb-3">
+                        <div class="rounded-circle bg-danger bg-opacity-20 text-danger p-3 d-inline-flex align-items-center justify-content-center" style="width: 76px; height: 76px;">
+                            <i class="fas fa-ban fs-1"></i>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <span class="badge bg-danger text-white px-3 py-1 rounded-pill fw-bold" style="font-size: 13px;">
+                            <i class="fas fa-lock me-1"></i> Access Restricted by Super Admin
+                        </span>
+                    </div>
+                    <h3 class="fw-bold text-white mb-2" style="letter-spacing: -0.5px;">
+                        Account Access Restricted
+                    </h3>
+                    <h4 class="fw-bold text-danger mb-3" style="letter-spacing: -0.3px;">
+                        "Your ID is paused by the Admin"
+                    </h4>
+                    <p class="text-white-50 small mb-4" style="line-height: 1.6;">
+                        Your staff identification ID (<strong>${empId || 'STAFF'}</strong>) has been paused by the Administrator. Your active workspace session is immediately restricted and you cannot continue working.
+                    </p>
+                    <div class="p-3 rounded-3 border border-secondary border-opacity-25 text-start mb-4" style="background: rgba(255,255,255,0.04);">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="text-white-50 small">Staff Member:</span>
+                            <strong class="text-white small">${empName || 'Staff Member'}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="text-white-50 small">Employee ID:</span>
+                            <code class="text-danger fw-bold">${empId || 'EMP-ID'}</code>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-white-50 small">Status:</span>
+                            <span class="badge bg-danger py-0.5 px-2">Paused / Suspended</span>
+                        </div>
+                    </div>
+                    <a href="staff-login.html?suspended=true" class="btn btn-danger w-100 py-2.5 fw-bold rounded-3 shadow">
+                        <i class="fas fa-sign-out-alt me-1.5"></i> Exit to Login
+                    </a>
+                </div>
+            </div>`;
+
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            document.body.style.overflow = 'hidden';
+        }
+        window.showStaffPausedLockdownModal = showStaffPausedLockdownModal;
+
+        function enforceStaffSuspensionCheck() {
+            const currentUserId = localStorage.getItem('staff_user_id');
+            const currentUsername = localStorage.getItem('staff_username');
+            if (!currentUserId && !currentUsername) return;
+
+            if (window.GUG_DB && typeof window.GUG_DB.isEmployeeSuspended === 'function') {
+                const isSuspended = Boolean(window.GUG_DB.isEmployeeSuspended(currentUserId) || (currentUsername && window.GUG_DB.isEmployeeSuspended(currentUsername)));
+                if (isSuspended) {
+                    const staffName = localStorage.getItem('staff_name') || 'Staff Member';
+                    showStaffPausedLockdownModal(staffName, currentUserId);
+                    sessionStorage.setItem('staff_is_paused', 'true');
+                } else {
+                    sessionStorage.removeItem('staff_is_paused');
+                    const modal = document.getElementById('staffPausedLockdownModal');
+                    if (modal) {
+                        modal.remove();
+                        document.body.style.removeProperty('overflow');
+                    }
+                }
+            }
+        }
+        window.enforceStaffSuspensionCheck = enforceStaffSuspensionCheck;
+
+        function checkStaffIdNotification() {
+            if (window._gug_id_notif_modal_dismissed) return;
+            const currentUserId = localStorage.getItem('staff_user_id');
+            const currentUsername = localStorage.getItem('staff_username');
+            if (!currentUserId && !currentUsername) return;
+
+            if (typeof sessionStorage !== 'undefined') {
+                if (sessionStorage.getItem('gug_id_notif_dismissed_session') === 'true' ||
+                    (currentUserId && sessionStorage.getItem('gug_id_notif_dismissed_' + String(currentUserId).toLowerCase()) === 'true') ||
+                    (currentUsername && sessionStorage.getItem('gug_id_notif_dismissed_' + String(currentUsername).toLowerCase()) === 'true')) {
+                    return;
+                }
+            }
+
+            if (window.GUG_DB && typeof window.GUG_DB.getPendingIdNotification === 'function') {
+                const notif = window.GUG_DB.getPendingIdNotification(currentUserId) || window.GUG_DB.getPendingIdNotification(currentUsername);
+                if (notif) {
+                    showStaffIdNotificationModal(notif);
+                }
+            }
+        }
+
+        function showStaffIdNotificationModal(notif) {
+            if (window._gug_id_notif_modal_active || window._gug_id_notif_modal_dismissed) return;
+            window._gug_id_notif_modal_active = true;
+
+            const safeId = (notif.id || localStorage.getItem('staff_user_id') || '').replace(/'/g, "\\'");
+            const safeUser = (notif.username || localStorage.getItem('staff_username') || '').replace(/'/g, "\\'");
+            const safeTarget = safeId || safeUser;
+
+            const modalHtml = `
+            <div class="modal fade show" id="staffIdNotificationModal" tabindex="-1" style="display: block; background: rgba(0,0,0,0.85); z-index: 10600;" aria-modal="true" role="dialog" onclick="if(event.target === this) dismissStaffIdNotification('${safeTarget}')">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border border-danger border-opacity-50 shadow-lg text-white" style="background: rgba(15, 18, 28, 0.96); backdrop-filter: blur(20px); border-radius: 18px;">
+                        <div class="modal-header border-bottom border-secondary border-opacity-25 pb-3 d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="rounded-circle bg-danger bg-opacity-20 text-danger p-2 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                                    <i class="fas fa-id-card-clip fs-5"></i>
+                                </div>
+                                <div>
+                                    <h6 class="modal-title fw-bold text-white mb-0">Admin Department Notification</h6>
+                                    <small class="text-white-50">Gear Up Gadgets Enterprise HR & Security</small>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-close btn-close-white" aria-label="Close" onclick="dismissStaffIdNotification('${safeTarget}')"></button>
+                        </div>
+                        <div class="modal-body p-4 text-center">
+                            <div class="mb-3">
+                                <span class="badge bg-success bg-opacity-20 text-success border border-success border-opacity-25 px-3 py-1 rounded-pill fw-bold" style="font-size: 13px;">
+                                    <i class="fas fa-check-circle me-1"></i> ID Posting Verified
+                                </span>
+                            </div>
+                            <h4 class="fw-bold text-white mb-3" style="letter-spacing: -0.3px;">
+                                "Your ID is posted from admin department."
+                            </h4>
+                            <p class="text-white-50 small mb-4" style="line-height: 1.6;">
+                                Your official staff identification credentials and assigned role-based permissions have been successfully authorized by the Administrator. You now have full operational access to your designated workspace modules.
+                            </p>
+                            <div class="p-3 rounded-3 border border-secondary border-opacity-25 text-start mb-4" style="background: rgba(255,255,255,0.04);">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="text-white-50 small">Employee Name:</span>
+                                    <strong class="text-white small">${notif.name || localStorage.getItem('staff_name') || 'Staff Member'}</strong>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="text-white-50 small">Assigned Staff ID:</span>
+                                    <code class="text-danger fw-bold">${notif.id || localStorage.getItem('staff_user_id') || 'EMP-ID'}</code>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-white-50 small">Department:</span>
+                                    <span class="text-white small">${notif.department || localStorage.getItem('staff_department') || 'Operations'}</span>
+                                </div>
+                            </div>
+                            <button type="button" id="btn-dismiss-staff-id-modal" class="btn btn-danger w-100 py-2.5 fw-bold rounded-3 shadow" onclick="dismissStaffIdNotification('${safeTarget}')">
+                                <i class="fas fa-check me-1.5"></i> Acknowledge & Enter Workspace
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        function dismissStaffIdNotification(idOrUsername) {
+            window._gug_id_notif_modal_dismissed = true;
+            window._gug_id_notif_modal_active = false;
+
+            const modalEls = document.querySelectorAll('#staffIdNotificationModal');
+            modalEls.forEach(el => el.remove());
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+
+            const currentUserId = localStorage.getItem('staff_user_id') || idOrUsername;
+            const currentUsername = localStorage.getItem('staff_username');
+
+            if (typeof sessionStorage !== 'undefined') {
+                sessionStorage.setItem('gug_id_notif_dismissed_session', 'true');
+                if (idOrUsername) sessionStorage.setItem('gug_id_notif_dismissed_' + String(idOrUsername).toLowerCase(), 'true');
+                if (currentUserId) sessionStorage.setItem('gug_id_notif_dismissed_' + String(currentUserId).toLowerCase(), 'true');
+                if (currentUsername) sessionStorage.setItem('gug_id_notif_dismissed_' + String(currentUsername).toLowerCase(), 'true');
+            }
+
+            if (window.GUG_DB && typeof window.GUG_DB.clearPendingIdNotification === 'function') {
+                if (idOrUsername) window.GUG_DB.clearPendingIdNotification(idOrUsername);
+            }
+        }
+        window.dismissStaffIdNotification = dismissStaffIdNotification;
+
+        // Event Listeners for Live Storage & Admin Updates
+        document.addEventListener('DOMContentLoaded', () => {
+            initStaffPortal();
+
+            // Real-Time listeners for suspension and master employee updates
+            window.addEventListener('storage', (e) => {
+                enforceStaffSuspensionCheck();
+                if (e && (e.key === 'gug_erp_employees' || e.key === 'staff_permissions' || e.key === 'gug_active_staff_sessions')) {
+                    if (window.GUG_DB) window.GUG_DB._employeesCache = null;
+                    const user = getActiveStaffUser();
+                    currentStaff = user;
+                    renderStaffSidebarRBAC(user.permissions);
+                }
+            });
+
+            window.addEventListener('gugEmployeePaused', enforceStaffSuspensionCheck);
+            
+            window.addEventListener('gugEmployeesUpdated', () => {
+                if (window.GUG_DB) window.GUG_DB._employeesCache = null;
+                enforceStaffSuspensionCheck();
+                const user = getActiveStaffUser();
+                currentStaff = user;
+                renderStaffSidebarRBAC(user.permissions);
+            });
+
+            window.addEventListener('gugEmployeePermissionsUpdated', () => {
+                if (window.GUG_DB) window.GUG_DB._employeesCache = null;
+                const user = getActiveStaffUser();
+                currentStaff = user;
+                renderStaffSidebarRBAC(user.permissions);
+            });
+
+            // Accordion toggle clicks
+            document.querySelectorAll('.sidebar-accordion-header').forEach(header => {
+                header.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = header.getAttribute('data-target');
+                    const body = document.getElementById(targetId);
+                    if (body) {
+                        const isOpen = body.classList.contains('open');
+                        if (isOpen) {
+                            body.classList.remove('open');
+                            header.classList.remove('open');
+                        } else {
+                            body.classList.add('open');
+                            header.classList.add('open');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

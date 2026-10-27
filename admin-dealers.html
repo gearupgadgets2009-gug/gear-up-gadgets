@@ -1,0 +1,2068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Immediate Zero-Delay Embedded View Detection (Prevents Duplicate Sidebar & Layout Snap) -->
+    <script>if(window.self!==window.top||(typeof location!=='undefined'&&location.search.indexOf('staff_view=1')!==-1)){document.documentElement.classList.add('is-embedded');}</script>
+    <style>
+        html.is-embedded .admin-sidebar, html.is-embedded aside.admin-sidebar, body.is-embedded .admin-sidebar { display: none !important; visibility: hidden !important; width: 0 !important; height: 0 !important; position: absolute !important; left: -9999px !important; opacity: 0 !important; pointer-events: none !important; animation: none !important; -webkit-animation: none !important; transition: none !important; transform: none !important; }
+        html.is-embedded .admin-main, body.is-embedded .admin-main { margin-left: 0 !important; width: 100% !important; padding: 15px 20px !important; animation: none !important; transition: none !important; }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B2B Dealers & Wholesale Ledger | GearUp Gadgets ERP</title>    
+    <!-- Favicon & Device Web Icons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/images/favicon-64x64.png">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/fonts/font-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <style>
+        body { background-color: var(--gug-bg-color, #07090d) !important; background-image: var(--gug-bg-image) !important; background-attachment: var(--gug-bg-attachment, fixed) !important; background-size: var(--gug-bg-size, cover, cover, 28px 49px) !important; background-position: var(--gug-bg-position, center top) !important; background-repeat: var(--gug-bg-repeat, no-repeat, no-repeat, repeat) !important; min-height: 100vh; color: #ffffff !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .admin-sidebar { width: 260px; background: rgba(10, 10, 15, 0.6) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; height: 100vh; position: fixed; left: 0; top: 0; padding: 20px 15px; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; overflow-y: auto; z-index: 1000; }
+        .admin-main { margin-left: 260px; padding: 25px 30px; min-height: 100vh; background-color: transparent !important; color: #ffffff !important; }
+        .admin-nav-link { display: flex; align-items: center; padding: 9px 13px; color: #94a3b8; text-decoration: none; border-radius: 8px; margin-bottom: 3px; font-size: 13px; font-weight: 500; transition: all 0.2s ease; }
+        .admin-nav-link:hover { background-color: rgba(219, 39, 36, 0.15); color: #fff; }
+        .admin-nav-link.active { background-color: var(--accent-red); color: #fff !important; font-weight: 600; box-shadow: 0 4px 12px rgba(219, 39, 36, 0.3); }
+        .sidebar-section-heading { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #64748b; margin-top: 15px; margin-bottom: 6px; padding-left: 10px; }
+        
+        .admin-card { background: rgba(10, 10, 15, 0.45) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 16px !important; padding: 20px; margin-bottom: 20px; color: #ffffff !important; box-shadow: 0 16px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important; }
+        .table { color: #ffffff !important; background-color: transparent !important; vertical-align: middle; }
+        .table th { background-color: rgba(255, 255, 255, 0.06) !important; border-bottom: 2px solid rgba(255, 255, 255, 0.15) !important; color: #ffffff !important; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .table td { border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important; font-size: 13.5px; color: #ffffff !important; }
+        
+        .nav-tabs-erp { border-bottom: 2px solid #e2e8f0; gap: 8px; }
+        .nav-tabs-erp .nav-link { color: #64748b; border: none; border-bottom: 2px solid transparent; padding: 10px 18px; font-weight: 600; font-size: 13.5px; background: transparent; transition: all 0.2s; }
+        .nav-tabs-erp .nav-link:hover { color: #ffffff; }
+        .nav-tabs-erp .nav-link.active { color: var(--accent-red); border-bottom-color: var(--accent-red); background: transparent; }
+
+        .dealer-badge-due { background-color: #fef2f2; color: #dc2626; border: 1px solid #fecaca; font-weight: 700; }
+        .dealer-badge-surplus { background-color: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; font-weight: 700; }
+        .dealer-badge-clear { background-color: #f8fafc; color: #475569; border: 1px solid #e2e8f0; font-weight: 600; }
+
+        @media print {
+            body {
+                background: #ffffff !important;
+                background-color: #ffffff !important;
+                background-image: none !important;
+                color: #000000 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            @page {
+                margin: 0 !important;
+                size: auto;
+            }
+
+            /* Strictly isolate individual print container when active */
+            body.gug-individual-print-active > *:not(#gug-individual-print-container):not(#print-container) {
+                display: none !important;
+                visibility: hidden !important;
+                height: 0 !important;
+                width: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+            }
+
+            body.gug-individual-print-active #gug-individual-print-container,
+            body.gug-individual-print-active #print-container {
+                display: block !important;
+                visibility: visible !important;
+                position: relative !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #ffffff !important;
+                color: #000000 !important;
+            }
+
+            .admin-sidebar, .nav-tabs-erp, .no-print, #gug-global-header-container, #gug-beginner-help-container, .btn, .search-box, .modal, .modal-backdrop { display: none !important; }
+            .admin-main { margin-left: 0 !important; padding: 0 !important; width: 100% !important; }
+            .print-statement-container { border: none !important; box-shadow: none !important; padding: 0 !important; }
+
+            /* Strict Single A4 Page Table Styling */
+            .gug-individual-slip {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                padding: 4px 8px !important;
+            }
+
+            .gug-print-box,
+            .dealer-ledger-section,
+            .gug-print-dealer-ledger {
+                margin-bottom: 4px !important;
+                padding: 3px 6px !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+
+            table.dealer-ledger-table,
+            .dealer-ledger-table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                background-color: #ffffff !important;
+                background: #ffffff !important;
+                color: #000000 !important;
+                border: 1px solid #000000 !important;
+                margin-top: 2px !important;
+                margin-bottom: 4px !important;
+                font-size: 9.5px !important;
+                line-height: 1.15 !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+
+            table.dealer-ledger-table th,
+            .dealer-ledger-table th,
+            table.dealer-ledger-table td,
+            .dealer-ledger-table td,
+            table.dealer-ledger-table tfoot td,
+            .dealer-ledger-table tfoot td {
+                border: 1px solid #000000 !important;
+                padding: 2px 4px !important;
+                font-size: 9.5px !important;
+                line-height: 1.15 !important;
+                color: #000000 !important;
+                background-color: #ffffff !important;
+                background: #ffffff !important;
+                box-sizing: border-box !important;
+                text-align: left !important;
+            }
+
+            table.dealer-ledger-table td::before,
+            .dealer-ledger-table td::before {
+                display: none !important;
+                content: none !important;
+            }
+
+            table.dealer-ledger-table th,
+            .dealer-ledger-table th {
+                font-weight: 700 !important;
+                text-transform: uppercase !important;
+                background: #ffffff !important;
+                background-color: #ffffff !important;
+                color: #000000 !important;
+            }
+
+            table.dealer-ledger-table tfoot,
+            .dealer-ledger-table tfoot {
+                font-weight: 700 !important;
+                border-top: 1px solid #000000 !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+
+            /* B2B Dealer Multi-Payment Schedule Cards Print Layout */
+            .payment-schedule-card,
+            .dealer-transaction-card {
+                border: 1px solid #000000 !important;
+                border-radius: 3px !important;
+                padding: 3px 5px !important;
+                margin-bottom: 3px !important;
+                background: #ffffff !important;
+                background-color: #ffffff !important;
+                box-shadow: none !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                color: #000000 !important;
+            }
+
+            .card-row-1 {
+                display: block !important;
+                width: 100% !important;
+                text-align: left !important;
+                border-bottom: 1px solid #000000 !important;
+                padding-bottom: 2px !important;
+                margin-bottom: 2px !important;
+            }
+
+            .payment-schedule-title {
+                font-size: 8pt !important;
+                font-weight: 800 !important;
+                color: #000000 !important;
+                text-transform: uppercase !important;
+                text-align: left !important;
+                display: block !important;
+            }
+
+            .card-row-2 {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr 1fr !important;
+                gap: 4px !important;
+                border-bottom: 1px dotted #cccccc !important;
+                padding-bottom: 2px !important;
+                margin-bottom: 2px !important;
+                font-size: 7.5pt !important;
+                line-height: 1.2 !important;
+            }
+
+            .card-row-3 {
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                border-bottom: 1px dotted #cccccc !important;
+                padding-bottom: 2px !important;
+                margin-bottom: 2px !important;
+                font-size: 7.5pt !important;
+            }
+
+            .card-row-4 {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 6px !important;
+                font-size: 7.5pt !important;
+                align-items: center !important;
+            }
+
+            .card-row-5 {
+                display: none !important;
+            }
+        }
+
+        /* ==========================================================================
+           Ultra-Compact Mobile Card Grid Engine (max-width: 768px)
+           Strict 2-Column Grid Layout, Zero Hidden Data, Full Action Button Visibility
+           ========================================================================== */
+        @media screen and (max-width: 768px) {
+            html, body, #wrapper, .admin-main, .admin-card, .table-responsive {
+                overflow-x: hidden !important;
+                max-width: 100vw !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            .admin-main {
+                padding-left: 8px !important;
+                padding-right: 8px !important;
+            }
+            table, .table, tbody {
+                display: block !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                box-sizing: border-box !important;
+            }
+            thead, thead tr, th {
+                display: none !important;
+                visibility: hidden !important;
+                height: 0 !important;
+                width: 0 !important;
+                opacity: 0 !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                border: none !important;
+            }
+            /* 1. Ultra-Compact Grid Card (display: grid; grid-template-columns: 1fr 1fr; gap: 6px;) */
+            tbody tr,
+            .table tbody tr {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 6px !important;
+                align-items: center !important;
+                width: 100% !important;
+                background: rgba(14, 18, 25, 0.94) !important;
+                backdrop-filter: blur(16px) !important;
+                -webkit-backdrop-filter: blur(16px) !important;
+                border: 1px solid rgba(255, 255, 255, 0.16) !important;
+                border-radius: 10px !important;
+                padding: 8px !important;
+                margin-bottom: 10px !important;
+                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45) !important;
+                box-sizing: border-box !important;
+                overflow: visible !important;
+            }
+
+            /* 2. Compact Grid Cells */
+            tbody td,
+            .table tbody td {
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: center !important;
+                align-items: flex-start !important;
+                width: 100% !important;
+                min-width: 0 !important;
+                padding: 4px 6px !important;
+                border: none !important;
+                border-radius: 6px !important;
+                background: rgba(255, 255, 255, 0.03) !important;
+                font-size: 11.5px !important;
+                line-height: 1.35 !important;
+                min-height: auto !important;
+                box-sizing: border-box !important;
+                white-space: normal !important;
+                word-wrap: break-word !important;
+                word-break: break-word !important;
+                overflow: visible !important;
+                text-align: left !important;
+            }
+
+            /* 3. Injected Column Labels */
+            tbody td::before,
+            .table tbody td::before {
+                content: attr(data-label);
+                font-weight: 700;
+                text-transform: uppercase;
+                font-size: 9px;
+                color: rgba(255, 255, 255, 0.55);
+                letter-spacing: 0.5px;
+                display: block !important;
+                margin-bottom: 2px !important;
+                width: 100% !important;
+                text-align: left !important;
+                flex: 0 0 auto !important;
+            }
+
+            /* 4. Full-Width Grid Elements (spanning both columns) */
+            tbody td:first-child,
+            .table tbody td:first-child,
+            tbody td[colspan],
+            .table tbody td[colspan],
+            tbody td[data-label="Dealer Details"],
+            tbody td[data-label="Dealer & Shop"],
+            tbody td[data-label="Current Balance"],
+            tbody td[data-label="Description & Breakdown"],
+            tbody td[data-label="Transaction Particulars & Details"],
+            tbody td[data-label="Transaction Particulars"],
+            tbody td[data-label="Product Name"],
+            tbody td[data-label="Actions"],
+            tbody td[data-label="Action"],
+            tbody td:last-child,
+            .table tbody td:last-child {
+                grid-column: 1 / -1 !important;
+                width: 100% !important;
+            }
+
+            /* Header cell (Card top banner) */
+            tbody td:first-child,
+            .table tbody td:first-child,
+            tbody td[data-label="Dealer Details"],
+            tbody td[data-label="Dealer & Shop"] {
+                background: rgba(255, 255, 255, 0.06) !important;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+                padding: 6px 8px !important;
+            }
+
+            /* Colspan empty states */
+            tbody td[colspan]::before,
+            .table tbody td[colspan]::before {
+                display: none !important;
+            }
+            tbody td[colspan],
+            .table tbody td[colspan] {
+                display: block !important;
+                text-align: center !important;
+                padding: 14px 6px !important;
+                background: transparent !important;
+                font-size: 12px !important;
+            }
+
+            /* 5. Action Buttons Full Visibility Container (Forced to bottom) */
+            tbody td:last-child,
+            .table tbody td:last-child,
+            tbody td[data-label="Actions"],
+            tbody td[data-label="Action"] {
+                background: rgba(255, 255, 255, 0.02) !important;
+                border-top: 1px dashed rgba(255, 255, 255, 0.16) !important;
+                padding: 6px 2px 2px 2px !important;
+                margin-top: 2px !important;
+                display: flex !important;
+                flex-direction: column !important;
+                width: 100% !important;
+            }
+
+            tbody td:last-child .btn-group,
+            tbody td[data-label="Actions"] .btn-group,
+            tbody td[data-label="Action"] .btn-group {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                gap: 5px !important;
+                width: 100% !important;
+                margin: 0 !important;
+            }
+
+            /* Dealer buttons: 3 per row on mobile, 100% visible & touch-friendly */
+            tbody td:last-child .btn-group .btn,
+            tbody td[data-label="Actions"] .btn-group .btn,
+            tbody td[data-label="Action"] .btn-group .btn {
+                flex: 1 1 calc(33.333% - 4px) !important;
+                min-width: 32px !important;
+                min-height: 34px !important;
+                padding: 5px 6px !important;
+                font-size: 11.5px !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                border-radius: 6px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Enterprise Sidebar Navigation -->
+    <div class="admin-sidebar">
+        <div class="d-flex align-items-center mb-3 px-2">
+            <i class="fas fa-shield-alt text-danger fs-4 me-2"></i>
+            <div>
+                <h6 class="text-white m-0 fw-bold">GearUp ERP</h6>
+                <small class="text-secondary" style="font-size: 11px;">Enterprise Operating System</small>
+            </div>
+        </div>
+
+        <a href="dashboard.html" class="admin-nav-link" id="nav-dashboard"><i class="fas fa-chart-pie me-2"></i> Executive Dashboard</a>
+        
+        <!-- Accordion 1: Catalog & E-Commerce -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-catalog">
+                <span><i class="fas fa-shopping-bag text-danger me-2"></i> Catalog & E-Commerce</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-catalog">
+                <a href="products.html" class="admin-nav-link" id="nav-products"><i class="fas fa-boxes-stacked me-2"></i> Products & Catalog</a>
+                <a href="admin-crm.html" class="admin-nav-link" id="nav-crm"><i class="fas fa-users-viewfinder me-2"></i> Customers (CRM)</a>
+                <a href="admin-marketing.html" class="admin-nav-link" id="nav-marketing"><i class="fas fa-tags me-2"></i> Coupons & Marketing</a>
+            </div>
+        </div>
+
+        <!-- Accordion 2: Supply Chain & Operations -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-supply">
+                <span><i class="fas fa-truck-ramp-box text-primary me-2"></i> Supply Chain & Operations</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-supply">
+                <a href="admin-inventory.html" class="admin-nav-link" id="nav-inventory"><i class="fas fa-warehouse me-2"></i> Multi-Warehouse Stock</a>
+                <a href="admin-purchasing.html" class="admin-nav-link" id="nav-purchasing"><i class="fas fa-dolly me-2"></i> Purchasing & Suppliers</a>
+                <a href="orders.html" class="admin-nav-link" id="nav-orders"><i class="fas fa-cart-shopping me-2"></i> Sales Orders Pipeline</a>
+                <a href="admin-logistics.html" class="admin-nav-link" id="nav-logistics"><i class="fas fa-truck-fast me-2"></i> Logistics & Courier COD</a>
+                <a href="admin-returns.html" class="admin-nav-link" id="nav-returns"><i class="fas fa-rotate-left me-2"></i> Returns & Warranty (RMA)</a>
+            </div>
+        </div>
+
+        <!-- Accordion 3: Finance & B2B Wholesale -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-finance">
+                <span><i class="fas fa-coins text-warning me-2"></i> Finance & B2B Wholesale</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-finance">
+                <a href="admin-dealers.html" class="admin-nav-link active" id="nav-dealers"><i class="fas fa-handshake me-2"></i> B2B Dealers & Ledger</a>
+                <a href="admin-finance.html" class="admin-nav-link" id="nav-finance"><i class="fas fa-file-invoice-dollar me-2"></i> Finance & P&L Ledger</a>
+                <a href="admin-staff.html" class="admin-nav-link" id="nav-staff"><i class="fas fa-user-tie me-2"></i> HR & Employee Payroll</a>
+                <a href="admin-tasks.html" class="admin-nav-link" id="nav-tasks"><i class="fas fa-list-check me-2"></i> Task Kanban & Workflow</a>
+                <a href="admin-reports.html" class="admin-nav-link" id="nav-reports"><i class="fas fa-chart-column me-2"></i> Business Reports</a>
+                <a href="admin-audit.html" class="admin-nav-link" id="nav-audit"><i class="fas fa-fingerprint me-2"></i> Security & Audit Logs</a>
+            </div>
+        </div>
+
+        <!-- Standalone Section: System Settings & Store Customization -->
+        <div class="mt-3 pt-3 border-top border-secondary border-opacity-25">
+            <div class="px-3 text-secondary text-uppercase fw-bold mb-2" style="font-size: 11px; letter-spacing: 0.6px;">System & Settings</div>
+            <a href="admin-settings.html" class="admin-nav-link" id="nav-settings"><i class="fas fa-sliders text-danger me-2"></i> System Settings & APIs</a>
+            <a href="admin-sales.html" class="admin-nav-link" id="nav-sales"><i class="fas fa-palette text-warning me-2"></i> Banner & Theme</a>
+        </div>
+        
+        <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
+            <a href="dealer-portal.html" target="_blank" class="admin-nav-link text-warning"><i class="fas fa-store-alt me-2"></i> Dealer Portal View</a>
+            <a href="employee-portal.html" class="admin-nav-link text-info"><i class="fas fa-id-badge me-2"></i> Employee Workspace</a>
+            <a href="index.html" target="_blank" class="admin-nav-link text-success"><i class="fas fa-store me-2"></i> Customer Storefront</a>
+            <a href="#" class="admin-nav-link text-danger mt-2" onclick="localStorage.removeItem('admin_logged_in'); localStorage.removeItem('admin_role'); localStorage.removeItem('admin_username'); window.location.href = 'admin.html'; return false;"><i class="fas fa-sign-out-alt me-2"></i> Sign Out</a>
+        </div>
+    </div>
+
+    <script>try{var _s=sessionStorage.getItem('gug_admin_sidebar_scroll');if(_s!==null){var _sb=document.querySelector('.admin-sidebar');if(_sb)_sb.scrollTop=parseFloat(_s);}}catch(e){}</script>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Global Header Container -->
+        <div id="gug-global-header-container"></div>
+
+        <!-- Beginner Help Banner -->
+        <div id="gug-beginner-help-container"></div>
+
+        <!-- Header Actions -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2 no-print">
+            <div>
+                <h4 class="fw-bold text-dark mb-1"><i class="fas fa-handshake text-danger me-2"></i> B2B Dealers & Wholesale Ledger</h4>
+                <p class="text-secondary small mb-0">Onboard wholesale partners, assign portal credentials, track stock dispatches, and manage double-entry receivables.</p>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+                <button class="btn btn-outline-danger btn-sm fw-bold no-print" onclick="window.printBatchDealerSlips ? window.printBatchDealerSlips() : window.GUG_DB.printBatchDealerSlips()" title="Print All B2B Dealer Slips (Multi-Page A4)"><i class="fas fa-print me-1"></i> Print Slip</button>
+                <button class="btn btn-outline-dark btn-sm fw-bold" onclick="openRecordTransactionModal()"><i class="fas fa-receipt me-1"></i> Record Transaction</button>
+                <button class="btn btn-danger btn-sm fw-bold" onclick="openAddDealerModal()"><i class="fas fa-user-plus me-1"></i> Onboard New Dealer</button>
+            </div>
+        </div>
+
+        <!-- KPI Metrics Summary Row -->
+        <div class="row g-3 mb-4 no-print">
+            <div class="col-xl-3 col-md-6">
+                <div class="admin-card h-100 p-3 border-start border-4 border-primary">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-secondary small fw-bold text-uppercase">Active Dealers</span>
+                            <h3 class="fw-bold text-dark mt-1 mb-0" id="kpi-total-dealers">0</h3>
+                            <small class="text-success fw-bold" id="kpi-active-dealers-sub"><i class="fas fa-check-circle me-1"></i> 0 Active Accounts</small>
+                        </div>
+                        <div class="rounded-circle bg-primary bg-opacity-10 p-3 text-primary fs-4">
+                            <i class="fas fa-users-gear"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6">
+                <div class="admin-card h-100 p-3 border-start border-4 border-danger">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-secondary small fw-bold text-uppercase">Total B2B Receivables</span>
+                            <h3 class="fw-bold text-danger mt-1 mb-0" id="kpi-total-receivables">Rs.  0</h3>
+                            <small class="text-danger fw-bold"><i class="fas fa-clock me-1"></i> Net Outstanding Dues</small>
+                        </div>
+                        <div class="rounded-circle bg-danger bg-opacity-10 p-3 text-danger fs-4">
+                            <i class="fas fa-hand-holding-dollar"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6">
+                <div class="admin-card h-100 p-3 border-start border-4 border-warning">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-secondary small fw-bold text-uppercase">Total Stock Dispatched</span>
+                            <h3 class="fw-bold text-dark mt-1 mb-0" id="kpi-total-stock-issued">Rs.  0</h3>
+                            <small class="text-secondary"><i class="fas fa-truck-ramp-box me-1"></i> Total Invoiced Stock</small>
+                        </div>
+                        <div class="rounded-circle bg-warning bg-opacity-10 p-3 text-warning fs-4">
+                            <i class="fas fa-boxes-packing"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6">
+                <div class="admin-card h-100 p-3 border-start border-4 border-success">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-secondary small fw-bold text-uppercase">Total Payments Recovered</span>
+                            <h3 class="fw-bold text-success mt-1 mb-0" id="kpi-total-payments">Rs.  0</h3>
+                            <small class="text-success fw-bold"><i class="fas fa-circle-check me-1"></i> Cleared & Advance Deposits</small>
+                        </div>
+                        <div class="rounded-circle bg-success bg-opacity-10 p-3 text-success fs-4">
+                            <i class="fas fa-money-bill-trend-up"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs nav-tabs-erp mb-4 no-print" id="dealerTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" id="tab-dealers-list-btn" data-bs-toggle="tab" data-bs-target="#tab-dealers-list"><i class="fas fa-address-book me-1.5"></i> Dealer Roster & Accounts</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="tab-dealer-ledger-btn" data-bs-toggle="tab" data-bs-target="#tab-dealer-ledger"><i class="fas fa-book-open me-1.5"></i> Stock & Financial Ledger</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="tab-dealer-statement-btn" data-bs-toggle="tab" data-bs-target="#tab-dealer-statement"><i class="fas fa-file-invoice me-1.5"></i> Official Billing Statement</button>
+            </li>
+        </ul>
+
+        <!-- Tab Content Panes -->
+        <div class="tab-content">
+            
+            <!-- TAB 1: DEALERS LIST -->
+            <div class="tab-pane fade show active" id="tab-dealers-list">
+                <div class="admin-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                        <div class="d-flex align-items-center gap-2 flex-grow-1" style="max-width: 400px;">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-secondary"></i></span>
+                                <input type="text" id="dealer-search-input" class="form-control border-start-0" placeholder="Search by Dealer Name, Shop, CNIC, Phone, or City..." oninput="renderDealersTable()">
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <select id="dealer-status-filter" class="form-select form-select-sm" style="width: 140px;" onchange="renderDealersTable()">
+                                <option value="ALL">All Statuses</option>
+                                <option value="Active">Active Only</option>
+                                <option value="Suspended">Suspended</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Dealer Details</th>
+                                    <th>Shop & Location</th>
+                                    <th>Contact Information</th>
+                                    <th>Portal Credentials</th>
+                                    <th>Credit Limit</th>
+                                    <th class="text-end">Current Balance</th>
+                                    <th class="text-center" style="width: 140px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dealers-table-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: DEALER LEDGER -->
+            <div class="tab-pane fade" id="tab-dealer-ledger">
+                <div class="admin-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <select id="ledger-dealer-filter" class="form-select form-select-sm" style="width: 240px;" onchange="renderLedgerTable()">
+                                <option value="ALL">All B2B Dealers</option>
+                                <!-- Populated dynamically -->
+                            </select>
+                            <select id="ledger-type-filter" class="form-select form-select-sm" style="width: 170px;" onchange="renderLedgerTable()">
+                                <option value="ALL">All Types</option>
+                                <option value="STOCK_ISSUED">Stock Issued (Invoice)</option>
+                                <option value="PAYMENT_RECEIVED">Payment Received</option>
+                                <option value="ADVANCE_PAYMENT">Advance Deposit</option>
+                                <option value="STOCK_RETURNED">Stock Returned</option>
+                            </select>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-danger btn-sm fw-bold" onclick="openRecordTransactionModal('STOCK_ISSUED')"><i class="fas fa-box me-1"></i> Issue Stock</button>
+                            <button class="btn btn-success btn-sm fw-bold" onclick="openRecordTransactionModal('PAYMENT_RECEIVED')"><i class="fas fa-money-bill-wave me-1"></i> Record Payment</button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Date & ID</th>
+                                    <th>Dealer & Shop</th>
+                                    <th>Type & Reference</th>
+                                    <th>Description & Breakdown</th>
+                                    <th class="text-end text-danger">Debit (Stock Invoiced)</th>
+                                    <th class="text-end text-success">Credit (Paid / Return)</th>
+                                    <th class="text-end">Net Balance</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ledger-table-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: OFFICIAL STATEMENT GENERATOR -->
+            <div class="tab-pane fade" id="tab-dealer-statement">
+                <div class="admin-card no-print">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Select B2B Dealer for Statement Generation</label>
+                            <select id="statement-dealer-select" class="form-select form-select-sm" onchange="renderDealerStatement()">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="col-md-6 text-md-end pt-md-4">
+                            <button class="btn btn-danger btn-sm fw-bold px-3 no-print" onclick="printDealerSlip(document.getElementById('statement-dealer-select').value)"><i class="fas fa-print me-1"></i> Print / Save PDF Statement</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Printable Statement Canvas -->
+                <div class="admin-card print-statement-container bg-white p-4 p-md-5" id="printable-statement-canvas">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL 1: ADD / EDIT DEALER -->
+    <div class="modal fade" id="dealerModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-dark text-white p-3">
+                    <h5 class="modal-title fw-bold" id="dealerModalTitle"><i class="fas fa-user-plus text-danger me-2"></i> Onboard New B2B Dealer</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="dealerForm" onsubmit="handleSaveDealer(event)" novalidate>
+                    <div class="modal-body p-4">
+                        <input type="hidden" id="dealer-id-field">
+                        
+                        <h6 class="fw-bold text-dark mb-3 border-bottom pb-2"><i class="fas fa-id-card text-danger me-2"></i> Personal & Shop Identification</h6>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label form-label-required small fw-bold">Dealer Full Name</label>
+                                <input type="text" id="dealer-name" class="form-control form-control-sm" placeholder="e.g. Muhammad Tariq" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label form-label-required small fw-bold">CNIC Number</label>
+                                <input type="text" id="dealer-cnic" class="form-control form-control-sm" placeholder="42101-1234567-1" required>
+                                <div class="form-helper-text">13-digit Pakistani National Identity Card number</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label form-label-required small fw-bold">Shop / Business Trade Name</label>
+                                <input type="text" id="dealer-shop-name" class="form-control form-control-sm" placeholder="e.g. Tariq Tech & Gaming Hub" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label form-label-required small fw-bold">City</label>
+                                <input type="text" id="dealer-city" class="form-control form-control-sm" list="dealer-city-datalist" placeholder="e.g. Karachi, Lahore, Quetta..." required>
+                                <datalist id="dealer-city-datalist">
+                                    <option value="Karachi">
+                                    <option value="Lahore">
+                                    <option value="Islamabad">
+                                    <option value="Rawalpindi">
+                                    <option value="Faisalabad">
+                                    <option value="Multan">
+                                    <option value="Peshawar">
+                                    <option value="Quetta">
+                                    <option value="Sialkot">
+                                    <option value="Gujranwala">
+                                    <option value="Hyderabad">
+                                    <option value="Gwadar">
+                                </datalist>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Market / Commercial Hub</label>
+                                <input type="text" id="dealer-market" class="form-control form-control-sm" list="dealer-market-datalist" placeholder="e.g. Techno City, Hafeez Center...">
+                                <datalist id="dealer-market-datalist">
+                                    <option value="Techno City (Saddar, Karachi)">
+                                    <option value="Regal Trade Square (Karachi)">
+                                    <option value="Hafeez Center (Gulberg, Lahore)">
+                                    <option value="Hall Road (Lahore)">
+                                    <option value="Blue Area (Islamabad)">
+                                    <option value="Dubai Plaza (Rawalpindi)">
+                                    <option value="ChenOne Road / D-Ground (Faisalabad)">
+                                    <option value="Penta Square / DHA">
+                                </datalist>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label form-label-required small fw-bold">Complete Shop Commercial Address</label>
+                                <input type="text" id="dealer-shop-number" class="form-control form-control-sm" placeholder="e.g. Shop # 14-B, 2nd Floor, Hafeez Center, Main Boulevard Gulberg, Lahore" required>
+                            </div>
+                        </div>
+
+                        <h6 class="fw-bold text-dark mb-3 border-bottom pb-2"><i class="fas fa-phone text-danger me-2"></i> Contact & Residential Information</h6>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label form-label-required small fw-bold">Primary Phone Number</label>
+                                <input type="text" id="dealer-phone" class="form-control form-control-sm" placeholder="0300-1234567" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label form-label-required small fw-bold">WhatsApp Business Number</label>
+                                <input type="text" id="dealer-whatsapp" class="form-control form-control-sm" placeholder="0300-1234567" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold">Dealer Residential Address</label>
+                                <textarea id="dealer-residential" class="form-control form-control-sm" rows="2" placeholder="e.g. House 12, Street 4, Sector G, DHA Phase 5, Lahore"></textarea>
+                            </div>
+                        </div>
+
+                        <h6 class="fw-bold text-dark mb-3 border-bottom pb-2"><i class="fas fa-key text-danger me-2"></i> Dedicated Portal Credentials</h6>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label form-label-required small fw-bold">Portal Username</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text">@</span>
+                                    <input type="text" id="dealer-username" class="form-control" placeholder="e.g. tariqtech" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label form-label-required small fw-bold">Portal Password</label>
+                                <div class="input-group input-group-sm">
+                                    <input type="password" id="dealer-password" class="form-control" placeholder="Enter secure password">
+                                    <button class="btn btn-outline-secondary btn-security-toggle" type="button" onclick="togglePasswordVisibility('dealer-password', 'icon-dealer-pw')" title="Show/Hide Password"><i class="fas fa-eye text-secondary" id="icon-dealer-pw"></i></button>
+                                    <button class="btn btn-outline-secondary" type="button" onclick="generateDealerPassword()"><i class="fas fa-wand-magic-sparkles me-1"></i> Auto</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Multi-Payment Schedule Tracking System (Ledger) -->
+                        <h6 class="fw-bold text-dark mb-3 border-bottom pb-2 d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-file-invoice-dollar text-danger me-2"></i> B2B Dealer Ledger &amp; Multi-Payment Schedule Tracking</span>
+                            <span class="badge bg-secondary" id="dealer-installments-counter" style="font-size: 8pt;">0 Payment Schedules</span>
+                        </h6>
+
+                        <!-- Amount Clear Banner -->
+                        <div id="dealer-amount-clear-banner" class="alert alert-success d-flex align-items-center justify-content-between p-2 mb-3" style="display: none; border-left: 4px solid #16a34a;">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-check-circle fs-4 me-2 text-success"></i>
+                                <div>
+                                    <strong class="text-success d-block">Status: AMOUNT CLEAR</strong>
+                                    <small class="text-muted">All payment schedules paid in full. The balance has been completely settled (PKR 0).</small>
+                                </div>
+                            </div>
+                            <span class="badge bg-success px-3 py-2 fs-6 shadow-sm"><i class="fas fa-check-circle me-1"></i> AMOUNT CLEAR</span>
+                        </div>
+
+                        <!-- Pending Balance Banner -->
+                        <div id="dealer-pending-balance-banner" class="alert alert-warning d-flex align-items-center justify-content-between p-2 mb-3" style="display: none; border-left: 4px solid #eab308;">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-hourglass-half fs-4 me-2 text-warning"></i>
+                                <div>
+                                    <strong class="text-dark d-block">Status: PAYMENT IN PROGRESS</strong>
+                                    <small class="text-muted">Payment schedules are ongoing. Outstanding balance remains to be cleared.</small>
+                                </div>
+                            </div>
+                            <span class="badge bg-danger px-3 py-2 fs-6 shadow-sm" id="dealer-pending-badge">Balance Due</span>
+                        </div>
+
+                        <!-- Initial Ledger Fields (Total Amount, Paid Amount, Balance Amount) -->
+                        <div class="row g-3 mb-3 p-3 bg-light rounded border">
+                            <div class="col-md-4">
+                                <label class="form-label form-label-required small fw-bold text-dark">Total Amount (PKR)</label>
+                                <input type="number" id="dealer-total-amount" class="form-control form-control-sm fw-bold" value="0" min="0" step="1000" oninput="recalculateDealerModalBalances()" required>
+                                <div class="form-helper-text">Total agreed wholesale order / deal value</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-dark">Paid Amount (PKR)</label>
+                                <input type="number" id="dealer-paid-amount" class="form-control form-control-sm bg-white text-success fw-bold" value="0" readonly>
+                                <div class="form-helper-text">Sum of all recorded payment schedules</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-dark">Balance Amount (PKR)</label>
+                                <input type="number" id="dealer-balance-amount" class="form-control form-control-sm bg-white fw-bold" value="0" readonly>
+                                <div class="form-helper-text">Total Amount &minus; Paid Amount (Read-only)</div>
+                            </div>
+                            <!-- Hidden legacy fields for backward compatibility -->
+                            <input type="hidden" id="dealer-credit-limit">
+                            <input type="hidden" id="dealer-opening-balance">
+                        </div>
+
+                        <!-- Multi-Payment History Header & Add Payment Button -->
+                        <div class="d-flex justify-content-between align-items-center mb-2 mt-3">
+                            <strong class="text-dark small"><i class="fas fa-history text-danger me-1"></i> Multi-Payment Schedule History</strong>
+                            <button type="button" class="btn btn-outline-danger btn-sm fw-bold shadow-sm" id="btn-toggle-add-payment" onclick="toggleAddPaymentInlineForm(true)">
+                                <i class="fas fa-plus-circle me-1"></i> Add Payment
+                            </button>
+                        </div>
+
+                        <!-- Inline Add Payment Form -->
+                        <div id="dealer-add-payment-form" class="card border-danger mb-3 p-3 bg-white shadow-sm" style="display: none;">
+                            <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom">
+                                <span class="fw-bold text-danger small"><i class="fas fa-receipt me-1"></i> Record New Payment Schedule</span>
+                                <button type="button" class="btn-close btn-sm" onclick="toggleAddPaymentInlineForm(false)"></button>
+                            </div>
+                            <div class="row g-2 align-items-end">
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-dark mb-1">Paid Amount (PKR) *</label>
+                                    <input type="number" id="new-payment-amount" class="form-control form-control-sm" placeholder="e.g. 500000" min="1" step="500">
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="form-label small fw-bold text-dark mb-1">Notes / Payment Mode</label>
+                                    <input type="text" id="new-payment-notes" class="form-control form-control-sm" placeholder="e.g. Online Transfer, Cash, PayOrder...">
+                                </div>
+                                <div class="col-md-3 d-flex gap-1">
+                                    <button type="button" class="btn btn-success btn-sm w-100 fw-bold shadow-sm" id="btn-save-installment" onclick="addNewPaymentInstallment()">
+                                        <i class="fas fa-plus-circle me-1"></i> Add Payment Schedule
+                                    </button>
+                                    <button type="button" class="btn btn-secondary btn-sm" onclick="toggleAddPaymentInlineForm(false)">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="text-muted mt-2" style="font-size: 8pt;">
+                                <i class="fas fa-info-circle text-primary me-1"></i> Current <strong>Date</strong>, <strong>Day</strong>, and <strong>Time</strong> will be automatically stamped. The new remaining Balance will be auto-calculated instantly.
+                            </div>
+                        </div>
+
+                        <!-- Payment Schedules List Table -->
+                        <div class="table-responsive border rounded mb-2" style="max-height: 220px; overflow-y: auto;">
+                            <table class="table table-sm table-bordered table-hover mb-0 text-dark align-middle" style="font-size: 8.5pt;">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th style="width: 35px;" class="text-center">#</th>
+                                        <th style="white-space: nowrap;">Date</th>
+                                        <th style="white-space: nowrap;">Day</th>
+                                        <th style="white-space: nowrap;">Time</th>
+                                        <th class="text-end" style="white-space: nowrap;">Paid Amount</th>
+                                        <th class="text-end" style="white-space: nowrap;">Balance After</th>
+                                        <th>Notes / Mode</th>
+                                        <th style="width: 45px;" class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dealer-payments-list-tbody">
+                                    <!-- Rendered dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light p-3 d-flex justify-content-between align-items-center">
+                        <button type="button" class="btn btn-outline-danger btn-sm fw-bold" id="modal-print-dealer-btn" onclick="printCurrentModalDealerSlip()">
+                            <i class="fas fa-print me-1"></i> Print Dealer Slip
+                        </button>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-danger btn-sm fw-bold px-4" id="save-dealer-btn" onclick="handleSaveDealer(event)">
+                                <i class="fas fa-save me-1"></i> Save Dealer
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: RECORD TRANSACTION -->
+    <div class="modal fade" id="transactionModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-dark text-white p-3">
+                    <h5 class="modal-title fw-bold"><i class="fas fa-receipt text-danger me-2"></i> Record B2B Ledger Transaction</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="transactionForm" onsubmit="handleSaveTransaction(event)">
+                    <div class="modal-body p-4">
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label form-label-required small fw-bold">Target B2B Dealer</label>
+                                <select id="tx-dealer-select" class="form-select form-select-sm" required onchange="updateTxDealerBalancePreview()">
+                                    <!-- Populated dynamically -->
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label form-label-required small fw-bold">Transaction Type</label>
+                                <select id="tx-type-select" class="form-select form-select-sm" required onchange="toggleTxTypeFields()">
+                                    <option value="STOCK_ISSUED">Stock Issued to Dealer (Invoice - Debit)</option>
+                                    <option value="PAYMENT_RECEIVED">Payment Received (Deposit - Credit)</option>
+                                    <option value="ADVANCE_PAYMENT">Advance Payment Received (Credit)</option>
+                                    <option value="STOCK_RETURNED">Stock Return from Dealer (Credit Note)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-light rounded-3 mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2 border">
+                            <div>
+                                <small class="text-secondary fw-bold text-uppercase d-block" style="font-size: 11px;">Current Dealer Balance</small>
+                                <span class="fw-bold text-dark fs-6" id="tx-preview-current-bal">Rs.  0</span>
+                            </div>
+                            <div class="text-md-end">
+                                <small class="text-secondary fw-bold text-uppercase d-block" style="font-size: 11px;">Available Credit Limit</small>
+                                <span class="fw-bold text-success fs-6" id="tx-preview-credit-limit">Rs.  0</span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label form-label-required small fw-bold">Reference / Invoice #</label>
+                                <input type="text" id="tx-reference" class="form-control form-control-sm" placeholder="e.g. INV-B2B-1088 or PAY-MEEZAN-9921" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label form-label-required small fw-bold">Payment Method / Terms</label>
+                                <select id="tx-payment-method" class="form-select form-select-sm" required>
+                                    <option value="Credit Invoice">Credit Invoice (Ledger Balance)</option>
+                                    <option value="Bank Transfer (Meezan Bank)">Bank Transfer (Meezan Bank)</option>
+                                    <option value="Bank Transfer (HBL)">Bank Transfer (HBL)</option>
+                                    <option value="Bank Transfer (Bank Alfalah)">Bank Transfer (Bank Alfalah)</option>
+                                    <option value="Cash Deposit">Cash Deposit</option>
+                                    <option value="Cheque Deposit">Cheque Deposit</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Line Items Builder (For Stock Issued) -->
+                        <div id="tx-line-items-section" class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="form-label small fw-bold m-0"><i class="fas fa-boxes-stacked text-danger me-1"></i> Dispatched Hardware Line Items</label>
+                                <button type="button" class="btn btn-outline-danger btn-sm py-0 px-2" onclick="addTxLineItem()"><i class="fas fa-plus me-1"></i> Add Product Line</button>
+                            </div>
+                            <div class="table-responsive border rounded mb-2">
+                                <table class="table table-sm align-middle mb-0" id="tx-line-items-table">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Product Selection</th>
+                                            <th style="width: 90px;">Qty</th>
+                                            <th style="width: 140px;">Wholesale Rate (Rs. )</th>
+                                            <th style="width: 130px;" class="text-end">Subtotal</th>
+                                            <th style="width: 40px;"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tx-line-items-tbody">
+                                        <!-- Populated dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Manual Amount Field -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label form-label-required small fw-bold" id="tx-amount-label">Transaction Amount (PKR)</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text">Rs. </span>
+                                    <input type="number" id="tx-amount" class="form-control form-control-sm fw-bold fs-6" min="1" step="1" required placeholder="0" oninput="updateTxResultingBalance()">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Resulting Balance Preview</label>
+                                <div class="p-2 bg-light border rounded text-dark fw-bold" id="tx-resulting-balance-preview">Rs.  0</div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold">Description & Dispatch Notes</label>
+                                <input type="text" id="tx-description" class="form-control form-control-sm" placeholder="e.g. 5x RTX 4070 Ti SUPER dispatched via Leopard Courier tracking #LEO-9912">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light p-3">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger btn-sm fw-bold px-4"><i class="fas fa-check-circle me-1"></i> Post to Ledger</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: RESET DEALER PASSWORD -->
+    <div class="modal fade" id="resetPasswordModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-dark text-white p-3">
+                    <h6 class="modal-title fw-bold"><i class="fas fa-key text-danger me-2"></i> Reset Dealer Password</h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-3">
+                    <input type="hidden" id="reset-dealer-id">
+                    <p class="small text-secondary mb-2" id="reset-dealer-label">Resetting password for dealer.</p>
+                    <label class="form-label small fw-bold">New Password</label>
+                    <div class="input-group input-group-sm mb-2">
+                        <input type="password" id="new-dealer-password-input" class="form-control" placeholder="Enter new password">
+                        <button class="btn btn-outline-secondary btn-security-toggle" type="button" onclick="togglePasswordVisibility('new-dealer-password-input', 'icon-new-dealer-pw')" title="Show/Hide Password"><i class="fas fa-eye text-secondary" id="icon-new-dealer-pw"></i></button>
+                        <button class="btn btn-outline-secondary" type="button" onclick="document.getElementById('new-dealer-password-input').value = 'GUG@' + Math.floor(1000 + Math.random() * 9000)" title="Auto-Generate"><i class="fas fa-dice"></i></button>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light p-2">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger btn-sm fw-bold" onclick="handleConfirmPasswordReset()">Update Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 4: LINE ITEMS INSPECTION -->
+    <div class="modal fade" id="lineItemsInspectionModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-dark text-white p-3">
+                    <h6 class="modal-title fw-bold" id="inspectionModalTitle"><i class="fas fa-boxes-stacked text-danger me-2"></i> Shipment Hardware Items</h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-3" id="inspectionModalBody">
+                    <!-- Populated dynamically -->
+                </div>
+                <div class="modal-footer bg-light p-2">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/products-data.js"></script>
+    <script src="assets/js/gug-erp-core.js"></script>
+    <!-- Firebase Compat SDKs & Cloud Sync -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/firebase-sync.js"></script>
+    <script src="assets/js/admin.js"></script>
+    <script>
+        let dealerModalInstance = null;
+        let transactionModalInstance = null;
+        let resetPasswordModalInstance = null;
+        let inspectionModalInstance = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            dealerModalInstance = new bootstrap.Modal(document.getElementById('dealerModal'));
+            transactionModalInstance = new bootstrap.Modal(document.getElementById('transactionModal'));
+            resetPasswordModalInstance = new bootstrap.Modal(document.getElementById('resetPasswordModal'));
+            inspectionModalInstance = new bootstrap.Modal(document.getElementById('lineItemsInspectionModal'));
+
+            if (window.GUG_DB && typeof window.GUG_DB.renderGlobalHeader === 'function') {
+                window.GUG_DB.renderGlobalHeader('gug-global-header-container', 'B2B Dealers & Wholesale Ledger');
+                window.GUG_DB.renderBeginnerHelpBanner('gug-beginner-help-container', {
+                    whereAmI: 'B2B Wholesale Accounts & Ledger Module',
+                    whatCanIDo: 'Onboard wholesale dealer shops, issue invoice stock dispatches with product lines, recover bank/cash payments, and track running debit/credit receivables.',
+                    whatNext: 'Click "Onboard New Dealer" to register a wholesale customer or click "Record Transaction" / "Issue Stock" on any dealer to post to their ledger.'
+                });
+            }
+
+            refreshAllData();
+
+            window.addEventListener('gugDealersUpdated', () => refreshAllData());
+            window.addEventListener('dealersReady', () => refreshAllData());
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'gug_erp_dealers' || e.key === 'gug_erp_dealer_ledger') refreshAllData();
+            });
+        });
+
+        function refreshAllData() {
+            renderKPICards();
+            renderDealersTable();
+            populateDealerDropdowns();
+            renderLedgerTable();
+            renderDealerStatement();
+        }
+
+        function renderKPICards() {
+            const summary = window.GUG_DB.calculateAllDealersSummary();
+            document.getElementById('kpi-total-dealers').innerText = summary.totalDealers;
+            document.getElementById('kpi-active-dealers-sub').innerHTML = `<i class="fas fa-check-circle me-1"></i> ${summary.activeDealers} Active Accounts`;
+            document.getElementById('kpi-total-receivables').innerText = `Rs.  ${summary.grandTotalReceivables.toLocaleString()}`;
+            document.getElementById('kpi-total-stock-issued').innerText = `Rs.  ${summary.grandTotalStockIssued.toLocaleString()}`;
+            document.getElementById('kpi-total-payments').innerText = `Rs.  ${summary.grandTotalPayments.toLocaleString()}`;
+        }
+
+        function populateDealerDropdowns() {
+            const dealers = window.GUG_DB.getDealers();
+            
+            // Ledger tab filter
+            const ledgerFilter = document.getElementById('ledger-dealer-filter');
+            const currentLedgerVal = ledgerFilter.value;
+            ledgerFilter.innerHTML = `<option value="ALL">All B2B Dealers</option>` + dealers.map(d => `<option value="${d.id}">${d.name} (${d.shopName})</option>`).join('');
+            if (currentLedgerVal) ledgerFilter.value = currentLedgerVal;
+
+            // Transaction modal dealer select
+            const txSelect = document.getElementById('tx-dealer-select');
+            txSelect.innerHTML = dealers.map(d => `<option value="${d.id}">${d.name} &bull; ${d.shopName} (${d.city})</option>`).join('');
+
+            // Statement select
+            const stmtSelect = document.getElementById('statement-dealer-select');
+            const currentStmtVal = stmtSelect.value;
+            stmtSelect.innerHTML = dealers.map(d => `<option value="${d.id}">${d.shopName} &bull; ${d.name} (${d.city})</option>`).join('');
+            if (currentStmtVal && dealers.some(d => d.id === currentStmtVal)) stmtSelect.value = currentStmtVal;
+        }
+
+        function renderDealersTable() {
+            const dealers = window.GUG_DB.getDealers();
+            const query = (document.getElementById('dealer-search-input').value || '').toLowerCase().trim();
+            const statusFilter = document.getElementById('dealer-status-filter').value;
+            const tbody = document.getElementById('dealers-table-tbody');
+            tbody.innerHTML = '';
+
+            const filtered = dealers.filter(d => {
+                const matchesQuery = !query || 
+                    (d.name && d.name.toLowerCase().includes(query)) ||
+                    (d.shopName && d.shopName.toLowerCase().includes(query)) ||
+                    (d.cnic && d.cnic.includes(query)) ||
+                    (d.phone && d.phone.includes(query)) ||
+                    (d.city && d.city.toLowerCase().includes(query)) ||
+                    (d.username && d.username.toLowerCase().includes(query));
+
+                const matchesStatus = statusFilter === 'ALL' || d.status === statusFilter;
+                return matchesQuery && matchesStatus;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted"><i class="fas fa-handshake fs-2 mb-2 d-block"></i>No matching B2B dealers found.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(d => {
+                const summary = window.GUG_DB.calculateDealerSummary(d.id);
+                const totalAmt = Number(d.totalAmount !== undefined ? d.totalAmount : (d.creditLimit || 0));
+                const paidAmt = Number(d.paidAmount !== undefined ? d.paidAmount : (d.paymentHistory ? d.paymentHistory.reduce((s, p) => s + Number(p.amount || 0), 0) : 0));
+                const bal = Number(d.balanceAmount !== undefined ? d.balanceAmount : (summary ? summary.currentBalance : 0));
+                const isClear = d.isAmountClear || (totalAmt > 0 && bal <= 0);
+
+                let balBadge = '';
+                if (isClear) {
+                    balBadge = `<span class="badge bg-success px-2 py-1"><i class="fas fa-check-circle me-1"></i>Amount Clear</span>`;
+                } else if (bal > 0) {
+                    balBadge = `<span class="badge dealer-badge-due px-2 py-1">Rs.  ${bal.toLocaleString()} Due</span>`;
+                } else if (bal < 0) {
+                    balBadge = `<span class="badge dealer-badge-surplus px-2 py-1">Rs.  ${Math.abs(bal).toLocaleString()} Advance</span>`;
+                } else {
+                    balBadge = `<span class="badge bg-success px-2 py-1"><i class="fas fa-check-circle me-1"></i>Amount Clear</span>`;
+                }
+
+                const cleanPhone = (d.whatsapp || d.phone || '').replace(/[^0-9]/g, '');
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td data-label="Dealer Details">
+                        <strong class="text-white">${d.name}</strong>
+                        <div class="text-secondary small"><code>${d.id}</code> &bull; CNIC: ${d.cnic || 'N/A'}</div>
+                    </td>
+                    <td data-label="Shop & Location">
+                        <strong class="text-white">${d.shopName}</strong>
+                        <div class="text-secondary small">${d.shopNumber || d.city}</div>
+                    </td>
+                    <td data-label="Contact Information">
+                        <div><i class="fas fa-phone text-danger me-1"></i> <a href="tel:${d.phone}" class="text-decoration-none text-light">${d.phone}</a></div>
+                        <div><i class="fab fa-whatsapp text-success me-1"></i> <a href="https://wa.me/92${cleanPhone.startsWith('0') ? cleanPhone.slice(1) : cleanPhone}" target="_blank" class="text-decoration-none text-success small fw-bold">${d.whatsapp || d.phone}</a></div>
+                    </td>
+                    <td data-label="Portal Credentials">
+                        <span class="badge bg-dark text-light"><i class="fas fa-at me-1"></i>${d.username}</span>
+                        <span class="badge ${d.status === 'Active' ? 'bg-success' : 'bg-danger'} ms-1">${d.status}</span>
+                    </td>
+                    <td data-label="Total Deal Amount">
+                        <span class="text-white fw-bold">Rs.  ${totalAmt.toLocaleString()}</span>
+                        <div class="text-success small fw-bold">Paid: Rs. ${paidAmt.toLocaleString()}</div>
+                    </td>
+                    <td data-label="Current Balance" class="text-end">
+                        ${balBadge}
+                    </td>
+                    <td data-label="Actions" class="text-center">
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-danger no-print" title="Print Dealer Slip" onclick="printDealerSlip('${d.id}')"><i class="fas fa-print"></i></button>
+                            <button class="btn btn-outline-danger" title="Record Transaction" onclick="quickRecordTx('${d.id}')"><i class="fas fa-plus"></i></button>
+                            <button class="btn btn-outline-primary" title="View Ledger" onclick="viewDealerLedger('${d.id}')"><i class="fas fa-book"></i></button>
+                            <button class="btn btn-outline-secondary" title="Edit Profile & Ledger" onclick="openEditDealerModal('${d.id}')"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-outline-dark" title="Reset Password" onclick="openResetPasswordModal('${d.id}')"><i class="fas fa-key"></i></button>
+                            <button class="btn ${d.status === 'Active' ? 'btn-outline-warning' : 'btn-outline-success'}" title="${d.status === 'Active' ? 'Suspend' : 'Activate'}" onclick="handleToggleStatus('${d.id}')">
+                                <i class="fas ${d.status === 'Active' ? 'fa-ban' : 'fa-check'}"></i>
+                            </button>
+                            <button class="btn btn-outline-danger" title="Delete Dealer" onclick="handleDeleteDealer('${d.id}')"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderLedgerTable() {
+            const dealerFilter = document.getElementById('ledger-dealer-filter').value;
+            const typeFilter = document.getElementById('ledger-type-filter').value;
+            const entries = window.GUG_DB.getDealerLedger(dealerFilter === 'ALL' ? null : dealerFilter);
+            const tbody = document.getElementById('ledger-table-tbody');
+            tbody.innerHTML = '';
+
+            const filtered = entries.filter(e => {
+                return typeFilter === 'ALL' || e.type === typeFilter;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-muted"><i class="fas fa-book-open fs-2 mb-2 d-block"></i>No ledger transactions recorded yet.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(e => {
+                let typeBadge = '';
+                if (e.type === 'STOCK_ISSUED') typeBadge = `<span class="badge bg-danger">Stock Issued</span>`;
+                else if (e.type === 'PAYMENT_RECEIVED') typeBadge = `<span class="badge bg-success">Payment Received</span>`;
+                else if (e.type === 'ADVANCE_PAYMENT') typeBadge = `<span class="badge bg-info">Advance Deposit</span>`;
+                else if (e.type === 'STOCK_RETURNED') typeBadge = `<span class="badge bg-warning text-dark">Stock Return</span>`;
+
+                const dateStr = new Date(e.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+                const hasItems = Array.isArray(e.items) && e.items.length > 0;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td data-label="Date & ID">
+                        <strong class="text-white">${dateStr}</strong>
+                        <div class="text-secondary small"><code>${e.id}</code></div>
+                    </td>
+                    <td data-label="Dealer & Shop">
+                        <strong class="text-white">${e.shopName || e.dealerName}</strong>
+                        <div class="text-secondary small">${e.dealerName}</div>
+                    </td>
+                    <td data-label="Type & Reference">
+                        ${typeBadge}
+                        <div class="text-white small fw-bold mt-1">Ref #${e.referenceNo}</div>
+                    </td>
+                    <td data-label="Description & Breakdown">
+                        <div class="text-white" style="font-size: 13px;">${e.description}</div>
+                        ${hasItems ? `<button class="btn btn-link btn-sm p-0 text-danger small fw-bold" onclick="inspectLineItems('${e.id}')"><i class="fas fa-boxes-stacked me-1"></i> View ${e.items.length} Line Items</button>` : ''}
+                        ${e.notes ? `<div class="text-secondary small italic"><i class="fas fa-info-circle me-1"></i> ${e.notes}</div>` : ''}
+                    </td>
+                    <td data-label="Debit" class="text-end fw-bold text-danger">
+                        ${e.debit ? `Rs.  ${e.debit.toLocaleString()}` : '-'}
+                    </td>
+                    <td data-label="Credit" class="text-end fw-bold text-success">
+                        ${e.credit ? `Rs.  ${e.credit.toLocaleString()}` : '-'}
+                    </td>
+                    <td data-label="Net Balance" class="text-end fw-bold text-white">
+                        ${e.runningBalance !== undefined ? `Rs.  ${e.runningBalance.toLocaleString()}` : '-'}
+                    </td>
+                    <td data-label="Action" class="text-center">
+                        <button class="btn btn-outline-danger btn-sm py-0 px-2" title="Delete Entry" onclick="handleDeleteLedgerEntry('${e.id}')"><i class="fas fa-trash-alt"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderDealerStatement() {
+            const dealerId = document.getElementById('statement-dealer-select').value;
+            const container = document.getElementById('printable-statement-canvas');
+            if (!dealerId) {
+                container.innerHTML = `<div class="text-center text-muted py-5">Please select a dealer to generate their statement.</div>`;
+                return;
+            }
+
+            const summary = window.GUG_DB.calculateDealerSummary(dealerId);
+            if (!summary) return;
+
+            const d = summary.dealer;
+            const entries = summary.ledgerEntries;
+            const bal = summary.currentBalance;
+
+            container.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-4 mb-4">
+                    <div>
+                        <h4 class="fw-bold text-danger m-0">GEAR UP GADGETS PAKISTAN</h4>
+                        <small class="text-secondary">Premier Tech Hardware & Wholesale B2B Distribution</small>
+                        <div class="text-dark small mt-2">
+                            <strong>Head Office:</strong> D-5, 4th floor, Osif Center, Block 13 A, University Road Gulshan-e-Iqbal, Karachi-Pakistan<br>
+                            <strong>Queries:</strong> 021 34832214 | <strong>Email:</strong> sales@gearupgadget.com
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <h4 class="fw-bold text-dark mb-1">B2B DEALER STATEMENT</h4>
+                        <div class="badge bg-dark fs-6 px-3 py-1">Statement Date: ${new Date().toLocaleDateString('en-GB')}</div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4 p-3 bg-light rounded-3">
+                    <div class="col-md-6">
+                        <div class="text-secondary small fw-bold text-uppercase">Billed B2B Partner</div>
+                        <h5 class="fw-bold text-dark mb-1">${d.shopName}</h5>
+                        <div class="text-dark small">
+                            <strong>Contact Person:</strong> ${d.name} (CNIC: ${d.cnic || 'N/A'})<br>
+                            <strong>Commercial Location:</strong> ${d.shopNumber || d.city}<br>
+                            <strong>Phone:</strong> ${d.phone} | <strong>WhatsApp:</strong> ${d.whatsapp}
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <div class="text-secondary small fw-bold text-uppercase">Account Summary</div>
+                        <div class="fs-5 fw-bold ${bal > 0 ? 'text-danger' : 'text-success'}">
+                            ${bal > 0 ? `Net Outstanding Dues: Rs.  ${bal.toLocaleString()}` : `Surplus Advance Credit: Rs.  ${Math.abs(bal).toLocaleString()}`}
+                        </div>
+                        <div class="text-secondary small mt-1">
+                            Approved Credit Limit: Rs.  ${(d.creditLimit || 0).toLocaleString()}<br>
+                            Total Stock Dispatched: Rs.  ${summary.totalStockIssued.toLocaleString()}<br>
+                            Total Payments Cleared: Rs.  ${summary.totalPayments.toLocaleString()}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive mb-4">
+                    <table class="table table-bordered table-sm align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Date</th>
+                                <th>Ref #</th>
+                                <th>Transaction Particulars & Details</th>
+                                <th class="text-end">Debit (Stock Rs. )</th>
+                                <th class="text-end">Credit (Paid Rs. )</th>
+                                <th class="text-end">Balance (Rs. )</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td data-label="Date">${d.createdAt}</td>
+                                <td data-label="Ref #">OPENING</td>
+                                <td data-label="Transaction Particulars"><em>Opening Account Balance</em></td>
+                                <td data-label="Debit" class="text-end">-</td>
+                                <td data-label="Credit" class="text-end">-</td>
+                                <td data-label="Balance" class="text-end fw-bold">Rs.  ${(d.openingBalance || 0).toLocaleString()}</td>
+                            </tr>
+                            ${entries.map(e => `
+                                <tr>
+                                    <td data-label="Date">${new Date(e.date).toLocaleDateString('en-GB')}</td>
+                                    <td data-label="Ref #"><code>${e.referenceNo}</code></td>
+                                    <td data-label="Transaction Particulars">
+                                        <strong>${e.description}</strong>
+                                        ${e.paymentMethod ? `<span class="text-secondary small d-block">Method: ${e.paymentMethod}</span>` : ''}
+                                    </td>
+                                    <td data-label="Debit" class="text-end text-danger">${e.debit ? `Rs.  ${e.debit.toLocaleString()}` : '-'}</td>
+                                    <td data-label="Credit" class="text-end text-success">${e.credit ? `Rs.  ${e.credit.toLocaleString()}` : '-'}</td>
+                                    <td data-label="Balance" class="text-end fw-bold">Rs.  ${(e.runningBalance || 0).toLocaleString()}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center pt-4 border-top">
+                    <div class="text-secondary small">
+                        This is an official computer-generated statement issued by Gear Up Gadgets ERP Operating System.
+                    </div>
+                    <div class="text-end" style="width: 200px;">
+                        <div class="border-bottom pb-4 mb-1"></div>
+                        <small class="text-secondary fw-bold">Authorized Accounts Signature</small>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- Multi-Installment Payment System (Ledger) ---
+        let activeEditDealerPayments = [];
+
+        function toggleAddPaymentInlineForm(show) {
+            const form = document.getElementById('dealer-add-payment-form');
+            if (!form) return;
+            form.style.display = show ? 'block' : 'none';
+            if (show) {
+                document.getElementById('new-payment-amount').value = '';
+                document.getElementById('new-payment-notes').value = '';
+                document.getElementById('new-payment-amount').focus();
+            } else {
+                if (document.getElementById('new-payment-amount')) document.getElementById('new-payment-amount').value = '';
+                if (document.getElementById('new-payment-notes')) document.getElementById('new-payment-notes').value = '';
+            }
+        }
+
+        function autoPersistModalDealer(id) {
+            if (!id) return;
+            const d = window.GUG_DB.getDealerById(id);
+            if (!d) return;
+
+            const totalAmount = Number(document.getElementById('dealer-total-amount').value || 0);
+            const sumPaid = activeEditDealerPayments.reduce((acc, p) => acc + Number(p.amount || 0), 0);
+            const balanceAmount = Math.max(0, totalAmount - sumPaid);
+            const isAmountClear = (totalAmount > 0 && balanceAmount <= 0) || (totalAmount === 0 && sumPaid > 0);
+
+            const updatedData = {
+                ...d,
+                totalAmount: totalAmount,
+                paidAmount: sumPaid,
+                balanceAmount: balanceAmount,
+                isAmountClear: isAmountClear,
+                paymentHistory: [...activeEditDealerPayments],
+                creditLimit: totalAmount,
+                openingBalance: balanceAmount
+            };
+
+            window.GUG_DB.saveDealer(updatedData);
+            refreshAllData();
+        }
+
+        function addNewPaymentInstallment() {
+            const amountInput = document.getElementById('new-payment-amount');
+            if (!amountInput) return false;
+            const newAmount = Number(amountInput.value);
+            if (isNaN(newAmount) || newAmount <= 0) {
+                window.GUG_DB.showToast('Please enter a valid payment schedule amount (greater than 0).', 'error', 'Invalid Amount');
+                return false;
+            }
+
+            const totalAmount = Number(document.getElementById('dealer-total-amount').value || 0);
+            const currentPaid = activeEditDealerPayments.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+            const prevBalance = Math.max(0, totalAmount - currentPaid);
+
+            // Prevent duplicate payments if balance is already fully cleared or zero-balance payment exists
+            const hasZeroPayment = activeEditDealerPayments.some(p => p.balanceAfter !== undefined && Number(p.balanceAfter) <= 0);
+            if (hasZeroPayment || (totalAmount > 0 && prevBalance <= 0)) {
+                window.GUG_DB.showToast('Account balance is already fully cleared (PKR 0). No additional payment entry can be logged.', 'warning', 'Already Cleared');
+                toggleAddPaymentInlineForm(false);
+                return false;
+            }
+
+            const balanceAfter = Math.max(0, prevBalance - newAmount);
+
+            // Auto Date, Day, and Time Generation
+            const now = new Date();
+            const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const currentDay = dayNames[now.getDay()];
+            const currentDate = String(now.getDate()).padStart(2, '0') + '/' + String(now.getMonth() + 1).padStart(2, '0') + '/' + now.getFullYear();
+            const currentTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+
+            const installmentNo = activeEditDealerPayments.length + 1;
+            const notesInput = document.getElementById('new-payment-notes');
+            const notes = (notesInput ? notesInput.value.trim() : '') || `Payment Schedule #${installmentNo}`;
+
+            const newPayment = {
+                id: 'PAY-' + Date.now().toString().slice(-6) + '-' + Math.floor(Math.random() * 1000),
+                installmentNo: installmentNo,
+                amount: newAmount,
+                date: currentDate,
+                day: currentDay,
+                time: currentTime,
+                balanceAfter: balanceAfter,
+                notes: notes
+            };
+
+            // Immediately clear input fields to avoid duplicate additions
+            amountInput.value = '';
+            if (notesInput) notesInput.value = '';
+
+            activeEditDealerPayments.push(newPayment);
+            toggleAddPaymentInlineForm(false);
+            recalculateDealerModalBalances();
+
+            // Auto-persist immediately if editing an existing dealer
+            const existingId = document.getElementById('dealer-id-field').value;
+            if (existingId) {
+                autoPersistModalDealer(existingId);
+            }
+
+            window.GUG_DB.showToast(`Payment Schedule #${installmentNo} of Rs. ${newAmount.toLocaleString()} recorded.`, 'success', 'Payment Added');
+            return true;
+        }
+
+        function removePaymentInstallment(index) {
+            if (index < 0 || index >= activeEditDealerPayments.length) return;
+            activeEditDealerPayments.splice(index, 1);
+            recalculateDealerModalBalances();
+            const existingId = document.getElementById('dealer-id-field').value;
+            if (existingId) {
+                autoPersistModalDealer(existingId);
+            }
+        }
+
+        function renderDealerPaymentsTable() {
+            const tbody = document.getElementById('dealer-payments-list-tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            const counter = document.getElementById('dealer-installments-counter');
+            if (counter) counter.innerText = `${activeEditDealerPayments.length} Payment Schedule${activeEditDealerPayments.length === 1 ? '' : 's'}`;
+
+            if (activeEditDealerPayments.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-3 text-muted"><i class="fas fa-hand-holding-dollar me-1"></i> No payment schedules recorded yet. Click <strong>"+ Add Payment"</strong> to log a payment schedule.</td></tr>`;
+                return;
+            }
+
+            activeEditDealerPayments.forEach((p, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="text-center fw-bold text-dark">${idx + 1}</td>
+                    <td style="white-space: nowrap;"><span class="badge bg-light text-dark border"><i class="far fa-calendar-alt text-danger me-1"></i>${p.date || '-'}</span></td>
+                    <td style="white-space: nowrap;"><strong>${p.day || '-'}</strong></td>
+                    <td style="white-space: nowrap;"><code class="text-dark bg-light px-1 rounded">${p.time || '-'}</code></td>
+                    <td class="text-end fw-bold text-success">+ Rs. ${Number(p.amount || 0).toLocaleString()}</td>
+                    <td class="text-end fw-bold text-dark">Rs. ${Number(p.balanceAfter || 0).toLocaleString()}</td>
+                    <td class="text-secondary small">${p.notes || '-'}</td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-outline-danger btn-sm p-0 px-1" onclick="removePaymentInstallment(${idx})" title="Remove payment schedule">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function recalculateDealerModalBalances() {
+            const totalAmount = Number(document.getElementById('dealer-total-amount').value || 0);
+
+            // Deduplicate accidental duplicate entries in activeEditDealerPayments
+            const uniquePayments = [];
+            let seenZeroBalance = false;
+            for (let i = 0; i < activeEditDealerPayments.length; i++) {
+                const p = activeEditDealerPayments[i];
+                const isZero = (p.balanceAfter !== undefined && Number(p.balanceAfter) <= 0);
+                if (seenZeroBalance && isZero) {
+                    continue; // Skip duplicate zero-balance entry
+                }
+                uniquePayments.push(p);
+                if (isZero) {
+                    seenZeroBalance = true;
+                }
+            }
+            activeEditDealerPayments = uniquePayments;
+
+            // Re-calculate running balance through all payments
+            let runningBal = totalAmount;
+            let sumPaid = 0;
+            activeEditDealerPayments.forEach((p, idx) => {
+                p.installmentNo = idx + 1;
+                sumPaid += Number(p.amount || 0);
+                runningBal = Math.max(0, runningBal - Number(p.amount || 0));
+                p.balanceAfter = runningBal;
+            });
+
+            const balance = Math.max(0, totalAmount - sumPaid);
+
+            document.getElementById('dealer-paid-amount').value = sumPaid;
+            document.getElementById('dealer-balance-amount').value = balance;
+
+            if (document.getElementById('dealer-credit-limit')) {
+                document.getElementById('dealer-credit-limit').value = totalAmount;
+            }
+            if (document.getElementById('dealer-opening-balance')) {
+                document.getElementById('dealer-opening-balance').value = balance;
+            }
+
+            renderDealerPaymentsTable();
+
+            // Status banners
+            const clearBanner = document.getElementById('dealer-amount-clear-banner');
+            const pendingBanner = document.getElementById('dealer-pending-balance-banner');
+            const pendingBadge = document.getElementById('dealer-pending-badge');
+
+            const isClear = (totalAmount > 0 && balance <= 0) || (totalAmount === 0 && sumPaid > 0);
+            if (isClear) {
+                if (clearBanner) clearBanner.style.display = 'flex';
+                if (pendingBanner) pendingBanner.style.display = 'none';
+            } else {
+                if (clearBanner) clearBanner.style.display = 'none';
+                if (pendingBanner) {
+                    pendingBanner.style.display = 'flex';
+                    if (pendingBadge) {
+                        pendingBadge.innerText = 'Rs. ' + balance.toLocaleString() + ' Due';
+                    }
+                }
+            }
+        }
+
+        // --- Dealer CRUD Handlers ---
+        function openAddDealerModal() {
+            document.getElementById('dealerForm').reset();
+            document.getElementById('dealer-id-field').value = '';
+            document.getElementById('dealerModalTitle').innerHTML = `<i class="fas fa-user-plus text-danger me-2"></i> Onboard New B2B Dealer`;
+            document.getElementById('dealer-city').value = 'Karachi';
+            document.getElementById('dealer-market').value = '';
+            document.getElementById('dealer-total-amount').value = 1500000;
+            document.getElementById('dealer-paid-amount').value = 0;
+            document.getElementById('dealer-balance-amount').value = 1500000;
+            if (document.getElementById('dealer-credit-limit')) document.getElementById('dealer-credit-limit').value = 1500000;
+            if (document.getElementById('dealer-opening-balance')) document.getElementById('dealer-opening-balance').value = 1500000;
+            activeEditDealerPayments = [];
+            toggleAddPaymentInlineForm(false);
+            recalculateDealerModalBalances();
+            generateDealerPassword();
+            dealerModalInstance.show();
+        }
+
+        function openEditDealerModal(id) {
+            const d = window.GUG_DB.getDealerById(id);
+            if (!d) return;
+
+            document.getElementById('dealer-id-field').value = d.id;
+            document.getElementById('dealer-name').value = d.name;
+            document.getElementById('dealer-cnic').value = d.cnic;
+            document.getElementById('dealer-shop-name').value = d.shopName;
+            document.getElementById('dealer-city').value = d.city || 'Karachi';
+            document.getElementById('dealer-market').value = d.market || '';
+            document.getElementById('dealer-shop-number').value = d.shopNumber;
+            document.getElementById('dealer-phone').value = d.phone;
+            document.getElementById('dealer-whatsapp').value = d.whatsapp || d.phone;
+            document.getElementById('dealer-residential').value = d.residentialAddress || '';
+            document.getElementById('dealer-username').value = d.username;
+            document.getElementById('dealer-password').value = d.password || '';
+
+            const total = Number(d.totalAmount !== undefined ? d.totalAmount : (d.creditLimit || 1000000));
+            document.getElementById('dealer-total-amount').value = total;
+
+            activeEditDealerPayments = Array.isArray(d.paymentHistory) ? JSON.parse(JSON.stringify(d.paymentHistory)) : [];
+            toggleAddPaymentInlineForm(false);
+            recalculateDealerModalBalances();
+
+            document.getElementById('dealerModalTitle').innerHTML = `<i class="fas fa-edit text-danger me-2"></i> Edit Dealer: ${d.name} (${d.shopName})`;
+            dealerModalInstance.show();
+        }
+
+        function generateDealerPassword() {
+            const pwd = 'DLR@' + Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('dealer-password').value = pwd;
+        }
+
+        function printCurrentModalDealerSlip() {
+            const id = document.getElementById('dealer-id-field').value;
+            if (!id) {
+                window.GUG_DB.showToast('Please save the dealer profile first before printing.', 'warning', 'Save First');
+                return;
+            }
+            // Auto-save any modal changes first
+            handleSaveDealer();
+            setTimeout(() => {
+                window.printDealerSlip(id);
+            }, 100);
+        }
+
+        function handleSaveDealer(e) {
+            if (e && typeof e.preventDefault === 'function') {
+                e.preventDefault();
+            }
+
+            // Auto-commit ONLY IF user has the inline payment form open and entered an uncommitted amount
+            const inlineForm = document.getElementById('dealer-add-payment-form');
+            if (inlineForm && inlineForm.style.display !== 'none') {
+                const pendingAmountInput = document.getElementById('new-payment-amount');
+                if (pendingAmountInput && Number(pendingAmountInput.value) > 0) {
+                    addNewPaymentInstallment();
+                }
+            }
+
+            // Strictly deduplicate payment entries (ensuring Amount Clear is logged once)
+            const cleanHistory = [];
+            let zeroLogged = false;
+            activeEditDealerPayments.forEach((p, idx) => {
+                const isZero = (p.balanceAfter !== undefined && Number(p.balanceAfter) <= 0);
+                if (zeroLogged && isZero) return;
+                cleanHistory.push({ ...p, installmentNo: cleanHistory.length + 1 });
+                if (isZero) zeroLogged = true;
+            });
+            activeEditDealerPayments = cleanHistory;
+
+            const id = document.getElementById('dealer-id-field').value;
+            const name = (document.getElementById('dealer-name').value || '').trim();
+            const shopName = (document.getElementById('dealer-shop-name').value || '').trim();
+            const phone = (document.getElementById('dealer-phone').value || '').trim();
+            const cnic = (document.getElementById('dealer-cnic').value || '').trim();
+
+            if (!name) {
+                window.GUG_DB.showToast('Please enter the dealer name.', 'error', 'Validation Error');
+                const field = document.getElementById('dealer-name');
+                if (field) field.focus();
+                return;
+            }
+            if (!shopName) {
+                window.GUG_DB.showToast('Please enter the shop / enterprise name.', 'error', 'Validation Error');
+                const field = document.getElementById('dealer-shop-name');
+                if (field) field.focus();
+                return;
+            }
+            if (!phone) {
+                window.GUG_DB.showToast('Please enter a contact phone number.', 'error', 'Validation Error');
+                const field = document.getElementById('dealer-phone');
+                if (field) field.focus();
+                return;
+            }
+
+            const totalAmount = Number(document.getElementById('dealer-total-amount').value || 0);
+            const sumPaid = activeEditDealerPayments.reduce((acc, p) => acc + Number(p.amount || 0), 0);
+            const balanceAmount = Math.max(0, totalAmount - sumPaid);
+            const isAmountClear = (totalAmount > 0 && balanceAmount <= 0) || (totalAmount === 0 && sumPaid > 0);
+
+            const dealerData = {
+                id: id || undefined,
+                name: name,
+                cnic: cnic,
+                shopName: shopName,
+                city: (document.getElementById('dealer-city').value || 'Karachi').trim(),
+                market: (document.getElementById('dealer-market').value || '').trim(),
+                shopNumber: (document.getElementById('dealer-shop-number').value || '').trim(),
+                phone: phone,
+                whatsapp: (document.getElementById('dealer-whatsapp').value || phone).trim(),
+                residentialAddress: (document.getElementById('dealer-residential').value || '').trim(),
+                username: (document.getElementById('dealer-username').value || '').trim(),
+                password: (document.getElementById('dealer-password').value || '').trim(),
+                totalAmount: totalAmount,
+                paidAmount: sumPaid,
+                balanceAmount: balanceAmount,
+                isAmountClear: isAmountClear,
+                paymentHistory: [...activeEditDealerPayments],
+                creditLimit: totalAmount,
+                openingBalance: balanceAmount
+            };
+
+            const res = window.GUG_DB.saveDealer(dealerData);
+            if (!res.success) {
+                window.GUG_DB.showToast(res.message, 'error', 'Validation Error');
+                return;
+            }
+
+            if (dealerModalInstance) {
+                dealerModalInstance.hide();
+            }
+            window.GUG_DB.showToast(`Dealer "${dealerData.name}" (${dealerData.shopName}) successfully saved!`, 'success', 'Dealer Saved');
+            refreshAllData();
+            return res;
+        }
+
+        function handleDeleteDealer(id) {
+            const d = window.GUG_DB.getDealerById(id);
+            if (!d) return;
+
+            if (confirm(`Are you sure you want to permanently delete dealer "${d.name}" (${d.shopName}) and all related ledger history?`)) {
+                window.GUG_DB.deleteDealer(id);
+                window.GUG_DB.showToast(`Dealer "${d.name}" removed from ERP system.`, 'info', 'Dealer Deleted');
+                refreshAllData();
+            }
+        }
+
+        function handleToggleStatus(id) {
+            const res = window.GUG_DB.toggleDealerStatus(id);
+            if (res.success) {
+                window.GUG_DB.showToast(`Dealer status set to ${res.status}.`, 'info', 'Status Updated');
+                refreshAllData();
+            }
+        }
+
+        function openResetPasswordModal(id) {
+            const d = window.GUG_DB.getDealerById(id);
+            if (!d) return;
+
+            document.getElementById('reset-dealer-id').value = d.id;
+            document.getElementById('reset-dealer-label').innerText = `Resetting portal login password for @${d.username} (${d.name})`;
+            document.getElementById('new-dealer-password-input').value = 'GUG@' + Math.floor(1000 + Math.random() * 9000);
+            resetPasswordModalInstance.show();
+        }
+
+        function handleConfirmPasswordReset() {
+            const id = document.getElementById('reset-dealer-id').value;
+            const newPwd = document.getElementById('new-dealer-password-input').value.trim();
+            const res = window.GUG_DB.resetDealerPassword(id, newPwd);
+            if (res.success) {
+                resetPasswordModalInstance.hide();
+                window.GUG_DB.showToast(res.message, 'success', 'Password Updated');
+                refreshAllData();
+            } else {
+                window.GUG_DB.showToast(res.message, 'error', 'Error');
+            }
+        }
+
+        function quickRecordTx(dealerId) {
+            openRecordTransactionModal();
+            document.getElementById('tx-dealer-select').value = dealerId;
+            updateTxDealerBalancePreview();
+        }
+
+        function viewDealerLedger(dealerId) {
+            const tabBtn = document.getElementById('tab-dealer-ledger-btn');
+            const tab = new bootstrap.Tab(tabBtn);
+            tab.show();
+            document.getElementById('ledger-dealer-filter').value = dealerId;
+            renderLedgerTable();
+        }
+
+        // --- Transaction Modal Handlers ---
+        function openRecordTransactionModal(defaultType = 'STOCK_ISSUED') {
+            document.getElementById('transactionForm').reset();
+            document.getElementById('tx-type-select').value = defaultType;
+            document.getElementById('tx-reference').value = defaultType === 'STOCK_ISSUED' ? 'INV-B2B-' + Math.floor(1000 + Math.random() * 9000) : 'PAY-BANK-' + Math.floor(1000 + Math.random() * 9000);
+            
+            document.getElementById('tx-line-items-tbody').innerHTML = '';
+            toggleTxTypeFields();
+            updateTxDealerBalancePreview();
+            transactionModalInstance.show();
+        }
+
+        function toggleTxTypeFields() {
+            const type = document.getElementById('tx-type-select').value;
+            const lineItemsSec = document.getElementById('tx-line-items-section');
+            const amountLabel = document.getElementById('tx-amount-label');
+
+            if (type === 'STOCK_ISSUED') {
+                lineItemsSec.style.display = 'block';
+                amountLabel.innerText = 'Total Invoiced Stock Amount (PKR - Debit)';
+                if (document.getElementById('tx-line-items-tbody').children.length === 0) {
+                    addTxLineItem();
+                }
+            } else if (type === 'PAYMENT_RECEIVED') {
+                lineItemsSec.style.display = 'none';
+                amountLabel.innerText = 'Payment Received Amount (PKR - Credit)';
+            } else if (type === 'ADVANCE_PAYMENT') {
+                lineItemsSec.style.display = 'none';
+                amountLabel.innerText = 'Advance Deposit Amount (PKR - Credit)';
+            } else if (type === 'STOCK_RETURNED') {
+                lineItemsSec.style.display = 'block';
+                amountLabel.innerText = 'Returned Stock Credit Amount (PKR - Credit)';
+            }
+            updateTxResultingBalance();
+        }
+
+        function addTxLineItem() {
+            const tbody = document.getElementById('tx-line-items-tbody');
+            const products = window.GUG_DB.getProducts();
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>
+                    <select class="form-select form-select-sm tx-prod-select" onchange="handleLineItemProductChange(this)">
+                        <option value="">Select Catalog Product...</option>
+                        ${products.map(p => `<option value="${p.id}" data-price="${p.sellingPrice || p.price || 0}" data-title="${p.title || p.name}">${p.title || p.name} (Rs.  ${(p.sellingPrice || p.price || 0).toLocaleString()})</option>`).join('')}
+                    </select>
+                </td>
+                <td>
+                    <input type="number" class="form-control form-control-sm tx-prod-qty" value="1" min="1" oninput="calculateLineItemsTotal()">
+                </td>
+                <td>
+                    <input type="number" class="form-control form-control-sm tx-prod-rate" value="0" min="0" oninput="calculateLineItemsTotal()">
+                </td>
+                <td class="text-end fw-bold text-dark tx-prod-subtotal">Rs.  0</td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-link text-danger p-0" onclick="this.closest('tr').remove(); calculateLineItemsTotal();"><i class="fas fa-times"></i></button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        }
+
+        function handleLineItemProductChange(selectEl) {
+            const opt = selectEl.options[selectEl.selectedIndex];
+            const price = opt.getAttribute('data-price') || 0;
+            const tr = selectEl.closest('tr');
+            tr.querySelector('.tx-prod-rate').value = price;
+            calculateLineItemsTotal();
+        }
+
+        function calculateLineItemsTotal() {
+            const rows = document.querySelectorAll('#tx-line-items-tbody tr');
+            let grand = 0;
+            rows.forEach(tr => {
+                const qty = Number(tr.querySelector('.tx-prod-qty').value || 1);
+                const rate = Number(tr.querySelector('.tx-prod-rate').value || 0);
+                const sub = qty * rate;
+                grand += sub;
+                tr.querySelector('.tx-prod-subtotal').innerText = `Rs.  ${sub.toLocaleString()}`;
+            });
+
+            const type = document.getElementById('tx-type-select').value;
+            if (type === 'STOCK_ISSUED' || type === 'STOCK_RETURNED') {
+                document.getElementById('tx-amount').value = grand;
+            }
+            updateTxResultingBalance();
+        }
+
+        function updateTxDealerBalancePreview() {
+            const dealerId = document.getElementById('tx-dealer-select').value;
+            if (!dealerId) return;
+
+            const summary = window.GUG_DB.calculateDealerSummary(dealerId);
+            if (summary) {
+                const bal = summary.currentBalance;
+                document.getElementById('tx-preview-current-bal').innerText = `Rs.  ${bal.toLocaleString()} (${bal > 0 ? 'Dues' : 'Surplus'})`;
+                document.getElementById('tx-preview-credit-limit').innerText = `Rs.  ${(summary.availableCredit || 0).toLocaleString()}`;
+            }
+            updateTxResultingBalance();
+        }
+
+        function updateTxResultingBalance() {
+            const dealerId = document.getElementById('tx-dealer-select').value;
+            const amount = Number(document.getElementById('tx-amount').value || 0);
+            const type = document.getElementById('tx-type-select').value;
+            const previewEl = document.getElementById('tx-resulting-balance-preview');
+
+            if (!dealerId) {
+                previewEl.innerText = 'Rs. 0';
+                return;
+            }
+
+            const summary = window.GUG_DB.calculateDealerSummary(dealerId);
+            if (!summary) return;
+
+            const current = summary.currentBalance;
+            let resulting = current;
+
+            if (type === 'STOCK_ISSUED') {
+                resulting = current + amount;
+            } else {
+                resulting = current - amount;
+            }
+
+            previewEl.innerText = `Rs.  ${resulting.toLocaleString()} (${resulting > 0 ? 'Dealer Dues' : 'Dealer Surplus Credit'})`;
+        }
+
+        function handleSaveTransaction(e) {
+            e.preventDefault();
+            const dealerId = document.getElementById('tx-dealer-select').value;
+            const type = document.getElementById('tx-type-select').value;
+            const amount = Number(document.getElementById('tx-amount').value);
+            const referenceNo = document.getElementById('tx-reference').value.trim();
+            const paymentMethod = document.getElementById('tx-payment-method').value;
+            const description = document.getElementById('tx-description').value.trim() || `${type.replace('_', ' ')} Ref #${referenceNo}`;
+
+            // Build line items if stock
+            const items = [];
+            if (type === 'STOCK_ISSUED' || type === 'STOCK_RETURNED') {
+                const rows = document.querySelectorAll('#tx-line-items-tbody tr');
+                rows.forEach(tr => {
+                    const sel = tr.querySelector('.tx-prod-select');
+                    const opt = sel.options[sel.selectedIndex];
+                    const prodId = sel.value;
+                    if (prodId) {
+                        const name = opt.getAttribute('data-title') || 'Product';
+                        const qty = Number(tr.querySelector('.tx-prod-qty').value || 1);
+                        const unitPrice = Number(tr.querySelector('.tx-prod-rate').value || 0);
+                        items.push({
+                            productId: prodId,
+                            name: name,
+                            qty: qty,
+                            unitPrice: unitPrice,
+                            total: qty * unitPrice
+                        });
+                    }
+                });
+            }
+
+            const res = window.GUG_DB.addDealerLedgerEntry({
+                dealerId: dealerId,
+                type: type,
+                amount: amount,
+                referenceNo: referenceNo,
+                paymentMethod: paymentMethod,
+                description: description,
+                items: items
+            });
+
+            if (!res.success) {
+                window.GUG_DB.showToast(res.message, 'error', 'Error');
+                return;
+            }
+
+            transactionModalInstance.hide();
+            window.GUG_DB.showToast(`Transaction #${referenceNo} successfully posted to dealer ledger!`, 'success', 'Ledger Updated');
+            refreshAllData();
+        }
+
+        function handleDeleteLedgerEntry(id) {
+            if (confirm('Are you sure you want to delete this ledger transaction? This will recalculate the dealer balance.')) {
+                window.GUG_DB.deleteDealerLedgerEntry(id);
+                window.GUG_DB.showToast('Ledger entry deleted.', 'info', 'Ledger Updated');
+                refreshAllData();
+            }
+        }
+
+        function inspectLineItems(id) {
+            const entries = window.GUG_DB.getDealerLedger();
+            const target = entries.find(e => e.id === id);
+            if (!target || !target.items || target.items.length === 0) return;
+
+            document.getElementById('inspectionModalTitle').innerHTML = `<i class="fas fa-boxes-stacked text-danger me-2"></i> Shipment Ref #${target.referenceNo}`;
+            document.getElementById('inspectionModalBody').innerHTML = `
+                <div class="mb-3 text-secondary small">
+                    <strong>Dealer:</strong> ${target.shopName || target.dealerName}<br>
+                    <strong>Date:</strong> ${new Date(target.date).toLocaleDateString('en-GB')}
+                </div>
+                <div class="table-responsive border rounded">
+                    <table class="table table-sm align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Qty</th>
+                                <th>Rate (Rs. )</th>
+                                <th class="text-end">Total (Rs. )</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${target.items.map(item => `
+                                <tr>
+                                    <td data-label="Product Name"><strong>${item.name}</strong></td>
+                                    <td data-label="Qty">${item.qty}</td>
+                                    <td data-label="Rate">Rs.  ${item.unitPrice.toLocaleString()}</td>
+                                    <td data-label="Total" class="text-end fw-bold">Rs.  ${item.total.toLocaleString()}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                        <tfoot class="table-light fw-bold">
+                            <tr>
+                                <td colspan="3" class="text-end">Grand Total:</td>
+                                <td class="text-end text-danger">Rs.  ${(target.debit || target.credit).toLocaleString()}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            `;
+            inspectionModalInstance.show();
+        }
+
+        window.printDealerSlip = function(id) {
+            if (window.GUG_DB && typeof window.GUG_DB.printDealerSlip === 'function') {
+                return window.GUG_DB.printDealerSlip(id);
+            }
+        };
+    </script>
+</body>
+</html>
+
+
+

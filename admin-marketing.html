@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coupons & Growth Marketing | GearUp Gadgets ERP</title>    
+    <!-- Favicon & Device Web Icons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/images/favicon-64x64.png">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/fonts/font-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <style>
+        body { background-color: var(--gug-bg-color, #07090d) !important; background-image: var(--gug-bg-image) !important; background-attachment: var(--gug-bg-attachment, fixed) !important; background-size: var(--gug-bg-size, cover, cover, 28px 49px) !important; background-position: var(--gug-bg-position, center top) !important; background-repeat: var(--gug-bg-repeat, no-repeat, no-repeat, repeat) !important; min-height: 100vh; color: #ffffff !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .admin-sidebar { width: 260px; background: rgba(10, 10, 15, 0.6) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; height: 100vh; position: fixed; left: 0; top: 0; padding: 20px 15px; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; overflow-y: auto; z-index: 1000; }
+        .admin-main { margin-left: 260px; padding: 25px 30px; min-height: 100vh; background-color: transparent !important; color: #ffffff !important; }
+        .admin-nav-link { display: flex; align-items: center; padding: 9px 13px; color: #94a3b8; text-decoration: none; border-radius: 8px; margin-bottom: 3px; font-size: 13px; font-weight: 500; transition: all 0.2s ease; }
+        .admin-nav-link:hover { background-color: rgba(219, 39, 36, 0.15); color: #fff; }
+        .admin-nav-link.active { background-color: var(--accent-red); color: #fff !important; font-weight: 600; box-shadow: 0 4px 12px rgba(219, 39, 36, 0.3); }
+        .sidebar-section-heading { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #64748b; margin-top: 15px; margin-bottom: 6px; padding-left: 10px; }
+        
+        .admin-card { background: rgba(10, 10, 15, 0.45) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 16px !important; padding: 20px; margin-bottom: 20px; color: #ffffff !important; box-shadow: 0 16px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important; }
+        .table { color: #ffffff !important; background-color: transparent !important; vertical-align: middle; }
+        .table th { background-color: rgba(255, 255, 255, 0.06) !important; border-bottom: 2px solid rgba(255, 255, 255, 0.15) !important; color: #ffffff !important; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .table td { border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important; font-size: 13.5px; color: #ffffff !important; }
+    </style>
+</head>
+<body>
+        <!-- Enterprise Sidebar Navigation -->
+    <div class="admin-sidebar">
+        <div class="d-flex align-items-center mb-3 px-2">
+            <i class="fas fa-shield-alt text-danger fs-4 me-2"></i>
+            <div>
+                <h6 class="text-white m-0 fw-bold">GearUp ERP</h6>
+                <small class="text-secondary" style="font-size: 11px;">Enterprise Operating System</small>
+            </div>
+        </div>
+
+        <a href="dashboard.html" class="admin-nav-link" id="nav-dashboard"><i class="fas fa-chart-pie me-2"></i> Executive Dashboard</a>
+        
+        <!-- Accordion 1: Catalog & E-Commerce -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-catalog">
+                <span><i class="fas fa-shopping-bag text-danger me-2"></i> Catalog & E-Commerce</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-catalog">
+                <a href="products.html" class="admin-nav-link" id="nav-products"><i class="fas fa-boxes-stacked me-2"></i> Products & Catalog</a>
+                <a href="admin-crm.html" class="admin-nav-link" id="nav-crm"><i class="fas fa-users-viewfinder me-2"></i> Customers (CRM)</a>
+                <a href="admin-marketing.html" class="admin-nav-link" id="nav-marketing"><i class="fas fa-tags me-2"></i> Coupons & Marketing</a>
+            </div>
+        </div>
+
+        <!-- Accordion 2: Supply Chain & Operations -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-supply">
+                <span><i class="fas fa-truck-ramp-box text-primary me-2"></i> Supply Chain & Operations</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-supply">
+                <a href="admin-inventory.html" class="admin-nav-link" id="nav-inventory"><i class="fas fa-warehouse me-2"></i> Multi-Warehouse Stock</a>
+                <a href="admin-purchasing.html" class="admin-nav-link" id="nav-purchasing"><i class="fas fa-dolly me-2"></i> Purchasing & Suppliers</a>
+                <a href="orders.html" class="admin-nav-link" id="nav-orders"><i class="fas fa-cart-shopping me-2"></i> Sales Orders Pipeline</a>
+                <a href="admin-logistics.html" class="admin-nav-link" id="nav-logistics"><i class="fas fa-truck-fast me-2"></i> Logistics & Courier COD</a>
+                <a href="admin-returns.html" class="admin-nav-link" id="nav-returns"><i class="fas fa-rotate-left me-2"></i> Returns & Warranty (RMA)</a>
+            </div>
+        </div>
+
+        <!-- Accordion 3: Finance & B2B Wholesale -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-finance">
+                <span><i class="fas fa-coins text-warning me-2"></i> Finance & B2B Wholesale</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-finance">
+                <a href="admin-dealers.html" class="admin-nav-link" id="nav-dealers"><i class="fas fa-handshake me-2"></i> B2B Dealers & Ledger</a>
+                <a href="admin-finance.html" class="admin-nav-link" id="nav-finance"><i class="fas fa-file-invoice-dollar me-2"></i> Finance & P&L Ledger</a>
+                <a href="admin-staff.html" class="admin-nav-link" id="nav-staff"><i class="fas fa-user-tie me-2"></i> HR & Employee Payroll</a>
+                <a href="admin-tasks.html" class="admin-nav-link" id="nav-tasks"><i class="fas fa-list-check me-2"></i> Task Kanban & Workflow</a>
+                <a href="admin-reports.html" class="admin-nav-link" id="nav-reports"><i class="fas fa-chart-column me-2"></i> Business Reports</a>
+                <a href="admin-audit.html" class="admin-nav-link" id="nav-audit"><i class="fas fa-fingerprint me-2"></i> Security & Audit Logs</a>
+            </div>
+        </div>
+
+        <!-- Standalone Section: System Settings & Store Customization -->
+        <div class="mt-3 pt-3 border-top border-secondary border-opacity-25">
+            <div class="px-3 text-secondary text-uppercase fw-bold mb-2" style="font-size: 11px; letter-spacing: 0.6px;">System & Settings</div>
+            <a href="admin-settings.html" class="admin-nav-link" id="nav-settings"><i class="fas fa-sliders text-danger me-2"></i> System Settings & APIs</a>
+            <a href="admin-sales.html" class="admin-nav-link" id="nav-sales"><i class="fas fa-palette text-warning me-2"></i> Banner & Theme</a>
+        </div>
+        
+        <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
+            <a href="dealer-portal.html" target="_blank" class="admin-nav-link text-warning"><i class="fas fa-store-alt me-2"></i> Dealer Portal View</a>
+            <a href="employee-portal.html" class="admin-nav-link text-info"><i class="fas fa-id-badge me-2"></i> Employee Workspace</a>
+            <a href="index.html" target="_blank" class="admin-nav-link text-success"><i class="fas fa-store me-2"></i> Customer Storefront</a>
+            <a href="#" class="admin-nav-link text-danger mt-2" onclick="localStorage.removeItem('admin_logged_in'); localStorage.removeItem('admin_role'); localStorage.removeItem('admin_username'); window.location.href = 'admin.html'; return false;"><i class="fas fa-sign-out-alt me-2"></i> Sign Out</a>
+        </div>
+    </div>
+    <script>try{var _s=sessionStorage.getItem('gug_admin_sidebar_scroll');if(_s!==null){var _sb=document.querySelector('.admin-sidebar');if(_sb)_sb.scrollTop=parseFloat(_s);}}catch(e){}</script>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Global Header -->
+        <div id="gug-global-header-container"></div>
+
+        <!-- Beginner Help Banner -->
+        <div id="gug-beginner-help-container"></div>
+
+        <!-- Marketing Metrics Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="admin-card p-3 mb-0">
+                    <span class="text-secondary small fw-bold text-uppercase">Active Discount Coupons</span>
+                    <h3 class="fw-bold text-dark mb-0 mt-1" id="stat-mktg-coupons">0</h3>
+                    <small class="text-muted">Live on storefront checkout</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="admin-card p-3 mb-0">
+                    <span class="text-secondary small fw-bold text-uppercase">Total Redemptions</span>
+                    <h3 class="fw-bold text-primary mb-0 mt-1" id="stat-mktg-used">0</h3>
+                    <small class="text-muted">Coupon order claims</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="admin-card p-3 mb-0">
+                    <span class="text-secondary small fw-bold text-uppercase">Promo Discount Issued</span>
+                    <h3 class="fw-bold text-success mb-0 mt-1" id="stat-mktg-discount">Rs.  48,200</h3>
+                    <small class="text-muted">Customer savings delivered</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="admin-card p-3 mb-0">
+                    <span class="text-secondary small fw-bold text-uppercase">Abandoned Cart Recoveries</span>
+                    <h3 class="fw-bold text-danger mb-0 mt-1">19</h3>
+                    <small class="text-muted">Recovered via WhatsApp / SMS</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coupons Management Card -->
+        <div class="admin-card mb-4 p-0">
+            <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="fw-bold text-dark mb-0"><i class="fas fa-tag text-danger me-2"></i> Promotional Discount Coupons</h5>
+                    <small class="text-secondary">Create percentage, fixed rupee, or free shipping vouchers with minimum spend requirements.</small>
+                </div>
+                <button class="btn btn-danger" onclick="openCouponModal()"><i class="fas fa-plus-circle me-1"></i> Create Promo Coupon</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">Coupon Code & Description</th>
+                            <th>Discount Rule</th>
+                            <th>Min. Order Spend</th>
+                            <th>Usage / Limit</th>
+                            <th>Expiry Date</th>
+                            <th>Status</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="coupons-tbody">
+                        <!-- Injected via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Storefront Campaigns & Product Reviews Moderation -->
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="admin-card p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold text-dark mb-0"><i class="fas fa-bullhorn text-danger me-2"></i> Active Seasonal Campaigns</h6>
+                        <span class="badge bg-success">3 Active</span>
+                    </div>
+                    <div class="list-group list-group-flush border rounded">
+                        <div class="list-group-item d-flex justify-content-between align-items-center p-3">
+                            <div>
+                                <strong class="text-dark d-block">Summer Tech Fest 2026</strong>
+                                <small class="text-secondary">Up to 25% OFF Gaming Accessories & Keyboards</small>
+                            </div>
+                            <span class="badge bg-primary bg-opacity-10 text-primary border">Active Theme</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center p-3">
+                            <div>
+                                <strong class="text-dark d-block">Flash Sale Clearance</strong>
+                                <small class="text-secondary">Flat 15% OFF on NVMe Storage & GaN Fast Chargers</small>
+                            </div>
+                            <span class="badge bg-warning bg-opacity-10 text-dark border">Scheduled</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="admin-card p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold text-dark mb-0"><i class="fas fa-star text-warning me-2"></i> Customer Storefront Reviews</h6>
+                        <span class="badge bg-primary">Moderation Queue</span>
+                    </div>
+                    <div class="p-3 bg-light rounded border mb-2">
+                        <div class="d-flex justify-content-between">
+                            <strong class="text-dark small">Hamza Tariq on <em>Mechanical Keyboard Pro</em></strong>
+                            <div class="text-warning small"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                        </div>
+                        <p class="small text-secondary mt-1 mb-2">"Super fast delivery to Lahore within 24 hours. Keyboard switches feel incredible!"</p>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-xs btn-outline-success py-0 px-2" style="font-size: 11px;"><i class="fas fa-check me-1"></i> Approve</button>
+                            <button class="btn btn-xs btn-outline-danger py-0 px-2" style="font-size: 11px;"><i class="fas fa-times me-1"></i> Hide</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create/Edit Coupon Modal -->
+    <div class="modal fade" id="couponModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg border-0">
+                <div class="modal-header border-bottom p-3">
+                    <h5 class="modal-title fw-bold text-dark"><i class="fas fa-tag text-danger me-2"></i> Create Promotional Coupon</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="couponForm" onsubmit="event.preventDefault(); saveCouponForm();">
+                        <input type="hidden" id="cpn-id">
+                        <div class="mb-3">
+                            <label class="form-label">Coupon Code <span class="text-danger">*</span></label>
+                            <input type="text" id="cpn-code" class="form-control text-uppercase fw-bold" placeholder="e.g. GEARUP10, EIDMUBARAK" required>
+                        </div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Discount Type</label>
+                                <select id="cpn-type" class="form-select">
+                                    <option value="percentage">Percentage (%)</option>
+                                    <option value="fixed">Fixed Amount (PKR)</option>
+                                    <option value="free_shipping">Free Shipping</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Discount Value <span class="text-danger">*</span></label>
+                                <input type="number" id="cpn-value" class="form-control" placeholder="10 (for 10% or Rs 1000)" required>
+                            </div>
+                        </div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Min. Order Spend (PKR)</label>
+                                <input type="number" id="cpn-min" class="form-control" value="0">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Max. Usage Limit</label>
+                                <input type="number" id="cpn-max" class="form-control" value="100">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Expiry Date</label>
+                            <input type="date" id="cpn-expiry" class="form-control">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-top p-3 bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger px-4" onclick="saveCouponForm()"><i class="fas fa-save me-1"></i> Save Coupon</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/products-data.js"></script>
+    <script src="assets/js/gug-erp-core.js"></script>
+    <!-- Firebase Compat SDKs & Cloud Sync -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/firebase-sync.js"></script>
+    <script src="assets/js/admin.js"></script>
+    <script>
+        let couponModalInstance = null;
+
+        function initMarketingPage() {
+            GUG_DB.renderGlobalHeader('gug-global-header-container', 'Coupons & Growth Marketing');
+            GUG_DB.renderBeginnerHelpBanner('gug-beginner-help-container', {
+                whereAmI: 'Marketing & Discount Promotion Suite',
+                whatCanIDo: 'Create promotional voucher codes for storefront checkout, manage campaign themes, and review customer product ratings.',
+                whatNext: 'Click "Create Promo Coupon" to launch a new discount code or copy existing codes to share on social media campaigns.'
+            });
+
+            renderCouponsTable();
+            updateMarketingStats();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('action') === 'add') {
+                openCouponModal();
+            }
+        }
+
+        function updateMarketingStats() {
+            const coupons = GUG_DB.getCoupons();
+            document.getElementById('stat-mktg-coupons').innerText = coupons.filter(c => c.active).length;
+            let totalUses = 0;
+            coupons.forEach(c => totalUses += Number(c.usedCount || 0));
+            document.getElementById('stat-mktg-used').innerText = totalUses;
+        }
+
+        function renderCouponsTable() {
+            const coupons = GUG_DB.getCoupons();
+            const tbody = document.getElementById('coupons-tbody');
+            tbody.innerHTML = '';
+
+            if (coupons.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <i class="fas fa-tag fs-1 mb-3 text-secondary d-block"></i>
+                            <h6 class="fw-bold text-dark">No Coupons Created</h6>
+                            <p class="small text-secondary mb-3">Launch a discount code to increase storefront sales conversion.</p>
+                            <button class="btn btn-sm btn-danger" onclick="openCouponModal()"><i class="fas fa-plus me-1"></i> Create Coupon</button>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            coupons.forEach(c => {
+                let ruleText = `${c.value}% OFF`;
+                if (c.type === 'fixed') ruleText = `Flat Rs.  ${Number(c.value).toLocaleString()} OFF`;
+                else if (c.type === 'free_shipping') ruleText = `Free Shipping (Nationwide)`;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="ps-4">
+                        <strong class="text-dark d-block"><code class="text-danger fw-bold fs-6">${c.code}</code></strong>
+                        <small class="text-secondary">${c.type === 'percentage' ? 'Percentage Discount' : 'Fixed Rupee Voucher'}</small>
+                    </td>
+                    <td>
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">${ruleText}</span>
+                    </td>
+                    <td>
+                        <strong class="text-dark">${c.minOrder ? `Rs.  ${Number(c.minOrder).toLocaleString()}` : 'No Minimum'}</strong>
+                    </td>
+                    <td>
+                        <span class="text-dark">${c.usedCount || 0} / ${c.maxUsage || 100}</span>
+                    </td>
+                    <td>
+                        <small class="text-secondary">${c.expiryDate || 'No Expiry'}</small>
+                    </td>
+                    <td>
+                        <span class="badge ${c.active ? 'bg-success' : 'bg-secondary'}">${c.active ? 'Active' : 'Expired'}</span>
+                    </td>
+                    <td class="text-end pe-4">
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteCoupon('${c.code}')" title="Delete Coupon"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function openCouponModal() {
+            document.getElementById('couponForm').reset();
+            document.getElementById('cpn-id').value = '';
+            document.getElementById('cpn-min').value = '0';
+            document.getElementById('cpn-max').value = '100';
+            couponModalInstance = new bootstrap.Modal(document.getElementById('couponModal'));
+            couponModalInstance.show();
+        }
+
+        function saveCouponForm() {
+            const code = document.getElementById('cpn-code').value.trim().toUpperCase();
+            const val = Number(document.getElementById('cpn-value').value);
+            if (!code || !val) {
+                window.GUG_DB.showToast('Please fill in Coupon Code and Discount Value.', 'warning', 'Missing Details');
+                return;
+            }
+
+            const couponData = {
+                code: code,
+                type: document.getElementById('cpn-type').value,
+                value: val,
+                minOrder: Number(document.getElementById('cpn-min').value || 0),
+                maxUsage: Number(document.getElementById('cpn-max').value || 100),
+                usedCount: 0,
+                expiryDate: document.getElementById('cpn-expiry').value || '2026-12-31',
+                active: true
+            };
+
+            GUG_DB.saveCoupon(couponData);
+            if (couponModalInstance) couponModalInstance.hide();
+            renderCouponsTable();
+            updateMarketingStats();
+            window.GUG_DB.showToast(`Coupon code "${code}" saved and published successfully!`, 'success', 'Coupon Created');
+        }
+
+        function deleteCoupon(code) {
+            if (confirm(`Are you sure you want to deactivate coupon ${code}?`)) {
+                let coupons = GUG_DB.getCoupons();
+                coupons = coupons.filter(c => c.code !== code);
+                localStorage.setItem(GUG_DB.KEYS.COUPONS, JSON.stringify(coupons));
+                renderCouponsTable();
+                updateMarketingStats();
+                window.GUG_DB.showToast(`Coupon "${code}" deactivated.`, 'info', 'Coupon Removed');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initMarketingPage();
+        });
+    </script>
+</body>
+</html>
+
+

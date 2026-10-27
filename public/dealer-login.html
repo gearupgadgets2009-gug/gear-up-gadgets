@@ -1,0 +1,208 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B2B Dealer Portal Login | GearUp Gadgets Pakistan</title>    
+    <!-- Favicon & Device Web Icons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/images/favicon-64x64.png">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/fonts/font-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <style>
+        body {
+            background-color: var(--gug-bg-color, #07090d) !important;
+            background-image: var(--gug-bg-image) !important;
+            background-attachment: var(--gug-bg-attachment, fixed) !important;
+            background-size: var(--gug-bg-size, cover, cover, 28px 49px) !important;
+            background-position: var(--gug-bg-position, center top) !important;
+            background-repeat: var(--gug-bg-repeat, no-repeat, no-repeat, repeat) !important;
+            color: #ffffff !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .dealer-login-card {
+            background: rgba(10, 10, 15, 0.55) !important;
+            backdrop-filter: blur(24px) saturate(200%) !important;
+            -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-top: 3px solid var(--accent-red) !important;
+            border-radius: 18px !important;
+            padding: 36px 32px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+            color: #ffffff !important;
+        }
+        .form-control {
+            background-color: rgba(255, 255, 255, 0.06) !important;
+            border-color: rgba(255, 255, 255, 0.15) !important;
+            color: #ffffff !important;
+        }
+        .form-control:focus {
+            border-color: var(--accent-red) !important;
+            box-shadow: 0 0 16px rgba(229, 3, 3, 0.35) !important;
+        }
+        .input-group-text {
+            background-color: rgba(255, 255, 255, 0.08) !important;
+            border-color: rgba(255, 255, 255, 0.15) !important;
+            color: rgba(255, 255, 255, 0.85) !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="dealer-login-card">
+    <div class="text-center mb-4">
+        <div class="d-inline-flex align-items-center justify-content-center bg-danger bg-opacity-10 border border-danger border-opacity-25 rounded-circle p-3 mb-2" style="width: 64px; height: 64px;">
+            <i class="fas fa-handshake text-danger fs-3"></i>
+        </div>
+        <h4 class="fw-bold text-white mb-1">B2B Dealer & Partner Portal</h4>
+        <p class="text-secondary small mb-0">GearUp Gadgets &bull; Wholesale Ledger & Statement Access</p>
+    </div>
+
+    <form id="dealer-login-form">
+        <div class="mb-3">
+            <label class="form-label text-light small fw-bold">Dealer Username or Mobile</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-store"></i></span>
+                <input type="text" id="dealer-username" class="form-control" placeholder="e.g. tariqtech, apexkarachi..." required autocomplete="username">
+            </div>
+            <div class="form-text text-secondary" style="font-size: 11.5px;">Enter your admin-issued B2B username or registered mobile.</div>
+        </div>
+
+        <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label text-light small fw-bold mb-0">Password</label>
+            </div>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                <input type="password" id="dealer-password" class="form-control" placeholder="Enter assigned password" value="" required autocomplete="off">
+                <button class="btn btn-outline-secondary btn-security-toggle" type="button" onclick="togglePasswordVisibility('dealer-password', 'toggle-pw-icon')" title="Show/Hide Password"><i class="fas fa-eye text-secondary" id="toggle-pw-icon"></i></button>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-danger w-100 fw-bold py-2 shadow-sm mb-3">
+            <i class="fas fa-sign-in-alt me-2"></i> Access Dealer Statement
+        </button>
+
+        <div id="dealer-login-error" class="alert alert-danger text-center p-2 small mb-0" style="display: none;"></div>
+    </form>
+
+    <div class="mt-4 pt-3 border-top border-secondary border-opacity-25 text-center">
+        <div class="d-flex justify-content-between align-items-center small text-secondary">
+            <a href="index.html" class="text-secondary text-decoration-none"><i class="fas fa-arrow-left me-1"></i> Public Store</a>
+            <a href="admin.html" class="text-secondary text-decoration-none"><i class="fas fa-shield-alt me-1"></i> Admin Portal</a>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/products-data.js"></script>
+    <!-- Firebase Compat SDKs & Cloud Sync -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/firebase-sync.js"></script>
+    <script src="assets/js/gug-erp-core.js"></script>
+<script>
+    function togglePasswordVisibility(target, iconTarget) {
+            const inputId = (typeof target === 'string') ? target : 'dealer-password';
+            const iconId = (typeof iconTarget === 'string') ? iconTarget : 'toggle-pw-icon';
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (!input) return;
+            if (input.type === 'password') {
+                input.type = 'text';
+                if (icon) {
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                }
+            } else {
+                input.type = 'password';
+                if (icon) {
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            }
+        }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Auto-redirect if already logged in as dealer
+        if (localStorage.getItem('dealer_logged_in') === 'true') {
+            window.location.href = 'dealer-portal.html';
+            return;
+        }
+
+        const form = document.getElementById('dealer-login-form');
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('dealer-username').value.trim();
+            const password = document.getElementById('dealer-password').value.trim();
+            const errorBox = document.getElementById('dealer-login-error');
+            errorBox.style.display = 'none';
+
+            const authResult = window.GUG_DB.authenticateDealer(username, password);
+
+            if (authResult.success) {
+                const dealer = authResult.dealer;
+
+                // Set isolated dealer session
+                localStorage.setItem('dealer_logged_in', 'true');
+                localStorage.setItem('dealer_id', dealer.id);
+                localStorage.setItem('dealer_username', dealer.username);
+                localStorage.setItem('dealer_name', dealer.name);
+                localStorage.setItem('dealer_shop', dealer.shopName);
+
+                // Isolate: Remove admin session to prevent crossover
+                localStorage.removeItem('admin_logged_in');
+                localStorage.removeItem('admin_username');
+                localStorage.removeItem('admin_role');
+                localStorage.removeItem('admin_permissions');
+                localStorage.removeItem('staff_logged_in');
+
+                window.GUG_DB.logAudit({
+                    action: 'DEALER_PORTAL_LOGIN_SUCCESS',
+                    entity: 'DEALER_SESSION',
+                    entityId: dealer.id,
+                    newValue: `Dealer Authenticated: ${dealer.name} (${dealer.shopName})`,
+                    reason: 'Dealer logged into B2B Partner Portal',
+                    user: dealer.name,
+                    role: 'B2B Dealer'
+                });
+
+                window.location.href = 'dealer-portal.html';
+            } else {
+                errorBox.innerText = authResult.message || 'Invalid dealer credentials.';
+                errorBox.style.display = 'block';
+
+                window.GUG_DB.logAudit({
+                    action: 'DEALER_PORTAL_LOGIN_FAILED',
+                    entity: 'DEALER_SESSION',
+                    entityId: username,
+                    newValue: 'Authentication Rejected',
+                    reason: authResult.message || 'Invalid credentials on dealer portal',
+                    user: username,
+                    role: 'Unauthenticated Dealer'
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>
+
+
+

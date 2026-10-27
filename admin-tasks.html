@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Immediate Zero-Delay Embedded View Detection (Prevents Duplicate Sidebar & Layout Snap) -->
+    <script>if(window.self!==window.top||(typeof location!=='undefined'&&location.search.indexOf('staff_view=1')!==-1)){document.documentElement.classList.add('is-embedded');}</script>
+    <style>
+        html.is-embedded .admin-sidebar, html.is-embedded aside.admin-sidebar, body.is-embedded .admin-sidebar { display: none !important; visibility: hidden !important; width: 0 !important; height: 0 !important; position: absolute !important; left: -9999px !important; opacity: 0 !important; pointer-events: none !important; animation: none !important; -webkit-animation: none !important; transition: none !important; transform: none !important; }
+        html.is-embedded .admin-main, body.is-embedded .admin-main { margin-left: 0 !important; width: 100% !important; padding: 15px 20px !important; animation: none !important; transition: none !important; }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Task & Workflow Management | GearUp Gadgets ERP</title>    
+    <!-- Favicon & Device Web Icons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/images/favicon-64x64.png">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/fonts/font-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <style>
+        body { background-color: var(--gug-bg-color, #07090d) !important; background-image: var(--gug-bg-image) !important; background-attachment: var(--gug-bg-attachment, fixed) !important; background-size: var(--gug-bg-size, cover, cover, 28px 49px) !important; background-position: var(--gug-bg-position, center top) !important; background-repeat: var(--gug-bg-repeat, no-repeat, no-repeat, repeat) !important; min-height: 100vh; color: #ffffff !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .admin-sidebar { width: 260px; background: rgba(10, 10, 15, 0.6) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; height: 100vh; position: fixed; left: 0; top: 0; padding: 20px 15px; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; overflow-y: auto; z-index: 1000; }
+        .admin-main { margin-left: 260px; padding: 25px 30px; min-height: 100vh; background-color: transparent !important; color: #ffffff !important; }
+        .admin-nav-link { display: flex; align-items: center; padding: 9px 13px; color: #94a3b8; text-decoration: none; border-radius: 8px; margin-bottom: 3px; font-size: 13px; font-weight: 500; transition: all 0.2s ease; }
+        .admin-nav-link:hover { background-color: rgba(219, 39, 36, 0.15); color: #fff; }
+        .admin-nav-link.active { background-color: var(--accent-red); color: #fff !important; font-weight: 600; box-shadow: 0 4px 12px rgba(219, 39, 36, 0.3); }
+        .sidebar-section-heading { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #64748b; margin-top: 15px; margin-bottom: 6px; padding-left: 10px; }
+        
+        .admin-card { background: rgba(10, 10, 15, 0.45) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 16px !important; padding: 20px; margin-bottom: 20px; color: #ffffff !important; box-shadow: 0 16px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important; }
+        .kanban-col { background: rgba(10, 10, 15, 0.35) !important; backdrop-filter: blur(20px) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 14px; padding: 16px; min-height: 500px; color: #ffffff !important; }
+        .kanban-card { background: rgba(10, 10, 15, 0.55) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; border: 1px solid rgba(255, 255, 255, 0.12) !important; border-radius: 12px; padding: 14px; margin-bottom: 12px; transition: all 0.2s ease; cursor: pointer; color: #ffffff !important; box-shadow: 0 8px 24px rgba(0,0,0,0.4) !important; }
+        .kanban-card:hover { border-color: var(--accent-red) !important; transform: translateY(-2px); box-shadow: 0 12px 30px rgba(0,0,0,0.6), 0 0 15px rgba(229, 3, 3, 0.25) !important; }
+        .priority-urgent { border-left: 4px solid #ef4444 !important; }
+        .priority-high { border-left: 4px solid #f59e0b !important; }
+        .priority-medium { border-left: 4px solid #3b82f6 !important; }
+        .priority-low { border-left: 4px solid #10b981 !important; }
+    </style>
+</head>
+<body>
+        <!-- Enterprise Sidebar Navigation -->
+    <div class="admin-sidebar">
+        <div class="d-flex align-items-center mb-3 px-2">
+            <i class="fas fa-shield-alt text-danger fs-4 me-2"></i>
+            <div>
+                <h6 class="text-white m-0 fw-bold">GearUp ERP</h6>
+                <small class="text-secondary" style="font-size: 11px;">Enterprise Operating System</small>
+            </div>
+        </div>
+
+        <a href="dashboard.html" class="admin-nav-link" id="nav-dashboard"><i class="fas fa-chart-pie me-2"></i> Executive Dashboard</a>
+        
+        <!-- Accordion 1: Catalog & E-Commerce -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-catalog">
+                <span><i class="fas fa-shopping-bag text-danger me-2"></i> Catalog & E-Commerce</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-catalog">
+                <a href="products.html" class="admin-nav-link" id="nav-products"><i class="fas fa-boxes-stacked me-2"></i> Products & Catalog</a>
+                <a href="admin-crm.html" class="admin-nav-link" id="nav-crm"><i class="fas fa-users-viewfinder me-2"></i> Customers (CRM)</a>
+                <a href="admin-marketing.html" class="admin-nav-link" id="nav-marketing"><i class="fas fa-tags me-2"></i> Coupons & Marketing</a>
+            </div>
+        </div>
+
+        <!-- Accordion 2: Supply Chain & Operations -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-supply">
+                <span><i class="fas fa-truck-ramp-box text-primary me-2"></i> Supply Chain & Operations</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-supply">
+                <a href="admin-inventory.html" class="admin-nav-link" id="nav-inventory"><i class="fas fa-warehouse me-2"></i> Multi-Warehouse Stock</a>
+                <a href="admin-purchasing.html" class="admin-nav-link" id="nav-purchasing"><i class="fas fa-dolly me-2"></i> Purchasing & Suppliers</a>
+                <a href="orders.html" class="admin-nav-link" id="nav-orders"><i class="fas fa-cart-shopping me-2"></i> Sales Orders Pipeline</a>
+                <a href="admin-logistics.html" class="admin-nav-link" id="nav-logistics"><i class="fas fa-truck-fast me-2"></i> Logistics & Courier COD</a>
+                <a href="admin-returns.html" class="admin-nav-link" id="nav-returns"><i class="fas fa-rotate-left me-2"></i> Returns & Warranty (RMA)</a>
+            </div>
+        </div>
+
+        <!-- Accordion 3: Finance & B2B Wholesale -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-finance">
+                <span><i class="fas fa-coins text-warning me-2"></i> Finance & B2B Wholesale</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-finance">
+                <a href="admin-dealers.html" class="admin-nav-link" id="nav-dealers"><i class="fas fa-handshake me-2"></i> B2B Dealers & Ledger</a>
+                <a href="admin-finance.html" class="admin-nav-link" id="nav-finance"><i class="fas fa-file-invoice-dollar me-2"></i> Finance & P&L Ledger</a>
+                <a href="admin-staff.html" class="admin-nav-link" id="nav-staff"><i class="fas fa-user-tie me-2"></i> HR & Employee Payroll</a>
+                <a href="admin-tasks.html" class="admin-nav-link" id="nav-tasks"><i class="fas fa-list-check me-2"></i> Task Kanban & Workflow</a>
+                <a href="admin-reports.html" class="admin-nav-link" id="nav-reports"><i class="fas fa-chart-column me-2"></i> Business Reports</a>
+                <a href="admin-audit.html" class="admin-nav-link" id="nav-audit"><i class="fas fa-fingerprint me-2"></i> Security & Audit Logs</a>
+            </div>
+        </div>
+
+        <!-- Standalone Section: System Settings & Store Customization -->
+        <div class="mt-3 pt-3 border-top border-secondary border-opacity-25">
+            <div class="px-3 text-secondary text-uppercase fw-bold mb-2" style="font-size: 11px; letter-spacing: 0.6px;">System & Settings</div>
+            <a href="admin-settings.html" class="admin-nav-link" id="nav-settings"><i class="fas fa-sliders text-danger me-2"></i> System Settings & APIs</a>
+            <a href="admin-sales.html" class="admin-nav-link" id="nav-sales"><i class="fas fa-palette text-warning me-2"></i> Banner & Theme</a>
+        </div>
+        
+        <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
+            <a href="dealer-portal.html" target="_blank" class="admin-nav-link text-warning"><i class="fas fa-store-alt me-2"></i> Dealer Portal View</a>
+            <a href="employee-portal.html" class="admin-nav-link text-info"><i class="fas fa-id-badge me-2"></i> Employee Workspace</a>
+            <a href="index.html" target="_blank" class="admin-nav-link text-success"><i class="fas fa-store me-2"></i> Customer Storefront</a>
+            <a href="#" class="admin-nav-link text-danger mt-2" onclick="localStorage.removeItem('admin_logged_in'); localStorage.removeItem('admin_role'); localStorage.removeItem('admin_username'); window.location.href = 'admin.html'; return false;"><i class="fas fa-sign-out-alt me-2"></i> Sign Out</a>
+        </div>
+    </div>
+    <script>try{var _s=sessionStorage.getItem('gug_admin_sidebar_scroll');if(_s!==null){var _sb=document.querySelector('.admin-sidebar');if(_sb)_sb.scrollTop=parseFloat(_s);}}catch(e){}</script>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Global Header -->
+        <div id="gug-global-header-container"></div>
+
+        <!-- Beginner Help Banner -->
+        <div id="gug-beginner-help-container"></div>
+
+        <!-- Metric KPI Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="admin-card p-3 mb-0">
+                    <span class="text-secondary small fw-bold text-uppercase">To Do Queue</span>
+                    <h3 class="fw-bold text-warning mt-1 mb-0" id="stat-tasks-todo">0</h3>
+                    <small class="text-secondary" style="font-size: 11.5px;">Pending initiation</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="admin-card p-3 mb-0">
+                    <span class="text-secondary small fw-bold text-uppercase">In Progress Execution</span>
+                    <h3 class="fw-bold text-primary mt-1 mb-0" id="stat-tasks-inprogress">0</h3>
+                    <small class="text-secondary" style="font-size: 11.5px;">Actively being worked</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="admin-card p-3 mb-0">
+                    <span class="text-secondary small fw-bold text-uppercase">Completed Tasks</span>
+                    <h3 class="fw-bold text-success mt-1 mb-0" id="stat-tasks-done">0</h3>
+                    <small class="text-success" style="font-size: 11.5px;"><i class="fas fa-check me-1"></i> Verified & Done</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Toolbar -->
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div class="text-secondary small">Drag or click actions to move tasks through operational workflow stages.</div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-danger btn-sm fw-bold no-print" onclick="window.GUG_DB.printModuleSlip('Enterprise Task & Workflow Kanban')">
+                    <i class="fas fa-print me-1"></i> Print Slip
+                </button>
+                <button class="btn btn-danger btn-sm fw-bold" onclick="new bootstrap.Modal(document.getElementById('createTaskModal')).show()">
+                    <i class="fas fa-plus-circle me-1"></i> Create Task
+                </button>
+            </div>
+        </div>
+
+        <!-- Kanban Board Row -->
+        <div class="row g-3">
+            <!-- Col 1: To Do -->
+            <div class="col-md-4">
+                <div class="kanban-col">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="text-dark fw-bold m-0"><i class="fas fa-clipboard-list text-warning me-2"></i> To Do Queue</h6>
+                        <span class="badge bg-warning text-dark" id="count-todo">0</span>
+                    </div>
+                    <div id="kanban-todo">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Col 2: In Progress -->
+            <div class="col-md-4">
+                <div class="kanban-col">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="text-dark fw-bold m-0"><i class="fas fa-spinner fa-spin text-primary me-2"></i> In Progress</h6>
+                        <span class="badge bg-primary text-white" id="count-progress">0</span>
+                    </div>
+                    <div id="kanban-progress">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Col 3: Completed -->
+            <div class="col-md-4">
+                <div class="kanban-col">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="text-dark fw-bold m-0"><i class="fas fa-check-circle text-success me-2"></i> Completed</h6>
+                        <span class="badge bg-success text-white" id="count-completed">0</span>
+                    </div>
+                    <div id="kanban-completed">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Task Modal -->
+    <div class="modal fade" id="createTaskModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg border-0">
+                <div class="modal-header border-bottom p-3">
+                    <h5 class="modal-title fw-bold text-dark"><i class="fas fa-plus-circle text-danger me-2"></i> Create Operational Task</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="createTaskForm" onsubmit="handleCreateTask(event)">
+                        <div class="mb-3">
+                            <label class="form-label text-dark fw-semibold small">Task Title & Description</label>
+                            <input type="text" id="task-title" class="form-control" placeholder="e.g., Pack order #GUG-8822 for Karachi express dispatch" required>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label text-secondary small">Department</label>
+                                <select id="task-dept" class="form-select" required>
+                                    <option value="Warehouse & Logistics">Warehouse & Logistics</option>
+                                    <option value="Supply Chain">Supply Chain</option>
+                                    <option value="Customer Experience">Customer Experience</option>
+                                    <option value="Finance & Accounts">Finance & Accounts</option>
+                                    <option value="Marketing">Marketing</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label text-secondary small">Assign To</label>
+                                <select id="task-assignee" class="form-select" required></select>
+                            </div>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label text-secondary small">Priority Level</label>
+                                <select id="task-priority" class="form-select" required>
+                                    <option value="Urgent">Urgent (Immediate)</option>
+                                    <option value="High" selected>High Priority</option>
+                                    <option value="Medium">Medium Priority</option>
+                                    <option value="Low">Low Priority</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label text-secondary small">Completion Deadline</label>
+                                <input type="datetime-local" id="task-deadline" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small">Related Entity (Optional)</label>
+                            <input type="text" id="task-entity" class="form-control" placeholder="e.g., Order #GUG-8822 or PO-2026-090">
+                        </div>
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-check me-1"></i> Assign Task</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/products-data.js"></script>
+    <script src="assets/js/gug-erp-core.js"></script>
+    <!-- Firebase Compat SDKs & Cloud Sync -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/firebase-sync.js"></script>
+    <script src="assets/js/admin.js"></script>
+    <script>
+        function renderKanban() {
+            const tasks = GUG_DB.getTasks();
+            const todoContainer = document.getElementById('kanban-todo');
+            const progressContainer = document.getElementById('kanban-progress');
+            const completedContainer = document.getElementById('kanban-completed');
+
+            todoContainer.innerHTML = '';
+            progressContainer.innerHTML = '';
+            completedContainer.innerHTML = '';
+
+            let todoCount = 0;
+            let progCount = 0;
+            let compCount = 0;
+
+            tasks.forEach(t => {
+                const priorityClass = 'priority-' + (t.priority || 'medium').toLowerCase();
+                const card = document.createElement('div');
+                card.className = `kanban-card ${priorityClass}`;
+                card.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <small class="badge bg-light text-dark border border-secondary">${t.id}</small>
+                        <span class="badge ${t.priority === 'Urgent' ? 'bg-danger' : (t.priority === 'High' ? 'bg-warning text-dark' : 'bg-info')}">${t.priority}</span>
+                    </div>
+                    <div class="fw-bold text-dark mb-2" style="font-size: 14px;">${t.title}</div>
+                    <div class="text-secondary small mb-2"><i class="fas fa-user-circle me-1 text-danger"></i> ${t.assignedTo || 'Unassigned'} | <i class="fas fa-building me-1"></i> ${t.department}</div>
+                    ${t.relatedEntity ? `<div class="badge bg-light text-dark border border-secondary mb-2" style="font-size: 10.5px;"><i class="fas fa-link me-1 text-danger"></i> ${t.relatedEntity}</div>` : ''}
+                    <div class="d-flex justify-content-between align-items-center pt-2 border-top border-secondary border-opacity-25 mt-2 flex-wrap gap-2">
+                        <small class="text-secondary" style="font-size: 11px;"><i class="fas fa-calendar-alt me-1"></i> ${t.deadline ? t.deadline.replace('T', ' ') : 'N/A'}</small>
+                        <div class="btn-group btn-group-sm">
+                            ${t.status !== 'To Do' ? `<button class="btn btn-outline-secondary py-0 px-1" onclick="moveTask('${t.id}', 'To Do')" title="Move to To Do"><i class="fas fa-chevron-left"></i></button>` : ''}
+                            ${t.status !== 'In Progress' ? `<button class="btn btn-outline-info py-0 px-1" onclick="moveTask('${t.id}', 'In Progress')" title="Move to In Progress"><i class="fas fa-play"></i></button>` : ''}
+                            ${t.status !== 'Completed' ? `<button class="btn btn-outline-success py-0 px-1" onclick="moveTask('${t.id}', 'Completed')" title="Mark Completed"><i class="fas fa-check"></i></button>` : ''}
+                        </div>
+                    </div>
+                `;
+
+                if (t.status === 'To Do') {
+                    todoContainer.appendChild(card);
+                    todoCount++;
+                } else if (t.status === 'In Progress') {
+                    progressContainer.appendChild(card);
+                    progCount++;
+                } else {
+                    completedContainer.appendChild(card);
+                    compCount++;
+                }
+            });
+
+            document.getElementById('count-todo').innerText = todoCount;
+            document.getElementById('count-progress').innerText = progCount;
+            document.getElementById('count-completed').innerText = compCount;
+        }
+
+        function openCreateTaskModal() {
+            const employees = GUG_DB.getEmployees();
+            const select = document.getElementById('task-assignee');
+            select.innerHTML = '';
+            employees.forEach(emp => {
+                select.innerHTML += `<option value="${emp.name}">${emp.name} (${emp.role})</option>`;
+            });
+
+            // Set default deadline 24h from now
+            const now = new Date(Date.now() + 86400000);
+            const offset = now.getTimezoneOffset() * 60000;
+            const localISOTime = (new Date(now - offset)).toISOString().slice(0, 16);
+            document.getElementById('task-deadline').value = localISOTime;
+
+            new bootstrap.Modal(document.getElementById('createTaskModal')).show();
+        }
+
+        function handleCreateTask(e) {
+            e.preventDefault();
+            const title = document.getElementById('task-title').value;
+            const department = document.getElementById('task-dept').value;
+            const assignedTo = document.getElementById('task-assignee').value;
+            const priority = document.getElementById('task-priority').value;
+            const deadline = document.getElementById('task-deadline').value;
+            const relatedEntity = document.getElementById('task-entity').value;
+
+            GUG_DB.createTask({
+                title,
+                department,
+                assignedTo,
+                priority,
+                deadline,
+                relatedEntity,
+                status: 'To Do'
+            });
+
+            GUG_DB.logAudit({
+                action: 'TASK_ASSIGNED',
+                entity: 'TASK',
+                entityId: title.substring(0, 20),
+                newValue: `Assigned to ${assignedTo} (${priority} priority)`,
+                reason: 'Operational manager task assignment'
+            });
+
+            bootstrap.Modal.getInstance(document.getElementById('createTaskModal')).hide();
+            document.getElementById('createTaskForm').reset();
+            renderKanban();
+        }
+
+        function moveTask(taskId, newStatus) {
+            GUG_DB.updateTaskStatus(taskId, newStatus);
+            renderKanban();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            GUG_DB.renderGlobalHeader('gug-global-header-container', 'Enterprise Task & Workflow Management');
+            GUG_DB.renderBeginnerHelpBanner('gug-beginner-help-container', {
+                whereAmI: 'Department Operations Kanban & Task Board',
+                whatCanIDo: 'Assign tasks across Sales, Warehouse, Support, and Finance, track completion SLAs, and move tasks between To Do, In Progress, and Completed.',
+                whatNext: 'Click "Create Task" to assign a new deliverable or click "Start" / "Complete" on any card to update its progress.'
+            });
+            renderKanban();
+        });
+    </script>
+</body>
+</html>
+
+
+

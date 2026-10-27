@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Security & Audit Logs | GearUp Gadgets ERP</title>    
+    <!-- Favicon & Device Web Icons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/images/favicon-64x64.png">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/fonts/font-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <style>
+        body { background-color: var(--gug-bg-color, #07090d) !important; background-image: var(--gug-bg-image) !important; background-attachment: var(--gug-bg-attachment, fixed) !important; background-size: var(--gug-bg-size, cover, cover, 28px 49px) !important; background-position: var(--gug-bg-position, center top) !important; background-repeat: var(--gug-bg-repeat, no-repeat, no-repeat, repeat) !important; min-height: 100vh; color: #ffffff !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .admin-sidebar { width: 260px; background: rgba(10, 10, 15, 0.6) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; height: 100vh; position: fixed; left: 0; top: 0; padding: 20px 15px; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; overflow-y: auto; z-index: 1000; }
+        .admin-main { margin-left: 260px; padding: 25px 30px; min-height: 100vh; background-color: transparent !important; color: #ffffff !important; }
+        .admin-nav-link { display: flex; align-items: center; padding: 9px 13px; color: #94a3b8; text-decoration: none; border-radius: 8px; margin-bottom: 3px; font-size: 13px; font-weight: 500; transition: all 0.2s ease; }
+        .admin-nav-link:hover { background-color: rgba(219, 39, 36, 0.15); color: #fff; }
+        .admin-nav-link.active { background-color: var(--accent-red); color: #fff !important; font-weight: 600; box-shadow: 0 4px 12px rgba(219, 39, 36, 0.3); }
+        .sidebar-section-heading { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #64748b; margin-top: 15px; margin-bottom: 6px; padding-left: 10px; }
+        
+        .admin-card { background: rgba(10, 10, 15, 0.45) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 16px !important; padding: 20px; margin-bottom: 20px; color: #ffffff !important; box-shadow: 0 16px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important; }
+        .table { color: #ffffff !important; background-color: transparent !important; vertical-align: middle; }
+        .table th { background-color: rgba(255, 255, 255, 0.06) !important; border-bottom: 2px solid rgba(255, 255, 255, 0.15) !important; color: #ffffff !important; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .table td { border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important; font-size: 13px; color: #ffffff !important; }
+        .diff-box { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 6px; padding: 8px; font-family: monospace; font-size: 12px; color: #ffffff; }
+    </style>
+</head>
+<body>
+        <!-- Enterprise Sidebar Navigation -->
+    <div class="admin-sidebar">
+        <div class="d-flex align-items-center mb-3 px-2">
+            <i class="fas fa-shield-alt text-danger fs-4 me-2"></i>
+            <div>
+                <h6 class="text-white m-0 fw-bold">GearUp ERP</h6>
+                <small class="text-secondary" style="font-size: 11px;">Enterprise Operating System</small>
+            </div>
+        </div>
+
+        <a href="dashboard.html" class="admin-nav-link" id="nav-dashboard"><i class="fas fa-chart-pie me-2"></i> Executive Dashboard</a>
+        
+        <!-- Accordion 1: Catalog & E-Commerce -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-catalog">
+                <span><i class="fas fa-shopping-bag text-danger me-2"></i> Catalog & E-Commerce</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-catalog">
+                <a href="products.html" class="admin-nav-link" id="nav-products"><i class="fas fa-boxes-stacked me-2"></i> Products & Catalog</a>
+                <a href="admin-crm.html" class="admin-nav-link" id="nav-crm"><i class="fas fa-users-viewfinder me-2"></i> Customers (CRM)</a>
+                <a href="admin-marketing.html" class="admin-nav-link" id="nav-marketing"><i class="fas fa-tags me-2"></i> Coupons & Marketing</a>
+            </div>
+        </div>
+
+        <!-- Accordion 2: Supply Chain & Operations -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-supply">
+                <span><i class="fas fa-truck-ramp-box text-primary me-2"></i> Supply Chain & Operations</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-supply">
+                <a href="admin-inventory.html" class="admin-nav-link" id="nav-inventory"><i class="fas fa-warehouse me-2"></i> Multi-Warehouse Stock</a>
+                <a href="admin-purchasing.html" class="admin-nav-link" id="nav-purchasing"><i class="fas fa-dolly me-2"></i> Purchasing & Suppliers</a>
+                <a href="orders.html" class="admin-nav-link" id="nav-orders"><i class="fas fa-cart-shopping me-2"></i> Sales Orders Pipeline</a>
+                <a href="admin-logistics.html" class="admin-nav-link" id="nav-logistics"><i class="fas fa-truck-fast me-2"></i> Logistics & Courier COD</a>
+                <a href="admin-returns.html" class="admin-nav-link" id="nav-returns"><i class="fas fa-rotate-left me-2"></i> Returns & Warranty (RMA)</a>
+            </div>
+        </div>
+
+        <!-- Accordion 3: Finance & B2B Wholesale -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-finance">
+                <span><i class="fas fa-coins text-warning me-2"></i> Finance & B2B Wholesale</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-finance">
+                <a href="admin-dealers.html" class="admin-nav-link" id="nav-dealers"><i class="fas fa-handshake me-2"></i> B2B Dealers & Ledger</a>
+                <a href="admin-finance.html" class="admin-nav-link" id="nav-finance"><i class="fas fa-file-invoice-dollar me-2"></i> Finance & P&L Ledger</a>
+                <a href="admin-staff.html" class="admin-nav-link" id="nav-staff"><i class="fas fa-user-tie me-2"></i> HR & Employee Payroll</a>
+                <a href="admin-tasks.html" class="admin-nav-link" id="nav-tasks"><i class="fas fa-list-check me-2"></i> Task Kanban & Workflow</a>
+                <a href="admin-reports.html" class="admin-nav-link" id="nav-reports"><i class="fas fa-chart-column me-2"></i> Business Reports</a>
+                <a href="admin-audit.html" class="admin-nav-link" id="nav-audit"><i class="fas fa-fingerprint me-2"></i> Security & Audit Logs</a>
+            </div>
+        </div>
+
+        <!-- Standalone Section: System Settings & Store Customization -->
+        <div class="mt-3 pt-3 border-top border-secondary border-opacity-25">
+            <div class="px-3 text-secondary text-uppercase fw-bold mb-2" style="font-size: 11px; letter-spacing: 0.6px;">System & Settings</div>
+            <a href="admin-settings.html" class="admin-nav-link" id="nav-settings"><i class="fas fa-sliders text-danger me-2"></i> System Settings & APIs</a>
+            <a href="admin-sales.html" class="admin-nav-link" id="nav-sales"><i class="fas fa-palette text-warning me-2"></i> Banner & Theme</a>
+        </div>
+        
+        <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
+            <a href="dealer-portal.html" target="_blank" class="admin-nav-link text-warning"><i class="fas fa-store-alt me-2"></i> Dealer Portal View</a>
+            <a href="employee-portal.html" class="admin-nav-link text-info"><i class="fas fa-id-badge me-2"></i> Employee Workspace</a>
+            <a href="index.html" target="_blank" class="admin-nav-link text-success"><i class="fas fa-store me-2"></i> Customer Storefront</a>
+            <a href="#" class="admin-nav-link text-danger mt-2" onclick="localStorage.removeItem('admin_logged_in'); localStorage.removeItem('admin_role'); localStorage.removeItem('admin_username'); window.location.href = 'admin.html'; return false;"><i class="fas fa-sign-out-alt me-2"></i> Sign Out</a>
+        </div>
+    </div>
+    <script>try{var _s=sessionStorage.getItem('gug_admin_sidebar_scroll');if(_s!==null){var _sb=document.querySelector('.admin-sidebar');if(_sb)_sb.scrollTop=parseFloat(_s);}}catch(e){}</script>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Global Header -->
+        <div id="gug-global-header-container"></div>
+
+        <!-- Beginner Help Banner -->
+        <div id="gug-beginner-help-container"></div>
+
+        <!-- Action & Filter Bar -->
+        <div class="admin-card mb-3 p-3">
+            <div class="row g-2 align-items-center">
+                <div class="col-md-3">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-light border-secondary border-opacity-25 text-secondary"><i class="fas fa-search"></i></span>
+                        <input type="text" id="audit-search" class="form-control" placeholder="Search by user, action, entity, note..." oninput="renderAuditTable()">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <select id="audit-role-filter" class="form-select form-select-sm" onchange="renderAuditTable()">
+                        <option value="all">All Roles</option>
+                        <option value="Super Admin">Super Admin</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Inventory Manager">Inventory Manager</option>
+                        <option value="Accountant">Accountant</option>
+                        <option value="Staff">Staff</option>
+                        <option value="Customer">Customer (Storefront)</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select id="audit-action-filter" class="form-select form-select-sm" onchange="renderAuditTable()">
+                        <option value="all">All Actions</option>
+                        <option value="SECURITY_NOTE">SECURITY_NOTE</option>
+                        <option value="MANUAL_AUDIT_LOG">MANUAL_AUDIT_LOG</option>
+                        <option value="ORDER_PLACED">ORDER_PLACED</option>
+                        <option value="STOCK_ADJUSTMENT">STOCK_ADJUSTMENT</option>
+                        <option value="INTER_WAREHOUSE_TRANSFER">INTER_WAREHOUSE_TRANSFER</option>
+                        <option value="PO_CREATED">PO_CREATED</option>
+                        <option value="GRN_RECEIVED">GRN_RECEIVED</option>
+                        <option value="ORDER_STATUS_CHANGED">ORDER_STATUS_CHANGED</option>
+                        <option value="EXPENSE_RECORDED">EXPENSE_RECORDED</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <span class="text-secondary small fw-bold" id="audit-total-count">0 Records</span>
+                </div>
+                <div class="col-md-3 text-end">
+                    <button class="btn btn-danger btn-sm fw-bold w-100" onclick="openManualAuditModal()"><i class="fas fa-plus-circle me-1"></i> Add Manual Log Entry / Security Note</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Audit Table -->
+        <div class="admin-card p-0">
+            <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                <h6 class="text-dark fw-bold mb-0"><i class="fas fa-fingerprint text-danger me-2"></i> Immutable Security Audit Trail</h6>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-danger fw-bold" onclick="openManualAuditModal()"><i class="fas fa-plus me-1"></i> New Log Note</button>
+                    <button class="btn btn-sm btn-outline-dark" onclick="exportAuditLogsCsv()"><i class="fas fa-download me-1"></i> Export CSV</button>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th class="ps-3">Log ID & Time</th>
+                            <th>User & Role</th>
+                            <th>Action Type</th>
+                            <th>Target Entity</th>
+                            <th>Previous Value</th>
+                            <th>New Value</th>
+                            <th>Operational Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody id="audit-table-body">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD MANUAL AUDIT LOG / SECURITY NOTE -->
+    <div class="modal fade" id="manualAuditModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content shadow-lg border-0">
+                <div class="modal-header bg-dark text-white p-3">
+                    <h5 class="modal-title fw-bold"><i class="fas fa-shield-halved text-danger me-2"></i> Add Manual Log Entry / Security Note</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="manualAuditForm" onsubmit="handleManualAuditSubmit(event)">
+                    <div class="modal-body p-4">
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold">Action / Log Type <span class="text-danger">*</span></label>
+                                <input type="text" id="manual-audit-action" class="form-control" list="audit-action-datalist" placeholder="e.g. SECURITY_NOTE, PHYSICAL_STOCK_AUDIT..." value="SECURITY_NOTE" required>
+                                <datalist id="audit-action-datalist">
+                                    <option value="SECURITY_NOTE">
+                                    <option value="MANUAL_AUDIT_LOG">
+                                    <option value="PHYSICAL_STOCK_AUDIT">
+                                    <option value="CASH_DRAWER_RECONCILIATION">
+                                    <option value="INCIDENT_REPORT">
+                                    <option value="POLICY_OVERRIDE_RECORD">
+                                    <option value="ACCESS_PERMISSIONS_AUDIT">
+                                    <option value="SYSTEM_MAINTENANCE_NOTE">
+                                </datalist>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold">Target Entity / Department <span class="text-danger">*</span></label>
+                                <input type="text" id="manual-audit-entity" class="form-control" list="audit-entity-datalist" placeholder="e.g. Warehouse / Hub Stock, Finance Ledger..." value="Security & Compliance" required>
+                                <datalist id="audit-entity-datalist">
+                                    <option value="Security & Compliance">
+                                    <option value="Warehouse / Hub Stock">
+                                    <option value="Finance & Cash Ledger">
+                                    <option value="Staff & Access Control">
+                                    <option value="Dealer Credit & Ledger">
+                                    <option value="Hardware / Asset Registry">
+                                </datalist>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold">Entity ID / Reference #</label>
+                                <input type="text" id="manual-audit-entity-id" class="form-control" placeholder="e.g. SEC-2026-001, WH-KHI-01">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold">Logged By (User / Admin Name) <span class="text-danger">*</span></label>
+                                <input type="text" id="manual-audit-user" class="form-control" placeholder="e.g. Khan (Super Admin)" required>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold">Previous Value / Baseline</label>
+                                <input type="text" id="manual-audit-prev" class="form-control" placeholder="e.g. 50 units on record, standard limit PKR 200k">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold">New Value / Observed State <span class="text-danger">*</span></label>
+                                <input type="text" id="manual-audit-new" class="form-control" placeholder="e.g. 48 units verified physically, approved exemption" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-dark small fw-bold">Reason / Detailed Security Note <span class="text-danger">*</span></label>
+                            <textarea id="manual-audit-reason" class="form-control" rows="3" placeholder="Provide full context, rationale, and observation notes for this audit log entry..." required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light p-3">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger btn-sm fw-bold px-4"><i class="fas fa-save me-1"></i> Commit to Audit Trail</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/products-data.js"></script>
+    <script src="assets/js/gug-erp-core.js"></script>
+    <!-- Firebase Compat SDKs & Cloud Sync -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/firebase-sync.js"></script>
+    <script src="assets/js/admin.js"></script>
+    <script>
+        function openManualAuditModal() {
+            const form = document.getElementById('manualAuditForm');
+            if (form) form.reset();
+
+            const loggedUser = localStorage.getItem('admin_username') || 'Khan Super Admin';
+            const userField = document.getElementById('manual-audit-user');
+            if (userField) userField.value = loggedUser;
+
+            const entityIdField = document.getElementById('manual-audit-entity-id');
+            if (entityIdField) entityIdField.value = 'SEC-' + Math.floor(1000 + Math.random() * 9000);
+
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('manualAuditModal')).show();
+        }
+
+        function handleManualAuditSubmit(e) {
+            e.preventDefault();
+
+            const action = document.getElementById('manual-audit-action').value.trim() || 'SECURITY_NOTE';
+            const entity = document.getElementById('manual-audit-entity').value.trim() || 'Security';
+            const entityId = document.getElementById('manual-audit-entity-id').value.trim() || ('SEC-' + Math.floor(1000 + Math.random() * 9000));
+            const user = document.getElementById('manual-audit-user').value.trim() || 'Admin';
+            const prev = document.getElementById('manual-audit-prev').value.trim() || 'N/A';
+            const newVal = document.getElementById('manual-audit-new').value.trim();
+            const reason = document.getElementById('manual-audit-reason').value.trim();
+
+            if (window.GUG_DB && typeof window.GUG_DB.logAudit === 'function') {
+                window.GUG_DB.logAudit({
+                    action: action,
+                    entity: entity,
+                    entityId: entityId,
+                    previousValue: prev,
+                    newValue: newVal,
+                    reason: reason,
+                    user: user,
+                    role: user.toLowerCase().includes('super') ? 'Super Admin' : 'Admin'
+                });
+            } else {
+                const logs = JSON.parse(localStorage.getItem('gug_erp_audit_logs') || '[]');
+                logs.unshift({
+                    id: 'LOG-' + Math.floor(100000 + Math.random() * 900000),
+                    timestamp: new Date().toISOString(),
+                    user: user,
+                    role: 'Admin',
+                    action: action,
+                    entity: entity,
+                    entityId: entityId,
+                    previousValue: prev,
+                    newValue: newVal,
+                    reason: reason
+                });
+                localStorage.setItem('gug_erp_audit_logs', JSON.stringify(logs));
+            }
+
+            const modalInstance = bootstrap.Modal.getInstance(document.getElementById('manualAuditModal'));
+            if (modalInstance) modalInstance.hide();
+
+            renderAuditTable();
+
+            if (window.GUG_DB && typeof window.GUG_DB.showToast === 'function') {
+                window.GUG_DB.showToast(`Manual audit note for "${entity}" committed successfully!`, 'success', 'Audit Logged');
+            }
+        }
+
+        function renderAuditTable() {
+            const logs = (window.GUG_DB && typeof window.GUG_DB.getAuditLogs === 'function')
+                ? window.GUG_DB.getAuditLogs()
+                : JSON.parse(localStorage.getItem('gug_erp_audit_logs') || '[]');
+
+            const search = (document.getElementById('audit-search').value || '').toLowerCase();
+            const roleFilter = document.getElementById('audit-role-filter').value;
+            const actionFilter = document.getElementById('audit-action-filter').value;
+
+            const tbody = document.getElementById('audit-table-body');
+            tbody.innerHTML = '';
+
+            let matched = 0;
+
+            logs.forEach(log => {
+                const matchSearch = !search || 
+                    (log.user && log.user.toLowerCase().includes(search)) ||
+                    (log.action && log.action.toLowerCase().includes(search)) ||
+                    (log.entity && log.entity.toLowerCase().includes(search)) ||
+                    (log.reason && log.reason.toLowerCase().includes(search));
+
+                const matchRole = roleFilter === 'all' || log.role === roleFilter;
+                const matchAction = actionFilter === 'all' || log.action === actionFilter;
+
+                if (!matchSearch || !matchRole || !matchAction) return;
+
+                matched++;
+                const tr = document.createElement('tr');
+                const timeFormatted = new Date(log.timestamp).toLocaleString();
+
+                let actionBadge = `<span class="badge bg-secondary">${log.action}</span>`;
+                if (log.action.includes('NOTE') || log.action.includes('SECURITY')) actionBadge = `<span class="badge bg-warning text-dark"><i class="fas fa-shield-alt me-1"></i> ${log.action}</span>`;
+                else if (log.action.includes('ADD') || log.action.includes('CREATE') || log.action.includes('REGISTERED')) actionBadge = `<span class="badge bg-success">${log.action}</span>`;
+                else if (log.action.includes('UPDATE') || log.action.includes('EDIT') || log.action.includes('ADJUSTMENT')) actionBadge = `<span class="badge bg-info text-dark">${log.action}</span>`;
+                else if (log.action.includes('DELETE') || log.action.includes('CANCEL') || log.action.includes('SUSPEND')) actionBadge = `<span class="badge bg-danger">${log.action}</span>`;
+                else if (log.action.includes('ORDER')) actionBadge = `<span class="badge bg-primary">${log.action}</span>`;
+
+                tr.innerHTML = `
+                    <td class="ps-3">
+                        <strong class="text-dark"><code>${log.id}</code></strong>
+                        <div class="text-secondary" style="font-size: 11px;">${timeFormatted}</div>
+                    </td>
+                    <td>
+                        <strong class="text-dark">${log.user}</strong>
+                        <div class="text-secondary" style="font-size: 11px;"><i class="fas fa-user-tag me-1 text-danger"></i> ${log.role}</div>
+                    </td>
+                    <td>${actionBadge}</td>
+                    <td><span class="badge bg-light text-dark border border-secondary">${log.entity} (${log.entityId})</span></td>
+                    <td><div class="diff-box text-dark">${log.previousValue || 'N/A'}</div></td>
+                    <td><div class="diff-box text-success fw-bold">${log.newValue || 'N/A'}</div></td>
+                    <td><small class="text-secondary">${log.reason || 'Standard system action'}</small></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('audit-total-count').innerText = `${matched} of ${logs.length} Records`;
+        }
+
+        function exportAuditLogsCsv() {
+            const logs = (window.GUG_DB && typeof window.GUG_DB.getAuditLogs === 'function')
+                ? window.GUG_DB.getAuditLogs()
+                : JSON.parse(localStorage.getItem('gug_erp_audit_logs') || '[]');
+
+            let csv = "Log ID,Timestamp,User,Role,Action,Entity,Entity ID,Previous Value,New Value,Reason\n";
+            logs.forEach(l => {
+                csv += `"${l.id}","${l.timestamp}","${l.user}","${l.role}","${l.action}","${l.entity}","${l.entityId}","${(l.previousValue||'').replace(/"/g, '""')}","${(l.newValue||'').replace(/"/g, '""')}","${(l.reason||'').replace(/"/g, '""')}"\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', `GearUp_Audit_Logs_${new Date().toISOString().split('T')[0]}.csv`);
+            a.click();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.GUG_DB && typeof window.GUG_DB.renderGlobalHeader === 'function') {
+                window.GUG_DB.renderGlobalHeader('gug-global-header-container', 'Enterprise Security & Audit Logs');
+            }
+            if (window.GUG_DB && typeof window.GUG_DB.renderBeginnerHelpBanner === 'function') {
+                window.GUG_DB.renderBeginnerHelpBanner('gug-beginner-help-container', {
+                    whereAmI: 'Immutable Security Audit Trail & System Log Center',
+                    whatCanIDo: 'Review cryptographic-style records of every financial posting, price edit, stock override, role change, and order cancellation with before/after diffs.',
+                    whatNext: 'Use the filter dropdowns to isolate changes made by specific employees, click "Add Manual Log Entry / Security Note" to record manual security logs, or click "Export CSV" for external compliance auditing.'
+                });
+            }
+            renderAuditTable();
+        });
+    </script>
+</body>
+</html>

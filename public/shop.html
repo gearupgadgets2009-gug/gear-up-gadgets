@@ -1,0 +1,2758 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="utf-8">
+    <title>Shop - Gear Up Gadgets</title>    
+    <!-- Favicon & Device Web Icons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/images/favicon-64x64.png">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <link rel="stylesheet" href="assets/icon/icomoon/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important; }
+        .list-group-item:hover a { color: var(--accent-red) !important; padding-left: 5px; transition: 0.3s; }
+        h4.section-title { border-bottom: 2px solid var(--accent-red); padding-bottom: 10px; margin-bottom: 20px; display: inline-block; color: white; font-weight: bold; }
+        
+        /* iOS 26 Glassmorphic Category Sidebar */
+        .category-sidebar-card {
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            background: rgba(13, 17, 23, 0.6) !important;
+            backdrop-filter: blur(24px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+        .sidebar-cat-btn {
+            background: transparent;
+            border: none;
+            padding: 9px 12px;
+            width: 100%;
+            text-align: left;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #FFFFFF !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            border-radius: 8px;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .sidebar-cat-btn span,
+        .sidebar-cat-btn i {
+            color: #FFFFFF !important;
+        }
+        .sidebar-cat-btn:hover {
+            background: rgba(219, 39, 36, 0.18) !important;
+            color: #FFFFFF !important;
+            transform: translateX(3px);
+        }
+        .sidebar-cat-btn.active {
+            background: linear-gradient(135deg, rgba(219, 39, 36, 0.4), rgba(219, 39, 36, 0.16)) !important;
+            border-left: 3px solid var(--accent-red, #db2724) !important;
+            color: #FFFFFF !important;
+            font-weight: 700;
+            box-shadow: 0 4px 14px rgba(219, 39, 36, 0.3) !important;
+        }
+        .sidebar-cat-count {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.16) !important;
+            color: #FFFFFF !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-width: 28px;
+            height: 20px;
+            transition: all 0.2s ease;
+        }
+        .sidebar-cat-btn:hover .sidebar-cat-count {
+            background: rgba(255, 255, 255, 0.25) !important;
+            color: #FFFFFF !important;
+        }
+        .sidebar-cat-btn.active .sidebar-cat-count {
+            background: var(--accent-red, #db2724) !important;
+            color: #FFFFFF !important;
+        }
+
+        /* Nested Brand Categories & Collapsible Submenu */
+        .sidebar-cat-item-wrapper {
+            display: flex !important;
+            align-items: center !important;
+            gap: 4px;
+            position: relative;
+            width: 100%;
+        }
+        .sidebar-cat-item-wrapper .sidebar-cat-btn {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+        .sidebar-cat-toggle-btn {
+            width: 32px;
+            height: 34px;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            background: rgba(255, 255, 255, 0.08) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            color: #FFFFFF !important;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            font-size: 11px;
+            padding: 0;
+            flex-shrink: 0;
+        }
+        .sidebar-cat-toggle-btn i {
+            color: #FFFFFF !important;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .sidebar-cat-toggle-btn:hover {
+            background: rgba(219, 39, 36, 0.25) !important;
+            color: #FFFFFF !important;
+            border-color: var(--accent-red, #db2724) !important;
+            box-shadow: 0 0 12px rgba(219, 39, 36, 0.35) !important;
+        }
+        .sidebar-cat-toggle-btn.is-open {
+            background: rgba(219, 39, 36, 0.3) !important;
+            border-color: rgba(219, 39, 36, 0.6) !important;
+        }
+        .sidebar-cat-toggle-btn.is-open i {
+            transform: rotate(180deg);
+        }
+
+        .sidebar-brand-submenu {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, margin 0.25s ease;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            border-left: 2px solid rgba(219, 39, 36, 0.4);
+            margin-left: 14px;
+            background: rgba(8, 12, 18, 0.5);
+            border-radius: 0 8px 8px 0;
+        }
+        .sidebar-brand-submenu.show {
+            max-height: 320px;
+            opacity: 1;
+            overflow-y: auto;
+            margin-top: 4px;
+            margin-bottom: 6px;
+            padding: 6px 4px 6px 8px;
+        }
+        .sidebar-brand-submenu::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar-brand-submenu::-webkit-scrollbar-thumb {
+            background: rgba(219, 39, 36, 0.6);
+            border-radius: 4px;
+        }
+        .sidebar-brand-btn {
+            width: 100%;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            background: transparent;
+            border: none;
+            color: #FFFFFF !important;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 6px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+        }
+        .sidebar-brand-btn span {
+            color: #FFFFFF !important;
+        }
+        .sidebar-brand-btn:hover {
+            color: #FFFFFF !important;
+            background: rgba(255, 255, 255, 0.12) !important;
+            transform: translateX(2px);
+        }
+        .sidebar-brand-btn.active {
+            color: #FFFFFF !important;
+            background: linear-gradient(135deg, rgba(219, 39, 36, 0.45), rgba(219, 39, 36, 0.18)) !important;
+            border-left: 2px solid var(--accent-red, #db2724);
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(219, 39, 36, 0.25);
+        }
+        .sidebar-brand-count {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.12) !important;
+            color: #FFFFFF !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-width: 22px;
+            height: 18px;
+        }
+        .sidebar-brand-btn:hover .sidebar-brand-count {
+            background: rgba(255, 255, 255, 0.22) !important;
+            color: #FFFFFF !important;
+        }
+        .sidebar-brand-btn.active .sidebar-brand-count {
+            background: var(--accent-red, #db2724) !important;
+            color: #FFFFFF !important;
+        }
+
+        /* 2. Item Count Badges & Match Indicators */
+        .shop-count-badge,
+        #shop-count-indicator {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            color: #FFFFFF !important;
+            background: rgba(18, 24, 36, 0.85) !important;
+            backdrop-filter: blur(16px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.16) !important;
+            border-radius: 10px !important;
+            padding: 0 14px !important;
+            height: 38px !important;
+            font-size: 12.5px !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.3px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35) !important;
+            white-space: nowrap !important;
+            user-select: none !important;
+            text-align: center !important;
+        }
+        .shop-matches-count-badge,
+        #filtered-matches-count {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            color: #FFFFFF !important;
+            background: rgba(255, 255, 255, 0.08) !important;
+            border: 1px solid rgba(255, 255, 255, 0.16) !important;
+            border-radius: 8px !important;
+            padding: 4px 10px !important;
+            font-size: 11.5px !important;
+            font-weight: 600 !important;
+            font-family: monospace;
+            white-space: nowrap !important;
+        }
+
+        /* 3. Custom Glassmorphic Dropdowns (iOS 26 Spec - High Z-Index Overhaul) */
+        .custom-glass-dropdown {
+            position: relative !important;
+            width: 100% !important;
+            z-index: 20 !important;
+        }
+        .custom-glass-dropdown.is-open {
+            z-index: 99999 !important;
+        }
+        .custom-dropdown-btn {
+            width: 100% !important;
+            height: 38px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 8px !important;
+            background: rgba(18, 24, 36, 0.85) !important;
+            backdrop-filter: blur(16px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.16) !important;
+            border-radius: 10px !important;
+            color: #FFFFFF !important;
+            font-size: 12.5px !important;
+            font-weight: 600 !important;
+            padding: 0 12px !important;
+            cursor: pointer !important;
+            position: relative !important;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35) !important;
+            user-select: none !important;
+        }
+        .custom-dropdown-btn:hover {
+            background: rgba(26, 34, 48, 0.95) !important;
+            border-color: rgba(255, 255, 255, 0.35) !important;
+            color: #FFFFFF !important;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45) !important;
+        }
+        .custom-dropdown-btn.is-active,
+        .custom-dropdown-btn:focus,
+        .custom-glass-dropdown.is-open .custom-dropdown-btn {
+            border-color: var(--accent-red, #db2724) !important;
+            box-shadow: 0 0 0 3px rgba(219, 39, 36, 0.3) !important;
+            outline: none !important;
+            color: #FFFFFF !important;
+        }
+        .dropdown-btn-text {
+            flex: 1 1 auto !important;
+            text-align: center !important;
+            color: #FFFFFF !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            font-weight: 600 !important;
+        }
+        .dropdown-btn-icon {
+            color: #FFFFFF !important;
+            font-size: 11px !important;
+            margin-left: 6px !important;
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            flex-shrink: 0 !important;
+        }
+        .custom-glass-dropdown.is-open .dropdown-btn-icon {
+            transform: rotate(180deg) !important;
+        }
+
+        /* Dropdown Menu Listing (Opened State - Super High Z-Index To Always Stand On Top) */
+        .custom-dropdown-menu {
+            display: none;
+            position: absolute !important;
+            top: calc(100% + 6px) !important;
+            left: 0 !important;
+            right: 0 !important;
+            min-width: max(100%, 195px) !important;
+            max-height: 310px !important;
+            overflow: hidden !important;
+            background: rgba(12, 16, 26, 0.98) !important;
+            backdrop-filter: blur(24px) saturate(200%) !important;
+            -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.22) !important;
+            border-radius: 12px !important;
+            padding: 6px !important;
+            z-index: 999999 !important; /* Critical: Highest priority stacking layer */
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95), 0 0 25px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+        }
+        .custom-glass-dropdown.is-open .custom-dropdown-menu {
+            display: flex !important;
+            flex-direction: column !important;
+            z-index: 999999 !important;
+            animation: dropdownMenuSlideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+        }
+        @keyframes dropdownMenuSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        .custom-dropdown-items-list {
+            max-height: 200px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 2px;
+        }
+        .custom-dropdown-items-list::-webkit-scrollbar,
+        .custom-dropdown-menu::-webkit-scrollbar {
+            width: 5px;
+        }
+        .custom-dropdown-items-list::-webkit-scrollbar-thumb,
+        .custom-dropdown-menu::-webkit-scrollbar-thumb {
+            background: rgba(219, 39, 36, 0.5);
+            border-radius: 4px;
+        }
+
+        /* Dropdown Items Inside Menu */
+        .custom-dropdown-item {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+            color: #FFFFFF !important;
+            font-size: 12.5px !important;
+            font-weight: 500 !important;
+            padding: 9px 12px !important;
+            border-radius: 8px !important;
+            cursor: pointer !important;
+            transition: all 0.18s ease !important;
+            margin-bottom: 2px !important;
+            user-select: none !important;
+        }
+        .custom-dropdown-item:hover {
+            background: rgba(219, 39, 36, 0.28) !important;
+            color: #FFFFFF !important;
+            transform: translateY(-1px);
+        }
+        .custom-dropdown-item.active {
+            background: linear-gradient(135deg, rgba(219, 39, 36, 0.5), rgba(219, 39, 36, 0.22)) !important;
+            border: 1px solid rgba(219, 39, 36, 0.5) !important;
+            color: #FFFFFF !important;
+            font-weight: 700 !important;
+        }
+
+        /* 4. Dynamic Context-Aware Attribute Filter Toolbar (Stacking Context & High Z-Index Overhaul) */
+        #dynamic-filter-bar-container {
+            position: relative !important;
+            z-index: 9999 !important;
+        }
+        .dynamic-filter-card {
+            background: rgba(10, 10, 15, 0.55) !important;
+            backdrop-filter: blur(24px) saturate(200%) !important;
+            -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.14) !important;
+            border-radius: 14px !important;
+            padding: 16px 18px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative !important;
+            z-index: 9999 !important;
+            overflow: visible !important; /* Critical: Prevent clipping of expanded dropdowns */
+        }
+        #dynamic-filter-controls-row {
+            position: relative !important;
+            z-index: 9999 !important;
+        }
+        #dynamic-filter-controls-row > [class*="col-"] {
+            position: relative !important;
+            z-index: 10;
+        }
+        #dynamic-filter-controls-row > [class*="col-"]:has(.custom-glass-dropdown.is-open),
+        #dynamic-filter-controls-row > [class*="col-"].dropdown-parent-open {
+            z-index: 99999 !important;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            position: relative !important;
+            z-index: 10;
+        }
+        .filter-group:has(.custom-glass-dropdown.is-open),
+        .filter-group.dropdown-parent-open {
+            z-index: 99999 !important;
+        }
+        .filter-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #FFFFFF !important;
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* 5. Manual Input (Physical Search) Strictly Inside Dropdown Menus */
+        .dropdown-manual-search-box {
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            flex-shrink: 0;
+        }
+        .dropdown-manual-divider {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: rgba(255, 255, 255, 0.5) !important;
+            text-align: center;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .dropdown-manual-input-group {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            background: rgba(8, 12, 18, 0.85) !important;
+            border: 1px solid rgba(255, 255, 255, 0.18) !important;
+            border-radius: 8px !important;
+            padding: 2px 6px 2px 8px !important;
+            transition: all 0.2s ease !important;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.35) !important;
+        }
+        .dropdown-manual-input-group:focus-within {
+            border-color: var(--accent-red, #db2724) !important;
+            box-shadow: 0 0 0 2px rgba(219, 39, 36, 0.3), inset 0 2px 4px rgba(0, 0, 0, 0.35) !important;
+            background: rgba(12, 16, 24, 0.95) !important;
+        }
+        .dropdown-manual-search-icon {
+            color: var(--accent-red, #db2724) !important;
+            font-size: 11px !important;
+            margin-right: 6px !important;
+            flex-shrink: 0 !important;
+        }
+        .dropdown-manual-input {
+            flex: 1 1 auto !important;
+            background: transparent !important;
+            border: none !important;
+            outline: none !important;
+            color: #FFFFFF !important;
+            font-size: 11.5px !important;
+            font-weight: 500 !important;
+            height: 28px !important;
+            padding: 0 !important;
+            width: 100% !important;
+            text-align: center !important;
+        }
+        .dropdown-manual-input::placeholder {
+            color: rgba(255, 255, 255, 0.45) !important;
+            font-size: 11px;
+        }
+        .dropdown-manual-apply-btn {
+            background: rgba(219, 39, 36, 0.3) !important;
+            border: 1px solid rgba(219, 39, 36, 0.5) !important;
+            color: #FFFFFF !important;
+            width: 24px !important;
+            height: 24px !important;
+            border-radius: 6px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            cursor: pointer !important;
+            font-size: 10px !important;
+            margin-left: 4px !important;
+            flex-shrink: 0 !important;
+            transition: all 0.2s ease !important;
+        }
+        .dropdown-manual-apply-btn:hover {
+            background: var(--accent-red, #db2724) !important;
+            color: #FFFFFF !important;
+            transform: scale(1.05) !important;
+            box-shadow: 0 0 8px rgba(219, 39, 36, 0.5) !important;
+        }
+
+        /* 6. Active Filter Pills */
+        .active-filters-container {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            padding-top: 10px;
+            margin-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .active-filter-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(219, 39, 36, 0.22);
+            border: 1px solid rgba(219, 39, 36, 0.45);
+            color: #FFFFFF !important;
+            font-size: 11.5px;
+            font-weight: 600;
+            padding: 4px 11px;
+            border-radius: 20px;
+            backdrop-filter: blur(8px);
+        }
+        .active-filter-pill button {
+            background: transparent;
+            border: none;
+            color: #FFFFFF !important;
+            padding: 0;
+            cursor: pointer;
+            font-size: 12px;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            opacity: 0.8;
+            transition: opacity 0.15s ease;
+        }
+        .active-filter-pill button:hover {
+            opacity: 1;
+            color: #ff4d4d !important;
+        }
+        .btn-clear-all {
+            background: transparent;
+            border: 1px dashed rgba(255, 255, 255, 0.3);
+            color: #FFFFFF !important;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-clear-all:hover {
+            border-color: var(--accent-red, #db2724);
+            color: #ff4d4d !important;
+            background: rgba(219, 39, 36, 0.15);
+        }
+
+        /* 7. Centered Empty State Screen */
+        .shop-empty-state-card {
+            background: rgba(10, 14, 22, 0.65) !important;
+            backdrop-filter: blur(24px) saturate(200%) !important;
+            -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.14) !important;
+            border-radius: 16px !important;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 48px 24px !important;
+            margin: 20px auto !important;
+            max-width: 680px !important;
+            text-align: center !important;
+        }
+        .empty-state-icon-wrapper {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(219, 39, 36, 0.15) !important;
+            border: 1px solid rgba(219, 39, 36, 0.35) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 auto 16px auto !important;
+            box-shadow: 0 0 24px rgba(219, 39, 36, 0.3) !important;
+        }
+        .empty-state-icon {
+            font-size: 34px !important;
+            color: var(--accent-red, #db2724) !important;
+        }
+
+        /* 8. Fallback for Native Form Selects & Top Stacking Elements */
+        .shop-header-toolbar {
+            position: relative !important;
+            z-index: 10000 !important;
+        }
+        #sort-dropdown-container {
+            position: relative !important;
+            z-index: 20 !important;
+        }
+        #sort-dropdown-container.is-open {
+            z-index: 99999 !important;
+        }
+        #sort-dropdown-container .custom-dropdown-menu {
+            z-index: 999999 !important;
+        }
+        select.filter-select,
+        select#shop-sort-select,
+        .form-select {
+            position: relative !important;
+            z-index: 9999 !important;
+            color: #FFFFFF !important;
+            background-color: rgba(18, 24, 36, 0.9) !important;
+            border: 1px solid rgba(255, 255, 255, 0.16) !important;
+            text-align: center !important;
+            text-align-last: center !important;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+        }
+        select.filter-select option,
+        select#shop-sort-select option,
+        .form-select option {
+            background-color: #0c101a !important;
+            color: #FFFFFF !important;
+            text-align: left !important;
+            padding: 8px 12px !important;
+        }
+
+        /* 8b. Stacking Context Isolation for Product Grid and Cards */
+        #active-filter-pills-container {
+            position: relative !important;
+            z-index: 9998 !important;
+        }
+        #shop-empty-state-container {
+            position: relative !important;
+            z-index: 9997 !important;
+        }
+        #main-shop-grid {
+            position: relative !important;
+            z-index: 1 !important;
+        }
+        #main-shop-grid .card {
+            position: relative !important;
+            z-index: 1;
+        }
+        #main-shop-grid .card:hover {
+            z-index: 2;
+        }
+        #shop-pagination-wrapper {
+            position: relative !important;
+            z-index: 1 !important;
+        }
+
+        /* 9. Mobile Horizontal Scroll Category Bar */
+        .mobile-cat-scroll {
+            display: flex;
+            overflow-x: auto;
+            gap: 8px;
+            padding: 4px 2px 10px 2px;
+            scrollbar-width: thin;
+            -webkit-overflow-scrolling: touch;
+        }
+        .mobile-cat-scroll::-webkit-scrollbar {
+            height: 4px;
+        }
+        .mobile-cat-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+        .mobile-cat-pill {
+            flex: 0 0 auto;
+            padding: 8px 16px;
+            font-size: 12.5px;
+            font-weight: 600;
+            border-radius: 20px;
+            background: rgba(20, 26, 35, 0.85) !important;
+            border: 1px solid rgba(255, 255, 255, 0.16) !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            color: #FFFFFF !important;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 8px;
+        }
+        .mobile-cat-pill span,
+        .mobile-cat-pill i {
+            color: #FFFFFF !important;
+        }
+        .mobile-cat-pill .mobile-cat-count {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 11px;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.16) !important;
+            color: #FFFFFF !important;
+            padding: 1px 7px;
+            border-radius: 10px;
+        }
+        .mobile-cat-pill:hover,
+        .mobile-cat-pill.active {
+            background: var(--accent-red, #db2724) !important;
+            color: #FFFFFF !important;
+            border-color: var(--accent-red, #db2724) !important;
+            box-shadow: 0 4px 14px rgba(219, 39, 36, 0.45) !important;
+        }
+        .mobile-cat-pill.active .mobile-cat-count {
+            background: rgba(0, 0, 0, 0.35) !important;
+            color: #FFFFFF !important;
+        }
+        
+        /* Pagination Styling */
+        nav[aria-label="Shop Pagination"],
+        .shop-pagination-nav {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            width: 100% !important;
+            margin-top: 50px !important;
+            margin-bottom: 30px !important;
+            clear: both !important;
+        }
+
+        ul.pagination#pagination-controls,
+        .pagination {
+            display: inline-flex !important;
+            flex-direction: row !important;
+            flex-wrap: wrap !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 8px !important;
+            margin: 0 auto !important;
+            padding: 0 !important;
+            list-style: none !important;
+            border: none !important;
+            background: transparent !important;
+        }
+
+        .pagination .page-item {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            list-style: none !important;
+            border: none !important;
+            background: transparent !important;
+        }
+
+        .pagination .page-item .page-link {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-width: 42px !important;
+            height: 42px !important;
+            padding: 0 14px !important;
+            margin: 0 !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            color: var(--text-primary, #ffffff) !important;
+            background-color: var(--bg-card, #121820) !important;
+            border: 1px solid var(--border-color, #232b36) !important;
+            border-radius: 8px !important;
+            text-decoration: none !important;
+            cursor: pointer !important;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25) !important;
+            user-select: none !important;
+            line-height: 1 !important;
+            box-sizing: border-box !important;
+        }
+
+        .pagination .page-item .page-link:hover {
+            background-color: rgba(219, 39, 36, 0.15) !important;
+            border-color: var(--accent-red, #db2724) !important;
+            color: var(--accent-red, #db2724) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(219, 39, 36, 0.3) !important;
+        }
+
+        .pagination .page-item.active .page-link {
+            background: linear-gradient(135deg, var(--accent-red, #db2724), #ff3b38) !important;
+            border-color: var(--accent-red, #db2724) !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
+            box-shadow: 0 4px 16px rgba(219, 39, 36, 0.5) !important;
+            pointer-events: none !important;
+            transform: translateY(-1px);
+        }
+
+        .pagination .page-item.disabled .page-link {
+            background-color: rgba(255, 255, 255, 0.02) !important;
+            border-color: rgba(255, 255, 255, 0.07) !important;
+            color: rgba(255, 255, 255, 0.25) !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+            box-shadow: none !important;
+            transform: none !important;
+        }
+
+        .pagination .page-item.dots .page-link {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            color: var(--text-secondary, #94a3b8) !important;
+            min-width: 28px !important;
+            padding: 0 !important;
+            cursor: default !important;
+            pointer-events: none !important;
+            font-size: 16px !important;
+            letter-spacing: 2px !important;
+        }
+    </style>
+    
+    
+    <style id="elite-cargo-styles">
+        .btn-cargo-expert.is-processing { pointer-events: none; }
+        .btn-cargo-expert.is-processing .cart-text { opacity: 0 !important; }
+        .btn-cargo-expert.is-processing .conveyor-line { opacity: 1 !important; animation: eliteMoveLine 1.5s 0.3s linear; }
+        .btn-cargo-expert.is-processing .box-item { animation: eliteBoxDrop 2.5s forwards cubic-bezier(0.4, 0, 0.2, 1); }
+        .btn-cargo-expert.is-processing .cart-vehicle { animation: eliteCartDrive 2.5s forwards cubic-bezier(0.4, 0, 0.2, 1); }
+        .btn-cargo-expert.is-processing .success-text { animation: eliteTextFade 0.5s 2.2s forwards; }
+
+        @keyframes eliteMoveLine {
+            0% { background-position: 0 0; }
+            100% { background-position: 100px 0; }
+        }
+
+        @keyframes eliteBoxDrop {
+            0% { top: -30px; left: 30px; opacity: 0; transform: scale(0.5); }
+            10% { top: 20px; left: 30px; opacity: 1; transform: scale(1); } 
+            15% { top: 20px; left: 30px; opacity: 1; transform: scale(1); }
+            40% { top: 20px; left: calc(100% - 60px); opacity: 1; transform: scale(1); } 
+            45% { top: 24px; left: calc(100% - 50px); opacity: 1; transform: rotate(45deg) scale(0.5); } 
+            50% { top: 30px; left: calc(100% - 50px); opacity: 0; transform: scale(0); } 
+            100% { top: 30px; left: calc(100% - 50px); opacity: 0; transform: scale(0); }
+        }
+
+        @keyframes eliteCartDrive {
+            0% { right: -40px; transform: translateX(0); }
+            20% { right: -40px; transform: translateX(0); }
+            40% { right: 30px; transform: translateX(0); } 
+            45% { right: 30px; transform: translateY(4px); } 
+            50% { right: 30px; transform: translateY(0); }
+            60% { right: 30px; transform: translateY(0); }
+            90% { right: 30px; transform: translateX(100px); } 
+            100% { right: 30px; transform: translateX(100px); }
+        }
+
+        @keyframes eliteTextFade {
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body style="background-color: var(--bg-main);">
+    <div id="wrapper">
+        <div id="header-placeholder"></div>
+        
+        <div class="gug-container py-4" style="margin-top: 100px;">
+            <div class="row">
+                <!-- Vertical Menu Sidebar -->
+                <div class="col-lg-3 d-none d-lg-block">
+                    <div class="category-sidebar-card mb-4">
+                        <div class="p-3 text-white fw-bold d-flex align-items-center justify-content-between" style="background: linear-gradient(135deg, var(--accent-red, #db2724), #b91c1c); border-bottom: 1px solid rgba(255,255,255,0.15); border-radius: 12px 12px 0 0;">
+                            <span><i class="fa-solid fa-layer-group me-2"></i> Categories</span>
+                            <span class="badge bg-black bg-opacity-50 text-white font-monospace" id="sidebar-total-badge">662 Items</span>
+                        </div>
+                        <ul class="list-unstyled p-2 mb-0" id="category-sidebar">
+                            <!-- Categories injected dynamically -->
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Main Content Area -->
+                <div class="col-lg-9">
+                    <!-- Mobile/Tablet Horizontal Scrollable Category Bar -->
+                    <div class="d-lg-none mb-3" id="mobile-category-container">
+                        <div class="mobile-cat-scroll" id="mobile-category-bar">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Product Container -->
+                    <div class="mb-5">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 border-bottom mb-3 pb-2 shop-header-toolbar" style="border-color: rgba(255,255,255,0.1) !important; position: relative; z-index: 10000;">
+                            <h4 class="section-title mb-0" id="shop-title">All Products</h4>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="shop-count-badge d-none d-sm-inline-flex" id="shop-count-indicator">Showing 157 items</div>
+                                <div class="custom-glass-dropdown" id="sort-dropdown-container" style="min-width: 175px;">
+                                    <button class="custom-dropdown-btn" id="sort-dropdown-btn" type="button" aria-haspopup="true" aria-expanded="false">
+                                        <span class="dropdown-btn-text" id="sort-dropdown-current-text">Featured First</span>
+                                        <i class="fa-solid fa-chevron-down dropdown-btn-icon"></i>
+                                    </button>
+                                    <div class="custom-dropdown-menu" id="sort-dropdown-menu">
+                                        <div class="custom-dropdown-item active" data-value="featured">Featured First</div>
+                                        <div class="custom-dropdown-item" data-value="price-asc">Price: Low to High</div>
+                                        <div class="custom-dropdown-item" data-value="price-desc">Price: High to Low</div>
+                                        <div class="custom-dropdown-item" data-value="newest">Newest Arrivals</div>
+                                        <div class="custom-dropdown-item" data-value="name-asc">Name: A to Z</div>
+                                    </div>
+                                    <select class="d-none" id="shop-sort-select">
+                                        <option value="featured">Featured First</option>
+                                        <option value="price-asc">Price: Low to High</option>
+                                        <option value="price-desc">Price: High to Low</option>
+                                        <option value="newest">Newest Arrivals</option>
+                                        <option value="name-asc">Name: A to Z</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Context-Aware Attribute Filter Toolbar (iOS 26 Glassmorphic) -->
+                        <div id="dynamic-filter-bar-container" class="mb-3"></div>
+
+                        <!-- Active Filter Pills Container -->
+                        <div id="active-filter-pills-container" class="mb-3 d-none"></div>
+                        
+                        <!-- Empty State Container (Displayed when no products match filters/search) -->
+                        <div id="shop-empty-state-container" class="d-none w-100 my-4"></div>
+
+                        <!-- Main Products Grid -->
+                        <div class="row g-2 g-md-4" id="main-shop-grid"></div>
+                        
+                        <!-- Pagination Container -->
+                        <nav class="mt-5" aria-label="Shop Pagination" id="shop-pagination-wrapper">
+                            <ul class="pagination justify-content-center" id="pagination-controls">
+                                <!-- Pagination injected dynamically -->
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="footer-placeholder"></div>
+    </div>
+    
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/products-data.js"></script>
+    <!-- Firebase Compat SDKs & Cloud Sync -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/firebase-sync.js"></script>
+    <script src="assets/js/gug-erp-core.js"></script>
+    <script src="assets/js/common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mainGrid = document.getElementById('main-shop-grid');
+            const shopTitle = document.getElementById('shop-title');
+            const sidebar = document.getElementById('category-sidebar');
+            const mobileBar = document.getElementById('mobile-category-bar');
+            const paginationControls = document.getElementById('pagination-controls');
+
+            const DISTINCT_CATEGORIES = [
+                { name: 'All Products', slug: 'all', icon: 'fa-solid fa-boxes-stacked' },
+                { name: 'Mobiles', slug: 'mobiles', icon: 'fa-solid fa-mobile-screen-button' },
+                { name: 'Laptops', slug: 'laptops', icon: 'fa-solid fa-laptop' },
+                { name: 'Computers', slug: 'computers', icon: 'fa-solid fa-desktop' },
+                { name: 'Mouse', slug: 'mouse', icon: 'fa-solid fa-computer-mouse' },
+                { name: 'CPU', slug: 'cpu', icon: 'fa-solid fa-microchip' },
+                { name: 'Monitors', slug: 'monitors', icon: 'fa-solid fa-display' },
+                { name: 'Graphics Cards', slug: 'graphics', icon: 'fa-solid fa-vr-cardboard' },
+                { name: 'Keyboards', slug: 'keyboards', icon: 'fa-solid fa-keyboard' },
+                { name: 'Tablets & Pads', slug: 'tablets', icon: 'fa-solid fa-tablet-screen-button' },
+                { name: 'Headphones & Audio', slug: 'headphones', icon: 'fa-solid fa-headphones' },
+                { name: 'Audio & Speakers', slug: 'speakers', icon: 'fa-solid fa-volume-high' },
+                { name: 'Smart Home & AC', slug: 'smart-home', icon: 'fa-solid fa-house-laptop' },
+                { name: 'Smartwatches', slug: 'smartwatches', icon: 'fa-solid fa-stopwatch' },
+                { name: 'Power & Chargers', slug: 'power', icon: 'fa-solid fa-bolt' },
+                { name: 'Networking & Wireless', slug: 'networking', icon: 'fa-solid fa-wifi' },
+                { name: 'Accessories & Cables', slug: 'accessories', icon: 'fa-solid fa-plug' }
+            ];
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialCat = (urlParams.get('category') || 'all').toLowerCase().trim();
+            const foundCat = DISTINCT_CATEGORIES.find(c => c.slug === initialCat || c.name.toLowerCase() === initialCat);
+            let currentCategory = foundCat ? foundCat.slug : (initialCat || 'all');
+            let currentSearch = urlParams.get('search') || '';
+            let currentBrand = urlParams.get('brand') || '';
+            let currentSale = urlParams.get('sale') === 'true' || urlParams.get('sale') === '1';
+            let currentPage = 1;
+            const itemsPerPage = 16;
+            let activeProducts = [];
+            let isMobileSubmenuOpen = (currentCategory === 'mobiles');
+            let activeAttributes = {};
+            let currentSort = 'featured';
+
+            function escapeHtml(str) {
+                if (!str) return '';
+                return str.toString()
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            }
+
+            function matchSpecQuery(product, query) {
+                if (!query) return true;
+                const q = query.trim().toLowerCase();
+                if (!q) return true;
+                
+                const title = ((product.title || product.name || '') + '').toLowerCase();
+                const desc = ((product.description || '') + '').toLowerCase();
+                const brand = ((product.brand || '') + '').toLowerCase();
+                const cat = ((product.category || '') + '').toLowerCase();
+                const sku = ((product.sku || '') + '').toLowerCase();
+                const fullText = `${title} ${brand} ${cat} ${desc} ${sku}`;
+
+                // 1. Direct substring match
+                if (fullText.includes(q)) return true;
+
+                // 2. Multi-word tokenized match
+                const words = q.split(/\s+/).filter(w => w.length > 0);
+                const allWordsMatch = words.every(word => {
+                    if (fullText.includes(word)) return true;
+                    if (word.includes('/')) {
+                        const parts = word.split('/');
+                        if (parts.length === 2 && parts[0] && parts[1]) {
+                            const rPart = parts[0].trim();
+                            const sPart = parts[1].trim();
+                            const hasSlash = fullText.includes(`${rPart}/${sPart}`) || fullText.includes(`${rPart} / ${sPart}`);
+                            const hasBoth = (fullText.includes(rPart) && fullText.includes(sPart));
+                            if (hasSlash || hasBoth) return true;
+                        }
+                    }
+                    return false;
+                });
+                if (allWordsMatch) return true;
+
+                // 3. Compact match without spaces e.g. "12 / 256" -> "12/256"
+                const cleanedQ = q.replace(/\s+/g, '');
+                const cleanedText = fullText.replace(/\s+/g, '');
+                if (cleanedText.includes(cleanedQ)) return true;
+
+                return false;
+            }
+
+            let _shopCatalogCache = null;
+            let _shopCatalogCacheTime = 0;
+
+            function getCatalog() {
+                const now = Date.now();
+                if (_shopCatalogCache && (now - _shopCatalogCacheTime < 3000)) {
+                    return _shopCatalogCache;
+                }
+                const master = (typeof window !== 'undefined' && window.productDatabase) ? window.productDatabase : (typeof productDatabase !== 'undefined' ? productDatabase : (window.PRODUCTS_DATA || []));
+                if (window.GUG_DB && typeof window.GUG_DB.getStorefrontProducts === 'function') {
+                    const dbProducts = window.GUG_DB.getStorefrontProducts();
+                    if (Array.isArray(dbProducts) && dbProducts.length > 0) {
+                        _shopCatalogCache = dbProducts;
+                        _shopCatalogCacheTime = now;
+                        return dbProducts;
+                    }
+                }
+                const res = (Array.isArray(master) && master.length > 0) ? master : [];
+                _shopCatalogCache = res;
+                _shopCatalogCacheTime = now;
+                return res;
+            }
+
+            // Dynamically extract all unique mobile brands with model counts
+            // Dynamically extract all unique mobile brands with model counts
+            function getMobileBrands(mobilesOrCatalog) {
+                const mobiles = (Array.isArray(mobilesOrCatalog) && mobilesOrCatalog.length > 0 && matchCategory(mobilesOrCatalog[0], 'mobiles'))
+                    ? mobilesOrCatalog
+                    : (mobilesOrCatalog || []).filter(p => matchCategory(p, 'mobiles'));
+                const map = {};
+                mobiles.forEach(m => {
+                    let b = (m.brand || '').trim();
+                    if (!b) {
+                        const t = ((m.title || m.name || '') + '').toLowerCase();
+                        if (t.includes('samsung')) b = 'Samsung';
+                        else if (t.includes('iphone') || t.includes('apple')) b = 'Apple';
+                        else if (t.includes('pixel') || t.includes('google')) b = 'Google';
+                        else if (t.includes('redmi')) b = 'Redmi';
+                        else if (t.includes('xiaomi')) b = 'Xiaomi';
+                        else if (t.includes('poco')) b = 'Poco';
+                        else if (t.includes('motorola') || t.includes('moto')) b = 'Motorola';
+                        else if (t.includes('infinix')) b = 'Infinix';
+                        else if (t.includes('tecno')) b = 'Tecno';
+                        else if (t.includes('realme')) b = 'Realme';
+                        else if (t.includes('vivo')) b = 'Vivo';
+                        else if (t.includes('oppo')) b = 'Oppo';
+                        else if (t.includes('honor')) b = 'Honor';
+                        else if (t.includes('nothing')) b = 'Nothing';
+                        else if (t.includes('nokia')) b = 'Nokia';
+                        else if (t.includes('itel')) b = 'Itel';
+                        else if (t.includes('vgotel')) b = 'VgoTel';
+                        else if (t.includes('zte') || t.includes('nubia')) b = 'ZTE Nubia';
+                        else b = 'Other';
+                    }
+                    const display = b.charAt(0).toUpperCase() + b.slice(1);
+                    map[display] = (map[display] || 0) + 1;
+                });
+                return Object.keys(map).sort((a, b) => a.localeCompare(b)).map(brand => ({
+                    name: brand,
+                    count: map[brand]
+                }));
+            }
+
+            function buildCategorySidebar() {
+                const catalog = getCatalog();
+                const totalBadge = document.getElementById('sidebar-total-badge');
+                if (totalBadge) totalBadge.innerText = `${catalog.length} Items`;
+
+                // Precompute category counts in a single fast pass O(N)
+                const catCounts = { all: catalog.length };
+                const mobilesList = [];
+                for (let i = 0; i < catalog.length; i++) {
+                    const p = catalog[i];
+                    if (matchCategory(p, 'mobiles')) {
+                        mobilesList.push(p);
+                        catCounts['mobiles'] = (catCounts['mobiles'] || 0) + 1;
+                    }
+                    for (let j = 0; j < DISTINCT_CATEGORIES.length; j++) {
+                        const slug = DISTINCT_CATEGORIES[j].slug;
+                        if (slug === 'all' || slug === 'mobiles') continue;
+                        if (matchCategory(p, slug)) {
+                            catCounts[slug] = (catCounts[slug] || 0) + 1;
+                        }
+                    }
+                }
+
+                // Render Desktop Sidebar with Nested Brand Categories
+                if (sidebar) {
+                    const mobileBrands = getMobileBrands(mobilesList);
+                    const mobilesTotalCount = catCounts['mobiles'] || 0;
+
+                    sidebar.innerHTML = DISTINCT_CATEGORIES.map(cat => {
+                        const count = catCounts[cat.slug] || 0;
+                        const isActiveCat = (cat.slug === currentCategory);
+
+                        if (cat.slug === 'mobiles') {
+                            const isSubmenuShown = isMobileSubmenuOpen;
+                            const isAllMobilesActive = isActiveCat && !currentBrand;
+
+                            return `
+                                <li class="mb-1 has-submenu" id="sidebar-cat-mobiles-wrapper">
+                                    <div class="sidebar-cat-item-wrapper d-flex align-items-center">
+                                        <button class="sidebar-cat-btn ${isAllMobilesActive ? 'active' : ''}" data-category="mobiles" type="button" title="View all mobile phones">
+                                            <span class="d-flex align-items-center">
+                                                <i class="${cat.icon} me-2" style="width: 18px; text-align: center; font-size: 13px; opacity: 0.85;"></i>
+                                                <span>${cat.name}</span>
+                                            </span>
+                                            <span class="sidebar-cat-count">${count}</span>
+                                        </button>
+                                        <button class="sidebar-cat-toggle-btn ${isSubmenuShown ? 'is-open' : ''}" type="button" id="btn-toggle-mobile-brands" aria-label="Toggle Mobile Brands Dropdown" title="Expand / Collapse Brands">
+                                            <i class="fa-solid fa-chevron-down"></i>
+                                        </button>
+                                    </div>
+                                    <ul class="sidebar-brand-submenu ${isSubmenuShown ? 'show' : ''}" id="mobiles-brand-submenu">
+                                        ${mobileBrands.map(b => {
+                                             const isBrandActive = (currentCategory === 'mobiles' && currentBrand.toLowerCase() === b.name.toLowerCase());
+                                             return `
+                                                <li>
+                                                    <button class="sidebar-brand-btn ${isBrandActive ? 'active' : ''}" data-brand="${b.name}" type="button">
+                                                        <span>${b.name}</span>
+                                                        <span class="sidebar-brand-count">${b.count}</span>
+                                                    </button>
+                                                </li>
+                                            `;
+                                        }).join('')}
+                                    </ul>
+                                </li>
+                            `;
+                        }
+
+                        return `
+                            <li class="mb-1">
+                                <button class="sidebar-cat-btn ${isActiveCat ? 'active' : ''}" data-category="${cat.slug}" type="button">
+                                    <span class="d-flex align-items-center">
+                                        <i class="${cat.icon} me-2" style="width: 18px; text-align: center; font-size: 13px; opacity: 0.85;"></i>
+                                        <span>${cat.name}</span>
+                                    </span>
+                                    <span class="sidebar-cat-count">${count}</span>
+                                </button>
+                            </li>
+                        `;
+                    }).join('');
+
+                    // 1. Main category button click listeners
+                    sidebar.querySelectorAll('.sidebar-cat-btn').forEach(btn => {
+                        btn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            const slug = this.getAttribute('data-category');
+                            if (slug === 'mobiles') {
+                                // Clicking the main 'Mobiles' text should display ALL mobile phones
+                                currentBrand = '';
+                                activeAttributes = {};
+                                isMobileSubmenuOpen = true; // Keep/expand brands visible
+                                filterCategory('mobiles');
+                            } else {
+                                currentBrand = '';
+                                activeAttributes = {};
+                                isMobileSubmenuOpen = false;
+                                filterCategory(slug);
+                            }
+                        });
+                    });
+
+                    // 2. Mobile brands dropdown toggle arrow click listener
+                    const toggleArrowBtn = document.getElementById('btn-toggle-mobile-brands');
+                    if (toggleArrowBtn) {
+                        toggleArrowBtn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            isMobileSubmenuOpen = !isMobileSubmenuOpen;
+                            const submenu = document.getElementById('mobiles-brand-submenu');
+                            if (submenu) {
+                                if (isMobileSubmenuOpen) {
+                                    submenu.classList.add('show');
+                                    this.classList.add('is-open');
+                                } else {
+                                    submenu.classList.remove('show');
+                                    this.classList.remove('is-open');
+                                }
+                            }
+                        });
+                    }
+
+                    // 3. Brand sub-menu click listeners
+                    sidebar.querySelectorAll('.sidebar-brand-btn').forEach(bBtn => {
+                        bBtn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            const selectedBrand = this.getAttribute('data-brand');
+                            filterBrand(selectedBrand);
+                        });
+                    });
+                }
+
+                // Render Mobile Scrollable Bar
+                const mBar = document.getElementById('mobile-category-bar');
+                if (mBar) {
+                    mBar.innerHTML = DISTINCT_CATEGORIES.map(cat => {
+                        const count = catCounts[cat.slug] || 0;
+                        const isActive = (cat.slug === currentCategory);
+                        return `
+                            <button class="mobile-cat-pill ${isActive ? 'active' : ''}" data-category="${cat.slug}" type="button">
+                                <i class="${cat.icon}"></i>
+                                <span>${cat.name}</span>
+                                <span style="opacity: 0.75; font-size: 11px;">(${count})</span>
+                            </button>
+                        `;
+                    }).join('');
+
+                    mBar.querySelectorAll('.mobile-cat-pill').forEach(btn => {
+                        btn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            const slug = this.getAttribute('data-category');
+                            currentBrand = '';
+                            activeAttributes = {};
+                            if (slug === 'mobiles') isMobileSubmenuOpen = true;
+                            else isMobileSubmenuOpen = false;
+                            filterCategory(slug);
+                        });
+                    });
+                }
+            }
+
+            function filterBrand(brandName) {
+                currentCategory = 'mobiles';
+                currentBrand = brandName || '';
+                activeAttributes = {};
+                isMobileSubmenuOpen = true;
+                currentPage = 1;
+
+                // Sync URL query cleanly without page reload
+                try {
+                    const newUrl = new URL(window.location.href);
+                    newUrl.searchParams.set('category', 'mobiles');
+                    if (currentBrand) {
+                        newUrl.searchParams.set('brand', currentBrand);
+                    } else {
+                        newUrl.searchParams.delete('brand');
+                    }
+                    window.history.pushState({ category: 'mobiles', brand: currentBrand }, '', newUrl.toString());
+                } catch (e) {}
+
+                updateActiveButtons();
+                renderDynamicFilterBar();
+                applyFilters();
+                window.scrollTo({ top: 120, behavior: 'smooth' });
+            }
+
+            function updateActiveButtons() {
+                if (sidebar) {
+                    sidebar.querySelectorAll('.sidebar-cat-btn').forEach(btn => {
+                        const slug = btn.getAttribute('data-category');
+                        if (slug === 'mobiles') {
+                            if (currentCategory === 'mobiles' && !currentBrand) {
+                                btn.classList.add('active');
+                            } else {
+                                btn.classList.remove('active');
+                            }
+                        } else {
+                            if (slug === currentCategory) {
+                                btn.classList.add('active');
+                            } else {
+                                btn.classList.remove('active');
+                            }
+                        }
+                    });
+
+                    // Update brand sub-buttons
+                    sidebar.querySelectorAll('.sidebar-brand-btn').forEach(bBtn => {
+                        const bName = bBtn.getAttribute('data-brand') || '';
+                        if (currentCategory === 'mobiles' && currentBrand && bName.toLowerCase() === currentBrand.toLowerCase()) {
+                            bBtn.classList.add('active');
+                        } else {
+                            bBtn.classList.remove('active');
+                        }
+                    });
+
+                    // Submenu toggle arrow state
+                    const toggleArrowBtn = document.getElementById('btn-toggle-mobile-brands');
+                    const submenu = document.getElementById('mobiles-brand-submenu');
+                    if (toggleArrowBtn && submenu) {
+                        if (isMobileSubmenuOpen) {
+                            toggleArrowBtn.classList.add('is-open');
+                            submenu.classList.add('show');
+                        } else {
+                            toggleArrowBtn.classList.remove('is-open');
+                            submenu.classList.remove('show');
+                        }
+                    }
+                }
+
+                const mBar = document.getElementById('mobile-category-bar');
+                if (mBar) {
+                    mBar.querySelectorAll('.mobile-cat-pill').forEach(btn => {
+                        if (btn.getAttribute('data-category') === currentCategory) {
+                            btn.classList.add('active');
+                        } else {
+                            btn.classList.remove('active');
+                        }
+                    });
+                }
+            }
+
+            buildCategorySidebar();
+
+            function renderCard(p, index) {
+    let priceRaw = (p.price || "").toString().replace(/Rs\.?|\s/gi, "").replace(/,/g, "");
+    if (priceRaw.includes(".")) priceRaw = priceRaw.split(".")[0];
+    
+    let priceHtml = `<span class="fw-bold" style="font-size: 16px; color: var(--accent-red);">Rs. ${p.price || ""}</span>`;
+    if (p.originalPrice && p.onSale) {
+        priceHtml = `<div class="d-flex flex-column"><span class="text-secondary text-decoration-line-through" style="font-size: 12px;">Rs. ${p.originalPrice}</span><span class="fw-bold" style="font-size: 16px; color: var(--accent-red);">Rs. ${p.price}</span></div>`;
+    }
+    
+    let leftBadges = [];
+      if (p.isNew) leftBadges.push(`<div style="background: #28a745; color: white; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: bold; margin-bottom: 5px;">NEW</div>`);
+      if (p.onSale) {
+          const eventName = localStorage.getItem("gug_sales_event_name");
+          if (eventName) leftBadges.push(`<div onclick="event.stopPropagation(); window.location.href='sales.html';" style="background: #E50303; color: white; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: bold; margin-bottom: 5px; cursor: pointer;" title="View Sale Deals">${eventName.toUpperCase()}</div>`);
+      }
+      let badgeHtml = leftBadges.length > 0 ? `<div style="position: absolute; top: 10px; left: 10px; z-index: 10; display: flex; flex-direction: column;">${leftBadges.join("")}</div>` : "";
+      if (p.onSale) {
+        let saleText = "SALE";
+        if (p.saleDiscountPercent) {
+            saleText = `${p.saleDiscountPercent}% OFF`;
+        } else if (p.originalPrice) {
+            let orig = parseFloat(p.originalPrice.toString().replace(/,/g, '').replace("Rs.", ""));
+            let curr = parseFloat((p.price || 0).toString().replace(/,/g, '').replace("Rs.", ""));
+            let perc = Math.round(((orig - curr) / orig) * 100);
+            if (!isNaN(perc) && perc > 0) saleText = `${perc}% OFF`;
+        }
+        badgeHtml += `<div onclick="event.stopPropagation(); window.location.href='sales.html';" style="position: absolute; top: 10px; right: 10px; background: #E50303; color: white; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: bold; z-index: 10; cursor: pointer;" title="View Sale Deals">${saleText}</div>`;
+    }
+    
+    const slideDir = (index % 2 === 0) ? 'left' : 'right';
+    const stockQty = typeof window.getProductStockNumber === 'function' ? window.getProductStockNumber(p) : (p.totalStock || p.stockQuantity || 0);
+    const stockBadge = typeof window.formatProductStockBadge === 'function' ? window.formatProductStockBadge(p, true) : (stockQty > 5 ? `<span class="stock-badge in-stock" style="font-size:10px;font-weight:700;color:#10b981;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);padding:2px 6px;border-radius:4px;white-space:nowrap;"><i class="fas fa-boxes-stacked"></i> ${stockQty} stocks available</span>` : (stockQty > 0 ? `<span class="stock-badge low-stock" style="font-size:10px;font-weight:700;color:#f59e0b;background:rgba(245,158,11,0.14);border:1px solid rgba(245,158,11,0.35);padding:2px 6px;border-radius:4px;white-space:nowrap;"><i class="fas fa-fire"></i> Only ${stockQty} stocks are left</span>` : `<span class="stock-badge out-of-stock" style="font-size:10px;font-weight:700;color:#ef4444;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);padding:2px 6px;border-radius:4px;white-space:nowrap;"><i class="fas fa-circle-xmark"></i> Out of stock</span>`));
+    const isOutOfStock = stockQty <= 0;
+      
+      return `
+      <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-3 mb-md-4 slide-hidden" data-slide-direction="${slideDir}">
+<div class="card overflow-hidden transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-2xl h-100 border-0 shadow-sm" style="background-color: var(--bg-card); cursor: pointer;" onclick="if (!event.target.closest('.add-to-cart-btn')) window.showQuickViewModal('${p.id}')">
+                ${badgeHtml}
+                <div class="rounded-t-lg" style="height: 180px; display: flex; align-items: center; justify-content: center; background-color: #fff; padding: 10px;">
+                    ${(window.isMediaVideo && window.isMediaVideo(p.image)) ? `<video src="${p.image}" autoplay loop muted playsinline style="max-width: 100%; max-height: 100%; object-fit: contain;"></video>` : `<img src="${p.image}" alt="${p.name}" loading="lazy" decoding="async" onerror="this.src='assets/images/logo.png'" style="max-width: 100%; max-height: 100%; object-fit: contain;">`}
+                </div>
+                <div class="card-body d-flex flex-column" style="padding: 15px;">
+                    <div class="d-flex justify-content-between align-items-center mb-1 flex-wrap gap-1">
+                        <span class="!text-gray-300 !font-semibold tracking-wide" style="font-size: 11px; text-transform: uppercase;">${p.category}</span>
+                        ${stockBadge}
+                    </div>
+                    <h6 class="card-title text-white mb-2" style="font-size: 13px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; flex-grow: 1;">${p.name}</h6>
+                    <div class="mt-auto pt-2 border-top" style="border-color: rgba(255,255,255,0.1) !important;">
+                        ${priceHtml}
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-3">
+                    ${isOutOfStock ? `
+                        <button class="btn w-100 btn-sm fw-bold" style="background-color: #2a2a2a; border-color: #3a3a3a; color: #777; cursor: not-allowed; padding: 8px 12px; border-radius: 4px;" disabled>
+                            <i class="fas fa-circle-xmark me-1"></i> Out of Stock
+                        </button>
+                    ` : `
+                        <button class="btn w-100 btn-sm fw-bold add-to-cart-btn btn-cargo-expert transition-all duration-300 hover:-translate-y-1 hover:shadow-lg" style="background-color: black; border-color: black; color: white;" data-id="${p.id}">
+                            <span class="btn-text-default">Add to Cart</span>
+                            <span class="btn-text-added">Your parcel is on the way!</span>
+                            <div class="cart-wrapper">
+                                <svg class="box-icon" width="14" height="14" viewBox="0 0 24 24" fill="#deb887" stroke="#8b5a2b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                                <svg class="cart-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                            </div>
+                        </button>
+                    `}
+                </div>
+            </div>
+</div>`;
+}
+
+            function attachCartEvents(container) {
+                const btns = container.querySelectorAll('.add-to-cart-btn');
+                btns.forEach(btn => {
+                    
+                });
+            }
+
+            function renderPagination(totalPages) {
+                if (totalPages <= 1) {
+                    paginationControls.innerHTML = '';
+                    return;
+                }
+
+                let html = '';
+                
+                // Prev button
+                html += `
+                    <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                        <a class="page-link" data-page="${currentPage - 1}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo; Prev</span>
+                        </a>
+                    </li>
+                `;
+                
+                // Smart sliding window pagination for clean horizontal alignment
+                let startPage = 1;
+                let endPage = totalPages;
+
+                if (totalPages > 7) {
+                    if (currentPage <= 4) {
+                        startPage = 1;
+                        endPage = 5;
+                    } else if (currentPage >= totalPages - 3) {
+                        startPage = totalPages - 4;
+                        endPage = totalPages;
+                    } else {
+                        startPage = currentPage - 1;
+                        endPage = currentPage + 1;
+                    }
+                }
+
+                if (startPage > 1) {
+                    html += `
+                        <li class="page-item ${currentPage === 1 ? 'active' : ''}">
+                            <a class="page-link" data-page="1">1</a>
+                        </li>
+                    `;
+                    if (startPage > 2) {
+                        html += `
+                            <li class="page-item dots disabled">
+                                <span class="page-link">&hellip;</span>
+                            </li>
+                        `;
+                    }
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    html += `
+                        <li class="page-item ${currentPage === i ? 'active' : ''}">
+                            <a class="page-link" data-page="${i}">${i}</a>
+                        </li>
+                    `;
+                }
+
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) {
+                        html += `
+                            <li class="page-item dots disabled">
+                                <span class="page-link">&hellip;</span>
+                            </li>
+                        `;
+                    }
+                    html += `
+                        <li class="page-item ${currentPage === totalPages ? 'active' : ''}">
+                            <a class="page-link" data-page="${totalPages}">${totalPages}</a>
+                        </li>
+                    `;
+                }
+
+                // Next button
+                html += `
+                    <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                        <a class="page-link" data-page="${currentPage + 1}" aria-label="Next">
+                            <span aria-hidden="true">Next &raquo;</span>
+                        </a>
+                    </li>
+                `;
+
+                paginationControls.innerHTML = html;
+
+                // Attach events
+                paginationControls.querySelectorAll('.page-link').forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const parent = this.closest('.page-item');
+                        if (parent.classList.contains('disabled') || parent.classList.contains('active')) return;
+                        
+                        const newPage = parseInt(this.getAttribute('data-page'));
+                        if (newPage >= 1 && newPage <= totalPages) {
+                            currentPage = newPage;
+                            updateGridView();
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }
+                    });
+                });
+            }
+
+            // --- UNIFIED FILTER STATE ---
+            
+            // --- CONTEXT-AWARE ATTRIBUTE MATCHERS ---
+            function matchPriceRange(p, range) {
+                if (!range) return true;
+                const price = parseFloat((p.price || 0).toString().replace(/[^0-9.]/g, ''));
+                if (isNaN(price)) return true;
+                const str = range.toString().trim();
+                if (str.includes('-')) {
+                    const parts = str.split('-');
+                    const min = parseFloat(parts[0]) || 0;
+                    const max = parts[1] ? parseFloat(parts[1]) : Infinity;
+                    return price >= min && price <= max;
+                }
+                const num = parseFloat(str.replace(/[^0-9.]/g, ''));
+                if (!isNaN(num) && num > 0) {
+                    return price <= num;
+                }
+                return true;
+            }
+
+            function matchMobileRam(p, targetRam) {
+                if (!targetRam) return true;
+                const text = ((p.title || '') + ' ' + (p.name || '') + ' ' + (p.description || '')).toLowerCase();
+                const t = (targetRam + '').trim().toLowerCase();
+
+                // Check slash notation e.g. "12/256"
+                if (t.includes('/')) {
+                    const parts = t.split('/');
+                    if (parts.length === 2 && parts[0] && parts[1]) {
+                        const rPart = parts[0].trim();
+                        const sPart = parts[1].trim();
+                        if (text.includes(`${rPart}/${sPart}`) || text.includes(`${rPart} / ${sPart}`)) return true;
+                        if (text.includes(`${rPart}gb`) && text.includes(`${sPart}gb`)) return true;
+                    }
+                }
+
+                const num = parseInt(t, 10);
+                if (!isNaN(num)) {
+                    // Flagship specs overrides
+                    if (num === 16 && text.includes('pixel 9 pro xl')) return true;
+                    if (num === 8 && (text.includes('iphone 16 pro max') || text.includes('iphone 16 pro') || text.includes('iphone 15 pro max') || text.includes('iphone 15 pro'))) return true;
+                    if (num === 6 && (text.includes('iphone 15') || text.includes('iphone 15 plus'))) return true;
+                    if (num === 12 && text.includes('galaxy s24 ultra')) return true;
+
+                    // Pattern 1: "8/256", "12/512", "4/64"
+                    const slashMatch = text.match(/\b(\d{1,2})\s*\/\s*\d{2,4}\b/);
+                    if (slashMatch && parseInt(slashMatch[1], 10) === num) return true;
+
+                    // Pattern 2: "8gb ram", "8 gb ram", "8gb"
+                    const ramMatch = text.match(new RegExp('\\b' + num + '\\s*gb\\s*(?:ram)?\\b'));
+                    if (ramMatch) return true;
+                }
+
+                return text.includes(t);
+            }
+
+            function matchMobileRom(p, targetRom) {
+                if (!targetRom) return true;
+                const text = ((p.title || '') + ' ' + (p.name || '') + ' ' + (p.description || '')).toLowerCase();
+                const t = (targetRom + '').trim().toLowerCase();
+
+                // Check product variants
+                if (Array.isArray(p.variants) && p.variants.length > 0) {
+                    const normTarget = t.replace(/\s+/g, '');
+                    if (p.variants.some(v => (v.storage || '').toLowerCase().replace(/\s+/g, '') === normTarget || (v.name || '').toLowerCase().replace(/\s+/g, '') === normTarget)) {
+                        return true;
+                    }
+                }
+
+                if (t === '1tb' || t === '1 tb') {
+                    return text.includes('1tb') || text.includes('1 tb');
+                }
+                if (t === '2tb' || t === '2 tb') {
+                    return text.includes('2tb') || text.includes('2 tb');
+                }
+
+                // Check slash notation e.g. "12/256"
+                if (t.includes('/')) {
+                    const parts = t.split('/');
+                    if (parts.length === 2 && parts[1]) {
+                        const sPart = parts[1].trim();
+                        if (text.includes(`/${sPart}`) || text.includes(sPart)) return true;
+                    }
+                }
+
+                const num = parseInt(t, 10);
+                if (!isNaN(num)) {
+                    // Flagship specs overrides
+                    if (num === 256 && (text.includes('pixel 9 pro xl') || text.includes('iphone 16 pro max'))) return true;
+                    if (num === 512 && text.includes('galaxy s24 ultra')) return true;
+
+                    // Pattern 1: "8/256"
+                    const slashMatch = text.match(/\b\d{1,2}\s*\/\s*(\d{2,4})\b/);
+                    if (slashMatch && parseInt(slashMatch[1], 10) === num) return true;
+
+                    // Pattern 2: "256gb", "256 gb"
+                    const romMatch = text.match(new RegExp('\\b' + num + '\\s*gb\\b'));
+                    if (romMatch) return true;
+                }
+
+                return text.includes(t);
+            }
+
+            function matchProcessor(p, targetProc) {
+                if (!targetProc) return true;
+                const text = ((p.title || '') + ' ' + (p.name || '') + ' ' + (p.description || '')).toLowerCase();
+                const tp = targetProc.toLowerCase();
+                if (tp === 'i3') return text.includes('core i3') || text.includes('ci3') || text.includes('i3-');
+                if (tp === 'i5') return text.includes('core i5') || text.includes('ci5') || text.includes('i5-');
+                if (tp === 'i7') return text.includes('core i7') || text.includes('ci7') || text.includes('i7-');
+                if (tp === 'i9') return text.includes('core i9') || text.includes('ci9') || text.includes('i9-');
+                if (tp === 'ultra') return text.includes('core ultra') || text.includes('ultra 9');
+                if (tp === 'ryzen') return text.includes('ryzen');
+                return text.includes(tp);
+            }
+
+            function matchRamGeneral(p, targetRam) {
+                if (!targetRam) return true;
+                const num = parseInt(targetRam, 10);
+                const text = ((p.title || '') + ' ' + (p.name || '') + ' ' + (p.description || '')).toLowerCase();
+                const match = text.match(new RegExp('\\b' + num + '\\s*gb\\b'));
+                return !!match;
+            }
+
+            function matchStorageGeneral(p, targetStorage) {
+                if (!targetStorage) return true;
+                const text = ((p.title || '') + ' ' + (p.name || '') + ' ' + (p.description || '')).toLowerCase();
+                if (targetStorage.toLowerCase() === '1tb') return text.includes('1tb') || text.includes('1 tb');
+                const num = parseInt(targetStorage, 10);
+                const match = text.match(new RegExp('\\b' + num + '\\s*gb\\b'));
+                return !!match;
+            }
+
+            function matchMouseConnectivity(p, targetConn) {
+                if (!targetConn) return true;
+                const text = ((p.title || '') + ' ' + (p.name || '') + ' ' + (p.description || '')).toLowerCase();
+                const tc = targetConn.toLowerCase();
+                if (tc === 'wireless') return text.includes('wireless') || text.includes('hyperspeed') || text.includes('2.4g');
+                if (tc === 'bluetooth') return text.includes('bluetooth') || text.includes('bt');
+                if (tc === 'wired') return !text.includes('wireless') && !text.includes('hyperspeed') && !text.includes('bluetooth');
+                return text.includes(tc);
+            }
+
+            function matchMouseUsage(p, targetUsage) {
+                if (!targetUsage) return true;
+                const text = ((p.title || '') + ' ' + (p.name || '') + ' ' + (p.description || '')).toLowerCase();
+                const tu = targetUsage.toLowerCase();
+                if (tu === 'gaming') return text.includes('gaming') || text.includes('hyperspeed') || text.includes('dpi');
+                if (tu === 'silent') return text.includes('silent') || text.includes('pebble') || text.includes('office');
+                if (tu === 'combo') return text.includes('combo') || text.includes('keyboard');
+                return text.includes(tu);
+            }
+
+            function matchScreenSize(p, targetSize) {
+                if (!targetSize) return true;
+                const text = ((p.title || '') + ' ' + (p.name || '') + ' ' + (p.description || '')).toLowerCase();
+                if (targetSize === '24') return text.includes('24"') || text.includes('24.1"') || text.includes('24.5"') || text.includes('24-inch') || text.includes('24 inch');
+                if (targetSize === '27') return text.includes('27"') || text.includes('27-inch') || text.includes('27 inch');
+                if (targetSize === '32+') return text.includes('32"') || text.includes('32-inch') || text.includes('34"') || text.includes('43"') || text.includes('49"');
+                return true;
+            }
+
+            function matchResolution(p, targetRes) {
+                if (!targetRes) return true;
+                const text = ((p.title || '') + ' ' + (p.name || '') + ' ' + (p.description || '')).toLowerCase();
+                if (targetRes === 'fhd') return text.includes('fhd') || text.includes('1080') || text.includes('1920');
+                if (targetRes === '2k') return text.includes('2k') || text.includes('qhd') || text.includes('1440') || text.includes('2560');
+                if (targetRes === '4k') return text.includes('4k') || text.includes('uhd') || text.includes('2160') || text.includes('3840');
+                return true;
+            }
+
+            function matchRefreshRate(p, targetRate) {
+                if (!targetRate) return true;
+                const text = ((p.title || '') + ' ' + (p.name || '') + ' ' + (p.description || '')).toLowerCase();
+                if (targetRate === '60-100') return text.includes('60hz') || text.includes('75hz') || text.includes('100hz');
+                if (targetRate === '144-180') return text.includes('144hz') || text.includes('160hz') || text.includes('165hz') || text.includes('180hz');
+                if (targetRate === '200-240') return text.includes('200 hz') || text.includes('200hz') || text.includes('240hz');
+                if (targetRate === '360+') return text.includes('360hz') || text.includes('500hz') || text.includes('600 hz') || text.includes('600hz');
+                return true;
+            }
+
+            // --- CUSTOM DROPDOWN COMPONENT & DROPDOWN ENGINE ---
+            function renderDropdownControl(colClass, labelIcon, labelText, filterKey, options, selectedValue) {
+                const currentVal = selectedValue || '';
+                const isPreset = options.some(o => o.value === currentVal);
+                let displayLabel = '';
+                let hasActiveValue = false;
+
+                if (currentVal) {
+                    hasActiveValue = true;
+                    if (isPreset) {
+                        const activeOpt = options.find(o => o.value === currentVal);
+                        displayLabel = activeOpt ? activeOpt.label : currentVal;
+                    } else {
+                        // Custom manual spec entered by user
+                        displayLabel = `${labelText}: "${escapeHtml(currentVal)}"`;
+                    }
+                } else {
+                    displayLabel = options[0].label;
+                }
+
+                let customPlaceholder = `Search / custom ${labelText.toLowerCase()}...`;
+                if (filterKey === 'brand') customPlaceholder = 'Type brand or model...';
+                else if (filterKey === 'ram') customPlaceholder = 'Type RAM (e.g. 12/256, 16GB)...';
+                else if (filterKey === 'rom' || filterKey === 'storage') customPlaceholder = 'Type storage (e.g. 512GB, 1TB)...';
+                else if (filterKey === 'priceRange') customPlaceholder = 'Type max price (e.g. 85000)...';
+                else if (filterKey === 'processor') customPlaceholder = 'Type processor (e.g. i7, Ryzen)...';
+
+                const customInputVal = (!isPreset && currentVal) ? currentVal : '';
+
+                return `
+                    <div class="${colClass}">
+                        <div class="filter-group">
+                            <label class="filter-label"><i class="${labelIcon} text-danger"></i> ${labelText}</label>
+                            <div class="custom-glass-dropdown ${hasActiveValue ? 'has-selection' : ''}" data-filter-key="${filterKey}">
+                                <button class="custom-dropdown-btn ${hasActiveValue ? 'is-active' : ''}" type="button" aria-haspopup="true" aria-expanded="false">
+                                    <span class="dropdown-btn-text">${displayLabel}</span>
+                                    <i class="fa-solid fa-chevron-down dropdown-btn-icon"></i>
+                                </button>
+                                <div class="custom-dropdown-menu">
+                                    <div class="custom-dropdown-items-list">
+                                        ${options.map(opt => `
+                                            <div class="custom-dropdown-item ${(opt.value === currentVal) ? 'active' : ''}" data-value="${opt.value}">
+                                                ${opt.label}
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                    <!-- Manual Input (Physical Search) strictly inside dropdown -->
+                                    <div class="dropdown-manual-search-box">
+                                        <div class="dropdown-manual-divider">
+                                            <span>or manual input</span>
+                                        </div>
+                                        <div class="dropdown-manual-input-group">
+                                            <i class="fa-solid fa-magnifying-glass dropdown-manual-search-icon"></i>
+                                            <input type="text" class="dropdown-manual-input" 
+                                                   placeholder="${customPlaceholder}" 
+                                                   data-filter-key="${filterKey}" 
+                                                   value="${escapeHtml(customInputVal)}" 
+                                                   autocomplete="off" spellcheck="false">
+                                            <button type="button" class="dropdown-manual-apply-btn" title="Apply filter" aria-label="Apply custom filter">
+                                                <i class="fa-solid fa-arrow-right"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function closeAllDropdowns(exceptEl = null) {
+                document.querySelectorAll('.custom-glass-dropdown.is-open').forEach(dd => {
+                    if (dd !== exceptEl) {
+                        dd.classList.remove('is-open');
+                        const btn = dd.querySelector('.custom-dropdown-btn');
+                        if (btn) btn.setAttribute('aria-expanded', 'false');
+                        const parentCol = dd.closest('[class*="col-"]');
+                        if (parentCol) parentCol.classList.remove('dropdown-parent-open');
+                    }
+                });
+            }
+
+            function toggleCustomDropdown(dropdownEl) {
+                const wasOpen = dropdownEl.classList.contains('is-open');
+                closeAllDropdowns(dropdownEl);
+                const parentCol = dropdownEl.closest('[class*="col-"]');
+                if (wasOpen) {
+                    dropdownEl.classList.remove('is-open');
+                    const btn = dropdownEl.querySelector('.custom-dropdown-btn');
+                    if (btn) btn.setAttribute('aria-expanded', 'false');
+                    if (parentCol) parentCol.classList.remove('dropdown-parent-open');
+                } else {
+                    dropdownEl.classList.add('is-open');
+                    const btn = dropdownEl.querySelector('.custom-dropdown-btn');
+                    if (btn) btn.setAttribute('aria-expanded', 'true');
+                    if (parentCol) parentCol.classList.add('dropdown-parent-open');
+                }
+            }
+
+            // Close open dropdowns when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.custom-glass-dropdown')) {
+                    closeAllDropdowns();
+                }
+            });
+
+            // --- CONTEXT-AWARE FILTER TOOLBAR RENDERING ---
+            function renderDynamicFilterBar() {
+                const container = document.getElementById('dynamic-filter-bar-container');
+                if (!container) return;
+
+                const catalog = getCatalog();
+                let categoryName = 'All Products';
+                const catObj = DISTINCT_CATEGORIES.find(c => c.slug === currentCategory);
+                if (catObj) categoryName = catObj.name;
+
+                let controlsHtml = '';
+
+                if (currentCategory === 'mobiles') {
+                    const mobileBrands = getMobileBrands(catalog);
+                    const brandOptions = [
+                        { value: '', label: `All Brands (${catalog.filter(p => matchCategory(p, 'mobiles')).length})` },
+                        ...mobileBrands.map(b => ({ value: b.name, label: `${b.name} (${b.count})` }))
+                    ];
+                    const ramOptions = [
+                        { value: '', label: 'All RAM Options' },
+                        { value: '3GB', label: '3GB RAM' },
+                        { value: '4GB', label: '4GB RAM' },
+                        { value: '6GB', label: '6GB RAM' },
+                        { value: '8GB', label: '8GB RAM' },
+                        { value: '12GB', label: '12GB RAM' },
+                        { value: '16GB', label: '16GB RAM' }
+                    ];
+                    const romOptions = [
+                        { value: '', label: 'All Storage Options' },
+                        { value: '32GB', label: '32GB Storage' },
+                        { value: '64GB', label: '64GB Storage' },
+                        { value: '128GB', label: '128GB Storage' },
+                        { value: '256GB', label: '256GB Storage' },
+                        { value: '512GB', label: '512GB Storage' },
+                        { value: '1TB', label: '1TB Storage' },
+                        { value: '2TB', label: '2TB Storage' }
+                    ];
+                    const priceOptions = [
+                        { value: '', label: 'All Prices' },
+                        { value: '0-40000', label: 'Under Rs. 40,000' },
+                        { value: '40000-75000', label: 'Rs. 40,000 - 75,000' },
+                        { value: '75000-130000', label: 'Rs. 75,000 - 130,000' },
+                        { value: '130000-200000', label: 'Rs. 130,000 - 200,000' },
+                        { value: '200000-9999999', label: 'Rs. 200,000+ (Flagships)' }
+                    ];
+
+                    controlsHtml = `
+                        ${renderDropdownControl('col-6 col-md-3', 'fa-solid fa-tag', 'Brand', 'brand', brandOptions, currentBrand)}
+                        ${renderDropdownControl('col-6 col-md-3', 'fa-solid fa-microchip', 'RAM', 'ram', ramOptions, activeAttributes.ram)}
+                        ${renderDropdownControl('col-6 col-md-3', 'fa-solid fa-hard-drive', 'Storage (ROM)', 'rom', romOptions, activeAttributes.rom)}
+                        ${renderDropdownControl('col-6 col-md-3', 'fa-solid fa-money-bill-wave', 'Price Range', 'priceRange', priceOptions, activeAttributes.priceRange)}
+                    `;
+                } else if (currentCategory === 'laptops') {
+                    const procOptions = [
+                        { value: '', label: 'All Processors' },
+                        { value: 'i5', label: 'Intel Core i5' },
+                        { value: 'i7', label: 'Intel Core i7' },
+                        { value: 'ultra', label: 'Core Ultra 9' },
+                        { value: 'ryzen', label: 'AMD Ryzen' }
+                    ];
+                    const ramOptions = [
+                        { value: '', label: 'All RAM' },
+                        { value: '8GB', label: '8GB RAM' },
+                        { value: '16GB', label: '16GB RAM' },
+                        { value: '32GB', label: '32GB RAM' }
+                    ];
+                    const storageOptions = [
+                        { value: '', label: 'All Storage' },
+                        { value: '256GB', label: '256GB SSD' },
+                        { value: '512GB', label: '512GB SSD' },
+                        { value: '1TB', label: '1TB SSD' }
+                    ];
+                    const brandOptions = [
+                        { value: '', label: 'All Brands' },
+                        { value: 'HP', label: 'HP' },
+                        { value: 'Acer', label: 'Acer' },
+                        { value: 'Dell', label: 'Dell' },
+                        { value: 'Lenovo', label: 'Lenovo' },
+                        { value: 'Apple', label: 'Apple' }
+                    ];
+                    const priceOptions = [
+                        { value: '', label: 'All Prices' },
+                        { value: '0-80000', label: 'Under Rs. 80,000' },
+                        { value: '80000-150000', label: 'Rs. 80,000 - 150,000' },
+                        { value: '150000-9999999', label: 'Rs. 150,000+' }
+                    ];
+
+                    controlsHtml = `
+                        ${renderDropdownControl('col-6 col-md-4 col-lg-2', 'fa-solid fa-microchip', 'Processor', 'processor', procOptions, activeAttributes.processor)}
+                        ${renderDropdownControl('col-6 col-md-4 col-lg-2', 'fa-solid fa-memory', 'RAM', 'ram', ramOptions, activeAttributes.ram)}
+                        ${renderDropdownControl('col-6 col-md-4 col-lg-2', 'fa-solid fa-hard-drive', 'Storage', 'storage', storageOptions, activeAttributes.storage)}
+                        ${renderDropdownControl('col-6 col-md-6 col-lg-3', 'fa-solid fa-laptop', 'Brand', 'brand', brandOptions, currentBrand)}
+                        ${renderDropdownControl('col-6 col-md-6 col-lg-3', 'fa-solid fa-money-bill-wave', 'Price Range', 'priceRange', priceOptions, activeAttributes.priceRange)}
+                    `;
+                } else if (currentCategory === 'computers') {
+                    const procOptions = [
+                        { value: '', label: 'All Processors' },
+                        { value: 'i5', label: 'Intel Core i5' },
+                        { value: 'i7', label: 'Intel Core i7' },
+                        { value: 'i9', label: 'Intel Core i9' },
+                        { value: 'ryzen', label: 'AMD Ryzen' }
+                    ];
+                    const ramOptions = [
+                        { value: '', label: 'All RAM' },
+                        { value: '8GB', label: '8GB RAM' },
+                        { value: '16GB', label: '16GB RAM' },
+                        { value: '32GB', label: '32GB RAM' },
+                        { value: '64GB', label: '64GB RAM' }
+                    ];
+                    const storageOptions = [
+                        { value: '', label: 'All Storage' },
+                        { value: '256GB', label: '256GB SSD' },
+                        { value: '512GB', label: '512GB SSD' },
+                        { value: '1TB', label: '1TB+ SSD' }
+                    ];
+                    const priceOptions = [
+                        { value: '', label: 'All Prices' },
+                        { value: '0-50000', label: 'Under Rs. 50,000' },
+                        { value: '50000-100000', label: 'Rs. 50,000 - 100,000' },
+                        { value: '100000-9999999', label: 'Rs. 100,000+' }
+                    ];
+
+                    controlsHtml = `
+                        ${renderDropdownControl('col-6 col-md-3', 'fa-solid fa-microchip', 'Processor', 'processor', procOptions, activeAttributes.processor)}
+                        ${renderDropdownControl('col-6 col-md-3', 'fa-solid fa-memory', 'RAM', 'ram', ramOptions, activeAttributes.ram)}
+                        ${renderDropdownControl('col-6 col-md-3', 'fa-solid fa-hard-drive', 'Storage', 'storage', storageOptions, activeAttributes.storage)}
+                        ${renderDropdownControl('col-6 col-md-3', 'fa-solid fa-money-bill-wave', 'Price Range', 'priceRange', priceOptions, activeAttributes.priceRange)}
+                    `;
+                } else if (currentCategory === 'mouse') {
+                    const connOptions = [
+                        { value: '', label: 'All Connectivity' },
+                        { value: 'wireless', label: 'Wireless / 2.4GHz' },
+                        { value: 'bluetooth', label: 'Bluetooth' },
+                        { value: 'wired', label: 'Wired USB' }
+                    ];
+                    const usageOptions = [
+                        { value: '', label: 'All Usage Types' },
+                        { value: 'gaming', label: 'Gaming Mouse' },
+                        { value: 'silent', label: 'Office / Silent Click' },
+                        { value: 'combo', label: 'Keyboard & Mouse Combo' }
+                    ];
+                    const brandOptions = [
+                        { value: '', label: 'All Brands' },
+                        { value: 'Razer', label: 'Razer' },
+                        { value: 'Logitech', label: 'Logitech' },
+                        { value: 'A4Tech', label: 'A4Tech / Bloody' },
+                        { value: 'GearUp Pro', label: 'GearUp Pro' },
+                        { value: 'Xiaomi', label: 'Xiaomi' }
+                    ];
+                    const priceOptions = [
+                        { value: '', label: 'All Prices' },
+                        { value: '0-5000', label: 'Under Rs. 5,000' },
+                        { value: '5000-15000', label: 'Rs. 5,000 - 15,000' },
+                        { value: '15000-9999999', label: 'Rs. 15,000+' }
+                    ];
+
+                    controlsHtml = `
+                        ${renderDropdownControl('col-6 col-md-3', 'fa-solid fa-wifi', 'Connectivity', 'connectivity', connOptions, activeAttributes.connectivity)}
+                        ${renderDropdownControl('col-6 col-md-3', 'fa-solid fa-gamepad', 'Usage Type', 'usageType', usageOptions, activeAttributes.usageType)}
+                        ${renderDropdownControl('col-6 col-md-3', 'fa-solid fa-tag', 'Brand', 'brand', brandOptions, currentBrand)}
+                        ${renderDropdownControl('col-6 col-md-3', 'fa-solid fa-money-bill-wave', 'Price Range', 'priceRange', priceOptions, activeAttributes.priceRange)}
+                    `;
+                } else if (currentCategory === 'monitors') {
+                    const sizeOptions = [
+                        { value: '', label: 'All Screen Sizes' },
+                        { value: '24', label: '24" - 25" Displays' },
+                        { value: '27', label: '27" Displays' },
+                        { value: '32+', label: '32"+ Ultra-Wide / 4K' }
+                    ];
+                    const resOptions = [
+                        { value: '', label: 'All Resolutions' },
+                        { value: 'fhd', label: 'FHD (1080p)' },
+                        { value: '2k', label: '2K QHD (1440p)' },
+                        { value: '4k', label: '4K UHD (2160p)' }
+                    ];
+                    const refreshOptions = [
+                        { value: '', label: 'All Refresh Rates' },
+                        { value: '60-100', label: '60Hz - 100Hz' },
+                        { value: '144-180', label: '144Hz - 180Hz' },
+                        { value: '200-240', label: '200Hz - 240Hz' },
+                        { value: '360+', label: '360Hz - 600Hz Esports' }
+                    ];
+                    const priceOptions = [
+                        { value: '', label: 'All Prices' },
+                        { value: '0-50000', label: 'Under Rs. 50,000' },
+                        { value: '50000-150000', label: 'Rs. 50,000 - 150,000' },
+                        { value: '150000-9999999', label: 'Rs. 150,000+' }
+                    ];
+
+                    controlsHtml = `
+                        ${renderDropdownControl('col-6 col-md-3', 'fa-solid fa-tv', 'Screen Size', 'screenSize', sizeOptions, activeAttributes.screenSize)}
+                        ${renderDropdownControl('col-6 col-md-3', 'fa-solid fa-expand', 'Resolution', 'resolution', resOptions, activeAttributes.resolution)}
+                        ${renderDropdownControl('col-6 col-md-3', 'fa-solid fa-gauge-high', 'Refresh Rate', 'refreshRate', refreshOptions, activeAttributes.refreshRate)}
+                        ${renderDropdownControl('col-6 col-md-3', 'fa-solid fa-money-bill-wave', 'Price Range', 'priceRange', priceOptions, activeAttributes.priceRange)}
+                    `;
+                } else {
+                    const catOptions = [
+                        { value: 'all', label: 'All Products' },
+                        ...DISTINCT_CATEGORIES.filter(c => c.slug !== 'all').map(c => ({ value: c.slug, label: c.name }))
+                    ];
+                    const priceOptions = [
+                        { value: '', label: 'All Prices' },
+                        { value: '0-25000', label: 'Under Rs. 25,000' },
+                        { value: '25000-50000', label: 'Rs. 25,000 - 50,000' },
+                        { value: '50000-100000', label: 'Rs. 50,000 - 100,000' },
+                        { value: '100000-200000', label: 'Rs. 100,000 - 200,000' },
+                        { value: '200000-9999999', label: 'Rs. 200,000+' }
+                    ];
+                    const availOptions = [
+                        { value: '', label: 'All Items' },
+                        { value: 'in-stock', label: 'In Stock Only' },
+                        { value: 'on-sale', label: 'On Sale Deals Only' }
+                    ];
+
+                    controlsHtml = `
+                        ${renderDropdownControl('col-6 col-md-4', 'fa-solid fa-layer-group', 'Category', 'category', catOptions, currentCategory)}
+                        ${renderDropdownControl('col-6 col-md-4', 'fa-solid fa-money-bill-wave', 'Price Range', 'priceRange', priceOptions, activeAttributes.priceRange)}
+                        ${renderDropdownControl('col-12 col-md-4', 'fa-solid fa-boxes-stacked', 'Availability', 'availability', availOptions, activeAttributes.availability)}
+                    `;
+                }
+
+                container.innerHTML = `
+                    <div class="dynamic-filter-card">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-sliders text-danger"></i>
+                                <span class="fw-bold text-white" style="font-size: 13px; letter-spacing: 0.3px;">Category Filters</span>
+                                <span class="badge bg-danger bg-opacity-25 text-white border border-danger border-opacity-25" style="font-size: 10.5px;">${categoryName}</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="shop-matches-count-badge" id="filtered-matches-count">${activeProducts.length} models found</span>
+                                <button class="btn btn-sm btn-outline-danger btn-clear-all" id="btn-reset-filters" type="button" style="display: none;">
+                                    <i class="fa-solid fa-rotate-left me-1"></i> Reset All
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Attribute Selectors Row (Restored Clean Layout) -->
+                        <div class="row g-2 align-items-center" id="dynamic-filter-controls-row">
+                            ${controlsHtml}
+                        </div>
+                    </div>
+                `;
+
+                attachFilterToolbarEvents(container);
+            }
+
+            function attachFilterToolbarEvents(container) {
+                // Dropdown trigger, selection, and manual input listeners
+                container.querySelectorAll('.custom-glass-dropdown').forEach(dd => {
+                    const btn = dd.querySelector('.custom-dropdown-btn');
+                    const key = dd.getAttribute('data-filter-key');
+                    const manualInput = dd.querySelector('.dropdown-manual-input');
+                    const applyBtn = dd.querySelector('.dropdown-manual-apply-btn');
+
+                    if (btn) {
+                        btn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            toggleCustomDropdown(dd);
+                            // Auto-focus manual input when opened for fluid typing
+                            if (dd.classList.contains('is-open') && manualInput) {
+                                setTimeout(() => manualInput.focus(), 120);
+                            }
+                        });
+                    }
+
+                    // Preset options click
+                    dd.querySelectorAll('.custom-dropdown-item').forEach(item => {
+                        item.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const val = this.getAttribute('data-value');
+                            
+                            dd.classList.remove('is-open');
+                            if (btn) btn.setAttribute('aria-expanded', 'false');
+                            const parentCol = dd.closest('[class*="col-"]');
+                            if (parentCol) parentCol.classList.remove('dropdown-parent-open');
+
+                            if (key === 'brand') {
+                                filterBrand(val);
+                            } else if (key === 'category') {
+                                filterCategory(val);
+                            } else {
+                                if (val) {
+                                    activeAttributes[key] = val;
+                                } else {
+                                    delete activeAttributes[key];
+                                }
+                                currentPage = 1;
+                                renderDynamicFilterBar();
+                                applyFilters();
+                            }
+                        });
+                    });
+
+                    // Manual input strictly inside dropdown menu (at bottom of filter list)
+                    if (manualInput) {
+                        manualInput.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                        });
+
+                        // Filter list of preset items in real time as user types
+                        manualInput.addEventListener('input', function(e) {
+                            e.stopPropagation();
+                            const q = this.value.trim().toLowerCase();
+                            const items = dd.querySelectorAll('.custom-dropdown-item');
+                            if (q) {
+                                items.forEach(it => {
+                                    const text = it.innerText.toLowerCase();
+                                    const val = (it.getAttribute('data-value') || '').toLowerCase();
+                                    it.style.display = (text.includes(q) || val.includes(q)) ? 'flex' : 'none';
+                                });
+                            } else {
+                                items.forEach(it => it.style.display = 'flex');
+                            }
+                        });
+
+                        // Pressing Enter applies custom spec
+                        manualInput.addEventListener('keydown', function(e) {
+                            e.stopPropagation();
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                applyManualDropdownValue(dd, key, this.value);
+                            }
+                        });
+                    }
+
+                    // Apply button click
+                    if (applyBtn) {
+                        applyBtn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const val = manualInput ? manualInput.value : '';
+                            applyManualDropdownValue(dd, key, val);
+                        });
+                    }
+                });
+
+                // Reset button in toolbar
+                const resetBtn = container.querySelector('#btn-reset-filters');
+                if (resetBtn) {
+                    resetBtn.addEventListener('click', function() {
+                        resetAllFilters();
+                    });
+                }
+            }
+
+            function applyManualDropdownValue(dd, key, rawVal) {
+                const val = (rawVal || '').trim();
+                dd.classList.remove('is-open');
+                const btn = dd.querySelector('.custom-dropdown-btn');
+                if (btn) btn.setAttribute('aria-expanded', 'false');
+                const parentCol = dd.closest('[class*="col-"]');
+                if (parentCol) parentCol.classList.remove('dropdown-parent-open');
+
+                if (key === 'brand') {
+                    filterBrand(val);
+                } else if (key === 'category') {
+                    filterCategory(val);
+                } else {
+                    if (val) {
+                        activeAttributes[key] = val;
+                    } else {
+                        delete activeAttributes[key];
+                    }
+                    currentPage = 1;
+                    renderDynamicFilterBar();
+                    applyFilters();
+                }
+            }
+
+            function renderActiveFilterPills() {
+                const container = document.getElementById('active-filter-pills-container');
+                if (!container) return;
+
+                const pills = [];
+
+                if (currentBrand) {
+                    pills.push({ label: `Brand: ${currentBrand}`, key: 'brand' });
+                }
+                if (activeAttributes.ram) {
+                    pills.push({ label: `RAM: ${activeAttributes.ram}`, key: 'ram' });
+                }
+                if (activeAttributes.rom) {
+                    pills.push({ label: `Storage: ${activeAttributes.rom}`, key: 'rom' });
+                }
+                if (activeAttributes.storage) {
+                    pills.push({ label: `Storage: ${activeAttributes.storage}`, key: 'storage' });
+                }
+                if (activeAttributes.processor) {
+                    pills.push({ label: `CPU: ${activeAttributes.processor.toUpperCase()}`, key: 'processor' });
+                }
+                if (activeAttributes.connectivity) {
+                    pills.push({ label: `Conn: ${activeAttributes.connectivity}`, key: 'connectivity' });
+                }
+                if (activeAttributes.usageType) {
+                    pills.push({ label: `Type: ${activeAttributes.usageType}`, key: 'usageType' });
+                }
+                if (activeAttributes.screenSize) {
+                    pills.push({ label: `Size: ${activeAttributes.screenSize}"`, key: 'screenSize' });
+                }
+                if (activeAttributes.resolution) {
+                    pills.push({ label: `Res: ${activeAttributes.resolution.toUpperCase()}`, key: 'resolution' });
+                }
+                if (activeAttributes.refreshRate) {
+                    pills.push({ label: `Hz: ${activeAttributes.refreshRate}`, key: 'refreshRate' });
+                }
+                if (activeAttributes.availability) {
+                    pills.push({ label: activeAttributes.availability === 'in-stock' ? 'In Stock' : 'On Sale', key: 'availability' });
+                }
+                if (activeAttributes.priceRange) {
+                    const priceLabel = activeAttributes.priceRange.includes('-')
+                        ? activeAttributes.priceRange.replace('9999999', '+').replace('0-', 'Under ')
+                        : `Under ${activeAttributes.priceRange}`;
+                    pills.push({ label: `Price: ${priceLabel}`, key: 'priceRange' });
+                }
+
+                if (pills.length === 0) {
+                    container.classList.add('d-none');
+                    container.innerHTML = '';
+                    const rBtn = document.getElementById('btn-reset-filters');
+                    if (rBtn) rBtn.style.display = 'none';
+                    return;
+                }
+
+                container.classList.remove('d-none');
+                container.innerHTML = `
+                    <div class="active-filters-container">
+                        <span class="text-white small fw-bold me-1">Active:</span>
+                        ${pills.map(p => `
+                            <span class="active-filter-pill">
+                                <span>${p.label}</span>
+                                <button type="button" data-key="${p.key}" aria-label="Remove filter">&times;</button>
+                            </span>
+                        `).join('')}
+                        <button class="btn-clear-all" type="button" id="btn-clear-all-pills">
+                            <i class="fa-solid fa-rotate-left me-1"></i> Clear All
+                        </button>
+                    </div>
+                `;
+
+                // Show toolbar reset button
+                const rBtn = document.getElementById('btn-reset-filters');
+                if (rBtn) rBtn.style.display = 'inline-block';
+
+                // Attach pill dismiss events
+                container.querySelectorAll('.active-filter-pill button').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const key = this.getAttribute('data-key');
+                        if (key === 'brand') {
+                            currentBrand = '';
+                            try {
+                                const newUrl = new URL(window.location.href);
+                                newUrl.searchParams.delete('brand');
+                                window.history.pushState({ category: currentCategory }, '', newUrl.toString());
+                            } catch (e) {}
+                        } else {
+                            delete activeAttributes[key];
+                        }
+                        currentPage = 1;
+                        updateActiveButtons();
+                        renderDynamicFilterBar();
+                        applyFilters();
+                    });
+                });
+
+                const clearAllBtn = container.querySelector('#btn-clear-all-pills');
+                if (clearAllBtn) {
+                    clearAllBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        resetAllFilters();
+                    });
+                }
+            }
+
+            function resetAllFilters() {
+                activeAttributes = {};
+                currentBrand = '';
+                currentPage = 1;
+                try {
+                    const newUrl = new URL(window.location.href);
+                    newUrl.searchParams.delete('brand');
+                    window.history.pushState({ category: currentCategory }, '', newUrl.toString());
+                } catch (e) {}
+                updateActiveButtons();
+                renderDynamicFilterBar();
+                applyFilters();
+            }
+            window.resetAllFilters = resetAllFilters;
+
+            // --- GRID VIEW & PAGINATION WITH EMPTY STATE ---
+            function updateGridView() {
+                const emptyContainer = document.getElementById('shop-empty-state-container');
+                const paginationNav = document.getElementById('shop-pagination-wrapper') || (paginationControls ? paginationControls.closest('nav') : null);
+
+                if (activeProducts.length === 0) {
+                    // Hide main grid and pagination completely
+                    if (mainGrid) {
+                        mainGrid.classList.add('d-none');
+                        mainGrid.innerHTML = '';
+                    }
+                    if (paginationNav) paginationNav.classList.add('d-none');
+                    if (paginationControls) paginationControls.innerHTML = '';
+
+                    // Reveal centered empty state screen
+                    if (emptyContainer) {
+                        emptyContainer.classList.remove('d-none');
+                        emptyContainer.innerHTML = `
+                            <div class="shop-empty-state-card">
+                                <div class="empty-state-icon-wrapper">
+                                    <i class="fa-solid fa-box-open empty-state-icon"></i>
+                                </div>
+                                <h3 class="text-white fw-bold mb-2">No Products Found</h3>
+                                <h6 class="mb-3" style="color: #cbd5e1; font-weight: 500;">No search results match your criteria</h6>
+                                <p class="mx-auto mb-4" style="max-width: 520px; color: #94a3b8; font-size: 13.5px; line-height: 1.6;">
+                                    We couldn't find any items matching your active filter criteria. Try resetting attribute filters to explore all available gear.
+                                </p>
+                                <div class="d-flex align-items-center justify-content-center gap-3 flex-wrap">
+                                    <button class="btn btn-danger px-4 py-2 rounded-pill fw-bold" onclick="resetAllFilters()">
+                                        <i class="fa-solid fa-rotate-left me-2"></i> Reset All Filters
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    return;
+                }
+
+                // If products exist, hide empty state and show grid & pagination
+                if (emptyContainer) {
+                    emptyContainer.classList.add('d-none');
+                    emptyContainer.innerHTML = '';
+                }
+                if (mainGrid) mainGrid.classList.remove('d-none');
+                if (paginationNav) paginationNav.classList.remove('d-none');
+
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+                const paginatedItems = activeProducts.slice(startIndex, endIndex);
+
+                mainGrid.innerHTML = paginatedItems.map((p, index) => renderCard(p, index)).join('');
+                  
+                mainGrid.querySelectorAll('.slide-hidden').forEach(el => {
+                    if (window.gugScrollObserver) {
+                        window.gugScrollObserver.observe(el);
+                    }
+                });
+                attachCartEvents(mainGrid);
+                
+                const totalPages = Math.ceil(activeProducts.length / itemsPerPage);
+                renderPagination(totalPages);
+            }
+
+            function matchCategory(p, query) {
+                if (!query || query === 'all') return true;
+                const q = (query || '').toLowerCase().trim();
+                const c = ((p.category || '') + '').toLowerCase().trim();
+                const t = (((p.title || '') + ' ' + (p.name || '')) + '').toLowerCase().trim();
+
+                switch (q) {
+                    case 'mobiles':
+                    case 'mobile':
+                    case 'smartphones':
+                        return (c === 'mobiles' || c === 'mobile phones & gadgets' || (c.includes('mobile') && !c.includes('smartwatch'))) &&
+                               !t.includes('watch') && !t.includes('pad') && !t.includes('buds') && !t.includes('earbuds') && !t.includes('power bank');
+                    case 'mouse':
+                    case 'mice':
+                        return (c === 'mouse' || c.includes('mice') || c.includes('pointing') || t.includes('mouse')) && !t.includes('mousepad');
+                    case 'laptops':
+                    case 'laptop':
+                        return c.includes('laptop') || c.includes('macbook') || t.includes('laptop') || t.includes('macbook');
+                    case 'computers':
+                    case 'computer':
+                    case 'desktop':
+                    case 'desktops':
+                    case 'pc':
+                        return (c.includes('desktop') || c === 'computers') && !t.includes('laptop') && !t.includes('mouse');
+                    case 'cpu':
+                    case 'processor':
+                    case 'processors':
+                        return c.includes('processor') || c.includes('cpu') || t.includes('core i') || t.includes('ryzen') || t.includes('intel core');
+                    case 'monitors':
+                    case 'monitor':
+                        return c === 'monitors' || (t.includes('monitor') && !t.includes('arm') && !t.includes('light bar'));
+                    case 'graphics':
+                    case 'graphics cards':
+                    case 'gpu':
+                        return c.includes('graphic') || c.includes('gpu') || t.includes('geforce') || t.includes('rtx') || t.includes('radeon');
+                    case 'keyboards':
+                    case 'keyboard':
+                        return c.includes('keyboard') || t.includes('keyboard');
+                    case 'tablets':
+                    case 'tablet':
+                    case 'tablets & pads':
+                        return c.includes('tablet') || c.includes('ipad') || t.includes('pad 2') || t.includes('pad 7') || t.includes('pad 8') || t.includes('writing tab') || t.includes('focus pen');
+                    case 'headphones':
+                    case 'headphone':
+                    case 'headphones & audio':
+                        return c.includes('headphone') || c.includes('headset') || t.includes('earbuds') || t.includes('buds') || t.includes('earphones');
+                    case 'speakers':
+                    case 'speaker':
+                    case 'audio & speakers':
+                        return c.includes('speaker') || c.includes('acoustic') || t.includes('soundbar') || t.includes('sound outdoor') || t.includes('sound pocket') || t.includes('sound party');
+                    case 'smart-home':
+                    case 'smart home':
+                    case 'smart home & ac':
+                        return c.includes('smart home') || c.includes('appliance') || t.includes('inverter') || t.includes('purifier') || t.includes('vacuum') || t.includes('humidifier') || t.includes('scale') || t.includes('toothbrush') || t.includes('hair dryer') || t.includes('massage gun') || t.includes('blender') || t.includes('toaster') || t.includes('espresso') || t.includes('fan') || t.includes('lamp') || t.includes('bulb') || t.includes('lint remover');
+                    case 'smartwatches':
+                    case 'smartwatch':
+                        return c.includes('smartwatch') || c.includes('wearable') || t.includes('watch') || t.includes('band 10') || t.includes('band 11');
+                    case 'power':
+                    case 'power & chargers':
+                        return c.includes('power') || c.includes('charger') || t.includes('power bank') || t.includes('adapter') || t.includes('gan');
+                    case 'networking':
+                    case 'networking & wireless':
+                        return c.includes('network') || c.includes('wireless') || t.includes('router') || t.includes('extender') || t.includes('switch') || t.includes('camera c') || t.includes('camera cw') || t.includes('tapo');
+                    case 'accessories':
+                    case 'accessories & cables':
+                        return c.includes('accessor') || c.includes('cable') || t.includes('cable') || t.includes('selfie stick') || t.includes('screwdriver');
+                    default:
+                        return c === q || c.includes(q) || t.includes(q);
+                }
+            }
+
+            function applyFilters() {
+                let filtered = getCatalog();
+                
+                // 1. Category Filter
+                if (currentCategory && currentCategory !== 'all') {
+                    filtered = filtered.filter(p => matchCategory(p, currentCategory));
+                }
+                
+                // 2. Brand Filter
+                if (currentBrand) {
+                    const cb = currentBrand.toLowerCase();
+                    filtered = filtered.filter(p => {
+                        const pb = ((p.brand || '') + '').toLowerCase();
+                        const pt = (((p.name || '') + ' ' + (p.title || '')) + '').toLowerCase();
+                        return pb === cb || pb.includes(cb) || pt.includes(cb);
+                    });
+                }
+
+                // 3. Global Search Filter (URL query param)
+                if (currentSearch) {
+                    const s = currentSearch.toLowerCase();
+                    filtered = filtered.filter(p => 
+                        (p.name || p.title || '').toLowerCase().includes(s) || 
+                        (p.category || '').toLowerCase().includes(s) ||
+                        (p.brand || '').toLowerCase().includes(s) ||
+                        (p.description || '').toLowerCase().includes(s) ||
+                        (p.sku || '').toLowerCase().includes(s)
+                    );
+                }
+
+                // 4. Sales Event Filter
+                if (currentSale) {
+                    filtered = filtered.filter(p => p.onSale === true);
+                }
+
+                // 5. Context-Aware Attribute Filters
+                if (activeAttributes.priceRange) {
+                    filtered = filtered.filter(p => matchPriceRange(p, activeAttributes.priceRange));
+                }
+
+                if (currentCategory === 'mobiles') {
+                    if (activeAttributes.ram) {
+                        filtered = filtered.filter(p => matchMobileRam(p, activeAttributes.ram));
+                    }
+                    if (activeAttributes.rom) {
+                        filtered = filtered.filter(p => matchMobileRom(p, activeAttributes.rom));
+                    }
+                } else if (currentCategory === 'laptops') {
+                    if (activeAttributes.processor) {
+                        filtered = filtered.filter(p => matchProcessor(p, activeAttributes.processor));
+                    }
+                    if (activeAttributes.ram) {
+                        filtered = filtered.filter(p => matchRamGeneral(p, activeAttributes.ram));
+                    }
+                    if (activeAttributes.storage) {
+                        filtered = filtered.filter(p => matchStorageGeneral(p, activeAttributes.storage));
+                    }
+                } else if (currentCategory === 'computers') {
+                    if (activeAttributes.processor) {
+                        filtered = filtered.filter(p => matchProcessor(p, activeAttributes.processor));
+                    }
+                    if (activeAttributes.ram) {
+                        filtered = filtered.filter(p => matchRamGeneral(p, activeAttributes.ram));
+                    }
+                    if (activeAttributes.storage) {
+                        filtered = filtered.filter(p => matchStorageGeneral(p, activeAttributes.storage));
+                    }
+                } else if (currentCategory === 'mouse') {
+                    if (activeAttributes.connectivity) {
+                        filtered = filtered.filter(p => matchMouseConnectivity(p, activeAttributes.connectivity));
+                    }
+                    if (activeAttributes.usageType) {
+                        filtered = filtered.filter(p => matchMouseUsage(p, activeAttributes.usageType));
+                    }
+                } else if (currentCategory === 'monitors') {
+                    if (activeAttributes.screenSize) {
+                        filtered = filtered.filter(p => matchScreenSize(p, activeAttributes.screenSize));
+                    }
+                    if (activeAttributes.resolution) {
+                        filtered = filtered.filter(p => matchResolution(p, activeAttributes.resolution));
+                    }
+                    if (activeAttributes.refreshRate) {
+                        filtered = filtered.filter(p => matchRefreshRate(p, activeAttributes.refreshRate));
+                    }
+                } else {
+                    if (activeAttributes.availability === 'in-stock') {
+                        filtered = filtered.filter(p => {
+                            const stockQty = typeof window.getProductStockNumber === 'function' ? window.getProductStockNumber(p) : (p.totalStock || p.stockQuantity || 0);
+                            return stockQty > 0;
+                        });
+                    } else if (activeAttributes.availability === 'on-sale') {
+                        filtered = filtered.filter(p => p.onSale === true);
+                    }
+                }
+
+                // 6. Dynamic Sorting
+                if (currentSort === 'price-asc') {
+                    filtered.sort((a, b) => (parseFloat(a.price) || 0) - (parseFloat(b.price) || 0));
+                } else if (currentSort === 'price-desc') {
+                    filtered.sort((a, b) => (parseFloat(b.price) || 0) - (parseFloat(a.price) || 0));
+                } else if (currentSort === 'newest') {
+                    filtered.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
+                } else if (currentSort === 'name-asc') {
+                    filtered.sort((a, b) => (a.name || a.title || '').localeCompare(b.name || b.title || ''));
+                } else {
+                    filtered.sort((a, b) => (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0));
+                }
+
+                activeProducts = filtered;
+                
+                // Update Title properly
+                let titleParts = [];
+                if (currentSale) titleParts.push("SPECIAL DEALS");
+                if (currentSearch) titleParts.push(`Search: "${currentSearch}"`);
+                if (currentBrand) titleParts.push(currentBrand.toUpperCase());
+                
+                const catObj = DISTINCT_CATEGORIES.find(c => c.slug === currentCategory);
+                const catDisplayName = catObj ? catObj.name : (currentCategory === 'all' || !currentCategory ? 'All Products' : currentCategory);
+
+                if (currentCategory === 'all' || !currentCategory) {
+                    if (titleParts.length === 0) titleParts.push("ALL PRODUCTS (" + filtered.length + ")");
+                    else titleParts.push("PRODUCTS (" + filtered.length + ")");
+                } else {
+                    titleParts.push(catDisplayName.toUpperCase() + " (" + filtered.length + ")");
+                }
+                
+                if (shopTitle) shopTitle.innerText = titleParts.join(" | ");
+
+                // Update indicators
+                const countInd = document.getElementById('shop-count-indicator');
+                if (countInd) countInd.innerText = `Showing ${filtered.length} items`;
+                const filteredMatches = document.getElementById('filtered-matches-count');
+                if (filteredMatches) filteredMatches.innerText = `${filtered.length} models found`;
+
+                renderActiveFilterPills();
+                updateGridView();
+            }
+
+            function filterCategory(cat) {
+                currentCategory = cat || 'all';
+                currentBrand = '';
+                activeAttributes = {};
+                currentPage = 1;
+
+                if (currentCategory === 'mobiles') {
+                    isMobileSubmenuOpen = true;
+                } else {
+                    isMobileSubmenuOpen = false;
+                }
+
+                try {
+                    const newUrl = new URL(window.location.href);
+                    if (currentCategory === 'all') {
+                        newUrl.searchParams.delete('category');
+                    } else {
+                        newUrl.searchParams.set('category', currentCategory);
+                    }
+                    newUrl.searchParams.delete('brand');
+                    window.history.pushState({ category: currentCategory }, '', newUrl.toString());
+                } catch (e) {}
+
+                updateActiveButtons();
+                renderDynamicFilterBar();
+                applyFilters();
+                window.scrollTo({ top: 120, behavior: 'smooth' });
+            }
+
+            // Expose resetAllFilters to window so empty state button can call it
+            window.resetAllFilters = resetAllFilters;
+
+            // Initialize Sort Dropdown Interactive Events
+            function initSortDropdown() {
+                const sortContainer = document.getElementById('sort-dropdown-container');
+                if (!sortContainer) return;
+                const sortBtn = sortContainer.querySelector('.custom-dropdown-btn');
+                if (sortBtn) {
+                    sortBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleCustomDropdown(sortContainer);
+                    });
+                }
+                sortContainer.querySelectorAll('.custom-dropdown-item').forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const val = this.getAttribute('data-value');
+                        currentSort = val;
+
+                        // Highlight in dropdown
+                        sortContainer.querySelectorAll('.custom-dropdown-item').forEach(it => {
+                            it.classList.toggle('active', it.getAttribute('data-value') === val);
+                        });
+                        const textEl = document.getElementById('sort-dropdown-current-text');
+                        if (textEl) textEl.innerText = this.innerText;
+
+                        const nativeSel = document.getElementById('shop-sort-select');
+                        if (nativeSel) nativeSel.value = val;
+
+                        sortContainer.classList.remove('is-open');
+                        if (sortBtn) sortBtn.setAttribute('aria-expanded', 'false');
+
+                        currentPage = 1;
+                        applyFilters();
+                    });
+                });
+            }
+            initSortDropdown();
+
+            // Native Sorting select fallback listener
+            const sortSelect = document.getElementById('shop-sort-select');
+            if (sortSelect) {
+                sortSelect.addEventListener('change', function() {
+                    currentSort = this.value;
+                    currentPage = 1;
+                    applyFilters();
+                });
+            }
+
+            window.addEventListener('popstate', function() {
+                const params = new URLSearchParams(window.location.search);
+                const popCat = (params.get('category') || 'all').toLowerCase().trim();
+                const matched = DISTINCT_CATEGORIES.find(c => c.slug === popCat || c.name.toLowerCase() === popCat);
+                currentCategory = matched ? matched.slug : (popCat || 'all');
+                currentBrand = params.get('brand') || '';
+                activeAttributes = {};
+                currentPage = 1;
+                isMobileSubmenuOpen = (currentCategory === 'mobiles');
+                updateActiveButtons();
+                renderDynamicFilterBar();
+                applyFilters();
+            });
+
+            // Initialize Dynamic Filter Bar and Product Grid
+            renderDynamicFilterBar();
+            applyFilters();
+
+            window.addEventListener('productsReady', () => {
+                _shopCatalogCache = null;
+                buildCategorySidebar();
+                renderDynamicFilterBar();
+                applyFilters();
+            });
+            window.addEventListener('gugProductsUpdated', () => {
+                _shopCatalogCache = null;
+                buildCategorySidebar();
+                renderDynamicFilterBar();
+                applyFilters();
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

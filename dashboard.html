@@ -1,0 +1,532 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Immediate Zero-Delay Embedded View Detection (Prevents Duplicate Sidebar & Layout Snap) -->
+    <script>if(window.self!==window.top||(typeof location!=='undefined'&&location.search.indexOf('staff_view=1')!==-1)){document.documentElement.classList.add('is-embedded');}</script>
+    <style>
+        html.is-embedded .admin-sidebar, html.is-embedded aside.admin-sidebar, body.is-embedded .admin-sidebar { display: none !important; visibility: hidden !important; width: 0 !important; height: 0 !important; position: absolute !important; left: -9999px !important; opacity: 0 !important; pointer-events: none !important; animation: none !important; -webkit-animation: none !important; transition: none !important; transform: none !important; }
+        html.is-embedded .admin-main, body.is-embedded .admin-main { margin-left: 0 !important; width: 100% !important; padding: 15px 20px !important; animation: none !important; transition: none !important; }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise ERP Operating System | GearUp Gadgets</title>    
+    <!-- Favicon & Device Web Icons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/images/favicon-64x64.png">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/fonts/font-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { background-color: var(--gug-bg-color, #07090d) !important; background-image: var(--gug-bg-image) !important; background-attachment: var(--gug-bg-attachment, fixed) !important; background-size: var(--gug-bg-size, cover, cover, 28px 49px) !important; background-position: var(--gug-bg-position, center top) !important; background-repeat: var(--gug-bg-repeat, no-repeat, no-repeat, repeat) !important; min-height: 100vh; color: #ffffff !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .admin-sidebar { width: 260px; background: rgba(10, 10, 15, 0.6) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; height: 100vh; position: fixed; left: 0; top: 0; padding: 20px 15px; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; overflow-y: auto; z-index: 1000; box-shadow: 4px 0 30px rgba(0, 0, 0, 0.5) !important; }
+        .admin-main { margin-left: 260px; padding: 25px 30px; min-height: 100vh; background-color: transparent !important; color: #ffffff !important; }
+        .admin-nav-link { display: flex; align-items: center; padding: 9px 13px; color: rgba(255, 255, 255, 0.85); text-decoration: none; border-radius: 8px; margin-bottom: 3px; font-size: 13px; font-weight: 500; transition: all 0.2s ease; }
+        .admin-nav-link:hover { background-color: rgba(255, 255, 255, 0.08); color: #fff; }
+        .admin-nav-link.active { background-color: var(--accent-red); color: #fff !important; font-weight: 600; box-shadow: 0 4px 12px rgba(219, 39, 36, 0.4); }
+        .sub-nav-link { font-size: 12.5px !important; padding: 7px 12px !important; margin-bottom: 2px !important; border-left: 2px solid rgba(255, 255, 255, 0.2); background-color: rgba(255,255,255,0.02); border-radius: 0 6px 6px 0 !important; color: rgba(255, 255, 255, 0.8) !important; }
+        .sub-nav-link:hover, .sub-nav-link.active { background-color: var(--accent-red) !important; color: #fff !important; border-left-color: #fff !important; }
+        
+        .sidebar-section-heading { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: rgba(255, 255, 255, 0.6); margin-top: 15px; margin-bottom: 6px; padding-left: 10px; }
+        
+        .erp-card { background: rgba(10, 10, 15, 0.45) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 16px !important; padding: 20px; margin-bottom: 20px; box-shadow: 0 16px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important; color: #ffffff !important; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .erp-card:hover { transform: translateY(-2px); box-shadow: 0 22px 50px rgba(0,0,0,0.7), 0 0 25px rgba(229, 3, 3, 0.25) !important; border-color: rgba(229, 3, 3, 0.55) !important; }
+        
+        .kpi-title { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.85); }
+        .kpi-value { font-size: 24px; font-weight: 800; color: #ffffff; margin-top: 4px; margin-bottom: 2px; text-shadow: 0 2px 6px rgba(0,0,0,0.8); }
+        
+        .table { color: #ffffff !important; vertical-align: middle; background-color: transparent !important; }
+        .table th { background-color: rgba(255, 255, 255, 0.06) !important; color: #ffffff !important; font-weight: 700; font-size: 12px; border-bottom: 2px solid rgba(255, 255, 255, 0.15) !important; text-transform: uppercase; letter-spacing: 0.5px; }
+        .table td { border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important; font-size: 13.5px; color: #ffffff !important; }
+        
+        .quick-action-btn { background: rgba(10, 10, 15, 0.45) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 12px !important; padding: 12px 16px; font-weight: 600; font-size: 13px; color: #ffffff !important; display: flex; align-items: center; gap: 10px; transition: all 0.2s ease; box-shadow: 0 8px 24px rgba(0,0,0,0.4) !important; }
+        .quick-action-btn:hover { background: rgba(255, 255, 255, 0.1) !important; border-color: var(--accent-red) !important; color: #ffffff !important; box-shadow: 0 10px 30px rgba(219, 39, 36, 0.25) !important; transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+        <!-- Enterprise Sidebar Navigation -->
+    <div class="admin-sidebar">
+        <div class="d-flex align-items-center mb-3 px-2">
+            <i class="fas fa-shield-alt text-danger fs-4 me-2"></i>
+            <div>
+                <h6 class="text-white m-0 fw-bold">GearUp ERP</h6>
+                <small class="text-secondary" style="font-size: 11px;">Enterprise Operating System</small>
+            </div>
+        </div>
+
+        <a href="dashboard.html" class="admin-nav-link" id="nav-dashboard"><i class="fas fa-chart-pie me-2"></i> Executive Dashboard</a>
+        
+        <!-- Accordion 1: Catalog & E-Commerce -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-catalog">
+                <span><i class="fas fa-shopping-bag text-danger me-2"></i> Catalog & E-Commerce</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-catalog">
+                <a href="products.html" class="admin-nav-link" id="nav-products"><i class="fas fa-boxes-stacked me-2"></i> Products & Catalog</a>
+                <a href="admin-crm.html" class="admin-nav-link" id="nav-crm"><i class="fas fa-users-viewfinder me-2"></i> Customers (CRM)</a>
+                <a href="admin-marketing.html" class="admin-nav-link" id="nav-marketing"><i class="fas fa-tags me-2"></i> Coupons & Marketing</a>
+            </div>
+        </div>
+
+        <!-- Accordion 2: Supply Chain & Operations -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-supply">
+                <span><i class="fas fa-truck-ramp-box text-primary me-2"></i> Supply Chain & Operations</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-supply">
+                <a href="admin-inventory.html" class="admin-nav-link" id="nav-inventory"><i class="fas fa-warehouse me-2"></i> Multi-Warehouse Stock</a>
+                <a href="admin-purchasing.html" class="admin-nav-link" id="nav-purchasing"><i class="fas fa-dolly me-2"></i> Purchasing & Suppliers</a>
+                <a href="orders.html" class="admin-nav-link" id="nav-orders"><i class="fas fa-cart-shopping me-2"></i> Sales Orders Pipeline</a>
+                <a href="admin-logistics.html" class="admin-nav-link" id="nav-logistics"><i class="fas fa-truck-fast me-2"></i> Logistics & Courier COD</a>
+                <a href="admin-returns.html" class="admin-nav-link" id="nav-returns"><i class="fas fa-rotate-left me-2"></i> Returns & Warranty (RMA)</a>
+            </div>
+        </div>
+
+        <!-- Accordion 3: Finance & B2B Wholesale -->
+        <div class="sidebar-accordion-group">
+            <button type="button" class="sidebar-accordion-header" data-target="grp-finance">
+                <span><i class="fas fa-coins text-warning me-2"></i> Finance & B2B Wholesale</span>
+                <i class="fas fa-chevron-down accordion-arrow"></i>
+            </button>
+            <div class="sidebar-accordion-body" id="grp-finance">
+                <a href="admin-dealers.html" class="admin-nav-link" id="nav-dealers"><i class="fas fa-handshake me-2"></i> B2B Dealers & Ledger</a>
+                <a href="admin-finance.html" class="admin-nav-link" id="nav-finance"><i class="fas fa-file-invoice-dollar me-2"></i> Finance & P&L Ledger</a>
+                <a href="admin-staff.html" class="admin-nav-link" id="nav-staff"><i class="fas fa-user-tie me-2"></i> HR & Employee Payroll</a>
+                <a href="admin-tasks.html" class="admin-nav-link" id="nav-tasks"><i class="fas fa-list-check me-2"></i> Task Kanban & Workflow</a>
+                <a href="admin-reports.html" class="admin-nav-link" id="nav-reports"><i class="fas fa-chart-column me-2"></i> Business Reports</a>
+                <a href="admin-audit.html" class="admin-nav-link" id="nav-audit"><i class="fas fa-fingerprint me-2"></i> Security & Audit Logs</a>
+            </div>
+        </div>
+
+        <!-- Standalone Section: System Settings & Store Customization -->
+        <div class="mt-3 pt-3 border-top border-secondary border-opacity-25">
+            <div class="px-3 text-secondary text-uppercase fw-bold mb-2" style="font-size: 11px; letter-spacing: 0.6px;">System & Settings</div>
+            <a href="admin-settings.html" class="admin-nav-link" id="nav-settings"><i class="fas fa-sliders text-danger me-2"></i> System Settings & APIs</a>
+            <a href="admin-sales.html" class="admin-nav-link" id="nav-sales"><i class="fas fa-palette text-warning me-2"></i> Banner & Theme</a>
+        </div>
+        
+        <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
+            <a href="dealer-portal.html" target="_blank" class="admin-nav-link text-warning"><i class="fas fa-store-alt me-2"></i> Dealer Portal View</a>
+            <a href="employee-portal.html" class="admin-nav-link text-info"><i class="fas fa-id-badge me-2"></i> Employee Workspace</a>
+            <a href="index.html" target="_blank" class="admin-nav-link text-success"><i class="fas fa-store me-2"></i> Customer Storefront</a>
+            <a href="#" class="admin-nav-link text-danger mt-2" onclick="localStorage.removeItem('admin_logged_in'); localStorage.removeItem('admin_role'); localStorage.removeItem('admin_username'); window.location.href = 'admin.html'; return false;"><i class="fas fa-sign-out-alt me-2"></i> Sign Out</a>
+        </div>
+    </div>
+    <script>try{var _s=sessionStorage.getItem('gug_admin_sidebar_scroll');if(_s!==null){var _sb=document.querySelector('.admin-sidebar');if(_sb)_sb.scrollTop=parseFloat(_s);}}catch(e){}</script>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Global Header Container -->
+        <div id="gug-global-header-container"></div>
+
+        <!-- Beginner Help Banner -->
+        <div id="gug-beginner-help-container"></div>
+
+        <!-- Quick Action Dock -->
+        <div class="d-flex align-items-center gap-2 mb-4 flex-wrap">
+            <span class="text-secondary small fw-bold text-uppercase me-2"><i class="fas fa-bolt text-warning me-1"></i> Quick Actions:</span>
+            <a href="products.html?action=add" class="quick-action-btn"><i class="fas fa-plus-circle text-danger"></i> Add Product</a>
+            <a href="orders.html?action=create" class="quick-action-btn"><i class="fas fa-cart-plus text-primary"></i> Create Order</a>
+            <a href="admin-crm.html?action=add" class="quick-action-btn"><i class="fas fa-user-plus text-success"></i> Add Customer</a>
+            <a href="admin-purchasing.html?action=new-po" class="quick-action-btn"><i class="fas fa-file-signature text-info"></i> New Purchase Order</a>
+            <a href="admin-finance.html?tab=expenses" class="quick-action-btn"><i class="fas fa-receipt text-warning"></i> Record Expense</a>
+            <a href="admin-marketing.html?action=new-coupon" class="quick-action-btn"><i class="fas fa-tag text-purple"></i> Create Coupon</a>
+            <a href="admin-reports.html" class="quick-action-btn"><i class="fas fa-file-export text-secondary"></i> Export Report</a>
+        </div>
+
+        <!-- Dynamic Role Context Alert (If non-admin persona) -->
+        <div id="role-perspective-banner" class="mb-3" style="display: none;"></div>
+
+        <!-- 8 Key Executive Metric Cards -->
+        <div class="row g-3 mb-4" id="kpi-cards-grid">
+            <!-- 1. Today Sales -->
+            <div class="col-xl-3 col-md-6">
+                <div class="erp-card p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="kpi-title">TODAY'S SALES & ORDERS</span>
+                        <div class="badge bg-danger bg-opacity-10 text-danger p-2 rounded-circle"><i class="fas fa-shopping-bag"></i></div>
+                    </div>
+                    <div class="kpi-value text-danger" id="kpi-today-sales">Rs. 0</div>
+                    <small class="text-secondary" id="kpi-today-count">0 orders today</small>
+                </div>
+            </div>
+
+            <!-- 2. Monthly Revenue -->
+            <div class="col-xl-3 col-md-6">
+                <div class="erp-card p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="kpi-title">TOTAL REVENUE (MTD)</span>
+                        <div class="badge bg-success bg-opacity-10 text-success p-2 rounded-circle"><i class="fas fa-wallet"></i></div>
+                    </div>
+                    <div class="kpi-value text-dark" id="kpi-total-revenue">Rs. 0</div>
+                    <small class="text-success"><i class="fas fa-arrow-up me-1"></i> Gross Sales Volume</small>
+                </div>
+            </div>
+
+            <!-- 3. Net Profit -->
+            <div class="col-xl-3 col-md-6">
+                <div class="erp-card p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="kpi-title">NET OPERATING PROFIT</span>
+                        <div class="badge bg-info bg-opacity-10 text-info p-2 rounded-circle"><i class="fas fa-chart-line"></i></div>
+                    </div>
+                    <div class="kpi-value text-success fw-bold" id="kpi-net-profit">Rs. 0</div>
+                    <small class="text-secondary">Gross Revenue minus COGS & Expenses</small>
+                </div>
+            </div>
+
+            <!-- 4. Inventory Asset Valuation -->
+            <div class="col-xl-3 col-md-6">
+                <div class="erp-card p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="kpi-title">INVENTORY VALUATION</span>
+                        <div class="badge bg-warning bg-opacity-10 text-warning p-2 rounded-circle"><i class="fas fa-boxes-stacked"></i></div>
+                    </div>
+                    <div class="kpi-value text-dark" id="kpi-inventory-val">Rs. 0</div>
+                    <small class="text-secondary" id="kpi-inventory-units">3 Warehouses Combined</small>
+                </div>
+            </div>
+
+            <!-- 5. Pending vs Delivered Orders -->
+            <div class="col-xl-3 col-md-6">
+                <div class="erp-card p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="kpi-title">PENDING FULFILLMENT</span>
+                        <div class="badge bg-warning bg-opacity-10 text-warning p-2 rounded-circle"><i class="fas fa-clock"></i></div>
+                    </div>
+                    <div class="kpi-value text-warning" id="kpi-pending-orders">Rs. 0</div>
+                    <small class="text-secondary" id="kpi-delivered-subtext">0 Delivered successfully</small>
+                </div>
+            </div>
+
+            <!-- 6. Low Stock Alerts -->
+            <div class="col-xl-3 col-md-6">
+                <div class="erp-card p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="kpi-title">LOW / OUT OF STOCK</span>
+                        <div class="badge bg-danger bg-opacity-10 text-danger p-2 rounded-circle"><i class="fas fa-triangle-exclamation"></i></div>
+                    </div>
+                    <div class="kpi-value text-danger" id="kpi-low-stock">Rs. 0 Items</div>
+                    <small class="text-danger"><a href="admin-inventory.html" class="text-danger text-decoration-none fw-bold">Trigger Restock Order &rarr;</a></small>
+                </div>
+            </div>
+
+            <!-- 7. Operating Expenses -->
+            <div class="col-xl-3 col-md-6">
+                <div class="erp-card p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="kpi-title">TOTAL EXPENSES (MTD)</span>
+                        <div class="badge bg-danger bg-opacity-10 text-danger p-2 rounded-circle"><i class="fas fa-receipt"></i></div>
+                    </div>
+                    <div class="kpi-value text-dark" id="kpi-expenses">Rs. 0</div>
+                    <small class="text-secondary">Rent, Ads, IT & Salaries</small>
+                </div>
+            </div>
+
+            <!-- 8. Supplier Payables -->
+            <div class="col-xl-3 col-md-6">
+                <div class="erp-card p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="kpi-title">SUPPLIER PAYABLES</span>
+                        <div class="badge bg-warning bg-opacity-10 text-warning p-2 rounded-circle"><i class="fas fa-hand-holding-dollar"></i></div>
+                    </div>
+                    <div class="kpi-value text-warning" id="kpi-payables">Rs. 0</div>
+                    <small class="text-secondary">Outstanding Vendor Dues</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row g-3 mb-4">
+            <!-- Sales & Revenue Trend Chart -->
+            <div class="col-lg-8">
+                <div class="erp-card h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="text-dark fw-bold m-0"><i class="fas fa-chart-area text-danger me-2"></i> Sales Inflow & Net Profit Performance (2026)</h6>
+                        <span class="badge bg-light text-dark border">Weekly Analytics</span>
+                    </div>
+                    <div style="height: 280px; position: relative; width: 100%; max-width: 100%; overflow: hidden;">
+                        <canvas id="salesTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Status Breakdown -->
+            <div class="col-lg-4">
+                <div class="erp-card h-100">
+                    <h6 class="text-dark fw-bold mb-3"><i class="fas fa-chart-pie text-info me-2"></i> Order Fulfillment Breakdown</h6>
+                    <div style="height: 220px; position: relative; width: 100%; max-width: 100%; overflow: hidden;">
+                        <canvas id="orderStatusChart"></canvas>
+                    </div>
+                    <div class="d-flex justify-content-around text-center mt-3 pt-2 border-top" id="order-status-legend">
+                        <!-- Legend populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tables Row: Top Selling Products & Recent Orders -->
+        <div class="row g-3">
+            <!-- Top Selling Products -->
+            <div class="col-lg-6">
+                <div class="erp-card h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="text-dark fw-bold m-0"><i class="fas fa-fire text-danger me-2"></i> Top Selling Catalog Products</h6>
+                        <a href="products.html" class="text-danger small fw-bold text-decoration-none">View All Catalog &rarr;</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Margin</th>
+                                    <th>Stock</th>
+                                </tr>
+                            </thead>
+                            <tbody id="top-products-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Orders Feed -->
+            <div class="col-lg-6">
+                <div class="erp-card h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="text-dark fw-bold m-0"><i class="fas fa-stream text-primary me-2"></i> Live E-Commerce Order Stream</h6>
+                        <a href="orders.html" class="text-danger small fw-bold text-decoration-none">View Orders &rarr;</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Customer</th>
+                                    <th>Amount</th>
+                                    <th>Payment</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-orders-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/products-data.js"></script>
+    <script src="assets/js/gug-erp-core.js"></script>
+    <!-- Firebase Compat SDKs & Cloud Sync -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/firebase-sync.js"></script>
+    <script src="assets/js/admin.js"></script>
+    <script>
+        function renderExecutiveDashboard() {
+            // Render Global Header and Beginner Guide
+            GUG_DB.renderGlobalHeader('gug-global-header-container', 'Executive Business Dashboard');
+            
+            const currentUser = GUG_DB.getCurrentUser();
+            GUG_DB.renderBeginnerHelpBanner('gug-beginner-help-container', {
+                whereAmI: 'Executive Business Dashboard & Central Cockpit',
+                whatCanIDo: 'View real-time sales volume, calculate net profitability, monitor low stock safety warnings across 3 warehouses, and inspect recent customer orders.',
+                whatNext: 'Review pending fulfillment orders below, or click any Quick Action button above to add new products, POs, or customer records.'
+            });
+
+            // If non-admin role, display persona contextual info
+            if (currentUser.role !== 'Super Admin' && currentUser.role !== 'Admin') {
+                const banner = document.getElementById('role-perspective-banner');
+                banner.style.display = 'block';
+                banner.innerHTML = `
+                    <div class="alert alert-warning border-warning d-flex align-items-center justify-content-between p-3 rounded-3">
+                        <div>
+                            <i class="fas fa-user-gear me-2"></i>
+                            <strong>Active Role Perspective: ${currentUser.role}</strong> &mdash; Interface and accessible modules are dynamically adapted to your job responsibilities.
+                        </div>
+                        <a href="employee-portal.html" class="btn btn-sm btn-dark">Open My Employee Workspace</a>
+                    </div>
+                `;
+            }
+
+            const metrics = GUG_DB.calculateExecutiveMetrics();
+
+            document.getElementById('kpi-today-sales').innerText = 'Rs.  ' + metrics.todayRevenue.toLocaleString();
+            document.getElementById('kpi-today-count').innerText = `${metrics.todayOrdersCount} orders placed today`;
+
+            document.getElementById('kpi-total-revenue').innerText = 'Rs.  ' + metrics.totalRevenue.toLocaleString();
+            document.getElementById('kpi-net-profit').innerText = 'Rs.  ' + metrics.netProfit.toLocaleString();
+            document.getElementById('kpi-inventory-val').innerText = 'Rs.  ' + metrics.inventoryValuation.toLocaleString();
+            document.getElementById('kpi-inventory-units').innerText = `${metrics.totalStockUnits || 0} Total Units across 3 Hubs`;
+
+            document.getElementById('kpi-pending-orders').innerText = metrics.pendingOrders;
+            document.getElementById('kpi-delivered-subtext').innerText = `${metrics.deliveredOrders} Delivered successfully`;
+
+            document.getElementById('kpi-low-stock').innerText = `${metrics.lowStockCount} Items`;
+            document.getElementById('kpi-expenses').innerText = 'Rs.  ' + metrics.totalExpenses.toLocaleString();
+            document.getElementById('kpi-payables').innerText = 'Rs.  ' + metrics.totalPayables.toLocaleString();
+
+            // Populate Top Products
+            const products = GUG_DB.getProducts();
+            const topTbody = document.getElementById('top-products-tbody');
+            topTbody.innerHTML = '';
+
+            products.slice(0, 4).forEach(p => {
+                let totalStock = 0;
+                if (p.stock && typeof p.stock === 'object') {
+                    Object.values(p.stock).forEach(qty => totalStock += Number(qty || 0));
+                } else {
+                    totalStock = Number(p.stock || 0);
+                }
+
+                const cost = p.costPrice || p.purchasePrice || (p.sellingPrice * 0.7);
+                const margin = Math.round(((p.sellingPrice - cost) / p.sellingPrice) * 100);
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <div class="fw-bold text-dark">${p.title}</div>
+                        <small class="text-secondary">${p.category} | SKU: ${p.sku}</small>
+                    </td>
+                    <td class="text-dark fw-bold">Rs.  ${p.sellingPrice.toLocaleString()}</td>
+                    <td><span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">${margin}% Margin</span></td>
+                    <td><strong class="${totalStock <= (p.lowStockThreshold || 15) ? 'text-danger' : 'text-dark'}">${totalStock} units</strong></td>
+                `;
+                topTbody.appendChild(tr);
+            });
+
+            // Populate Recent Orders
+            const orders = GUG_DB.getOrders();
+            const ordTbody = document.getElementById('recent-orders-tbody');
+            ordTbody.innerHTML = '';
+
+            orders.slice(0, 4).forEach(o => {
+                let statusBadge = '<span class="badge bg-secondary">' + (o.orderStatus || 'Processing') + '</span>';
+                if (o.orderStatus === 'Delivered') statusBadge = '<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">Delivered</span>';
+                else if (o.orderStatus === 'Shipped') statusBadge = '<span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25">Shipped</span>';
+                else if (o.orderStatus === 'Processing' || o.orderStatus === 'New Order') statusBadge = '<span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25">' + o.orderStatus + '</span>';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><code class="text-danger fw-bold">${o.id}</code></td>
+                    <td>
+                        <div class="text-dark fw-bold">${(o.customer && o.customer.name) || o.name || 'Customer'}</div>
+                        <small class="text-secondary">${(o.customer && o.customer.city) || o.city || 'Karachi'}</small>
+                    </td>
+                    <td class="text-dark fw-bold">Rs.  ${(o.total || 0).toLocaleString()}</td>
+                    <td><small class="badge bg-light text-dark border">${o.paymentStatus || 'Pending'}</small></td>
+                    <td>${statusBadge}</td>
+                `;
+                ordTbody.appendChild(tr);
+            });
+
+            // Render Charts
+            renderCharts(metrics);
+        }
+
+        function renderCharts(metrics) {
+            // 1. Sales Trend Chart
+            const ctxSales = document.getElementById('salesTrendChart').getContext('2d');
+            new Chart(ctxSales, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6 (Current)'],
+                    datasets: [
+                        {
+                            label: 'Revenue (Rs.)',
+                            data: [350000, 420000, 390000, 580000, 620000, Math.max(metrics.totalRevenue, 650000)],
+                            borderColor: '#db2724',
+                            backgroundColor: 'rgba(219, 39, 36, 0.08)',
+                            fill: true,
+                            tension: 0.35,
+                            borderWidth: 3
+                        },
+                        {
+                            label: 'Net Profit (Rs.)',
+                            data: [120000, 160000, 140000, 240000, 260000, Math.max(metrics.netProfit, 280000)],
+                            borderColor: '#16a34a',
+                            backgroundColor: 'transparent',
+                            borderDash: [5, 5],
+                            tension: 0.35,
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#334155', font: { weight: 'bold' } } }
+                    },
+                    scales: {
+                        x: { grid: { color: '#e2e8f0' }, ticks: { color: '#475569', font: { weight: '600' } } },
+                        y: { grid: { color: '#e2e8f0' }, ticks: { color: '#475569', font: { weight: '600' } } }
+                    }
+                }
+            });
+
+            // 2. Order Status Doughnut Chart
+            const ctxOrders = document.getElementById('orderStatusChart').getContext('2d');
+            new Chart(ctxOrders, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Delivered', 'Pending / Processing', 'Cancelled'],
+                    datasets: [{
+                        data: [metrics.deliveredOrders || 1, metrics.pendingOrders || 1, metrics.cancelledOrders || 0],
+                        backgroundColor: ['#16a34a', '#d97706', '#dc2626'],
+                        borderColor: '#ffffff',
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+
+            document.getElementById('order-status-legend').innerHTML = `
+                <div><span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2">${metrics.deliveredOrders}</span><div class="small text-secondary mt-1">Delivered</div></div>
+                <div><span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2">${metrics.pendingOrders}</span><div class="small text-secondary mt-1">Processing</div></div>
+                <div><span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2">${metrics.cancelledOrders}</span><div class="small text-secondary mt-1">Cancelled</div></div>
+            `;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderExecutiveDashboard();
+            window.addEventListener('gugOrdersUpdated', () => renderExecutiveDashboard());
+            window.addEventListener('gugRepairsUpdated', () => renderExecutiveDashboard());
+            window.addEventListener('gugContactsUpdated', () => renderExecutiveDashboard());
+            window.addEventListener('gugRecoveryUpdated', () => renderExecutiveDashboard());
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'admin_orders' || e.key === 'admin_repair_requests' || e.key === 'admin_contact_inquiries' || e.key === 'admin_recovery_requests') {
+                    renderExecutiveDashboard();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+
+
