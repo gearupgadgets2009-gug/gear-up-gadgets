@@ -29,6 +29,7 @@
         .table { color: #ffffff !important; background-color: transparent !important; vertical-align: middle; }
         .table th { background-color: rgba(255, 255, 255, 0.06) !important; border-bottom: 2px solid rgba(255, 255, 255, 0.15) !important; color: #ffffff !important; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
         .table td { border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important; font-size: 13.5px; color: #ffffff !important; }
+        .coupon-actions { white-space: nowrap; }
     </style>
 </head>
 <body>
@@ -227,7 +228,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content shadow-lg border-0">
                 <div class="modal-header border-bottom p-3">
-                    <h5 class="modal-title fw-bold text-dark"><i class="fas fa-tag text-danger me-2"></i> Create Promotional Coupon</h5>
+                    <h5 class="modal-title fw-bold text-dark" id="couponModalTitle"><i class="fas fa-tag text-danger me-2"></i> Create Promotional Coupon</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4">
@@ -236,6 +237,7 @@
                         <div class="mb-3">
                             <label class="form-label">Coupon Code <span class="text-danger">*</span></label>
                             <input type="text" id="cpn-code" class="form-control text-uppercase fw-bold" placeholder="e.g. GEARUP10, EIDMUBARAK" required>
+                            <small id="cpn-code-help" class="form-text text-muted d-none">Coupon codes cannot be changed while editing.</small>
                         </div>
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
@@ -246,19 +248,20 @@
                                     <option value="free_shipping">Free Shipping</option>
                                 </select>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Discount Value <span class="text-danger">*</span></label>
-                                <input type="number" id="cpn-value" class="form-control" placeholder="10 (for 10% or Rs 1000)" required>
+                            <div class="col-md-6" id="cpn-value-field">
+                                <label class="form-label" id="cpn-value-label" for="cpn-value">Discount Percentage <span class="text-danger">*</span></label>
+                                <input type="number" id="cpn-value" class="form-control" min="0" step="any" placeholder="e.g. 10 or 15" required>
+                                <small id="cpn-free-shipping-help" class="form-text text-muted d-none">No discount value is needed for free shipping.</small>
                             </div>
                         </div>
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
                                 <label class="form-label">Min. Order Spend (PKR)</label>
-                                <input type="number" id="cpn-min" class="form-control" value="0">
+                                <input type="number" id="cpn-min" class="form-control" min="0" value="0">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Max. Usage Limit</label>
-                                <input type="number" id="cpn-max" class="form-control" value="100">
+                                <input type="number" id="cpn-max" class="form-control" min="0" value="100">
                             </div>
                         </div>
                         <div class="mb-3">
@@ -289,6 +292,56 @@
     <script>
         let couponModalInstance = null;
 
+        function escapeCouponHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, character => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            })[character]);
+        }
+
+        function isCouponActive(coupon) {
+            return coupon.active !== false && !['inactive', 'paused', 'expired'].includes(String(coupon.status || '').toLowerCase());
+        }
+
+        function normalizeCouponType(type) {
+            const normalized = String(type || 'percentage').toLowerCase().replace(/[\s-]+/g, '_');
+            if (['free_shipping', 'freeship', 'freeshipping'].includes(normalized)) return 'free_shipping';
+            if (normalized.includes('fixed')) return 'fixed';
+            return 'percentage';
+        }
+
+        function updateCouponValueField() {
+            const typeInput = document.getElementById('cpn-type');
+            const valueInput = document.getElementById('cpn-value');
+            const valueLabel = document.getElementById('cpn-value-label');
+            const freeShippingHelp = document.getElementById('cpn-free-shipping-help');
+            const previousType = typeInput.dataset.previousType || typeInput.value;
+            const isFreeShipping = typeInput.value === 'free_shipping';
+
+            if (isFreeShipping) {
+                valueInput.value = '0';
+                valueInput.disabled = true;
+                valueInput.required = false;
+                valueInput.placeholder = 'Not needed for free shipping';
+                valueLabel.textContent = 'Free Shipping';
+                freeShippingHelp.classList.remove('d-none');
+            } else {
+                if (previousType === 'free_shipping') valueInput.value = '';
+                valueInput.disabled = false;
+                valueInput.required = true;
+                valueLabel.innerHTML = typeInput.value === 'percentage'
+                    ? 'Discount Percentage <span class="text-danger">*</span>'
+                    : 'Discount Amount <span class="text-danger">*</span>';
+                valueInput.placeholder = typeInput.value === 'percentage' ? 'e.g. 10 or 15' : 'Enter amount in PKR';
+                freeShippingHelp.classList.add('d-none');
+            }
+
+            typeInput.dataset.previousType = typeInput.value;
+        }
+
         function initMarketingPage() {
             GUG_DB.renderGlobalHeader('gug-global-header-container', 'Coupons & Growth Marketing');
             GUG_DB.renderBeginnerHelpBanner('gug-beginner-help-container', {
@@ -299,6 +352,9 @@
 
             renderCouponsTable();
             updateMarketingStats();
+            document.getElementById('coupons-tbody').addEventListener('click', handleCouponAction);
+            document.getElementById('cpn-type').addEventListener('change', updateCouponValueField);
+            updateCouponValueField();
 
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('action') === 'add') {
@@ -308,9 +364,9 @@
 
         function updateMarketingStats() {
             const coupons = GUG_DB.getCoupons();
-            document.getElementById('stat-mktg-coupons').innerText = coupons.filter(c => c.active).length;
+            document.getElementById('stat-mktg-coupons').innerText = coupons.filter(isCouponActive).length;
             let totalUses = 0;
-            coupons.forEach(c => totalUses += Number(c.usedCount || 0));
+            coupons.forEach(c => totalUses += Number(c.usedCount || c.usageCount || 0));
             document.getElementById('stat-mktg-used').innerText = totalUses;
         }
 
@@ -334,82 +390,161 @@
             }
 
             coupons.forEach(c => {
-                let ruleText = `${c.value}% OFF`;
-                if (c.type === 'fixed') ruleText = `Flat Rs.  ${Number(c.value).toLocaleString()} OFF`;
-                else if (c.type === 'free_shipping') ruleText = `Free Shipping (Nationwide)`;
+                const code = escapeCouponHtml(c.code);
+                const active = isCouponActive(c);
+                const type = normalizeCouponType(c.type);
+                const value = Number(c.value || 0);
+                let ruleText = `${value}% OFF`;
+                if (type === 'fixed') ruleText = `Flat Rs. ${value.toLocaleString()} OFF`;
+                else if (type === 'free_shipping') ruleText = 'Free Shipping (Nationwide)';
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td class="ps-4">
-                        <strong class="text-dark d-block"><code class="text-danger fw-bold fs-6">${c.code}</code></strong>
-                        <small class="text-secondary">${c.type === 'percentage' ? 'Percentage Discount' : 'Fixed Rupee Voucher'}</small>
+                        <strong class="text-dark d-block"><code class="text-danger fw-bold fs-6">${code}</code></strong>
+                        <small class="text-secondary">${type === 'percentage' ? 'Percentage Discount' : type === 'free_shipping' ? 'Free Shipping Voucher' : 'Fixed Rupee Voucher'}</small>
                     </td>
                     <td>
-                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">${ruleText}</span>
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">${escapeCouponHtml(ruleText)}</span>
                     </td>
                     <td>
-                        <strong class="text-dark">${c.minOrder ? `Rs.  ${Number(c.minOrder).toLocaleString()}` : 'No Minimum'}</strong>
+                        <strong class="text-dark">${c.minOrder ? `Rs. ${Number(c.minOrder).toLocaleString()}` : 'No Minimum'}</strong>
                     </td>
                     <td>
-                        <span class="text-dark">${c.usedCount || 0} / ${c.maxUsage || 100}</span>
+                        <span class="text-dark">${Number(c.usedCount || c.usageCount || 0)} / ${Number(c.maxUsage ?? c.usageLimit ?? 100)}</span>
                     </td>
                     <td>
-                        <small class="text-secondary">${c.expiryDate || 'No Expiry'}</small>
+                        <small class="text-secondary">${escapeCouponHtml(c.expiryDate || c.expiry || 'No Expiry')}</small>
                     </td>
                     <td>
-                        <span class="badge ${c.active ? 'bg-success' : 'bg-secondary'}">${c.active ? 'Active' : 'Expired'}</span>
+                        <span class="badge ${active ? 'bg-success' : 'bg-secondary'}">${active ? 'Active' : 'Paused'}</span>
                     </td>
-                    <td class="text-end pe-4">
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteCoupon('${c.code}')" title="Delete Coupon"><i class="fas fa-trash"></i></button>
+                    <td class="text-end pe-4 coupon-actions">
+                        <button type="button" class="btn btn-sm btn-outline-primary me-1" data-action="edit" data-code="${code}" title="Edit Coupon"><i class="fas fa-edit me-1"></i>Edit</button>
+                        <button type="button" class="btn btn-sm ${active ? 'btn-outline-warning' : 'btn-outline-success'} me-1" data-action="toggle" data-code="${code}" title="${active ? 'Pause Coupon' : 'Apply Coupon'}"><i class="fas ${active ? 'fa-pause' : 'fa-play'} me-1"></i>${active ? 'Pause' : 'Apply'}</button>
+                        <button type="button" class="btn btn-sm btn-outline-danger" data-action="delete" data-code="${code}" title="Delete Coupon"><i class="fas fa-trash"></i></button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        function openCouponModal() {
-            document.getElementById('couponForm').reset();
+        function openCouponModal(code = '') {
+            const form = document.getElementById('couponForm');
+            const codeInput = document.getElementById('cpn-code');
+            const codeHelp = document.getElementById('cpn-code-help');
+            const title = document.getElementById('couponModalTitle');
+            form.reset();
             document.getElementById('cpn-id').value = '';
             document.getElementById('cpn-min').value = '0';
             document.getElementById('cpn-max').value = '100';
-            couponModalInstance = new bootstrap.Modal(document.getElementById('couponModal'));
+            document.getElementById('cpn-type').value = 'percentage';
+            document.getElementById('cpn-type').dataset.previousType = 'percentage';
+            codeInput.disabled = false;
+            codeHelp.classList.add('d-none');
+            title.innerHTML = '<i class="fas fa-tag text-danger me-2"></i> Create Promotional Coupon';
+
+            if (code) {
+                const coupon = GUG_DB.getCoupons().find(c => String(c.code).toUpperCase() === code.toUpperCase());
+                if (!coupon) {
+                    GUG_DB.showToast(`Coupon "${code}" could not be found.`, 'warning', 'Coupon Not Found');
+                    return;
+                }
+                document.getElementById('cpn-id').value = coupon.code;
+                codeInput.value = coupon.code;
+                codeInput.disabled = true;
+                codeHelp.classList.remove('d-none');
+                document.getElementById('cpn-type').value = normalizeCouponType(coupon.type);
+                document.getElementById('cpn-value').value = Number(coupon.value || 0);
+                document.getElementById('cpn-min').value = Number(coupon.minOrder || 0);
+                document.getElementById('cpn-max').value = Number(coupon.maxUsage ?? coupon.usageLimit ?? 100);
+                document.getElementById('cpn-expiry').value = coupon.expiryDate || coupon.expiry || '';
+                title.innerHTML = '<i class="fas fa-tag text-danger me-2"></i> Edit Promotional Coupon';
+            }
+
+            updateCouponValueField();
+            couponModalInstance = bootstrap.Modal.getOrCreateInstance(document.getElementById('couponModal'));
             couponModalInstance.show();
         }
 
         function saveCouponForm() {
-            const code = document.getElementById('cpn-code').value.trim().toUpperCase();
-            const val = Number(document.getElementById('cpn-value').value);
-            if (!code || !val) {
-                window.GUG_DB.showToast('Please fill in Coupon Code and Discount Value.', 'warning', 'Missing Details');
+            const form = document.getElementById('couponForm');
+            if (!form.reportValidity()) return;
+
+            const originalCode = document.getElementById('cpn-id').value;
+            const code = (originalCode || document.getElementById('cpn-code').value).trim().toUpperCase();
+            const type = document.getElementById('cpn-type').value;
+            const val = type === 'free_shipping' ? 0 : Number(document.getElementById('cpn-value').value);
+            const minOrder = Number(document.getElementById('cpn-min').value || 0);
+            const maxUsage = Number(document.getElementById('cpn-max').value || 100);
+            if (!code || !Number.isFinite(val) || val < 0 || (type !== 'free_shipping' && val === 0) ||
+                (type === 'percentage' && val > 100) || !Number.isFinite(minOrder) || minOrder < 0 ||
+                !Number.isFinite(maxUsage) || maxUsage < 0) {
+                GUG_DB.showToast('Enter a valid coupon discount, minimum spend, and usage limit.', 'warning', 'Invalid Coupon Details');
                 return;
             }
 
+            const existing = originalCode
+                ? GUG_DB.getCoupons().find(c => String(c.code).toUpperCase() === originalCode.toUpperCase())
+                : null;
+            const expiryDate = document.getElementById('cpn-expiry').value || (existing ? '' : '2026-12-31');
             const couponData = {
-                code: code,
-                type: document.getElementById('cpn-type').value,
+                ...(existing || {}),
+                code,
+                type,
                 value: val,
-                minOrder: Number(document.getElementById('cpn-min').value || 0),
-                maxUsage: Number(document.getElementById('cpn-max').value || 100),
-                usedCount: 0,
-                expiryDate: document.getElementById('cpn-expiry').value || '2026-12-31',
-                active: true
+                minOrder,
+                maxUsage,
+                usedCount: Number((existing && (existing.usedCount ?? existing.usageCount)) || 0),
+                expiryDate,
+                ...(existing && Object.prototype.hasOwnProperty.call(existing, 'expiry') ? { expiry: expiryDate } : {}),
+                active: existing ? isCouponActive(existing) : true
             };
+            if (couponData.status === 'Inactive' && couponData.active) couponData.status = 'Active';
 
             GUG_DB.saveCoupon(couponData);
             if (couponModalInstance) couponModalInstance.hide();
             renderCouponsTable();
             updateMarketingStats();
-            window.GUG_DB.showToast(`Coupon code "${code}" saved and published successfully!`, 'success', 'Coupon Created');
+            GUG_DB.showToast(`Coupon code "${code}" saved successfully.`, 'success', existing ? 'Coupon Updated' : 'Coupon Created');
+        }
+
+        function handleCouponAction(event) {
+            const button = event.target.closest('button[data-action]');
+            if (!button) return;
+            const { action, code } = button.dataset;
+
+            if (action === 'edit') {
+                openCouponModal(code);
+            } else if (action === 'toggle') {
+                const coupon = GUG_DB.getCoupons().find(c => String(c.code).toUpperCase() === code.toUpperCase());
+                if (coupon) setCouponActive(code, !isCouponActive(coupon));
+            } else if (action === 'delete') {
+                deleteCoupon(code);
+            }
+        }
+
+        function setCouponActive(code, active) {
+            const coupon = GUG_DB.getCoupons().find(c => String(c.code).toUpperCase() === code.toUpperCase());
+            if (!coupon) {
+                GUG_DB.showToast(`Coupon "${code}" could not be found.`, 'warning', 'Coupon Not Found');
+                return;
+            }
+            coupon.active = active;
+            coupon.status = active ? 'Active' : 'Inactive';
+            GUG_DB.saveCoupon(coupon);
+            renderCouponsTable();
+            updateMarketingStats();
+            GUG_DB.showToast(`Coupon "${coupon.code}" is now ${active ? 'active' : 'paused'}.`, 'success', active ? 'Coupon Activated' : 'Coupon Paused');
         }
 
         function deleteCoupon(code) {
-            if (confirm(`Are you sure you want to deactivate coupon ${code}?`)) {
-                let coupons = GUG_DB.getCoupons();
-                coupons = coupons.filter(c => c.code !== code);
-                localStorage.setItem(GUG_DB.KEYS.COUPONS, JSON.stringify(coupons));
+            if (confirm(`Are you sure you want to delete coupon ${code}?`)) {
+                const coupons = GUG_DB.getCoupons().filter(c => String(c.code).toUpperCase() !== code.toUpperCase());
+                localStorage.setItem('gug_erp_coupons', JSON.stringify(coupons));
                 renderCouponsTable();
                 updateMarketingStats();
-                window.GUG_DB.showToast(`Coupon "${code}" deactivated.`, 'info', 'Coupon Removed');
+                GUG_DB.showToast(`Coupon "${code}" deleted.`, 'info', 'Coupon Removed');
             }
         }
 
@@ -419,5 +554,3 @@
     </script>
 </body>
 </html>
-
-

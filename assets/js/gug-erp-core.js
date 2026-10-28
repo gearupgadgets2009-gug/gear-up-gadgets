@@ -3921,7 +3921,7 @@
                 return { valid: false, message: `Coupon code "${cleanCode}" is not recognized.` };
             }
 
-            if (coupon.active === false || coupon.status === 'Inactive') {
+            if (coupon.active === false || ['inactive', 'paused', 'expired'].includes(String(coupon.status || '').toLowerCase())) {
                 return { valid: false, message: `Coupon code "${cleanCode}" is deactivated or expired.` };
             }
 
@@ -3930,27 +3930,26 @@
                 return { valid: false, message: `Minimum order amount of Rs. ${minSpend.toLocaleString()} is required for coupon ${coupon.code}.` };
             }
 
-            const rawType = (coupon.type || '').toLowerCase().replace(/\s+/g, '_');
-            const isFreeShipping = rawType === 'free_shipping' || rawType === 'freeship' || rawType === 'freeshipping' || cleanCode === 'FREESHIP' || cleanCode === 'FREESHIPPING';
-
-            let calcDiscount = 0;
-            if (isFreeShipping) {
-                calcDiscount = 0; // Handled by setting shipping fee to 0
-            } else if (rawType === 'fixed' || rawType.includes('fixed')) {
-                calcDiscount = Number(coupon.value || 0);
-            } else {
-                calcDiscount = subtotal * (Number(coupon.value || 0) / 100);
-            }
+            const rawType = String(coupon.type || '').trim().toLowerCase().replace(/[\s-]+/g, '_');
+            const isFreeShipping = ['free_shipping', 'freeship', 'freeshipping'].includes(rawType) ||
+                (!rawType && ['FREESHIP', 'FREESHIPPING'].includes(cleanCode));
+            const discountType = isFreeShipping ? 'free_shipping' :
+                (rawType.includes('fixed') || rawType.includes('amount') ? 'fixed' : 'percentage');
+            const discountValue = Number(coupon.value || 0);
+            const calcDiscount = discountType === 'free_shipping' ? 0 :
+                (discountType === 'fixed' ? discountValue : subtotal * (discountValue / 100));
+            const discountAmount = discountType === 'percentage' ? Math.round(calcDiscount) : calcDiscount;
 
             return {
                 valid: true,
                 coupon: coupon,
                 code: coupon.code,
-                type: isFreeShipping ? 'free_shipping' : (rawType.includes('fixed') ? 'fixed' : 'percentage'),
-                value: Number(coupon.value || 0),
-                discountAmount: Math.round(calcDiscount),
+                type: discountType,
+                value: discountType === 'free_shipping' ? 0 : discountValue,
+                discountAmount: discountAmount,
                 isFreeShipping: isFreeShipping,
-                description: coupon.description || (isFreeShipping ? 'Free Shipping Nationwide' : `${coupon.value}% Off`)
+                description: coupon.description || (isFreeShipping ? 'Free Shipping Nationwide' :
+                    (discountType === 'fixed' ? `Rs. ${discountValue.toLocaleString()} Off` : `${discountValue}% Off`))
             };
         }
 
@@ -7561,5 +7560,4 @@
     };
 
 })(window);
-
 
