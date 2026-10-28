@@ -33,13 +33,250 @@
         
         .admin-card { background: rgba(10, 10, 15, 0.45) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 16px !important; padding: 20px; margin-bottom: 20px; color: #ffffff !important; box-shadow: 0 16px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important; }
         .table { color: #ffffff !important; background-color: transparent !important; vertical-align: middle; }
-        .table th { background-color: rgba(255, 255, 255, 0.06) !important; border-bottom: 2px solid rgba(255, 255, 255, 0.15) !important; color: #ffffff !important; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .table th { background-color: rgba(255, 255, 255, 0.06) !important; border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important; color: #ffffff !important; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
         .table td { border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important; font-size: 13.5px; color: #ffffff !important; }
 
+        #report-print-header { display: none; }
+        @page {
+            margin: 0.5cm;
+        }
         @media print {
-            .admin-sidebar, #gug-global-header-container, #gug-beginner-help-container, .no-print { display: none !important; }
-            .admin-main { margin-left: 0 !important; padding: 0 !important; }
-            .admin-card { box-shadow: none !important; border: 1px solid #000 !important; }
+            html:root, html:root body {
+                width: 100% !important;
+                min-height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #FFF !important;
+                background-color: #FFF !important;
+                background-image: none !important;
+                color: #000 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            body * {
+                visibility: hidden !important;
+                text-shadow: none !important;
+            }
+            #report-printable-area,
+            #report-printable-area * {
+                visibility: visible !important;
+            }
+            body > *:not(.admin-main) {
+                display: none !important;
+            }
+            .admin-main {
+                position: absolute !important;
+                inset: 0 !important;
+                width: 100% !important;
+                min-height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #FFF !important;
+                color: #000 !important;
+            }
+            .admin-sidebar, #gug-global-header-container, #gug-beginner-help-container,
+            .no-print, #adjustmentModal, .modal-backdrop, button {
+                display: none !important;
+            }
+            #report-printable-area {
+                display: block !important;
+                position: relative !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                border: 0 !important;
+                border-radius: 0 !important;
+                background: #FFF !important;
+                background-color: #FFF !important;
+                color: #000 !important;
+                box-shadow: none !important;
+                filter: none !important;
+                font-family: Arial, Helvetica, sans-serif !important;
+            }
+            #report-printable-area *,
+            #report-printable-area *::before,
+            #report-printable-area *::after {
+                background-image: none !important;
+                box-shadow: none !important;
+                text-shadow: none !important;
+            }
+            #report-print-header {
+                display: block !important;
+                width: 100% !important;
+                margin: 0 0 12px !important;
+                padding: 0 0 8px !important;
+                border-bottom: 1px solid #ccc !important;
+                background: #FFF !important;
+                color: #000 !important;
+                text-align: center !important;
+            }
+            #report-print-header img {
+                display: block !important;
+                width: auto !important;
+                height: auto !important;
+                max-width: 220px !important;
+                max-height: 52px !important;
+                margin: 0 auto 5px !important;
+                object-fit: contain !important;
+                filter: none !important;
+            }
+            #report-print-header h1,
+            #report-print-header h2,
+            #report-print-header p,
+            #report-print-header small {
+                margin: 2px 0 !important;
+                color: #000 !important;
+                text-align: center !important;
+            }
+            #report-printable-area > .d-flex {
+                justify-content: center !important;
+                text-align: center !important;
+                border-bottom: 1px solid #ccc !important;
+                margin: 0 0 8px !important;
+                padding: 0 0 8px !important;
+            }
+            #report-printable-area > .d-flex > div {
+                width: 100% !important;
+                text-align: center !important;
+            }
+            #report-heading-title {
+                color: #000 !important;
+                font-size: 15pt !important;
+                text-align: center !important;
+            }
+            #report-printable-area > .d-flex small {
+                display: block !important;
+                width: 100% !important;
+                color: #000 !important;
+                text-align: center !important;
+            }
+            #report-timestamp {
+                color: #000 !important;
+            }
+            #report-metric-summary {
+                display: inline-block !important;
+                margin-top: 5px !important;
+                padding: 0 !important;
+                border: 0 !important;
+                background: #FFF !important;
+                color: #000 !important;
+                font-size: 10pt !important;
+            }
+            #report-content-body,
+            #report-content-body .row,
+            #report-content-body .col-md-4,
+            #report-content-body .p-3,
+            #report-content-body .rounded,
+            #report-content-body .admin-card {
+                background: #FFF !important;
+                background-color: #FFF !important;
+                color: #000 !important;
+            }
+            #report-content-body .row.g-3.mb-4 {
+                justify-content: center !important;
+                text-align: center !important;
+            }
+            #report-content-body .row.g-3.mb-4 > [class*="col-"] {
+                text-align: center !important;
+            }
+            #report-content-body table,
+            #report-content-body .table {
+                width: 100% !important;
+                margin: 6px 0 0 !important;
+                border-collapse: collapse !important;
+                border-spacing: 0 !important;
+                background: #FFF !important;
+                background-color: #FFF !important;
+                color: #000 !important;
+                font-size: 9pt !important;
+                table-layout: auto !important;
+            }
+            #report-content-body table th,
+            #report-content-body table td,
+            #report-content-body .table th,
+            #report-content-body .table td {
+                padding: 5px 6px !important;
+                border: 1px solid #ccc !important;
+                background: #FFF !important;
+                background-color: #FFF !important;
+                color: #000 !important;
+                text-align: left !important;
+                vertical-align: middle !important;
+                text-shadow: none !important;
+            }
+            #report-content-body table td::before,
+            #report-content-body table td::after,
+            #report-content-body table th::before,
+            #report-content-body table th::after {
+                display: none !important;
+                content: none !important;
+            }
+            #report-content-body table th {
+                font-weight: 700 !important;
+                text-transform: uppercase !important;
+            }
+            #report-content-body .report-sales-table th,
+            #report-content-body .report-sales-table td {
+                white-space: normal !important;
+            }
+            #report-content-body .report-sales-table {
+                border-collapse: collapse !important;
+                border-spacing: 0 !important;
+                margin: 10px 0 0 !important;
+                border: 1px solid #ccc !important;
+                border-width: 1px !important;
+            }
+            #report-content-body .report-sales-table thead,
+            #report-content-body .report-sales-table tbody,
+            #report-content-body .report-sales-table tr,
+            #report-content-body .report-sales-table th,
+            #report-content-body .report-sales-table td,
+            #report-content-body .report-sales-table tbody td + td,
+            #report-content-body .report-sales-table tbody td:first-child,
+            #report-content-body .report-sales-table tbody td:last-child {
+                border: 1px solid #ccc !important;
+                border-width: 1px !important;
+            }
+            #report-content-body .report-sales-table th:last-child,
+            #report-content-body .report-sales-table td:last-child {
+                text-align: right !important;
+            }
+            #report-content-body .text-success,
+            #report-content-body .text-success *,
+            #report-content-body .report-positive,
+            #report-content-body .badge.bg-success {
+                color: #008000 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            #report-content-body .text-danger,
+            #report-content-body .text-danger *,
+            #report-content-body .report-total-sales,
+            #report-content-body .badge.bg-danger {
+                color: #C00000 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            #report-content-body .text-primary,
+            #report-content-body .text-warning,
+            #report-content-body .text-secondary,
+            #report-content-body .text-dark,
+            #report-content-body code {
+                color: #000 !important;
+                background: #FFF !important;
+                background-color: #FFF !important;
+            }
+            #report-content-body .badge.bg-success,
+            #report-content-body .badge.bg-danger {
+                background: #FFF !important;
+                background-color: #FFF !important;
+            }
+            #report-content-body tr,
+            #report-content-body td,
+            #report-content-body th {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
         }
     </style>
 </head>
@@ -156,6 +393,10 @@
 
         <!-- Report Output Container -->
         <div class="admin-card p-4" id="report-printable-area">
+            <header id="report-print-header">
+                <img src="assets/images/logo.png" alt="Gear Up Gadgets logo">
+                <h1 id="report-print-title">Sales &amp; Revenue Analysis Report</h1>
+            </header>
             <div class="d-flex justify-content-between align-items-center pb-3 border-bottom mb-4 flex-wrap gap-2">
                 <div>
                     <h4 class="fw-bold text-dark mb-0" id="report-heading-title">Sales & Revenue Analysis Report</h4>
@@ -369,6 +610,7 @@
 
             if (reportType === 'sales') {
                 heading.innerText = 'Sales & Revenue Analysis Report';
+                document.getElementById('report-print-title').innerText = heading.innerText;
                 const orders = (window.GUG_DB && typeof window.GUG_DB.getOrders === 'function')
                     ? window.GUG_DB.getOrders()
                     : JSON.parse(localStorage.getItem('gug_orders') || '[]');
@@ -412,21 +654,21 @@
                         </div>
                         <div class="col-md-4">
                             <div class="p-3 bg-danger bg-opacity-10 rounded border border-danger border-opacity-25 text-center">
-                                <small class="text-danger fw-bold text-uppercase d-block">Total Consolidated Sales</small>
-                                <span class="fs-5 fw-bold text-danger">Rs. ${totalGross.toLocaleString()}</span>
+                                <small class="text-danger fw-bold text-uppercase d-block report-total-sales">TOTAL CONSOLIDATED SALES</small>
+                                <span class="fs-5 fw-bold text-danger report-total-sales">Rs. ${totalGross.toLocaleString()}</span>
                             </div>
                         </div>
                     </div>
 
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table table-hover align-middle mb-0 report-sales-table">
                         <thead>
                             <tr>
-                                <th>Order / Ref ID</th>
+                                <th>ORDER / REF ID</th>
                                 <th>Date</th>
-                                <th>Customer Name / Channel</th>
-                                <th>Payment Method</th>
+                                <th>Customer</th>
+                                <th>Payment</th>
                                 <th>Status</th>
-                                <th class="text-end">Order Total (PKR)</th>
+                                <th class="text-end">Total</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -446,6 +688,7 @@
                 `;
             } else if (reportType === 'inventory') {
                 heading.innerText = 'Inventory Asset Valuation Report';
+                document.getElementById('report-print-title').innerText = heading.innerText;
                 const products = (window.GUG_DB && typeof window.GUG_DB.getProducts === 'function')
                     ? window.GUG_DB.getProducts()
                     : (window.LIVE_PRODUCTS || []);
@@ -504,6 +747,7 @@
                 `;
             } else if (reportType === 'purchasing') {
                 heading.innerText = 'Purchasing & Supplier Payables (AP) Report';
+                document.getElementById('report-print-title').innerText = heading.innerText;
                 const pos = (window.GUG_DB && typeof window.GUG_DB.getPurchaseOrders === 'function')
                     ? window.GUG_DB.getPurchaseOrders()
                     : JSON.parse(localStorage.getItem('gug_purchase_orders') || '[]');
@@ -539,6 +783,7 @@
                 `;
             } else if (reportType === 'pnl') {
                 heading.innerText = 'Financial Profit & Loss Statement (P&L)';
+                document.getElementById('report-print-title').innerText = heading.innerText;
                 
                 const orders = (window.GUG_DB && typeof window.GUG_DB.getOrders === 'function')
                     ? window.GUG_DB.getOrders()
@@ -628,6 +873,7 @@
                 `;
             } else if (reportType === 'payroll') {
                 heading.innerText = 'HR Staff Payroll & Compensation Report';
+                document.getElementById('report-print-title').innerText = heading.innerText;
                 const employees = (window.GUG_DB && typeof window.GUG_DB.getEmployees === 'function')
                     ? window.GUG_DB.getEmployees()
                     : JSON.parse(localStorage.getItem('gug_employees') || '[]');
@@ -681,6 +927,7 @@
                 `;
             } else if (reportType === 'adjustments') {
                 heading.innerText = 'Manual Revenue & Expense Adjustments Ledger';
+                document.getElementById('report-print-title').innerText = heading.innerText;
                 summaryBadge.innerText = `Inflows: +Rs. ${manualRevTotal.toLocaleString()} | Outflows: -Rs. ${manualExpTotal.toLocaleString()}`;
 
                 if (adjustments.length === 0) {
@@ -777,5 +1024,3 @@
     </script>
 </body>
 </html>
-
-

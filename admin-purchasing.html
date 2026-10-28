@@ -34,6 +34,47 @@
         .nav-tabs-erp .nav-link { color: #64748b; border: none; border-bottom: 2px solid transparent; padding: 10px 18px; font-weight: 600; font-size: 13.5px; background: transparent; transition: all 0.2s; }
         .nav-tabs-erp .nav-link:hover { color: #ffffff; }
         .nav-tabs-erp .nav-link.active { color: var(--accent-red); border-bottom-color: var(--accent-red); background: transparent; }
+        .po-extra-field { border: 1px solid rgba(255,255,255,.12); border-radius: 8px; padding: 10px; }
+        .statement-summary-box { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; }
+        #purchase-order-print, #supplierStatementModal { display: none; }
+        @media print {
+            body > *:not(#supplierStatementModal):not(#purchase-order-print) {
+                display: none !important;
+                visibility: hidden !important;
+            }
+            body { background: #ffffff !important; }
+            #supplierStatementModal, #supplierStatementModal *, #purchase-order-print, #purchase-order-print * {
+                visibility: visible !important;
+            }
+            #supplierStatementModal {
+                display: block !important;
+                position: fixed !important;
+                inset: 0 !important;
+                background: #fff !important;
+                color: #111 !important;
+                z-index: 20000 !important;
+            }
+            #purchase-order-print {
+                display: block !important;
+                position: absolute !important;
+                inset: 0 !important;
+                padding: 28px !important;
+                background: #fff !important;
+                color: #111 !important;
+                font: 14px Arial, sans-serif;
+            }
+            .modal-backdrop, .admin-sidebar, .admin-main > *:not(#supplierStatementModal):not(#purchase-order-print) { display: none !important; }
+            .modal-dialog { max-width: 100% !important; width: 100% !important; margin: 0 !important; }
+            .modal-content { border: none !important; box-shadow: none !important; border-radius: 0 !important; background: #fff !important; color: #111 !important; }
+            .modal-header, .modal-footer { border-color: #d1d5db !important; }
+            .statement-summary-box, .table, .table th, .table td, .statement-table th, .statement-table td { background: #fff !important; color: #111 !important; border-color: #d1d5db !important; }
+            #supplier-statement-print-btn { display: none !important; }
+            #purchase-order-print h1, #purchase-order-print h2 { color: #111; }
+            #purchase-order-print table { width: 100%; border-collapse: collapse; margin: 18px 0; }
+            #purchase-order-print th, #purchase-order-print td { border: 1px solid #bbb; padding: 8px; text-align: left; }
+            #purchase-order-print th { background: #f0f0f0; }
+            #purchase-order-print .po-print-total { text-align: right; font-size: 18px; font-weight: bold; margin-top: 16px; }
+        }
     </style>
 </head>
 <body>
@@ -259,6 +300,7 @@
                                     <span class="input-group-text bg-dark border-secondary text-danger"><i class="fas fa-building"></i></span>
                                     <input type="text" id="po-supplier-input" class="form-control" list="po-supplier-datalist" placeholder="Type or select supplier (e.g. ASUS Regional Direct, Custom Tech Vendor)" required>
                                 </div>
+                                <button type="button" class="btn btn-outline-danger btn-sm mt-2" onclick="addPOSupplier()"><i class="fas fa-plus me-1"></i> Add New Supplier</button>
                                 <small class="text-muted" style="font-size: 11px;">Pick from registered suppliers or physically type any custom vendor name.</small>
                             </div>
                             <div class="col-md-6">
@@ -270,6 +312,7 @@
                                     <span class="input-group-text bg-dark border-secondary text-primary"><i class="fas fa-warehouse"></i></span>
                                     <input type="text" id="po-warehouse-input" class="form-control" list="po-warehouse-datalist" placeholder="e.g. Karachi Central Hub, Lahore, Faisalabad" value="Karachi Central Hub (WH-01)" required>
                                 </div>
+                                <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addPOHub()"><i class="fas fa-plus me-1"></i> Add New Hub/City</button>
                                 <small class="text-muted" style="font-size: 11px;">Type any custom warehouse hub or city name where items will be received.</small>
                             </div>
                         </div>
@@ -341,12 +384,38 @@
                                 <small class="text-muted" style="font-size: 11px;">Special shipping or warranty instructions.</small>
                             </div>
                         </div>
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="addPOTermField()"><i class="fas fa-plus me-1"></i> Add More</button>
+                            <div id="po-extra-fields" class="d-grid gap-2 mt-2"></div>
+                        </div>
 
                         <div class="d-flex justify-content-end gap-2 mt-4 pt-2 border-top border-secondary">
                             <button type="button" class="btn btn-secondary btn-sm px-3" data-bs-dismiss="modal">Cancel</button>
                             <button type="submit" class="btn btn-danger btn-sm px-4 fw-bold"><i class="fas fa-save me-1"></i> Issue &amp; Save Purchase Order</button>
+                            <button type="button" class="btn btn-success btn-sm px-4 fw-bold" onclick="handleCreatePO({ preventDefault: function() {} }, true)"><i class="fas fa-print me-1"></i> Generate &amp; Print Purchase Order</button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section id="purchase-order-print" aria-label="Printable purchase order"></section>
+
+    <div class="modal fade" id="supplierStatementModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content bg-dark border-secondary shadow-lg">
+                <div class="modal-header border-secondary p-3">
+                    <div>
+                        <h5 class="modal-title text-white fw-bold"><i class="fas fa-file-invoice text-danger me-2"></i> Supplier Ledger Statement</h5>
+                        <small class="text-secondary" id="supplier-statement-subtitle">Vendor financial statement</small>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4" id="supplier-statement-body"></div>
+                <div class="modal-footer border-secondary p-3">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                    <button type="button" id="supplier-statement-print-btn" class="btn btn-danger btn-sm" onclick="printSupplierStatement()"><i class="fas fa-print me-1"></i> Print Statement</button>
                 </div>
             </div>
         </div>
@@ -364,19 +433,119 @@
     <script src="assets/js/firebase-sync.js"></script>
     <script src="assets/js/admin.js"></script>
     <script>
+        function escapePOHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, character => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            })[character]);
+        }
+
+        function addPOHub() {
+            const city = prompt('Enter the new warehouse hub or city name:');
+            if (city === null) return;
+            const cleanCity = city.trim();
+            if (!cleanCity) {
+                GUG_DB.showToast('Enter a hub or city name.', 'warning', 'Hub Name Required');
+                return;
+            }
+            const cities = GUG_DB.getInventoryCities ? GUG_DB.getInventoryCities() : [];
+            if (cities.some(existing => existing.toLowerCase() === cleanCity.toLowerCase())) {
+                document.getElementById('po-warehouse-input').value = cleanCity;
+                GUG_DB.showToast(`${cleanCity} is already available and has been selected.`, 'info', 'Hub Already Exists');
+                return;
+            }
+            if (typeof GUG_DB.saveInventoryCity === 'function') GUG_DB.saveInventoryCity(cleanCity);
+            populatePODatalists();
+            document.getElementById('po-warehouse-input').value = cleanCity;
+            GUG_DB.showToast(`${cleanCity} was added and selected as the destination hub.`, 'success', 'Hub Added');
+        }
+
+        function addPOSupplier() {
+            const supplierName = prompt('Enter the new supplier or vendor name:');
+            if (supplierName === null) return;
+            const cleanName = supplierName.trim();
+            if (!cleanName) {
+                GUG_DB.showToast('Enter a supplier or vendor name.', 'warning', 'Supplier Name Required');
+                return;
+            }
+            const existing = GUG_DB.getSuppliers().find(supplier =>
+                String(supplier.name || '').toLowerCase() === cleanName.toLowerCase()
+            );
+            if (existing) {
+                document.getElementById('po-supplier-input').value = existing.name;
+                GUG_DB.showToast(`${existing.name} is already registered and has been selected.`, 'info', 'Supplier Already Exists');
+                return;
+            }
+
+            const supplier = GUG_DB.saveSupplier({
+                name: cleanName,
+                contactPerson: 'Vendor Representative',
+                category: 'Hardware & Accessories',
+                email: '',
+                phone: '',
+                paymentTerms: document.getElementById('po-payment-terms').value.trim() || 'Net 30 Days',
+                balancePayable: 0,
+                status: 'Active'
+            });
+            populatePODatalists();
+            document.getElementById('po-supplier-input').value = supplier.name;
+            GUG_DB.showToast(`${supplier.name} was added and selected.`, 'success', 'Supplier Added');
+            if (typeof renderPurchasingViews === 'function') renderPurchasingViews();
+        }
+
+        function addPOTermField(label = '', value = '') {
+            const container = document.getElementById('po-extra-fields');
+            const row = document.createElement('div');
+            row.className = 'row g-2 align-items-center po-extra-field';
+            row.innerHTML = `
+                <div class="col-md-4">
+                    <input type="text" class="form-control po-extra-label" maxlength="80" placeholder="Custom field / term name" value="${escapePOHtml(label)}" aria-label="Custom term name">
+                </div>
+                <div class="col-md-7">
+                    <input type="text" class="form-control po-extra-value" maxlength="240" placeholder="Enter additional term or detail" value="${escapePOHtml(value)}" aria-label="Custom term detail">
+                </div>
+                <div class="col-md-1 text-end">
+                    <button type="button" class="btn btn-outline-danger btn-sm" aria-label="Remove custom field"><i class="fas fa-trash"></i></button>
+                </div>
+            `;
+            row.querySelector('button').addEventListener('click', () => row.remove());
+            container.appendChild(row);
+            row.querySelector('.po-extra-label').focus();
+        }
+
+        function getPOAdditionalTerms() {
+            return [...document.querySelectorAll('#po-extra-fields .po-extra-field')].map(row => ({
+                label: row.querySelector('.po-extra-label').value.trim(),
+                value: row.querySelector('.po-extra-value').value.trim()
+            })).filter(field => field.label || field.value);
+        }
+
         function populatePODatalists() {
             // Populate Suppliers Datalist
             const supDatalist = document.getElementById('po-supplier-datalist');
             if (supDatalist) {
                 const suppliers = GUG_DB.getSuppliers();
-                supDatalist.innerHTML = suppliers.map(s => `<option value="${s.name}">${s.name} (${s.category || 'Vendor'})</option>`).join('');
+                supDatalist.replaceChildren(...suppliers.map(supplier => {
+                    const option = document.createElement('option');
+                    option.value = supplier.name;
+                    option.label = `${supplier.name} (${supplier.category || 'Vendor'})`;
+                    return option;
+                }));
             }
 
             // Populate Warehouse Datalist
             const whDatalist = document.getElementById('po-warehouse-datalist');
             if (whDatalist) {
                 const cities = GUG_DB.getInventoryCities ? GUG_DB.getInventoryCities() : ['Karachi', 'Lahore', 'Islamabad', 'Faisalabad', 'Multan', 'Rawalpindi', 'Peshawar', 'Quetta', 'Sialkot', 'Gujranwala'];
-                whDatalist.innerHTML = cities.map(c => `<option value="${c} Central Hub">${c} Central Hub</option>`).join('');
+                const hubs = new Set(['Karachi Central Hub (WH-01)', ...cities.flatMap(city => [`${city} Central Hub`, city])]);
+                whDatalist.replaceChildren(...[...hubs].map(hub => {
+                    const option = document.createElement('option');
+                    option.value = hub;
+                    return option;
+                }));
             }
 
             // Populate Item Catalog Datalist
@@ -569,15 +738,24 @@
                     <td><span class="badge bg-light text-dark border border-secondary">${s.paymentTerms}</span></td>
                     <td class="fw-bold text-danger">Rs ${(s.balancePayable || 0).toLocaleString()}</td>
                     <td>
-                        <button class="btn btn-outline-dark btn-sm py-1 px-2" onclick="window.GUG_DB.showToast('Statement generated for ${s.name}.', 'info', 'Statement Ready')"><i class="fas fa-receipt"></i> Statement</button>
+                        <button class="btn btn-outline-dark btn-sm py-1 px-2 statement-btn" data-supplier-id="${s.id}" data-supplier-name="${escapePOHtml(s.name)}" type="button"><i class="fas fa-receipt"></i> Statement</button>
                     </td>
                 `;
                 supTbody.appendChild(tr);
+            });
+
+            document.querySelectorAll('.statement-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    const supplierId = this.dataset.supplierId;
+                    const supplierName = this.dataset.supplierName || 'Supplier';
+                    openSupplierStatement(supplierId, supplierName);
+                });
             });
         }
 
         function openCreatePOModal() {
             document.getElementById('createPOForm').reset();
+            document.getElementById('po-extra-fields').innerHTML = '';
             populatePODatalists();
 
             const suppliers = GUG_DB.getSuppliers();
@@ -611,16 +789,19 @@
             setPOExpectedPreset(14);
             calculatePOTotals();
 
-            new bootstrap.Modal(document.getElementById('createPOModal')).show();
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('createPOModal')).show();
         }
 
-        function handleCreatePO(e) {
+        function handleCreatePO(e, shouldPrint = false) {
             e.preventDefault();
+            const form = document.getElementById('createPOForm');
+            if (!form.reportValidity()) return;
             const supplierName = document.getElementById('po-supplier-input').value.trim();
             const targetWarehouse = document.getElementById('po-warehouse-input').value.trim() || 'Karachi Central Hub (WH-01)';
             const expectedDate = document.getElementById('po-expected-date').value;
             const paymentTerms = document.getElementById('po-payment-terms').value.trim() || 'Net 30 Days';
             const notes = document.getElementById('po-notes').value.trim();
+            const additionalTerms = getPOAdditionalTerms();
 
             if (!supplierName) {
                 window.GUG_DB.showToast('Please enter or select a Supplier Name.', 'warning', 'Supplier Required');
@@ -663,11 +844,12 @@
             const suppliers = GUG_DB.getSuppliers();
             const existingSup = suppliers.find(s => s.name && s.name.toLowerCase() === supplierName.toLowerCase());
 
-            GUG_DB.createPurchaseOrder({
+            const purchaseOrder = GUG_DB.createPurchaseOrder({
                 supplierId: existingSup ? existingSup.id : undefined,
                 supplierName: supplierName,
                 targetWarehouse: targetWarehouse,
                 paymentTerms: paymentTerms,
+                additionalTerms,
                 items: items,
                 totalAmount: totalAmount,
                 status: 'Approved',
@@ -678,6 +860,152 @@
             bootstrap.Modal.getInstance(document.getElementById('createPOModal')).hide();
             window.GUG_DB.showToast(`Purchase Order for Rs. ${totalAmount.toLocaleString()} created and approved successfully!`, 'success', 'PO Approved');
             renderPurchasingViews();
+            if (shouldPrint) {
+                renderPurchaseOrderPrint(purchaseOrder);
+                setTimeout(() => window.print(), 250);
+            }
+        }
+
+        function renderPurchaseOrderPrint(po) {
+            const itemsRows = po.items.map(item => `
+                <tr>
+                    <td>${escapePOHtml(item.name)}</td>
+                    <td>${Number(item.quantity || 0).toLocaleString()} ${escapePOHtml(item.unit || 'Pieces')}</td>
+                    <td>Rs. ${Number(item.unitCost || 0).toLocaleString()}</td>
+                    <td>Rs. ${Number(item.totalCost || 0).toLocaleString()}</td>
+                </tr>
+            `).join('');
+            const extraTerms = (po.additionalTerms || []).map(field => `
+                <p><strong>${escapePOHtml(field.label || 'Additional Term')}:</strong> ${escapePOHtml(field.value)}</p>
+            `).join('');
+            document.getElementById('purchase-order-print').innerHTML = `
+                <header>
+                    <h1>Gear Up Gadgets</h1>
+                    <p>Purchase Order</p>
+                </header>
+                <hr>
+                <h2>Purchase Order ${escapePOHtml(po.id)}</h2>
+                <p><strong>Order Date:</strong> ${escapePOHtml(po.orderDate)}</p>
+                <p><strong>Expected Delivery:</strong> ${escapePOHtml(po.expectedDate)}</p>
+                <p><strong>Supplier / Vendor:</strong> ${escapePOHtml(po.supplierName)}</p>
+                <p><strong>Destination Hub:</strong> ${escapePOHtml(po.targetWarehouse)}</p>
+                <p><strong>Payment & Credit Terms:</strong> ${escapePOHtml(po.paymentTerms || 'Not specified')}</p>
+                ${extraTerms}
+                <table>
+                    <thead><tr><th>Product / Item</th><th>Quantity</th><th>Unit Cost</th><th>Line Total</th></tr></thead>
+                    <tbody>${itemsRows}</tbody>
+                </table>
+                <p><strong>Procurement Notes:</strong> ${escapePOHtml(po.notes || 'None')}</p>
+                <p class="po-print-total">Grand Total: Rs. ${Number(po.totalAmount || 0).toLocaleString()}</p>
+                <footer><p>Authorized Signature: ____________________________</p></footer>
+            `;
+        }
+
+        function buildSupplierLedgerEntries(supplierId, supplierName) {
+            const purchaseOrders = GUG_DB.getPurchaseOrders ? GUG_DB.getPurchaseOrders() : [];
+            const supplierPos = purchaseOrders.filter(po => {
+                const sameName = po.supplierName && supplierName && po.supplierName.toLowerCase() === supplierName.toLowerCase();
+                const sameId = supplierId && po.supplierId && String(po.supplierId).toLowerCase() === String(supplierId).toLowerCase();
+                return sameName || sameId;
+            });
+
+            const entries = supplierPos.map(po => ({
+                date: po.orderDate || new Date().toISOString().slice(0, 10),
+                description: `Purchase Order ${po.id} - ${po.targetWarehouse || 'Warehouse'}`,
+                type: 'Debit',
+                amount: Number(po.totalAmount || 0),
+                status: po.status || 'Approved'
+            }));
+
+            if (!entries.length) {
+                entries.push({
+                    date: new Date().toISOString().slice(0, 10),
+                    description: 'Opening balance / initial vendor account',
+                    type: 'Opening',
+                    amount: 0,
+                    status: 'Active'
+                });
+            }
+
+            const payable = Number((GUG_DB.getSuppliers ? GUG_DB.getSuppliers().find(s => s.id === supplierId || (s.name && s.name.toLowerCase() === supplierName.toLowerCase())) : null)?.balancePayable || 0);
+            const totalDebits = entries.reduce((sum, entry) => sum + (entry.amount || 0), 0);
+            const closingBalance = Math.max(payable, totalDebits);
+
+            return { entries, closingBalance };
+        }
+
+        function openSupplierStatement(supplierId, supplierName) {
+            const suppliers = GUG_DB.getSuppliers ? GUG_DB.getSuppliers() : [];
+            const supplier = suppliers.find(item => item.id === supplierId || (item.name && item.name.toLowerCase() === String(supplierName || '').toLowerCase())) || {
+                id: supplierId || 'SUP-NEW',
+                name: supplierName || 'Supplier',
+                contactPerson: 'N/A',
+                email: 'N/A',
+                phone: 'N/A',
+                paymentTerms: 'TBD',
+                balancePayable: 0,
+                address: 'N/A'
+            };
+
+            const { entries, closingBalance } = buildSupplierLedgerEntries(supplier.id, supplier.name);
+            const statementBody = document.getElementById('supplier-statement-body');
+            const subtitle = document.getElementById('supplier-statement-subtitle');
+
+            subtitle.textContent = `${supplier.name} • ${supplier.paymentTerms || 'Payment terms not assigned'}`;
+            statementBody.innerHTML = `
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="statement-summary-box p-3">
+                            <div class="text-secondary small text-uppercase fw-bold">Supplier</div>
+                            <h4 class="text-dark fw-bold mb-1">${escapePOHtml(supplier.name)}</h4>
+                            <div class="text-dark small">Contact: ${escapePOHtml(supplier.contactPerson || 'N/A')}</div>
+                            <div class="text-dark small">Email: ${escapePOHtml(supplier.email || 'N/A')}</div>
+                            <div class="text-dark small">Phone: ${escapePOHtml(supplier.phone || 'N/A')}</div>
+                            <div class="text-dark small">Address: ${escapePOHtml(supplier.address || 'N/A')}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="statement-summary-box p-3">
+                            <div class="text-secondary small text-uppercase fw-bold">Account Summary</div>
+                            <div class="mt-2 text-dark small">Payment Terms: <strong>${escapePOHtml(supplier.paymentTerms || 'N/A')}</strong></div>
+                            <div class="mt-2 text-dark small">Current Balance Payable: <strong class="text-danger">Rs. ${Number(closingBalance || supplier.balancePayable || 0).toLocaleString()}</strong></div>
+                            <div class="mt-2 text-dark small">Transactions Logged: <strong>${entries.length}</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle statement-table bg-white text-dark">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${entries.map(entry => `
+                                <tr>
+                                    <td>${escapePOHtml(entry.date)}</td>
+                                    <td>${escapePOHtml(entry.description)}</td>
+                                    <td>${escapePOHtml(entry.type || 'Debit')}</td>
+                                    <td class="fw-bold text-dark">Rs. ${Number(entry.amount || 0).toLocaleString()}</td>
+                                    <td><span class="badge bg-${entry.status === 'Paid' ? 'success' : entry.status === 'Active' ? 'info' : 'warning'} text-dark">${escapePOHtml(entry.status || 'Pending')}</span></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('supplierStatementModal'));
+            modal.show();
+        }
+
+        function printSupplierStatement() {
+            window.print();
         }
 
         function receiveGRN(poId, targetWh) {
@@ -704,6 +1032,3 @@
     </script>
 </body>
 </html>
-
-
-

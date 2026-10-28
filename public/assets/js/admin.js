@@ -731,7 +731,7 @@ const DEFAULT_THEME = {
     footerShopAddress: 'FA-06, 1st floor, Techno City Mall, Karachi.',
     footerHeadOffice: 'D-5, 4th floor, Osif Center, Block 13 A, University Road Gulshan-e-Iqbal, Karachi-Pakistan.',
     footerAbout: "Pakistan's premier high-end computer store. Servicing tech enthusiasts, gaming communities, and rendering professionals since 2012 with premium hardware, graphics cards, custom PC assembly, and unmatched support.",
-    footerCopyright: 'Copyright \u00a9 2021 to 2026 GEAR UP GADGETS. All rights reserved.',
+    footerCopyright: 'Copyright 2021 to 2026 Gear Up Gadgets All rights reserved. [POWERED BY PHOENIX TECHNOLOGY]',
 
     bgAttachment: 'fixed',
     bgOpacity: 85,
@@ -958,7 +958,7 @@ window.updateLiveThemePreview = function() {
     const topbarTitle = document.getElementById('theme-footer-topbar-title')?.value || 'Our Official Partners';
     const topbarShow = document.getElementById('theme-footer-topbar-toggle')?.checked ?? true;
     const shopAddr = document.getElementById('theme-footer-shop-addr')?.value || 'FA-06, 1st floor, Techno City Mall, Karachi.';
-    const copyText = document.getElementById('theme-footer-copyright')?.value || 'Copyright \u00a9 2021 to 2026 GEAR UP GADGETS';
+    const copyText = 'Copyright 2021 to 2026 Gear Up Gadgets All rights reserved. [POWERED BY PHOENIX TECHNOLOGY]';
 
     const prevTopPhone = document.getElementById('prev-topbar-phone');
     if (prevTopPhone) prevTopPhone.innerHTML = `<i class="fas fa-phone text-danger me-1"></i> ${phoneLabel} ${phone}`;
@@ -1225,7 +1225,7 @@ window.saveGlobalThemeConfig = async () => {
     const footerShopAddress = (document.getElementById('theme-footer-shop-addr')?.value || 'FA-06, 1st floor, Techno City Mall, Karachi.').trim();
     const footerHeadOffice = (document.getElementById('theme-footer-office-addr')?.value || 'D-5, 4th floor, Osif Center, Block 13 A, University Road Gulshan-e-Iqbal, Karachi-Pakistan.').trim();
     const footerAbout = (document.getElementById('theme-footer-about')?.value || '').trim();
-    const footerCopyright = (document.getElementById('theme-footer-copyright')?.value || 'Copyright \u00a9 2021 to 2026 GEAR UP GADGETS. All rights reserved.').trim();
+    const footerCopyright = 'Copyright 2021 to 2026 Gear Up Gadgets All rights reserved. [POWERED BY PHOENIX TECHNOLOGY]';
 
     const bgAttachment = document.getElementById('theme-bg-attachment')?.value || 'fixed';
     const bgOpacity = Number(document.getElementById('theme-bg-opacity')?.value || 85);
@@ -2816,7 +2816,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (footAboutEl && cfg.footerAbout) footAboutEl.value = cfg.footerAbout;
 
         const footCopyEl = document.getElementById('theme-footer-copyright');
-        if (footCopyEl && cfg.footerCopyright) footCopyEl.value = cfg.footerCopyright;
+        if (footCopyEl) footCopyEl.value = 'Copyright 2021 to 2026 Gear Up Gadgets All rights reserved. [POWERED BY PHOENIX TECHNOLOGY]';
 
         const bgAttachEl = document.getElementById('theme-bg-attachment');
         if (bgAttachEl && cfg.bgAttachment) bgAttachEl.value = cfg.bgAttachment;
@@ -2916,7 +2916,6 @@ document.addEventListener('DOMContentLoaded', () => {
         window.renderSalesBanners();
     }
 });
-
 
 
 

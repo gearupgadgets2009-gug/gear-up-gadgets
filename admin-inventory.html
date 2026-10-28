@@ -34,6 +34,9 @@
         .nav-tabs-erp .nav-link { color: #64748b; border: none; border-bottom: 2px solid transparent; padding: 10px 18px; font-weight: 600; font-size: 13.5px; background: transparent; transition: all 0.2s; }
         .nav-tabs-erp .nav-link:hover { color: #ffffff; }
         .nav-tabs-erp .nav-link.active { color: var(--accent-red); border-bottom-color: var(--accent-red); background: transparent; }
+        .warehouse-stock-row { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 14px; }
+        .warehouse-stock-row .form-control[readonly] { background-color: rgba(255,255,255,0.06); }
+        @media print { body * { visibility: hidden !important; } #warehouse-slip-print, #warehouse-slip-print * { visibility: visible !important; } #warehouse-slip-print { display: block !important; position: absolute; inset: 0; padding: 24px; color: #111; background: #fff; } }
     </style>
 </head>
 <body>
@@ -130,7 +133,7 @@
                 <div class="admin-card p-3 mb-0">
                     <span class="text-secondary small fw-bold text-uppercase">Total Units in Stock</span>
                     <h3 class="fw-bold text-primary mt-1 mb-0" id="stat-total-units">0</h3>
-                    <small class="text-secondary" style="font-size: 11.5px;">Across 3 Active Hubs</small>
+                    <small class="text-secondary" style="font-size: 11.5px;" id="stat-city-count">Across 0 Active Hubs</small>
                 </div>
             </div>
             <div class="col-md-3">
@@ -143,8 +146,8 @@
             <div class="col-md-3">
                 <div class="admin-card p-3 mb-0">
                     <span class="text-secondary small fw-bold text-uppercase">Active Warehouses</span>
-                    <h3 class="fw-bold text-success mt-1 mb-0">3 Hubs</h3>
-                    <small class="text-secondary" style="font-size: 11.5px;">Karachi, Lahore, Islamabad</small>
+                    <h3 class="fw-bold text-success mt-1 mb-0" id="stat-active-warehouses">0 Hubs</h3>
+                    <small class="text-secondary" style="font-size: 11.5px;" id="stat-warehouse-cities">No locations configured</small>
                 </div>
             </div>
         </div>
@@ -172,10 +175,7 @@
                         </div>
                         <div class="d-flex gap-2">
                             <select id="filter-hub" class="form-select form-select-sm" style="width: 180px;" onchange="renderStockTable()">
-                                <option value="all">All Warehouses</option>
-                                <option value="WH-01">Main Central Hub (KHI)</option>
-                                <option value="WH-02">North Hub (LHR)</option>
-                                <option value="WH-03">Capital Hub (ISB)</option>
+                                        <option value="all">All Warehouses</option>
                             </select>
                             <select id="filter-status" class="form-select form-select-sm" style="width: 160px;" onchange="renderStockTable()">
                                 <option value="all">All Stock Status</option>
@@ -263,6 +263,35 @@
         </div>
     </div>
 
+    <!-- Product stock allocations by warehouse -->
+    <div class="modal fade" id="warehouseStockModal" tabindex="-1" aria-labelledby="warehouse-stock-title">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content bg-dark border-secondary">
+                <div class="modal-header border-secondary">
+                    <div>
+                        <h5 class="modal-title text-white fw-bold" id="warehouse-stock-title"><i class="fas fa-warehouse text-danger me-2"></i> Warehouse Stock Allocations</h5>
+                        <small class="text-secondary" id="warehouse-stock-product"></small>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-2 mb-2 px-2 text-secondary small fw-bold text-uppercase">
+                        <div class="col-md-5">City / Country</div>
+                        <div class="col-md-3">Units Allocated</div>
+                        <div class="col-md-4 text-md-end">Actions</div>
+                    </div>
+                    <div id="warehouse-stock-rows" class="d-grid gap-2"></div>
+                    <button type="button" class="btn btn-outline-danger mt-3" id="add-warehouse-city"><i class="fas fa-plus me-2"></i>Add Another City</button>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section id="warehouse-slip-print" class="d-none"></section>
+
     <!-- Transfer Stock Modal -->
     <div class="modal fade" id="transferModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
@@ -325,9 +354,262 @@
     <script src="assets/js/firebase-sync.js"></script>
     <script src="assets/js/admin.js"></script>
     <script>
+        let stockEditorProductId = null;
+        let warehouseStockModalInstance = null;
+
+        function escapeInventoryHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, character => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            })[character]);
+        }
+
+        function getProductCityStock(product) {
+            return GUG_DB.normalizeProductStock
+                ? GUG_DB.normalizeProductStock(product.stock)
+                : (product.stock && typeof product.stock === 'object' ? { ...product.stock } : { Karachi: Number(product.stock || 0) });
+        }
+
+        function getInventoryCities() {
+            const cities = new Set();
+            try {
+                const registered = JSON.parse(localStorage.getItem('gug_custom_inventory_cities') || '[]');
+                if (Array.isArray(registered)) registered.forEach(city => {
+                    if (typeof city === 'string' && city.trim()) cities.add(city.trim());
+                });
+            } catch (error) {
+                console.error('Unable to read saved inventory cities.', error);
+            }
+            GUG_DB.getProducts().forEach(product => Object.keys(getProductCityStock(product)).forEach(city => cities.add(city)));
+            return [...cities].sort((a, b) => a.localeCompare(b));
+        }
+
+        function removeInventoryCityIfUnused(cityName) {
+            if (!cityName) return;
+            const usedByAnyProduct = GUG_DB.getProducts().some(product =>
+                Object.keys(getProductCityStock(product)).some(city => city.toLowerCase() === cityName.toLowerCase())
+            );
+            if (usedByAnyProduct) return;
+
+            try {
+                const registered = JSON.parse(localStorage.getItem('gug_custom_inventory_cities') || '[]');
+                if (Array.isArray(registered)) {
+                    localStorage.setItem('gug_custom_inventory_cities', JSON.stringify(
+                        registered.filter(city => typeof city !== 'string' || city.toLowerCase() !== cityName.toLowerCase())
+                    ));
+                }
+            } catch (error) {
+                console.error(`Unable to remove unused inventory city "${cityName}".`, error);
+            }
+        }
+
+        function renderWarehouseFilter() {
+            const filter = document.getElementById('filter-hub');
+            const selectedCity = filter.value;
+            filter.innerHTML = '<option value="all">All Warehouses</option>';
+            getInventoryCities().forEach(city => {
+                const option = document.createElement('option');
+                option.value = city;
+                option.textContent = city;
+                filter.appendChild(option);
+            });
+            filter.value = [...filter.options].some(option => option.value === selectedCity) ? selectedCity : 'all';
+        }
+
+        function openWarehouseStockEditor(prodId) {
+            const product = GUG_DB.getProducts().find(item => item.id === prodId);
+            if (!product) {
+                GUG_DB.showToast('The selected product could not be found.', 'warning', 'Product Not Found');
+                return;
+            }
+            stockEditorProductId = product.id;
+            document.getElementById('warehouse-stock-product').textContent = `${product.title} · SKU: ${product.sku || 'N/A'}`;
+            const stock = getProductCityStock(product);
+            renderWarehouseStockRows(Object.entries(stock).map(([city, units]) => ({
+                city,
+                units: Number(units || 0),
+                originalCity: city,
+                editing: false,
+                isNew: false
+            })));
+            warehouseStockModalInstance = bootstrap.Modal.getOrCreateInstance(document.getElementById('warehouseStockModal'));
+            warehouseStockModalInstance.show();
+        }
+
+        function renderWarehouseStockRows(rows) {
+            const container = document.getElementById('warehouse-stock-rows');
+            container.innerHTML = '';
+            rows.forEach((row, index) => {
+                const rowElement = document.createElement('div');
+                rowElement.className = 'warehouse-stock-row';
+                rowElement.dataset.index = String(index);
+                rowElement.dataset.originalCity = row.originalCity || '';
+                rowElement.dataset.isNew = String(Boolean(row.isNew));
+                rowElement.innerHTML = `
+                    <div class="row g-2 align-items-center">
+                        <div class="col-md-5">
+                            <span class="warehouse-city-label text-white fw-semibold ${row.editing ? 'd-none' : ''}">${escapeInventoryHtml(row.city)}</span>
+                            <input type="text" class="form-control warehouse-city-input ${row.editing ? '' : 'd-none'}" value="${escapeInventoryHtml(row.city)}" aria-label="City or country name" placeholder="e.g. Karachi, Pakistan" maxlength="80">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" class="form-control warehouse-units-input" value="${Number(row.units)}" min="0" step="1" ${row.editing ? '' : 'readonly'} aria-label="Units allocated">
+                        </div>
+                        <div class="col-md-4 d-flex flex-wrap justify-content-md-end gap-1">
+                            <button type="button" class="btn btn-sm ${row.editing ? 'btn-success' : 'btn-outline-primary'}" data-action="edit">${row.editing ? '<i class="fas fa-save me-1"></i>Save' : '<i class="fas fa-edit me-1"></i>Edit'}</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" data-action="delete" title="Delete this product’s allocation for this city"><i class="fas fa-trash"></i><span class="d-md-none ms-1">Delete</span></button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" data-action="print" title="Print stock slip for this city"><i class="fas fa-print me-1"></i>Print Slip</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(rowElement);
+            });
+        }
+
+        function persistWarehouseStockRow(rowElement) {
+            const product = GUG_DB.getProducts().find(item => item.id === stockEditorProductId);
+            if (!product) {
+                GUG_DB.showToast('The selected product could not be found.', 'warning', 'Product Not Found');
+                return false;
+            }
+
+            const cityInput = rowElement.querySelector('.warehouse-city-input');
+            const unitsInput = rowElement.querySelector('.warehouse-units-input');
+            const city = cityInput.value.trim();
+            const units = Number(unitsInput.value);
+            const previousCity = rowElement.dataset.originalCity;
+            const currentStock = getProductCityStock(product);
+            const duplicateCity = Object.keys(currentStock).some(existingCity =>
+                existingCity.toLowerCase() === city.toLowerCase() && existingCity !== previousCity
+            );
+
+            if (!city || !Number.isInteger(units) || units < 0 || duplicateCity) {
+                GUG_DB.showToast(duplicateCity ? 'This product already has a stock row for that city.' : 'Enter a city name and a whole number of units (0 or more).', 'warning', 'Invalid Stock Allocation');
+                return false;
+            }
+
+            const oldUnits = previousCity ? Number(currentStock[previousCity] || 0) : 0;
+            if (previousCity && previousCity !== city) delete currentStock[previousCity];
+            currentStock[city] = units;
+            product.stock = currentStock;
+            GUG_DB.saveProduct(product);
+            if (typeof GUG_DB.saveInventoryCity === 'function') GUG_DB.saveInventoryCity(city);
+            if (previousCity && previousCity.toLowerCase() !== city.toLowerCase()) removeInventoryCityIfUnused(previousCity);
+            GUG_DB.logAudit({
+                action: 'STOCK_ADJUSTMENT',
+                entity: 'PRODUCT',
+                entityId: product.id,
+                previousValue: `${previousCity || 'New allocation'}: ${oldUnits}`,
+                newValue: `${city}: ${units}`,
+                reason: `Warehouse allocation updated via Multi-Warehouse Inventory`
+            });
+            window.GUG_DB.showToast(`Saved ${units} units for ${city}.`, 'success', 'Stock Allocation Saved');
+            renderStockTable();
+            return true;
+        }
+
+        function handleWarehouseStockAction(event) {
+            const button = event.target.closest('button[data-action]');
+            if (!button) return;
+            const rowElement = button.closest('.warehouse-stock-row');
+            if (!rowElement) return;
+            const index = Number(rowElement.dataset.index);
+            const rows = [...document.querySelectorAll('#warehouse-stock-rows .warehouse-stock-row')];
+            const row = rows[index];
+            if (!row) return;
+
+            if (button.dataset.action === 'edit') {
+                if (button.textContent.trim().startsWith('Save')) {
+                    if (!persistWarehouseStockRow(row)) return;
+                    row.dataset.originalCity = row.querySelector('.warehouse-city-input').value.trim();
+                    row.dataset.isNew = 'false';
+                    row.querySelector('.warehouse-city-label').textContent = row.dataset.originalCity;
+                    row.querySelector('.warehouse-city-label').classList.remove('d-none');
+                    row.querySelector('.warehouse-city-input').classList.add('d-none');
+                    row.querySelector('.warehouse-units-input').readOnly = true;
+                    button.className = 'btn btn-sm btn-outline-primary';
+                    button.innerHTML = '<i class="fas fa-edit me-1"></i>Edit';
+                    const product = GUG_DB.getProducts().find(item => item.id === stockEditorProductId);
+                    row.querySelector('.warehouse-units-input').value = getProductCityStock(product)[row.dataset.originalCity] || 0;
+                } else {
+                    row.querySelector('.warehouse-city-label').classList.add('d-none');
+                    row.querySelector('.warehouse-city-input').classList.remove('d-none');
+                    row.querySelector('.warehouse-units-input').readOnly = false;
+                    button.className = 'btn btn-sm btn-success';
+                    button.innerHTML = '<i class="fas fa-save me-1"></i>Save';
+                }
+            } else if (button.dataset.action === 'delete') {
+                const city = row.dataset.originalCity || row.querySelector('.warehouse-city-input').value.trim();
+                if (row.dataset.isNew === 'true') {
+                    row.remove();
+                    [...document.querySelectorAll('#warehouse-stock-rows .warehouse-stock-row')].forEach((item, rowIndex) => item.dataset.index = String(rowIndex));
+                    return;
+                }
+                if (!confirm(`Delete the ${city} stock allocation for this product? Other products and warehouse records will not be changed.`)) return;
+                const product = GUG_DB.getProducts().find(item => item.id === stockEditorProductId);
+                const stock = getProductCityStock(product);
+                delete stock[row.dataset.originalCity];
+                product.stock = stock;
+                GUG_DB.saveProduct(product);
+                removeInventoryCityIfUnused(row.dataset.originalCity);
+                GUG_DB.logAudit({
+                    action: 'STOCK_ALLOCATION_DELETED',
+                    entity: 'PRODUCT',
+                    entityId: product.id,
+                    previousValue: `${row.dataset.originalCity}: ${Number(row.querySelector('.warehouse-units-input').value || 0)}`,
+                    newValue: 'Allocation removed',
+                    reason: `Warehouse stock allocation removed via Multi-Warehouse Inventory`
+                });
+                window.GUG_DB.showToast(`Removed ${city} allocation from ${product.title}.`, 'info', 'Allocation Deleted');
+                row.remove();
+                [...document.querySelectorAll('#warehouse-stock-rows .warehouse-stock-row')].forEach((item, rowIndex) => item.dataset.index = String(rowIndex));
+                renderStockTable();
+            } else if (button.dataset.action === 'print') {
+                printWarehouseStockSlip(row);
+            }
+        }
+
+        function addWarehouseStockCity() {
+            const rows = [...document.querySelectorAll('#warehouse-stock-rows .warehouse-stock-row')].map(row => ({
+                city: row.querySelector('.warehouse-city-input').value.trim() || row.querySelector('.warehouse-city-label').textContent,
+                units: Number(row.querySelector('.warehouse-units-input').value || 0),
+                originalCity: row.dataset.originalCity,
+                editing: row.querySelector('.warehouse-city-input').classList.contains('d-none') === false,
+                isNew: row.dataset.isNew === 'true'
+            }));
+            rows.push({ city: '', units: 0, originalCity: '', editing: true, isNew: true });
+            renderWarehouseStockRows(rows);
+            const newRow = document.querySelector('#warehouse-stock-rows .warehouse-stock-row:last-child');
+            newRow.querySelector('.warehouse-city-input').focus();
+        }
+
+        function printWarehouseStockSlip(rowElement) {
+            const product = GUG_DB.getProducts().find(item => item.id === stockEditorProductId);
+            if (!product) {
+                GUG_DB.showToast('The selected product could not be found.', 'warning', 'Product Not Found');
+                return;
+            }
+            const city = rowElement.querySelector('.warehouse-city-input').value.trim() || rowElement.querySelector('.warehouse-city-label').textContent.trim();
+            const units = Number(rowElement.querySelector('.warehouse-units-input').value || 0);
+            const printContainer = document.getElementById('warehouse-slip-print');
+            printContainer.innerHTML = `
+                <h1>Gear Up Gadgets — Warehouse Stock Slip</h1>
+                <hr>
+                <p><strong>Product:</strong> ${escapeInventoryHtml(product.title)}</p>
+                <p><strong>SKU:</strong> ${escapeInventoryHtml(product.sku || 'N/A')}</p>
+                <p><strong>City / Country:</strong> ${escapeInventoryHtml(city)}</p>
+                <p><strong>Units Allocated:</strong> ${units}</p>
+                <p><strong>Printed:</strong> ${new Date().toLocaleString()}</p>
+            `;
+            window.print();
+        }
+
         function renderStockTable() {
             const products = GUG_DB.getProducts();
             const metrics = GUG_DB.calculateExecutiveMetrics();
+            renderWarehouseFilter();
             
             document.getElementById('stat-total-valuation').innerText = 'Rs ' + metrics.inventoryValuation.toLocaleString();
             
@@ -341,6 +623,10 @@
             });
             document.getElementById('stat-total-units').innerText = totalUnits.toLocaleString() + ' Units';
             document.getElementById('stat-low-stock').innerText = metrics.lowStockCount;
+            const activeCities = getInventoryCities();
+            document.getElementById('stat-city-count').innerText = `Across ${activeCities.length} Active Hubs`;
+            document.getElementById('stat-active-warehouses').innerText = `${activeCities.length} ${activeCities.length === 1 ? 'Hub' : 'Hubs'}`;
+            document.getElementById('stat-warehouse-cities').innerText = activeCities.join(', ') || 'No locations configured';
 
             const search = (document.getElementById('search-inventory').value || '').toLowerCase();
             const filterHub = document.getElementById('filter-hub').value;
@@ -368,6 +654,7 @@
 
                 // Filters
                 if (search && !p.title.toLowerCase().includes(search) && !(p.sku || '').toLowerCase().includes(search)) return;
+                if (filterHub !== 'all' && !Object.keys(normStock).some(city => city.toLowerCase() === filterHub.toLowerCase())) return;
                 if (filterStatus === 'low' && (total > threshold || total === 0)) return;
                 if (filterStatus === 'out' && total > 0) return;
 
@@ -392,7 +679,7 @@
                     <td><strong class="text-dark">${total} Units</strong></td>
                     <td>${healthBadge}</td>
                     <td>
-                        <button class="btn btn-outline-danger btn-sm py-1 px-2" onclick="quickStockAdjust('${p.id}')" title="Quick Adjust Stock"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-outline-danger btn-sm py-1 px-2" onclick="openWarehouseStockEditor('${escapeInventoryHtml(p.id)}')" title="Edit warehouse stock allocations"><i class="fas fa-edit"></i></button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -474,45 +761,17 @@
             renderStockTable();
         }
 
-        function quickStockAdjust(prodId) {
-            const products = GUG_DB.getProducts();
-            const prod = products.find(p => p.id === prodId);
-            if (!prod) return;
-
-            const normStock = GUG_DB.normalizeProductStock ? GUG_DB.normalizeProductStock(prod.stock) : (prod.stock || { 'Karachi': 0 });
-            const cityNames = Object.keys(normStock);
-            const defaultCity = cityNames[0] || 'Karachi';
-            const targetCity = prompt(`Enter City to adjust stock for "${prod.title}" (Available: ${cityNames.join(', ')}):`, defaultCity);
-            if (!targetCity) return;
-            const cleanCity = targetCity.trim();
-
-            const currentQty = normStock[cleanCity] || 0;
-            const newQtyStr = prompt(`Enter new stock quantity for "${prod.title}" in ${cleanCity}:`, currentQty);
-            if (newQtyStr !== null && !isNaN(newQtyStr)) {
-                const newQty = Math.max(0, Number(newQtyStr));
-                normStock[cleanCity] = newQty;
-                prod.stock = normStock;
-                GUG_DB.saveProduct(prod);
-
-                GUG_DB.logAudit({
-                    action: 'STOCK_ADJUSTMENT',
-                    entity: 'PRODUCT',
-                    entityId: prod.id,
-                    previousValue: `${cleanCity}: ${currentQty}`,
-                    newValue: `${cleanCity}: ${newQty}`,
-                    reason: `Manual stock count adjustment for ${cleanCity} via ERP Inventory`
-                });
-                window.GUG_DB.showToast(`Updated stock in ${cleanCity} to ${newQty} units.`, 'success', 'Stock Adjusted');
-                renderStockTable();
-            }
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
             GUG_DB.renderGlobalHeader('gug-global-header-container', 'Multi-Warehouse Inventory Control');
             GUG_DB.renderBeginnerHelpBanner('gug-beginner-help-container', {
                 whereAmI: 'Multi-Hub Inventory & Valuation Manager',
                 whatCanIDo: 'View live stock levels across Karachi (WH-01), Lahore (WH-02), and Islamabad (WH-03), perform inter-hub transfers, and adjust stock counts.',
                 whatNext: 'Click "Transfer Stock" to move products between hubs or click the edit icon on any item to perform an inventory count adjustment.'
+            });
+            document.getElementById('warehouse-stock-rows').addEventListener('click', handleWarehouseStockAction);
+            document.getElementById('add-warehouse-city').addEventListener('click', addWarehouseStockCity);
+            window.addEventListener('afterprint', () => {
+                document.getElementById('warehouse-slip-print').innerHTML = '';
             });
             renderStockTable();
             window.addEventListener('gugCatalogUpdated', () => renderStockTable());
@@ -521,6 +780,3 @@
     </script>
 </body>
 </html>
-
-
-

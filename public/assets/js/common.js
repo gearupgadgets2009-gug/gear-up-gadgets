@@ -858,7 +858,7 @@ function injectFooter() {
     const shopAddr = cfg.footerShopAddress || 'FA-06, 1st floor, Techno City Mall, Karachi.';
     const officeAddr = cfg.footerHeadOffice || 'D-5, 4th floor, Osif Center, Block 13 A, University Road Gulshan-e-Iqbal, Karachi-Pakistan.';
     const aboutText = cfg.footerAbout || "Pakistan's premier high-end computer store. Servicing tech enthusiasts, gaming communities, and rendering professionals since 2012 with premium hardware, graphics cards, custom PC assembly, and unmatched support.";
-    const copyright = cfg.footerCopyright || 'Copyright &copy; 2021 to 2026 <a href="index.html" class="text-white fw-bold">GEAR UP GADGETS</a>. All rights reserved.';
+    const copyright = 'Copyright 2021 to 2026 Gear Up Gadgets All rights reserved. [POWERED BY PHOENIX TECHNOLOGY]';
     
     // Contact Info - Support Multiple Arrays & Fallback Single Strings
     const queriesPhones = (Array.isArray(cfg.queriesPhones) && cfg.queriesPhones.length > 0)
@@ -1067,9 +1067,9 @@ function injectFooter() {
                     </div>
                 </div>
 
-                <div style="border-top: 1px solid var(--border-color); padding-top: 20px;" class="d-flex justify-content-between align-items-center flex-wrap gap-10">
-                    <p class="m-0" style="font-size: 13px;">${copyright}</p>
-                    <div class="d-flex gap-15">
+                <div style="border-top: 1px solid var(--border-color); padding-top: 20px; text-align: center !important;" class="d-flex flex-column justify-content-center align-items-center flex-wrap gap-10">
+                    <p class="m-0 w-100" style="font-size: 13px; text-align: center !important;">${copyright}</p>
+                    <div class="d-flex gap-15 justify-content-center">
                         <a href="#" class="text-secondary hover-danger" style="font-size: 16px;"><i class="icon icon-facebook-f-brands"></i></a>
                         <a href="#" class="text-secondary hover-danger" style="font-size: 16px;"><i class="icon icon-twitter-brands"></i></a>
                         <a href="#" class="text-secondary hover-danger" style="font-size: 16px;"><i class="icon icon-youtube-brands"></i></a>
@@ -1986,6 +1986,5 @@ function initStorefrontResponsiveTableCards() {
     }
 }
 document.addEventListener('DOMContentLoaded', initStorefrontResponsiveTableCards);
-
 
 

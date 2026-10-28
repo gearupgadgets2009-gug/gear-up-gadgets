@@ -34,6 +34,18 @@
         .nav-tabs-erp .nav-link { color: #64748b; border: none; border-bottom: 2px solid transparent; padding: 10px 18px; font-weight: 600; font-size: 13.5px; background: transparent; transition: all 0.2s; }
         .nav-tabs-erp .nav-link:hover { color: #ffffff; }
         .nav-tabs-erp .nav-link.active { color: var(--accent-red); border-bottom-color: var(--accent-red); background: transparent; }
+        .po-extra-field { border: 1px solid rgba(255,255,255,.12); border-radius: 8px; padding: 10px; }
+        #purchase-order-print { display: none; }
+        @media print {
+            body * { visibility: hidden !important; }
+            #purchase-order-print, #purchase-order-print * { visibility: visible !important; }
+            #purchase-order-print { display: block !important; position: absolute; inset: 0; padding: 28px; background: #fff; color: #111; font: 14px Arial, sans-serif; }
+            #purchase-order-print h1, #purchase-order-print h2 { color: #111; }
+            #purchase-order-print table { width: 100%; border-collapse: collapse; margin: 18px 0; }
+            #purchase-order-print th, #purchase-order-print td { border: 1px solid #bbb; padding: 8px; text-align: left; }
+            #purchase-order-print th { background: #f0f0f0; }
+            #purchase-order-print .po-print-total { text-align: right; font-size: 18px; font-weight: bold; margin-top: 16px; }
+        }
     </style>
 </head>
 <body>
@@ -259,6 +271,7 @@
                                     <span class="input-group-text bg-dark border-secondary text-danger"><i class="fas fa-building"></i></span>
                                     <input type="text" id="po-supplier-input" class="form-control" list="po-supplier-datalist" placeholder="Type or select supplier (e.g. ASUS Regional Direct, Custom Tech Vendor)" required>
                                 </div>
+                                <button type="button" class="btn btn-outline-danger btn-sm mt-2" onclick="addPOSupplier()"><i class="fas fa-plus me-1"></i> Add New Supplier</button>
                                 <small class="text-muted" style="font-size: 11px;">Pick from registered suppliers or physically type any custom vendor name.</small>
                             </div>
                             <div class="col-md-6">
@@ -270,6 +283,7 @@
                                     <span class="input-group-text bg-dark border-secondary text-primary"><i class="fas fa-warehouse"></i></span>
                                     <input type="text" id="po-warehouse-input" class="form-control" list="po-warehouse-datalist" placeholder="e.g. Karachi Central Hub, Lahore, Faisalabad" value="Karachi Central Hub (WH-01)" required>
                                 </div>
+                                <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addPOHub()"><i class="fas fa-plus me-1"></i> Add New Hub/City</button>
                                 <small class="text-muted" style="font-size: 11px;">Type any custom warehouse hub or city name where items will be received.</small>
                             </div>
                         </div>
@@ -341,16 +355,23 @@
                                 <small class="text-muted" style="font-size: 11px;">Special shipping or warranty instructions.</small>
                             </div>
                         </div>
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="addPOTermField()"><i class="fas fa-plus me-1"></i> Add More</button>
+                            <div id="po-extra-fields" class="d-grid gap-2 mt-2"></div>
+                        </div>
 
                         <div class="d-flex justify-content-end gap-2 mt-4 pt-2 border-top border-secondary">
                             <button type="button" class="btn btn-secondary btn-sm px-3" data-bs-dismiss="modal">Cancel</button>
                             <button type="submit" class="btn btn-danger btn-sm px-4 fw-bold"><i class="fas fa-save me-1"></i> Issue &amp; Save Purchase Order</button>
+                            <button type="button" class="btn btn-success btn-sm px-4 fw-bold" onclick="handleCreatePO({ preventDefault: function() {} }, true)"><i class="fas fa-print me-1"></i> Generate &amp; Print Purchase Order</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+
+    <section id="purchase-order-print" aria-label="Printable purchase order"></section>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -364,19 +385,119 @@
     <script src="assets/js/firebase-sync.js"></script>
     <script src="assets/js/admin.js"></script>
     <script>
+        function escapePOHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, character => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            })[character]);
+        }
+
+        function addPOHub() {
+            const city = prompt('Enter the new warehouse hub or city name:');
+            if (city === null) return;
+            const cleanCity = city.trim();
+            if (!cleanCity) {
+                GUG_DB.showToast('Enter a hub or city name.', 'warning', 'Hub Name Required');
+                return;
+            }
+            const cities = GUG_DB.getInventoryCities ? GUG_DB.getInventoryCities() : [];
+            if (cities.some(existing => existing.toLowerCase() === cleanCity.toLowerCase())) {
+                document.getElementById('po-warehouse-input').value = cleanCity;
+                GUG_DB.showToast(`${cleanCity} is already available and has been selected.`, 'info', 'Hub Already Exists');
+                return;
+            }
+            if (typeof GUG_DB.saveInventoryCity === 'function') GUG_DB.saveInventoryCity(cleanCity);
+            populatePODatalists();
+            document.getElementById('po-warehouse-input').value = cleanCity;
+            GUG_DB.showToast(`${cleanCity} was added and selected as the destination hub.`, 'success', 'Hub Added');
+        }
+
+        function addPOSupplier() {
+            const supplierName = prompt('Enter the new supplier or vendor name:');
+            if (supplierName === null) return;
+            const cleanName = supplierName.trim();
+            if (!cleanName) {
+                GUG_DB.showToast('Enter a supplier or vendor name.', 'warning', 'Supplier Name Required');
+                return;
+            }
+            const existing = GUG_DB.getSuppliers().find(supplier =>
+                String(supplier.name || '').toLowerCase() === cleanName.toLowerCase()
+            );
+            if (existing) {
+                document.getElementById('po-supplier-input').value = existing.name;
+                GUG_DB.showToast(`${existing.name} is already registered and has been selected.`, 'info', 'Supplier Already Exists');
+                return;
+            }
+
+            const supplier = GUG_DB.saveSupplier({
+                name: cleanName,
+                contactPerson: 'Vendor Representative',
+                category: 'Hardware & Accessories',
+                email: '',
+                phone: '',
+                paymentTerms: document.getElementById('po-payment-terms').value.trim() || 'Net 30 Days',
+                balancePayable: 0,
+                status: 'Active'
+            });
+            populatePODatalists();
+            document.getElementById('po-supplier-input').value = supplier.name;
+            GUG_DB.showToast(`${supplier.name} was added and selected.`, 'success', 'Supplier Added');
+            if (typeof renderPurchasingViews === 'function') renderPurchasingViews();
+        }
+
+        function addPOTermField(label = '', value = '') {
+            const container = document.getElementById('po-extra-fields');
+            const row = document.createElement('div');
+            row.className = 'row g-2 align-items-center po-extra-field';
+            row.innerHTML = `
+                <div class="col-md-4">
+                    <input type="text" class="form-control po-extra-label" maxlength="80" placeholder="Custom field / term name" value="${escapePOHtml(label)}" aria-label="Custom term name">
+                </div>
+                <div class="col-md-7">
+                    <input type="text" class="form-control po-extra-value" maxlength="240" placeholder="Enter additional term or detail" value="${escapePOHtml(value)}" aria-label="Custom term detail">
+                </div>
+                <div class="col-md-1 text-end">
+                    <button type="button" class="btn btn-outline-danger btn-sm" aria-label="Remove custom field"><i class="fas fa-trash"></i></button>
+                </div>
+            `;
+            row.querySelector('button').addEventListener('click', () => row.remove());
+            container.appendChild(row);
+            row.querySelector('.po-extra-label').focus();
+        }
+
+        function getPOAdditionalTerms() {
+            return [...document.querySelectorAll('#po-extra-fields .po-extra-field')].map(row => ({
+                label: row.querySelector('.po-extra-label').value.trim(),
+                value: row.querySelector('.po-extra-value').value.trim()
+            })).filter(field => field.label || field.value);
+        }
+
         function populatePODatalists() {
             // Populate Suppliers Datalist
             const supDatalist = document.getElementById('po-supplier-datalist');
             if (supDatalist) {
                 const suppliers = GUG_DB.getSuppliers();
-                supDatalist.innerHTML = suppliers.map(s => `<option value="${s.name}">${s.name} (${s.category || 'Vendor'})</option>`).join('');
+                supDatalist.replaceChildren(...suppliers.map(supplier => {
+                    const option = document.createElement('option');
+                    option.value = supplier.name;
+                    option.label = `${supplier.name} (${supplier.category || 'Vendor'})`;
+                    return option;
+                }));
             }
 
             // Populate Warehouse Datalist
             const whDatalist = document.getElementById('po-warehouse-datalist');
             if (whDatalist) {
                 const cities = GUG_DB.getInventoryCities ? GUG_DB.getInventoryCities() : ['Karachi', 'Lahore', 'Islamabad', 'Faisalabad', 'Multan', 'Rawalpindi', 'Peshawar', 'Quetta', 'Sialkot', 'Gujranwala'];
-                whDatalist.innerHTML = cities.map(c => `<option value="${c} Central Hub">${c} Central Hub</option>`).join('');
+                const hubs = new Set(['Karachi Central Hub (WH-01)', ...cities.flatMap(city => [`${city} Central Hub`, city])]);
+                whDatalist.replaceChildren(...[...hubs].map(hub => {
+                    const option = document.createElement('option');
+                    option.value = hub;
+                    return option;
+                }));
             }
 
             // Populate Item Catalog Datalist
@@ -578,6 +699,7 @@
 
         function openCreatePOModal() {
             document.getElementById('createPOForm').reset();
+            document.getElementById('po-extra-fields').innerHTML = '';
             populatePODatalists();
 
             const suppliers = GUG_DB.getSuppliers();
@@ -611,16 +733,19 @@
             setPOExpectedPreset(14);
             calculatePOTotals();
 
-            new bootstrap.Modal(document.getElementById('createPOModal')).show();
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('createPOModal')).show();
         }
 
-        function handleCreatePO(e) {
+        function handleCreatePO(e, shouldPrint = false) {
             e.preventDefault();
+            const form = document.getElementById('createPOForm');
+            if (!form.reportValidity()) return;
             const supplierName = document.getElementById('po-supplier-input').value.trim();
             const targetWarehouse = document.getElementById('po-warehouse-input').value.trim() || 'Karachi Central Hub (WH-01)';
             const expectedDate = document.getElementById('po-expected-date').value;
             const paymentTerms = document.getElementById('po-payment-terms').value.trim() || 'Net 30 Days';
             const notes = document.getElementById('po-notes').value.trim();
+            const additionalTerms = getPOAdditionalTerms();
 
             if (!supplierName) {
                 window.GUG_DB.showToast('Please enter or select a Supplier Name.', 'warning', 'Supplier Required');
@@ -663,11 +788,12 @@
             const suppliers = GUG_DB.getSuppliers();
             const existingSup = suppliers.find(s => s.name && s.name.toLowerCase() === supplierName.toLowerCase());
 
-            GUG_DB.createPurchaseOrder({
+            const purchaseOrder = GUG_DB.createPurchaseOrder({
                 supplierId: existingSup ? existingSup.id : undefined,
                 supplierName: supplierName,
                 targetWarehouse: targetWarehouse,
                 paymentTerms: paymentTerms,
+                additionalTerms,
                 items: items,
                 totalAmount: totalAmount,
                 status: 'Approved',
@@ -678,6 +804,45 @@
             bootstrap.Modal.getInstance(document.getElementById('createPOModal')).hide();
             window.GUG_DB.showToast(`Purchase Order for Rs. ${totalAmount.toLocaleString()} created and approved successfully!`, 'success', 'PO Approved');
             renderPurchasingViews();
+            if (shouldPrint) {
+                renderPurchaseOrderPrint(purchaseOrder);
+                setTimeout(() => window.print(), 250);
+            }
+        }
+
+        function renderPurchaseOrderPrint(po) {
+            const itemsRows = po.items.map(item => `
+                <tr>
+                    <td>${escapePOHtml(item.name)}</td>
+                    <td>${Number(item.quantity || 0).toLocaleString()} ${escapePOHtml(item.unit || 'Pieces')}</td>
+                    <td>Rs. ${Number(item.unitCost || 0).toLocaleString()}</td>
+                    <td>Rs. ${Number(item.totalCost || 0).toLocaleString()}</td>
+                </tr>
+            `).join('');
+            const extraTerms = (po.additionalTerms || []).map(field => `
+                <p><strong>${escapePOHtml(field.label || 'Additional Term')}:</strong> ${escapePOHtml(field.value)}</p>
+            `).join('');
+            document.getElementById('purchase-order-print').innerHTML = `
+                <header>
+                    <h1>Gear Up Gadgets</h1>
+                    <p>Purchase Order</p>
+                </header>
+                <hr>
+                <h2>Purchase Order ${escapePOHtml(po.id)}</h2>
+                <p><strong>Order Date:</strong> ${escapePOHtml(po.orderDate)}</p>
+                <p><strong>Expected Delivery:</strong> ${escapePOHtml(po.expectedDate)}</p>
+                <p><strong>Supplier / Vendor:</strong> ${escapePOHtml(po.supplierName)}</p>
+                <p><strong>Destination Hub:</strong> ${escapePOHtml(po.targetWarehouse)}</p>
+                <p><strong>Payment & Credit Terms:</strong> ${escapePOHtml(po.paymentTerms || 'Not specified')}</p>
+                ${extraTerms}
+                <table>
+                    <thead><tr><th>Product / Item</th><th>Quantity</th><th>Unit Cost</th><th>Line Total</th></tr></thead>
+                    <tbody>${itemsRows}</tbody>
+                </table>
+                <p><strong>Procurement Notes:</strong> ${escapePOHtml(po.notes || 'None')}</p>
+                <p class="po-print-total">Grand Total: Rs. ${Number(po.totalAmount || 0).toLocaleString()}</p>
+                <footer><p>Authorized Signature: ____________________________</p></footer>
+            `;
         }
 
         function receiveGRN(poId, targetWh) {
@@ -704,6 +869,3 @@
     </script>
 </body>
 </html>
-
-
-
