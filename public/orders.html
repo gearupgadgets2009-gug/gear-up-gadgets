@@ -22,6 +22,7 @@
     <link rel="stylesheet" href="assets/fonts/font-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/custom.css">
+    <link rel="stylesheet" href="assets/css/payment-methods.css">
     <style>
         body { background-color: var(--gug-bg-color, #07090d) !important; background-image: var(--gug-bg-image) !important; background-attachment: var(--gug-bg-attachment, fixed) !important; background-size: var(--gug-bg-size, cover, cover, 28px 49px) !important; background-position: var(--gug-bg-position, center top) !important; background-repeat: var(--gug-bg-repeat, no-repeat, no-repeat, repeat) !important; min-height: 100vh; color: #ffffff !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .admin-sidebar { width: 260px; background: rgba(10, 10, 15, 0.6) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; height: 100vh; position: fixed; left: 0; top: 0; padding: 20px 15px; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; overflow-y: auto; z-index: 1000; }
@@ -271,16 +272,16 @@
                                 <input type="number" id="mo-qty" class="form-control" value="1" min="1" required oninput="recalcManualOrderTotal()">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Payment Method</label>
-                                <input type="text" id="mo-payment" class="form-control" list="mo-payment-datalist" placeholder="Select or type payment method..." value="Cash on Delivery (COD)">
-                                <datalist id="mo-payment-datalist">
-                                    <option value="Cash on Delivery (COD)">
-                                    <option value="Bank Transfer (Prepaid)">
-                                    <option value="JazzCash">
-                                    <option value="EasyPaisa">
-                                    <option value="Debit / Credit Card">
-                                    <option value="Direct Cash / POS">
-                                </datalist>
+                                <label class="form-label" for="mo-payment">Payment Method</label>
+                                <select id="mo-payment" class="form-select" required>
+                                    <option value="Cash">Cash</option>
+                                    <option value="Online">Online</option>
+                                    <option value="Bank">Bank</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="mo-paid-amount">Paid Amount (PKR)</label>
+                                <input type="number" id="mo-paid-amount" class="form-control" min="0" step="0.01" value="0">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Fulfillment Hub / Warehouse</label>
@@ -333,6 +334,7 @@
     <script src="assets/js/firebase-config.js"></script>
     <script src="assets/js/firebase-sync.js"></script>
     <script src="assets/js/admin.js"></script>
+    <script src="assets/js/payment-methods.js"></script>
     <script>
         let orderModalInstance = null;
         let createModalInstance = null;
@@ -583,12 +585,23 @@
             }
 
             document.getElementById('mo-city').value = 'Karachi';
-            document.getElementById('mo-payment').value = 'Cash on Delivery (COD)';
+            document.getElementById('mo-payment').value = 'Cash';
             document.getElementById('mo-hub').value = 'Main Central Hub (Karachi)';
             document.getElementById('mo-status').value = 'Processing';
             document.getElementById('mo-qty').value = '1';
             document.getElementById('mo-price').value = '';
             document.getElementById('mo-total-preview').innerText = 'Rs. 0';
+            document.getElementById('mo-paid-amount').value = '0';
+            window.manualOrderPaymentCapture = window.GUG_PAYMENT_METHODS.mount({
+                form: 'createOrderForm',
+                prefix: 'manual-order-payment',
+                methodId: 'mo-payment',
+                amountId: 'mo-paid-amount',
+                defaultMethod: 'Cash',
+                amountLabel: 'Paid Amount (PKR)',
+                total: () => (parseFloat(document.getElementById('mo-price').value) || 0) *
+                    (parseInt(document.getElementById('mo-qty').value, 10) || 1)
+            });
 
             const modalEl = document.getElementById('createOrderModal');
             if (modalEl) {
@@ -615,6 +628,7 @@
             if (preview) {
                 preview.innerText = 'Rs. ' + total.toLocaleString();
             }
+            if (window.manualOrderPaymentCapture) window.manualOrderPaymentCapture.refresh();
         }
 
         function submitManualOrder() {
@@ -626,7 +640,6 @@
             const prodTitle = document.getElementById('mo-product-input').value.trim();
             const unitPrice = parseFloat(document.getElementById('mo-price').value) || 0;
             const qty = parseInt(document.getElementById('mo-qty').value) || 1;
-            const payment = document.getElementById('mo-payment').value.trim() || 'Cash on Delivery (COD)';
             const hub = document.getElementById('mo-hub').value.trim() || 'Main Central Hub (Karachi)';
             const status = document.getElementById('mo-status').value.trim() || 'Processing';
             const notes = document.getElementById('mo-notes') ? document.getElementById('mo-notes').value.trim() : '';
@@ -640,13 +653,32 @@
                 return;
             }
 
+            let paymentDetails;
+            try {
+                if (!window.manualOrderPaymentCapture) {
+                    throw new Error('Payment capture is not ready. Reopen the order form and try again.');
+                }
+                paymentDetails = window.manualOrderPaymentCapture.collect();
+            } catch (error) {
+                if (window.GUG_DB && window.GUG_DB.showToast) {
+                    window.GUG_DB.showToast(error.message, 'error', 'Payment Details Required');
+                } else {
+                    alert(error.message);
+                }
+                return;
+            }
+
             const products = (window.GUG_DB && window.GUG_DB.getProducts) ? window.GUG_DB.getProducts() : [];
             const matched = products.find(p => p.title.toLowerCase() === prodTitle.toLowerCase());
             const prodId = matched ? matched.id : ('CUSTOM-' + Date.now());
 
             const total = unitPrice * qty;
+            const orderId = 'GUG-' + Math.floor(100000 + Math.random() * 900000);
+            const paymentStatus = paymentDetails.paidAmount >= total && total > 0
+                ? 'Paid'
+                : paymentDetails.paidAmount > 0 ? 'Partial' : 'Pending';
             const newOrder = {
-                id: 'GUG-' + Math.floor(100000 + Math.random() * 900000),
+                id: orderId,
                 date: new Date().toISOString(),
                 customer: {
                     name: name,
@@ -663,8 +695,27 @@
                 }],
                 subtotal: total,
                 total: total,
-                paymentMethod: payment,
-                paymentStatus: (payment.includes('Prepaid') || payment.includes('Online') || payment.includes('Card') || payment.includes('POS') || payment.includes('Jazz') || payment.includes('Paisa')) ? 'Paid' : 'Pending',
+                paymentMethod: paymentDetails.paymentMethod,
+                bankNetwork: paymentDetails.bankNetwork,
+                transactionReference: paymentDetails.transactionReference,
+                paidAmount: paymentDetails.paidAmount,
+                balanceAmount: paymentDetails.balanceAmount,
+                transactionAt: paymentDetails.transactionAt,
+                receiptName: paymentDetails.receiptName,
+                receiptData: paymentDetails.receiptData,
+                paymentHistory: paymentDetails.paidAmount > 0 ? [{
+                    id: `${orderId}-PAY-${Date.now()}`,
+                    amount: paymentDetails.paidAmount,
+                    paymentMethod: paymentDetails.paymentMethod,
+                    bankNetwork: paymentDetails.bankNetwork,
+                    transactionReference: paymentDetails.transactionReference,
+                    reference: paymentDetails.transactionReference,
+                    timestamp: paymentDetails.transactionAt,
+                    date: paymentDetails.transactionAt,
+                    receiptName: paymentDetails.receiptName,
+                    receiptData: paymentDetails.receiptData
+                }] : [],
+                paymentStatus,
                 orderStatus: status,
                 hub: hub,
                 notes: notes || 'Manual order placed via Admin Pipeline'
@@ -719,6 +770,5 @@
     </script>
 </body>
 </html>
-
 
 

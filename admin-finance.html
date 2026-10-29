@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/custom.css">
+    <link rel="stylesheet" href="assets/css/payment-methods.css">
         <style>
         body { background-color: var(--gug-bg-color, #07090d) !important; background-image: var(--gug-bg-image) !important; background-attachment: var(--gug-bg-attachment, fixed) !important; background-size: var(--gug-bg-size, cover, cover, 28px 49px) !important; background-position: var(--gug-bg-position, center top) !important; background-repeat: var(--gug-bg-repeat, no-repeat, no-repeat, repeat) !important; min-height: 100vh; color: #ffffff !important; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
         .admin-sidebar { width: 260px; background: rgba(10, 10, 15, 0.6) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; height: 100vh; position: fixed; left: 0; top: 0; padding: 20px 15px; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; overflow-y: auto; z-index: 1000; box-shadow: 4px 0 30px rgba(0, 0, 0, 0.5) !important; }
@@ -94,6 +95,11 @@
             margin-bottom: 8px;
             transition: all 0.2s;
         }
+        .finance-view-tabs { display: flex; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid rgba(255,255,255,.12); padding-bottom: 12px; }
+        .finance-view-tabs .btn { flex: 1 1 220px; min-height: 44px; }
+        .finance-view-tabs .btn.active { background: var(--accent-red); border-color: var(--accent-red); color: #fff; }
+        .finance-view-panel[hidden], .stock-movement-panel[hidden] { display: none !important; }
+        .finance-payment-method { display: inline-flex; align-items: center; white-space: nowrap; }
         .erp-tabs .nav-link:hover {
             color: #ffffff;
             background: rgba(255, 255, 255, 0.12);
@@ -129,6 +135,14 @@
             border: 1px solid rgba(255, 255, 255, 0.15);
             color: rgba(255, 255, 255, 0.85);
         }
+        .finance-range-controls { min-width: 180px; }
+        .finance-ledger-table { min-width: 880px; }
+        .finance-kpi { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: 12px; padding: 16px; height: 100%; }
+        .finance-kpi-label { color: #94a3b8; font-size: 11px; font-weight: 700; letter-spacing: .7px; text-transform: uppercase; }
+        .finance-kpi-value { color: #fff; font-size: clamp(1.2rem, 2vw, 1.75rem); font-weight: 800; overflow-wrap: anywhere; }
+        .finance-subsection-title { color: #fff; font-size: 1rem; font-weight: 700; }
+        .finance-ledger-actions .btn { white-space: nowrap; }
+        #finance-receipt-file { color: #212529; }
         
         .modal-content {
             background: rgba(10, 10, 15, 0.75) !important;
@@ -297,9 +311,9 @@
             <div class="col-xl-2 col-md-4 col-sm-6">
                 <div class="kpi-card" style="border-left: 4px solid #28a745;">
                     <i class="fas fa-chart-line-up kpi-icon text-success"></i>
-                    <p class="kpi-title">Net Profit (Items)</p>
+                    <p class="kpi-title">Net Profit</p>
                     <div class="kpi-value text-success" id="kpi-accumulated-profit">Rs. 0</div>
-                    <p class="kpi-subtitle">Revenue - Cost of Sold Goods</p>
+                    <p class="kpi-subtitle">Ledger revenue less supplier, payroll and petty expenses</p>
                 </div>
             </div>
 
@@ -309,7 +323,7 @@
                     <i class="fas fa-sack-dollar kpi-icon text-danger"></i>
                     <p class="kpi-title">Net Operating Profit</p>
                     <div class="kpi-value text-white fw-bold" id="kpi-operating-profit">Rs. 0</div>
-                    <p class="kpi-subtitle">Gross Profit - Salaries Paid</p>
+                    <p class="kpi-subtitle">Revenue less payroll and petty expenses</p>
                 </div>
             </div>
 
@@ -327,7 +341,7 @@
             <div class="col-xl-2 col-md-4 col-sm-6">
                 <div class="kpi-card" style="border-left: 4px solid #6f42c1;">
                     <i class="fas fa-receipt kpi-icon" style="color: #9b59b6;"></i>
-                    <p class="kpi-title">Online Payments</p>
+                    <p class="kpi-title">Online Payment</p>
                     <div class="kpi-value" style="color: #bb86fc;" id="kpi-online-volume">Rs. 0</div>
                     <p class="kpi-subtitle" id="kpi-online-count">0 Settled Transactions</p>
                 </div>
@@ -363,6 +377,66 @@
 
             <!-- TAB 1: PROFIT & LOSS DASHBOARD -->
             <div class="tab-pane fade show active" id="tab-pnl" role="tabpanel">
+                <section class="admin-card" id="finance-master-dashboard">
+                    <div class="admin-card-header flex-wrap gap-3">
+                        <div>
+                            <h4 class="text-white fw-bold mb-1"><i class="fas fa-chart-pie text-danger me-2"></i> Master Profit &amp; Loss</h4>
+                            <p class="text-secondary small mb-0">Live totals from customer orders, dealer receipts, supplier payments, payroll and petty cash. Product cost defaults to recorded purchase cost, or an estimate when none is available.</p>
+                        </div>
+                        <div class="d-flex flex-wrap align-items-center gap-2 btn-no-print">
+                            <label for="finance-range-pnl" class="small text-white mb-0">Reporting period</label>
+                            <select id="finance-range-pnl" class="form-select bg-dark text-white border-secondary finance-range-filter finance-range-controls">
+                                <option value="1d">1 day</option>
+                                <option value="1w">1 week</option>
+                                <option value="3m">3 months</option>
+                                <option value="6m">6 months</option>
+                                <option value="1y" selected>1 year</option>
+                                <option value="2y">2 years</option>
+                                <option value="5y">5 years</option>
+                                <option value="10y">10 years</option>
+                                <option value="custom">Custom range</option>
+                            </select>
+                            <input type="date" id="finance-range-start-pnl" class="form-control bg-dark text-white border-secondary finance-range-start d-none" aria-label="Period start date">
+                            <input type="date" id="finance-range-end-pnl" class="form-control bg-dark text-white border-secondary finance-range-end d-none" aria-label="Period end date">
+                        </div>
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-xl-3 col-md-6"><div class="finance-kpi"><div class="finance-kpi-label">Total Capital Invested</div><div class="finance-kpi-value text-info" id="master-capital">Rs. 0</div><small class="text-secondary">Recorded inventory acquisition cost</small></div></div>
+                        <div class="col-xl-3 col-md-6"><div class="finance-kpi"><div class="finance-kpi-label">Total Revenue</div><div class="finance-kpi-value text-success" id="master-revenue">Rs. 0</div><small class="text-secondary">Customer CRM + dealer receipts</small></div></div>
+                        <div class="col-xl-3 col-md-6"><div class="finance-kpi"><div class="finance-kpi-label">Total Expenses</div><div class="finance-kpi-value text-warning" id="master-expenses">Rs. 0</div><small class="text-secondary">Suppliers + payroll + petty cash</small></div></div>
+                        <div class="col-xl-3 col-md-6"><div class="finance-kpi"><div class="finance-kpi-label">Net Profit / Net Loss</div><div class="finance-kpi-value" id="master-net">Rs. 0</div><small class="text-secondary" id="master-period-label">Selected period</small></div></div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-lg-6">
+                            <h5 class="finance-subsection-title"><i class="fas fa-arrow-trend-up text-success me-2"></i>Income Sources</h5>
+                            <div class="table-responsive"><table class="table table-sm"><thead><tr><th>Source</th><th class="text-end">Amount</th></tr></thead><tbody id="master-income-breakdown"></tbody></table></div>
+                        </div>
+                        <div class="col-lg-6">
+                            <h5 class="finance-subsection-title"><i class="fas fa-arrow-trend-down text-danger me-2"></i>Expense Sources</h5>
+                            <div class="table-responsive"><table class="table table-sm"><thead><tr><th>Source</th><th class="text-end">Amount</th></tr></thead><tbody id="master-expense-breakdown"></tbody></table></div>
+                        </div>
+                    </div>
+                    <details class="mt-4">
+                        <summary class="finance-subsection-title mb-2"><i class="fas fa-truck-ramp-box text-warning me-2"></i>Supplier Payment Receipts</summary>
+                        <div class="d-flex justify-content-end mb-2"><button type="button" class="btn btn-outline-warning btn-sm finance-add-source" data-source="supplier"><i class="fas fa-plus me-1"></i> Add Supplier Entry</button></div>
+                        <div class="table-responsive"><table class="table table-hover finance-ledger-table"><thead><tr><th>Date</th><th>PO / Reference</th><th>Supplier / Description</th><th>Payment status</th><th class="text-end">Amount paid</th><th>Receipt file</th><th class="text-end action-column">Actions</th></tr></thead><tbody id="finance-supplier-ledger"></tbody></table></div>
+                    </details>
+                    <details class="mt-4">
+                        <summary class="finance-subsection-title mb-2"><i class="fas fa-boxes-stacked text-info me-2"></i>Fast Moving vs. Slow Moving Products</summary>
+                        <p class="text-secondary small">Sales-derived margin is linked to order item cost prices where available.</p>
+                        <div class="row g-3">
+                            <div class="col-lg-6"><h6 class="text-success">Fast moving / most sold</h6><div class="table-responsive"><table class="table table-sm"><thead><tr><th>Product</th><th class="text-end">Units</th><th class="text-end">Revenue</th><th class="text-end">Gross profit</th></tr></thead><tbody id="finance-fast-moving"></tbody></table></div></div>
+                            <div class="col-lg-6"><h6 class="text-warning">Slow moving / least sold</h6><div class="table-responsive"><table class="table table-sm"><thead><tr><th>Product</th><th class="text-end">Units</th><th class="text-end">Revenue</th><th class="text-end">Gross profit</th></tr></thead><tbody id="finance-slow-moving"></tbody></table></div></div>
+                        </div>
+                    </details>
+                    <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                            <div><h5 class="finance-subsection-title mb-1"><i class="fas fa-wallet text-warning me-2"></i>Petty Cash / Miscellaneous Expenses</h5><small class="text-secondary">Record daily Fueling, Tea/Snacks/Water, Groceries or Conveyance expenses.</small></div>
+                            <button type="button" class="btn btn-warning btn-sm fw-bold" id="finance-add-petty"><i class="fas fa-plus me-1"></i> Add Daily Expense</button>
+                        </div>
+                        <div class="table-responsive"><table class="table table-sm finance-ledger-table"><thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Receipt</th><th class="text-end">Amount</th><th class="text-end action-column">Actions</th></tr></thead><tbody id="finance-petty-table"></tbody></table></div>
+                    </div>
+                </section>
                 <div class="admin-card">
                     <div class="admin-card-header flex-wrap gap-2">
                         <div>
@@ -427,7 +501,7 @@
                         <div class="d-flex flex-wrap gap-2 btn-no-print">
                             <select id="salary-month-filter" class="form-select bg-dark text-white border-secondary" style="width: 170px;" onchange="renderSalaryTable()">
                                 <option value="ALL">All Months</option>
-                                <option value="August 2026" selected>August 2026</option>
+                                <option value="August 2026">August 2026</option>
                                 <option value="July 2026">July 2026</option>
                                 <option value="June 2026">June 2026</option>
                             </select>
@@ -444,7 +518,7 @@
                     <div class="row g-2 mb-3">
                         <div class="col-md-3">
                             <div class="p-2 rounded bg-dark border border-secondary border-opacity-25 text-center">
-                                <span class="text-secondary small d-block">Monthly Payroll Budget:</span>
+                                <span class="text-secondary small d-block">Selected Payroll Budget:</span>
                                 <span class="fw-bold text-white fs-6" id="salary-stat-total">Rs. 0</span>
                             </div>
                         </div>
@@ -478,15 +552,17 @@
                                     <th class="text-end">Base Salary</th>
                                     <th class="text-end">Allowances</th>
                                     <th class="text-end">Deductions</th>
+                                    <th class="text-end">Advance Paid</th>
                                     <th class="text-end">Net Payable</th>
                                     <th class="text-center">Month</th>
                                     <th class="text-center">Payment Status</th>
+                                    <th class="text-center">Payment Method</th>
                                     <th>Payment Details</th>
                                     <th class="text-center action-column">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="salary-table-body">
-                                <tr><td colspan="10" class="text-center text-secondary py-4">Loading salary records...</td></tr>
+                                <tr><td colspan="12" class="text-center text-secondary py-4">Loading salary records...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -495,19 +571,64 @@
 
             <!-- TAB 3: ONLINE PAYMENTS & TRANSACTIONS -->
             <div class="tab-pane fade" id="tab-payments" role="tabpanel">
-                <div class="admin-card">
+                <section class="admin-card" id="finance-integrated-ledger">
                     <div class="admin-card-header flex-wrap gap-3">
                         <div>
-                            <h5 class="text-white mb-1"><i class="fas fa-credit-card text-primary me-2"></i> Online Payments &amp; Gateway Transactions</h5>
-                            <p class="text-secondary small mb-0">Audit live customer transactions, track gateway settlements (Stripe, JazzCash, EasyPaisa, Bank Wire), and monitor payment statuses.</p>
+                            <h4 class="text-white fw-bold mb-1"><i class="fas fa-book-open text-primary me-2"></i> Integrated Online Payment &amp; Ledger</h4>
+                            <p class="text-secondary small mb-0">Customer CRM sales, dealer receipts and supplier payments are synchronized from their source modules. Ledger edits and exclusions do not alter source-module records.</p>
                         </div>
-                        <div class="d-flex flex-wrap gap-2 btn-no-print">
+                        <div class="d-flex flex-wrap align-items-center gap-2 btn-no-print">
+                            <label for="finance-range-ledger" class="small text-white mb-0">Filter all ledgers</label>
+                            <select id="finance-range-ledger" class="form-select bg-dark text-white border-secondary finance-range-filter finance-range-controls">
+                                <option value="1d">1 day</option>
+                                <option value="1w">1 week</option>
+                                <option value="3m">3 months</option>
+                                <option value="6m">6 months</option>
+                                <option value="1y" selected>1 year</option>
+                                <option value="2y">2 years</option>
+                                <option value="5y">5 years</option>
+                                <option value="10y">10 years</option>
+                                <option value="custom">Custom range</option>
+                            </select>
+                            <input type="date" id="finance-range-start-ledger" class="form-control bg-dark text-white border-secondary finance-range-start d-none" aria-label="Period start date">
+                            <input type="date" id="finance-range-end-ledger" class="form-control bg-dark text-white border-secondary finance-range-end d-none" aria-label="Period end date">
+                            <button type="button" class="btn btn-outline-light btn-sm" id="finance-add-ledger"><i class="fas fa-plus me-1"></i> Add Ledger Entry</button>
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-4">
+                        <div class="col-md-4"><div class="finance-kpi"><div class="finance-kpi-label">Customer CRM Total</div><div class="finance-kpi-value text-success" id="ledger-customer-total">Rs. 0</div></div></div>
+                        <div class="col-md-4"><div class="finance-kpi"><div class="finance-kpi-label">Dealer B2B Total</div><div class="finance-kpi-value text-info" id="ledger-dealer-total">Rs. 0</div></div></div>
+                        <div class="col-md-4"><div class="finance-kpi"><div class="finance-kpi-label">Supplier Payments Total</div><div class="finance-kpi-value text-warning" id="ledger-supplier-total">Rs. 0</div></div></div>
+                    </div>
+                    <div class="finance-view-tabs mb-3" role="tablist" aria-label="Finance payment ledgers">
+                        <button type="button" class="btn btn-outline-light active" id="finance-customer-tab" role="tab" aria-selected="true" aria-controls="finance-customer-panel">Customer CRM Sales &amp; Receipts</button>
+                        <button type="button" class="btn btn-outline-light" id="finance-dealer-tab" role="tab" aria-selected="false" aria-controls="finance-dealer-panel">Dealer B2B &amp; Payment Receipts</button>
+                        <button type="button" class="btn btn-outline-light" id="finance-online-tab" role="tab" aria-selected="false" aria-controls="finance-online-panel">Online Payment &amp; Gateway Transactions</button>
+                    </div>
+                    <section class="finance-view-panel" id="finance-customer-panel" role="tabpanel" aria-labelledby="finance-customer-tab">
+                        <div class="d-flex justify-content-between align-items-center mb-2"><h5 class="finance-subsection-title mb-0">Customer CRM Sales &amp; Receipts</h5><button type="button" class="btn btn-outline-success btn-sm finance-add-source" data-source="customer"><i class="fas fa-plus me-1"></i> Add Customer Entry</button></div>
+                        <div class="table-responsive"><table class="table table-hover finance-ledger-table"><thead><tr><th>Date</th><th>Order / Reference</th><th>Customer / Description</th><th>Payment</th><th class="text-end">Amount</th><th>Receipt file</th><th class="text-end action-column">Actions</th></tr></thead><tbody id="finance-customer-ledger"></tbody></table></div>
+                    </section>
+                    <section class="finance-view-panel" id="finance-dealer-panel" role="tabpanel" aria-labelledby="finance-dealer-tab" hidden>
+                        <div class="d-flex justify-content-between align-items-center mb-2"><h5 class="finance-subsection-title mb-0">Dealer B2B &amp; Payment Receipts</h5><button type="button" class="btn btn-outline-info btn-sm finance-add-source" data-source="dealer"><i class="fas fa-plus me-1"></i> Add Dealer Entry</button></div>
+                        <div class="table-responsive"><table class="table table-hover finance-ledger-table"><thead><tr><th>Date</th><th>Payment / Dealer</th><th>Dealer / Description</th><th>Method / Status</th><th class="text-end">Amount</th><th>Receipt file</th><th class="text-end action-column">Actions</th></tr></thead><tbody id="finance-dealer-ledger"></tbody></table></div>
+                    </section>
+                    <section class="finance-view-panel" id="finance-online-panel" role="tabpanel" aria-labelledby="finance-online-tab" hidden>
+                        <div class="admin-card-header flex-wrap gap-3">
+                            <div>
+                                <h5 class="text-white mb-1"><i class="fas fa-credit-card text-primary me-2"></i> Online Payments &amp; Gateway Transactions</h5>
+                                <p class="text-secondary small mb-0">Audit live customer transactions, track gateway settlements, and monitor payment statuses.</p>
+                            </div>
+                        <div class="d-flex flex-wrap gap-2 btn-no-print mb-3">
                             <div class="input-group search-input-group" style="width: 220px;">
                                 <span class="input-group-text"><i class="fas fa-search"></i></span>
                                 <input type="text" id="txn-search" class="form-control" placeholder="Search Txn/Order..." oninput="renderTransactionsTable()">
                             </div>
                             <select id="txn-gateway-filter" class="form-select bg-dark text-white border-secondary" style="width: 160px;" onchange="renderTransactionsTable()">
                                 <option value="ALL">All Gateways</option>
+                                <option value="Cash">Cash</option>
+                                <option value="Online">Online</option>
+                                <option value="Bank">Bank</option>
                                 <option value="Stripe">Stripe (Card)</option>
                                 <option value="JazzCash">JazzCash</option>
                                 <option value="EasyPaisa">EasyPaisa</option>
@@ -523,7 +644,6 @@
                             </select>
                             <button class="btn btn-primary btn-sm fw-bold" onclick="openTransactionModal()"><i class="fas fa-plus me-1"></i> Record Txn</button>
                         </div>
-                    </div>
 
                     <!-- Transactions Table -->
                     <div class="table-responsive">
@@ -545,7 +665,8 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
+                    </section>
+                </section>
             </div>
 
             <!-- TAB 4: INVENTORY & STOCK MONITORING -->
@@ -569,6 +690,17 @@
                             </select>
                         </div>
                     </div>
+
+                    <div class="finance-view-tabs mb-3" role="tablist" aria-label="Inventory sales movement">
+                        <button type="button" class="btn btn-outline-light active" id="stock-running-tab" role="tab" aria-selected="true" aria-controls="stock-running-panel">Running Items</button>
+                        <button type="button" class="btn btn-outline-light" id="stock-slow-tab" role="tab" aria-selected="false" aria-controls="stock-slow-panel">Slow Running Items</button>
+                    </div>
+                    <section class="stock-movement-panel" id="stock-running-panel" role="tabpanel" aria-labelledby="stock-running-tab">
+                        <div class="p-3 rounded border border-success border-opacity-25 bg-dark mb-4"><h5 class="text-success fw-bold"><i class="fas fa-arrow-trend-up me-2"></i>Running Items / Most Sold</h5><div class="table-responsive"><table class="table table-sm"><thead><tr><th>Product</th><th class="text-end">Units</th><th class="text-end">Margin</th><th class="text-end">Profit</th></tr></thead><tbody id="stock-fast-moving"></tbody></table></div></div>
+                    </section>
+                    <section class="stock-movement-panel" id="stock-slow-panel" role="tabpanel" aria-labelledby="stock-slow-tab" hidden>
+                        <div class="p-3 rounded border border-warning border-opacity-25 bg-dark mb-4"><h5 class="text-warning fw-bold"><i class="fas fa-arrow-trend-down me-2"></i>Slow Running Items / Least Sold</h5><div class="table-responsive"><table class="table table-sm"><thead><tr><th>Product</th><th class="text-end">Units</th><th class="text-end">Margin</th><th class="text-end">Profit</th></tr></thead><tbody id="stock-slow-moving"></tbody></table></div></div>
+                    </section>
 
                     <!-- Stock Overview Table -->
                     <div class="table-responsive">
@@ -610,6 +742,7 @@
                 <form id="salary-form" onsubmit="handleSalarySubmit(event)">
                     <div class="modal-body p-4">
                         <input type="hidden" id="sal-edit-id" value="">
+                        <input type="hidden" id="sal-employee-id" value="">
                         
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
@@ -633,7 +766,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label text-dark small fw-bold">Salary Month / Period <span class="text-danger">*</span></label>
-                                <input type="text" id="sal-month" class="form-control" list="sal-month-datalist" placeholder="e.g. September 2026, Q3 Bonus..." value="September 2026" required>
+                                <input type="text" id="sal-month" class="form-control" list="sal-month-datalist" placeholder="e.g. October 2026, Q3 Bonus..." required>
                                 <datalist id="sal-month-datalist">
                                     <option value="September 2026">
                                     <option value="August 2026">
@@ -668,6 +801,14 @@
                                 <label class="form-label text-dark small fw-bold">Deductions (PKR)</label>
                                 <input type="number" id="sal-deduction" class="form-control" placeholder="Tax, Advance, EOBI..." value="0" min="0" oninput="calcNetSalary()">
                             </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold">Salary Advance Paid (PKR)</label>
+                                <input type="number" id="sal-advance" class="form-control" placeholder="Advance already paid" value="0" min="0" oninput="calcNetSalary()">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold">Advance Payment Date</label>
+                                <input type="date" id="sal-advance-date" class="form-control">
+                            </div>
                         </div>
 
                         <div class="p-3 mb-3 rounded bg-light border text-center">
@@ -678,19 +819,19 @@
                         <div class="row g-3 mb-3" id="sal-payment-details-row">
                             <div class="col-md-6">
                                 <label class="form-label text-dark small fw-bold">Payment Method</label>
-                                <input type="text" id="sal-method" class="form-control" list="sal-method-datalist" placeholder="Select or type payment method..." value="Bank Transfer">
-                                <datalist id="sal-method-datalist">
-                                    <option value="Bank Transfer (Meezan / HBL / Alfalah)">
-                                    <option value="JazzCash Mobile Account">
-                                    <option value="EasyPaisa">
-                                    <option value="Cash In Hand">
-                                    <option value="Cross Cheque">
-                                    <option value="Raast Instant Pay">
-                                </datalist>
+                                <select id="sal-method" class="form-select">
+                                    <option value="Cash">Cash</option>
+                                    <option value="Online">Online</option>
+                                    <option value="Bank">Bank</option>
+                                </select>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label text-dark small fw-bold">Payment Date</label>
                                 <input type="date" id="sal-date" class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-dark small fw-bold" for="sal-paid-amount">Paid Amount (PKR)</label>
+                                <input type="number" id="sal-paid-amount" class="form-control" min="0" step="0.01" value="0">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label text-dark small fw-bold">Reference / Transaction / Slip #</label>
@@ -747,17 +888,12 @@
 
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
-                                <label class="form-label text-dark small fw-bold">Payment Gateway / Method <span class="text-danger">*</span></label>
-                                <input type="text" id="txn-gateway-field" class="form-control" list="txn-gateway-datalist" placeholder="Select or type payment gateway..." value="Direct Bank Wire / IBFT" required>
-                                <datalist id="txn-gateway-datalist">
-                                    <option value="Direct Bank Wire / IBFT (Meezan/Alfalah)">
-                                    <option value="JazzCash Mobile Account">
-                                    <option value="EasyPaisa">
-                                    <option value="Stripe (Debit/Credit Card)">
-                                    <option value="Cash on Delivery (COD Settlement)">
-                                    <option value="POS Card Swipe">
-                                    <option value="Raast Payment">
-                                </datalist>
+                                <label class="form-label text-dark small fw-bold">Payment Method <span class="text-danger">*</span></label>
+                                <select id="txn-payment-method" class="form-select" required>
+                                    <option value="Cash">Cash</option>
+                                    <option value="Online">Online</option>
+                                    <option value="Bank">Bank</option>
+                                </select>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label text-dark small fw-bold">Amount (PKR) <span class="text-danger">*</span></label>
@@ -859,41 +995,11 @@
 
     <!-- ERP Specific Core Logic Script -->
     <script>
-        // Data Schemas & Initial Seeders
-        const DEFAULT_SALARIES = [
-            { id: "SAL-101", name: "Ahmed Khan", role: "Store & Inventory Manager", base: 85000, allowance: 5000, deduction: 0, net: 90000, month: "August 2026", status: "Paid", date: "2026-08-01", method: "Bank Transfer", ref: "HBL-882190", notes: "Monthly executive allowance" },
-            { id: "SAL-102", name: "Hamza Ali", role: "Senior Hardware Specialist", base: 65000, allowance: 3000, deduction: 1000, net: 67000, month: "August 2026", status: "Paid", date: "2026-08-02", method: "Bank Transfer", ref: "BAHL-44129", notes: "Repair bonus included" },
-            { id: "SAL-103", name: "Bilal Tariq", role: "Lead Sales Executive", base: 50000, allowance: 8000, deduction: 0, net: 58000, month: "August 2026", status: "Paid", date: "2026-08-03", method: "JazzCash", ref: "JC-9921448", notes: "Sales target commission" },
-            { id: "SAL-104", name: "Zubair Shah", role: "Warehouse & Stock Officer", base: 45000, allowance: 2000, deduction: 0, net: 47000, month: "August 2026", status: "Pending", date: "", method: "EasyPaisa", ref: "", notes: "Pending month-end clearance" },
-            { id: "SAL-105", name: "Sara Malik", role: "Customer Support & Dispatch", base: 40000, allowance: 2500, deduction: 500, net: 42000, month: "August 2026", status: "Pending", date: "", method: "Bank Transfer", ref: "", notes: "" },
-            { id: "SAL-106", name: "Usman Riaz", role: "PC Assembly Technician", base: 42000, allowance: 3000, deduction: 0, net: 45000, month: "August 2026", status: "Paid", date: "2026-08-02", method: "Cash", ref: "VOUCH-882", notes: "Cash voucher payout" },
-            
-            { id: "SAL-091", name: "Ahmed Khan", role: "Store & Inventory Manager", base: 85000, allowance: 5000, deduction: 0, net: 90000, month: "July 2026", status: "Paid", date: "2026-07-01", method: "Bank Transfer", ref: "HBL-77124", notes: "" },
-            { id: "SAL-092", name: "Hamza Ali", role: "Senior Hardware Specialist", base: 65000, allowance: 2000, deduction: 0, net: 67000, month: "July 2026", status: "Paid", date: "2026-07-01", method: "Bank Transfer", ref: "BAHL-3310", notes: "" },
-            { id: "SAL-093", name: "Bilal Tariq", role: "Lead Sales Executive", base: 50000, allowance: 5000, deduction: 0, net: 55000, month: "July 2026", status: "Paid", date: "2026-07-02", method: "JazzCash", ref: "JC-77192", notes: "" }
-        ];
-
-        const DEFAULT_TRANSACTIONS = [
-            { id: "TXN-88421", orderId: "#GUG-1049", customer: "Daniyal Sheikh", phone: "0321-8849201", gateway: "Stripe", amount: 169999, date: "19 Aug 2026, 03:45 PM", status: "Completed" },
-            { id: "TXN-88422", orderId: "#GUG-1050", customer: "Kashif Mehmood", phone: "0300-4491022", gateway: "JazzCash", amount: 48500, date: "19 Aug 2026, 02:15 PM", status: "Completed" },
-            { id: "TXN-88423", orderId: "#GUG-1051", customer: "Rehan Ahmed", phone: "0333-9912048", gateway: "EasyPaisa", amount: 124999, date: "18 Aug 2026, 06:10 PM", status: "Completed" },
-            { id: "TXN-88424", orderId: "#GUG-1052", customer: "Muneeb Khan", phone: "0312-5501928", gateway: "Bank Transfer", amount: 219999, date: "18 Aug 2026, 01:20 PM", status: "Completed" },
-            { id: "TXN-88425", orderId: "#GUG-1053", customer: "Taimoor Shah", phone: "0345-6619021", gateway: "Stripe", amount: 35000, date: "17 Aug 2026, 11:05 AM", status: "Pending" },
-            { id: "TXN-88426", orderId: "#GUG-1054", customer: "Waseem Akram", phone: "0301-7729103", gateway: "Cash on Delivery", amount: 18500, date: "16 Aug 2026, 04:50 PM", status: "Completed" },
-            { id: "TXN-88427", orderId: "#GUG-1055", customer: "Zeeshan Ali", phone: "0322-1184920", gateway: "JazzCash", amount: 8999, date: "15 Aug 2026, 09:30 AM", status: "Refunded" }
-        ];
-
-        // Seed data function
-        function seedDefaultERPData(force = false) {
-            if (force || !localStorage.getItem('gug_finance_salaries')) {
-                localStorage.setItem('gug_finance_salaries', JSON.stringify(DEFAULT_SALARIES));
-            }
-            if (force || !localStorage.getItem('gug_finance_transactions')) {
-                localStorage.setItem('gug_finance_transactions', JSON.stringify(DEFAULT_TRANSACTIONS));
-            }
-            if (force || !localStorage.getItem('gug_finance_stock_custom')) {
-                localStorage.setItem('gug_finance_stock_custom', JSON.stringify({}));
-            }
+        function seedDefaultERPData() {
+            if (!localStorage.getItem('gug_finance_salaries')) localStorage.setItem('gug_finance_salaries', '[]');
+            if (!localStorage.getItem('gug_finance_transactions')) localStorage.setItem('gug_finance_transactions', '[]');
+            if (!localStorage.getItem('gug_finance_stock_custom')) localStorage.setItem('gug_finance_stock_custom', '{}');
+            if (!localStorage.getItem('gug_finance_petty_expenses')) localStorage.setItem('gug_finance_petty_expenses', '[]');
             renderAllERPModules();
         }
 
@@ -903,8 +1009,11 @@
             const pId = prod.id.toString();
             const numericPrice = Number(prod.price) || 0;
             
-            const defaultCost = Math.round(numericPrice * 0.70); // 30% standard retail margin
-            const defaultPurchased = 50;
+            const defaultCost = Number(prod.costPrice || prod.purchasePrice) || Math.round(numericPrice * 0.70);
+            const stockValue = prod.stock;
+            const defaultPurchased = stockValue && typeof stockValue === 'object'
+                ? Object.values(stockValue).reduce((total, quantity) => total + (Number(quantity) || 0), 0)
+                : (Number(stockValue || prod.stockQuantity) || 0);
 
             if (customMap[pId]) {
                 return {
@@ -935,10 +1044,11 @@
             let orderItemsSold = 0;
 
             orders.forEach(ord => {
+                if (/cancel|refund|return|void/i.test(String(ord.status || ord.orderStatus || ''))) return;
                 if (ord.items && Array.isArray(ord.items)) {
                     ord.items.forEach(item => {
-                        const name = item.name || 'Unknown Product';
-                        const qty = Number(item.qty) || 1;
+                        const name = item.name || item.title || 'Unknown Product';
+                        const qty = Number(item.quantity || item.qty) || 1;
                         const price = Number(item.price) || 0;
                         salesVelocity[name] = (salesVelocity[name] || 0) + qty;
                         orderRevenue += (price * qty);
@@ -946,8 +1056,6 @@
                     });
                 }
             });
-
-            const hasRealOrders = orders.length > 0;
 
             let totalCapitalInvested = 0;
             let totalCostOfSoldGoods = 0;
@@ -958,17 +1066,13 @@
             let totalInventoryCostValue = 0;
             let totalInventoryRetailValue = 0;
 
-            const productRows = liveProducts.map((p, idx) => {
+            const productRows = liveProducts.map(p => {
                 const fConfig = getProductFinanceConfig(p);
                 const price = Number(p.price) || 0;
                 const costPrice = fConfig.costPrice;
                 const purchasedQty = fConfig.purchasedQty;
                 
-                let qtySold = salesVelocity[p.name] || 0;
-                if (!hasRealOrders) {
-                    qtySold = ((idx * 7) % 24) + 3;
-                    if (qtySold > purchasedQty) qtySold = purchasedQty - 5;
-                }
+                const qtySold = salesVelocity[p.name] || 0;
 
                 const remainingStock = Math.max(0, purchasedQty - qtySold);
                 const unitNetProfit = price - costPrice;
@@ -1014,8 +1118,9 @@
             let totalSalariesPaid = 0;
             let totalSalariesPending = 0;
             salaries.forEach(s => {
-                if (s.status === 'Paid') totalSalariesPaid += (Number(s.net) || 0);
-                else totalSalariesPending += (Number(s.net) || 0);
+                totalSalariesPaid += (Number(s.advance) || 0);
+                if (s.status === 'Paid') totalSalariesPaid += Number(s.net) || 0;
+                else totalSalariesPending += Number(s.net) || 0;
             });
 
             // 3. Transactions aggregation
@@ -1051,19 +1156,28 @@
 
         // Render KPI Cards
         function renderKPICards(erp) {
+            const finance = window.GUG_FINANCE_LEDGER && typeof window.GUG_FINANCE_LEDGER.getSummary === 'function'
+                ? window.GUG_FINANCE_LEDGER.getSummary()
+                : null;
             document.getElementById('kpi-capital-invested').textContent = 'Rs. ' + erp.totalCapitalInvested.toLocaleString();
-            document.getElementById('kpi-gross-revenue').textContent = 'Rs. ' + erp.totalGrossRevenue.toLocaleString();
-            document.getElementById('kpi-accumulated-profit').textContent = 'Rs. ' + erp.totalAccumulatedGrossProfit.toLocaleString();
+            document.getElementById('kpi-gross-revenue').textContent = 'Rs. ' + (finance ? finance.revenue : erp.totalGrossRevenue).toLocaleString();
+            const netProfit = finance ? finance.netProfit : erp.totalAccumulatedGrossProfit;
+            document.getElementById('kpi-accumulated-profit').textContent = 'Rs. ' + netProfit.toLocaleString();
             
             const opProfEl = document.getElementById('kpi-operating-profit');
-            opProfEl.textContent = 'Rs. ' + erp.netOperatingProfit.toLocaleString();
-            opProfEl.className = erp.netOperatingProfit >= 0 ? 'kpi-value text-success' : 'kpi-value text-danger';
+            const operatingProfit = finance ? finance.netOperatingProfit : erp.netOperatingProfit;
+            opProfEl.textContent = 'Rs. ' + operatingProfit.toLocaleString();
+            opProfEl.className = operatingProfit >= 0 ? 'kpi-value text-success' : 'kpi-value text-danger';
 
-            document.getElementById('kpi-salaries-paid').textContent = 'Rs. ' + erp.totalSalariesPaid.toLocaleString();
+            document.getElementById('kpi-salaries-paid').textContent = 'Rs. ' + (finance ? finance.payrollPaid : erp.totalSalariesPaid).toLocaleString();
             document.getElementById('kpi-salaries-pending').textContent = 'Rs. ' + erp.totalSalariesPending.toLocaleString();
             
-            document.getElementById('kpi-online-volume').textContent = 'Rs. ' + erp.totalOnlineVolume.toLocaleString();
-            document.getElementById('kpi-online-count').textContent = erp.settledOnlineCount + ' Settled Transactions';
+            document.getElementById('kpi-online-volume').textContent = 'Rs. ' + (finance ? finance.onlinePayment : erp.totalOnlineVolume).toLocaleString();
+            document.getElementById('kpi-online-count').textContent = (finance ? finance.onlineCount : erp.settledOnlineCount) + ' Settled Transactions';
+        }
+
+        function renderFinancialKpis() {
+            renderKPICards(calculateFullERP());
         }
 
         // Render Tab 1: P&L Table
@@ -1146,9 +1260,83 @@
             document.getElementById('pnl-foot-summary').textContent = filtered.length + ' SKUs Active in View';
         }
 
+        function getHRFinanceEmployees() {
+            let employees = [];
+            try {
+                if (window.GUG_DB && typeof window.GUG_DB.getEmployees === 'function') {
+                    employees = window.GUG_DB.getEmployees() || [];
+                }
+            } catch (error) {
+                console.error('[Finance] Could not load employees from the HR module.', error);
+            }
+            if (!Array.isArray(employees) || employees.length === 0) {
+                try {
+                    const stored = JSON.parse(localStorage.getItem('gug_erp_employees') || '[]');
+                    employees = Array.isArray(stored) ? stored : [];
+                } catch (error) {
+                    console.error('[Finance] Could not read the HR employee directory.', error);
+                    employees = [];
+                }
+            }
+            let deleted = [];
+            try {
+                const storedDeleted = JSON.parse(localStorage.getItem('admin_deleted_employees') || '[]');
+                deleted = Array.isArray(storedDeleted) ? storedDeleted.map(id => String(id).toLowerCase()) : [];
+            } catch (error) {
+                console.error('[Finance] Could not read deleted employee records.', error);
+            }
+            return employees.filter(employee => employee && employee.id && !deleted.includes(String(employee.id).toLowerCase())
+                && (!employee.username || !deleted.includes(String(employee.username).toLowerCase())));
+        }
+
+        function salaryPaymentMethod(method) {
+            const value = String(method || '').trim().toLowerCase();
+            if (value === 'cash' || /cash|hand/.test(value)) return 'Cash';
+            if (value === 'online transfer' || /online|jazzcash|easypaisa|stripe|raast|mobile account|digital/.test(value)) return 'Online Transfer';
+            return 'Bank Transfer';
+        }
+
+        function generateEmployeeSalary(employeeId) {
+            const employee = getHRFinanceEmployees().find(record => String(record.id) === decodeURIComponent(employeeId));
+            if (!employee) {
+                window.alert('This employee is no longer available in the HR directory. Refresh the salary sheet and try again.');
+                renderSalaryTable();
+                return;
+            }
+            openSalaryModal();
+            document.getElementById('sal-employee-id').value = employee.id;
+            document.getElementById('sal-name').value = employee.name || employee.fullName || '';
+            document.getElementById('sal-role').value = employee.department || employee.role || '';
+            document.getElementById('sal-month').value = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            document.getElementById('sal-base').value = Number(employee.basicSalary || employee.baseSalary || employee.salary) || 0;
+            document.getElementById('sal-allowance').value = Number(employee.allowance) || 0;
+            document.getElementById('sal-deduction').value = Number(employee.deductions || employee.deduction) || 0;
+            document.getElementById('sal-status').value = 'Pending';
+            toggleSalPaymentFields();
+            calcNetSalary();
+        }
+
+        function populateSalaryMonthFilter(salaries) {
+            const select = document.getElementById('salary-month-filter');
+            if (!select) return;
+            const selectedMonth = select.value || 'ALL';
+            const months = new Set(salaries.map(salary => salary && salary.month).filter(Boolean));
+            const current = new Date();
+            for (let offset = 0; offset < 12; offset++) {
+                const month = new Date(current.getFullYear(), current.getMonth() - offset, 1)
+                    .toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                months.add(month);
+            }
+            select.innerHTML = '<option value="ALL">All Months</option>' + [...months]
+                .sort((first, second) => new Date(second).getTime() - new Date(first).getTime())
+                .map(month => `<option value="${month}">${month}</option>`).join('');
+            select.value = months.has(selectedMonth) ? selectedMonth : 'ALL';
+        }
+
         // Render Tab 2: Salary Sheet
         function renderSalaryTable() {
             const salaries = JSON.parse(localStorage.getItem('gug_finance_salaries') || '[]');
+            populateSalaryMonthFilter(salaries);
             const monthFilter = document.getElementById('salary-month-filter').value;
             const statusFilter = document.getElementById('salary-status-filter').value;
             const tbody = document.getElementById('salary-table-body');
@@ -1158,13 +1346,41 @@
                 const matchesStatus = statusFilter === 'ALL' || s.status === statusFilter;
                 return matchesMonth && matchesStatus;
             });
+            const currentMonth = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            const directory = getHRFinanceEmployees();
+            const targetMonth = monthFilter === 'ALL' ? currentMonth : monthFilter;
+            const employeeRows = statusFilter === 'ALL' ? directory
+                .filter(employee => !salaries.some(salary => {
+                    const sameEmployee = String(salary.employeeId || salary.staffId || '').toLowerCase() === String(employee.id).toLowerCase()
+                        || String(salary.name || '').trim().toLowerCase() === String(employee.name || '').trim().toLowerCase();
+                    return sameEmployee && salary.month === targetMonth;
+                }))
+                .map(employee => ({
+                    id: employee.id,
+                    employeeId: employee.id,
+                    name: employee.name || employee.fullName || 'Employee',
+                    role: employee.department || employee.role || 'Staff',
+                    base: Number(employee.basicSalary || employee.salary) || 0,
+                    allowance: Number(employee.allowance) || 0,
+                    deduction: Number(employee.deductions || employee.deduction) || 0,
+                    advance: 0,
+                    net: Math.max(0, (Number(employee.basicSalary || employee.salary) || 0) + (Number(employee.allowance) || 0) - (Number(employee.deductions || employee.deduction) || 0)),
+                    month: targetMonth,
+                    status: 'Not generated',
+                    method: '',
+                    linkedEmployee: true
+                }))
+                : [];
+            filtered.push(...employeeRows);
 
             let totBudget = 0, totPaid = 0, totPending = 0, paidCount = 0;
             filtered.forEach(s => {
                 const n = Number(s.net) || 0;
-                totBudget += n;
+                const advance = Number(s.advance) || 0;
+                totBudget += n + advance;
+                totPaid += advance;
                 if (s.status === 'Paid') { totPaid += n; paidCount++; }
-                else { totPending += n; }
+                else if (s.status !== 'Not generated') { totPending += n; }
             });
 
             document.getElementById('salary-stat-total').textContent = 'Rs. ' + totBudget.toLocaleString();
@@ -1173,7 +1389,7 @@
             document.getElementById('salary-stat-count').textContent = `${paidCount} / ${filtered.length} Paid`;
 
             if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" class="text-center text-secondary py-5">No salary records for selected filter.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="12" class="text-center text-secondary py-5">No salary records or HR employees match the selected filter.</td></tr>';
                 return;
             }
 
@@ -1181,15 +1397,22 @@
                 const isPaid = s.status === 'Paid';
                 const statusBadge = isPaid
                     ? `<span class="badge badge-paid px-2 py-1"><i class="fas fa-check-circle me-1"></i> Paid</span>`
-                    : `<span class="badge badge-pending px-2 py-1"><i class="fas fa-clock me-1"></i> Pending</span>`;
+                    : s.status === 'Not generated'
+                        ? `<span class="badge bg-secondary px-2 py-1">Not generated</span>`
+                        : `<span class="badge badge-pending px-2 py-1"><i class="fas fa-clock me-1"></i> Pending</span>`;
 
-                const payToggleBtn = isPaid
-                    ? `<button class="btn btn-sm btn-outline-warning py-0 px-2" title="Mark as Pending" onclick="toggleSalaryStatus('${s.id}')"><i class="fas fa-undo small"></i> Revert</button>`
-                    : `<button class="btn btn-sm btn-success py-0 px-2 fw-bold" title="Mark as Paid" onclick="toggleSalaryStatus('${s.id}')"><i class="fas fa-check small"></i> Pay</button>`;
+                const payToggleBtn = s.linkedEmployee
+                    ? `<button class="btn btn-sm btn-outline-success py-0 px-2 fw-bold" title="Generate salary record" onclick="generateEmployeeSalary('${encodeURIComponent(s.employeeId)}')"><i class="fas fa-plus small"></i> Generate</button>`
+                    : isPaid
+                    ? `<button class="btn btn-sm btn-outline-warning py-0 px-2" title="Edit payment details" onclick="editSalary('${s.id}')"><i class="fas fa-edit small"></i> Edit Payment</button>`
+                    : `<button class="btn btn-sm btn-success py-0 px-2 fw-bold" title="Record salary payment" onclick="toggleSalaryStatus('${s.id}')"><i class="fas fa-check small"></i> Pay</button>`;
 
-                const paymentDetailStr = isPaid
+                const paymentDetailStr = s.linkedEmployee
+                    ? `<small class="text-secondary">Generate this month’s payroll to record payment.</small>`
+                    : isPaid
                     ? `<small class="text-dark fw-bold">${s.method || 'Bank Transfer'}</small><br><small class="text-secondary">${s.date || 'Disbursed'} ${s.ref ? '(' + s.ref + ')' : ''}</small>`
                     : `<small class="text-secondary italic">Awaiting payout</small>`;
+                const paymentMethod = isPaid ? salaryPaymentMethod(s.method) : '—';
 
                 return `
                     <tr>
@@ -1208,15 +1431,16 @@
                         <td class="text-end font-monospace text-secondary">Rs. ${(Number(s.base)||0).toLocaleString()}</td>
                         <td class="text-end font-monospace text-success">+ Rs. ${(Number(s.allowance)||0).toLocaleString()}</td>
                         <td class="text-end font-monospace text-danger">- Rs. ${(Number(s.deduction)||0).toLocaleString()}</td>
+                        <td class="text-end font-monospace text-warning">- Rs. ${(Number(s.advance)||0).toLocaleString()}</td>
                         <td class="text-end font-monospace fw-bold text-dark fs-6">Rs. ${(Number(s.net)||0).toLocaleString()}</td>
                         <td class="text-center"><span class="badge bg-light text-dark border border-secondary">${s.month}</span></td>
                         <td class="text-center">${statusBadge}</td>
+                        <td class="text-center"><span class="badge bg-info bg-opacity-25 text-info finance-payment-method">${paymentMethod}</span></td>
                         <td>${paymentDetailStr}</td>
                         <td class="text-center action-column">
                             <div class="d-flex justify-content-center gap-1">
                                 ${payToggleBtn}
-                                <button class="btn btn-sm btn-outline-dark py-0 px-2" title="Edit Record" onclick="editSalary('${s.id}')"><i class="fas fa-edit small"></i></button>
-                                <button class="btn btn-sm btn-outline-danger py-0 px-2" title="Delete" onclick="deleteSalary('${s.id}')"><i class="fas fa-trash small"></i></button>
+                                ${s.linkedEmployee ? '' : `<button class="btn btn-sm btn-outline-dark py-0 px-2" title="Edit Record" onclick="editSalary('${s.id}')"><i class="fas fa-edit small"></i></button><button class="btn btn-sm btn-outline-danger py-0 px-2" title="Delete" onclick="deleteSalary('${s.id}')"><i class="fas fa-trash small"></i></button>`}
                             </div>
                         </td>
                     </tr>
@@ -1231,10 +1455,15 @@
             const gwFilter = document.getElementById('txn-gateway-filter').value;
             const statusFilter = document.getElementById('txn-status-filter').value;
             const tbody = document.getElementById('txn-table-body');
+            const escapeTxnText = value => String(value == null ? '' : value).replace(/[&<>"']/g, character => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            })[character]);
 
             const filtered = txns.filter(t => {
-                const matchesSearch = search === '' || t.id.toLowerCase().includes(search) || t.orderId.toLowerCase().includes(search) || t.customer.toLowerCase().includes(search);
-                const matchesGw = gwFilter === 'ALL' || t.gateway === gwFilter;
+                const searchable = [t.id, t.orderId, t.customer, t.transactionReference, t.reference]
+                    .map(value => String(value || '').toLowerCase());
+                const matchesSearch = search === '' || searchable.some(value => value.includes(search));
+                const matchesGw = gwFilter === 'ALL' || t.gateway === gwFilter || t.bankNetwork === gwFilter || t.paymentMethod === gwFilter;
                 const matchesStatus = statusFilter === 'ALL' || t.status === statusFilter;
                 return matchesSearch && matchesGw && matchesStatus;
             });
@@ -1244,47 +1473,60 @@
                 return;
             }
 
-            tbody.innerHTML = filtered.map((t, idx) => {
+            tbody.innerHTML = filtered.map(t => {
+                const transactionId = String(t.id || '');
+                const orderId = String(t.orderId || '');
+                const status = String(t.status || 'Pending');
+                const gateway = String(t.gateway || '');
+                const method = String(t.paymentMethod || gateway || 'Payment');
+                const network = String(t.bankNetwork || (gateway !== method ? gateway : ''));
+                const reference = String(t.transactionReference || t.reference || '');
                 let badgeClass = 'badge-pending';
-                if (t.status === 'Completed') badgeClass = 'badge-paid';
-                else if (t.status === 'Failed') badgeClass = 'badge-failed';
-                else if (t.status === 'Refunded') badgeClass = 'badge-refunded';
+                if (status === 'Completed') badgeClass = 'badge-paid';
+                else if (status === 'Failed') badgeClass = 'badge-failed';
+                else if (status === 'Refunded') badgeClass = 'badge-refunded';
 
                 let gwIcon = 'fa-credit-card';
-                if (t.gateway.includes('JazzCash') || t.gateway.includes('EasyPaisa')) gwIcon = 'fa-mobile-screen-button';
-                else if (t.gateway.includes('Bank')) gwIcon = 'fa-building-columns';
-                else if (t.gateway.includes('Cash')) gwIcon = 'fa-money-bill-1-wave';
+                if (/JazzCash|EasyPaisa/i.test(network || method)) gwIcon = 'fa-mobile-screen-button';
+                else if (/Bank/i.test(network || method)) gwIcon = 'fa-building-columns';
+                else if (/Cash/i.test(method)) gwIcon = 'fa-money-bill-1-wave';
 
                 return `
                     <tr>
                         <td>
-                            <span class="text-dark fw-bold font-monospace">${t.id}</span>
+                            <span class="text-dark fw-bold font-monospace">${escapeTxnText(transactionId)}</span>
                         </td>
                         <td>
-                            <span class="badge bg-light border border-secondary text-primary font-monospace">${t.orderId}</span>
+                            <span class="badge bg-light border border-secondary text-primary font-monospace">${escapeTxnText(orderId)}</span>
                         </td>
                         <td>
-                            <div class="text-dark fw-bold">${t.customer}</div>
-                            <small class="text-secondary">${t.phone || '-'}</small>
+                            <div class="text-dark fw-bold">${escapeTxnText(t.customer || 'Customer')}</div>
+                            <small class="text-secondary">${escapeTxnText(t.phone || '-')}</small>
                         </td>
                         <td>
-                            <span class="text-dark"><i class="fas ${gwIcon} text-secondary me-1"></i> ${t.gateway}</span>
+                            <span class="text-dark"><i class="fas ${gwIcon} text-secondary me-1"></i> ${escapeTxnText(method)}</span>
+                            ${network ? `<small class="d-block text-secondary">${escapeTxnText(network)}</small>` : ''}
+                            ${reference ? `<small class="d-block text-secondary">Ref: ${escapeTxnText(reference)}</small>` : ''}
                         </td>
-                        <td class="text-end font-monospace fw-bold text-dark fs-6">Rs. ${(Number(t.amount)||0).toLocaleString()}</td>
-                        <td class="text-center text-secondary small">${t.date}</td>
-                        <td class="text-center"><span class="badge ${badgeClass} px-2 py-1">${t.status}</span></td>
+                        <td class="text-end font-monospace fw-bold text-dark fs-6">Rs. ${(Number(t.paidAmount != null ? t.paidAmount : t.amount) || 0).toLocaleString()}
+                            <small class="d-block text-secondary fw-normal">Balance: Rs. ${(Number(t.balanceAmount) || 0).toLocaleString()}</small>
+                        </td>
+                        <td class="text-center text-secondary small">${escapeTxnText(t.transactionAt || t.date || 'Date not recorded')}</td>
+                        <td class="text-center"><span class="badge ${badgeClass} px-2 py-1">${escapeTxnText(status)}</span></td>
                         <td class="text-center action-column">
                             <div class="dropdown d-inline-block">
                                 <button class="btn btn-sm btn-outline-secondary dropdown-toggle py-0 px-2" data-bs-toggle="dropdown">
                                     Action
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end">
-                                    <li><a class="dropdown-item text-success" href="#" onclick="updateTxnStatus('${t.id}', 'Completed')"><i class="fas fa-check-circle me-2"></i> Mark Completed</a></li>
-                                    <li><a class="dropdown-item text-warning" href="#" onclick="updateTxnStatus('${t.id}', 'Pending')"><i class="fas fa-clock me-2"></i> Mark Pending</a></li>
-                                    <li><a class="dropdown-item text-danger" href="#" onclick="updateTxnStatus('${t.id}', 'Failed')"><i class="fas fa-times-circle me-2"></i> Mark Failed</a></li>
-                                    <li><a class="dropdown-item text-purple" href="#" onclick="updateTxnStatus('${t.id}', 'Refunded')"><i class="fas fa-rotate-left me-2"></i> Mark Refunded</a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="printFinanceTransactionSlip('${escapeTxnText(transactionId)}')"><i class="fas fa-print me-2"></i> Print Receipt</a></li>
                                     <li><hr class="dropdown-divider border-secondary"></li>
-                                    <li><a class="dropdown-item text-danger" href="#" onclick="deleteTransaction('${t.id}')"><i class="fas fa-trash me-2"></i> Delete</a></li>
+                                    <li><a class="dropdown-item text-success" href="#" onclick="updateTxnStatus('${escapeTxnText(transactionId)}', 'Completed')"><i class="fas fa-check-circle me-2"></i> Mark Completed</a></li>
+                                    <li><a class="dropdown-item text-warning" href="#" onclick="updateTxnStatus('${escapeTxnText(transactionId)}', 'Pending')"><i class="fas fa-clock me-2"></i> Mark Pending</a></li>
+                                    <li><a class="dropdown-item text-danger" href="#" onclick="updateTxnStatus('${escapeTxnText(transactionId)}', 'Failed')"><i class="fas fa-times-circle me-2"></i> Mark Failed</a></li>
+                                    <li><a class="dropdown-item text-purple" href="#" onclick="updateTxnStatus('${escapeTxnText(transactionId)}', 'Refunded')"><i class="fas fa-rotate-left me-2"></i> Mark Refunded</a></li>
+                                    <li><hr class="dropdown-divider border-secondary"></li>
+                                    <li><a class="dropdown-item text-danger" href="#" onclick="deleteTransaction('${escapeTxnText(transactionId)}')"><i class="fas fa-trash me-2"></i> Delete</a></li>
                                 </ul>
                             </div>
                         </td>
@@ -1299,8 +1541,15 @@
             const search = (document.getElementById('stock-search').value || '').toLowerCase().trim();
             const stockFilter = document.getElementById('stock-filter').value;
             const tbody = document.getElementById('stock-table-body');
+            const slowView = document.getElementById('stock-slow-panel').hidden === false;
+            const movementRows = slowView
+                ? [...erp.productRows].sort((a, b) => a.qtySold - b.qtySold || a.itemTotalProfit - b.itemTotalProfit).slice(0, 5)
+                : erp.productRows.filter(row => row.qtySold > 0)
+                    .sort((a, b) => b.qtySold - a.qtySold || b.itemTotalProfit - a.itemTotalProfit).slice(0, 5);
+            const movementIds = new Set(movementRows.map(row => String(row.id)));
 
             const filtered = erp.productRows.filter(r => {
+                if (!movementIds.has(String(r.id))) return false;
                 const matchesSearch = search === '' || r.name.toLowerCase().includes(search) || r.category.toLowerCase().includes(search);
                 let matchesLevel = true;
                 if (stockFilter === 'IN_STOCK') matchesLevel = r.remainingStock > 10;
@@ -1409,17 +1658,14 @@
 
         function handleStaffNameInput(input) {
             const val = input.value.trim().toLowerCase();
-            if (!val) return;
-            const gugEmployees = (window.GUG_DB && typeof window.GUG_DB.getEmployees === 'function') 
-                ? window.GUG_DB.getEmployees() 
-                : JSON.parse(localStorage.getItem('gug_employees') || '[]');
-            const match = gugEmployees.find(e => e.name && e.name.toLowerCase() === val);
+            const match = getHRFinanceEmployees().find(employee => String(employee.name || employee.fullName || '').toLowerCase() === val);
+            document.getElementById('sal-employee-id').value = match ? match.id : '';
             if (match) {
                 if (!document.getElementById('sal-role').value) {
                     document.getElementById('sal-role').value = match.designation || match.role || match.department || '';
                 }
                 if (!document.getElementById('sal-base').value || document.getElementById('sal-base').value === '0') {
-                    document.getElementById('sal-base').value = match.baseSalary || match.salary || 50000;
+                    document.getElementById('sal-base').value = match.basicSalary || match.baseSalary || match.salary || 0;
                 }
                 if (match.allowance && (!document.getElementById('sal-allowance').value || document.getElementById('sal-allowance').value === '0')) {
                     document.getElementById('sal-allowance').value = match.allowance;
@@ -1435,9 +1681,7 @@
             const datalist = document.getElementById('staff-datalist');
             if (!datalist) return;
             const staffUsers = JSON.parse(localStorage.getItem('admin_staff_users') || '[]');
-            const gugEmployees = (window.GUG_DB && typeof window.GUG_DB.getEmployees === 'function') 
-                ? window.GUG_DB.getEmployees() 
-                : JSON.parse(localStorage.getItem('gug_employees') || '[]');
+            const gugEmployees = getHRFinanceEmployees();
             
             const allStaff = [];
             const seen = new Set();
@@ -1447,7 +1691,7 @@
                     allStaff.push({
                         name: emp.name,
                         role: emp.designation || emp.role || emp.department || 'Staff',
-                        salary: emp.baseSalary || emp.salary || 50000,
+                        salary: emp.basicSalary || emp.baseSalary || emp.salary || 0,
                         allowance: emp.allowance || 0,
                         deductions: emp.deductions || 0,
                         dept: emp.department || 'Operations'
@@ -1475,7 +1719,8 @@
             const base = Number(document.getElementById('sal-base').value) || 0;
             const allowance = Number(document.getElementById('sal-allowance').value) || 0;
             const deduction = Number(document.getElementById('sal-deduction').value) || 0;
-            const net = Math.max(0, base + allowance - deduction);
+            const advance = Number(document.getElementById('sal-advance').value) || 0;
+            const net = Math.max(0, base + allowance - deduction - advance);
             document.getElementById('sal-net-preview').textContent = 'Rs. ' + net.toLocaleString();
         }
 
@@ -1503,26 +1748,53 @@
             if (editObj) {
                 document.getElementById('salaryModalTitle').innerHTML = '<i class="fas fa-edit text-warning me-2"></i> Edit Employee Salary';
                 document.getElementById('sal-edit-id').value = editObj.id;
+                document.getElementById('sal-employee-id').value = editObj.employeeId || editObj.staffId || '';
                 document.getElementById('sal-name').value = editObj.name || '';
                 document.getElementById('sal-role').value = editObj.role || '';
                 document.getElementById('sal-month').value = editObj.month || 'September 2026';
                 document.getElementById('sal-base').value = editObj.base || 0;
                 document.getElementById('sal-allowance').value = editObj.allowance || 0;
                 document.getElementById('sal-deduction').value = editObj.deduction || 0;
+                document.getElementById('sal-advance').value = editObj.advance || 0;
+                document.getElementById('sal-advance-date').value = editObj.advanceDate || '';
                 document.getElementById('sal-status').value = editObj.status || 'Pending';
                 document.getElementById('sal-method').value = editObj.method || 'Bank Transfer';
                 document.getElementById('sal-date').value = editObj.date || '';
+                document.getElementById('sal-paid-amount').value = Number(editObj.paidAmount) || (editObj.status === 'Paid' ? Number(editObj.net) || 0 : 0);
                 document.getElementById('sal-ref').value = editObj.ref || '';
                 document.getElementById('sal-notes').value = editObj.notes || '';
             } else {
                 document.getElementById('salaryModalTitle').innerHTML = '<i class="fas fa-id-card text-warning me-2"></i> Record Employee Salary';
                 document.getElementById('salary-form').reset();
                 document.getElementById('sal-edit-id').value = '';
+                document.getElementById('sal-employee-id').value = '';
                 document.getElementById('sal-status').value = 'Pending';
-                document.getElementById('sal-month').value = 'September 2026';
-                document.getElementById('sal-method').value = 'Bank Transfer';
+                document.getElementById('sal-month').value = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                document.getElementById('sal-method').value = 'Bank';
+                document.getElementById('sal-advance').value = 0;
+                document.getElementById('sal-advance-date').value = '';
+                document.getElementById('sal-paid-amount').value = 0;
             }
             calcNetSalary();
+            const netPayable = Math.max(0,
+                (Number(document.getElementById('sal-base').value) || 0) +
+                (Number(document.getElementById('sal-allowance').value) || 0) -
+                (Number(document.getElementById('sal-deduction').value) || 0) -
+                (Number(document.getElementById('sal-advance').value) || 0));
+            window.salaryPaymentCapture = window.GUG_PAYMENT_METHODS.mount({
+                form: 'salary-form',
+                prefix: 'payroll',
+                methodId: 'sal-method',
+                amountId: 'sal-paid-amount',
+                defaultMethod: 'Bank',
+                existingDetails: editObj && Number(editObj.paidAmount || 0) > 0 ? editObj : null,
+                total: () => Math.max(0,
+                    (Number(document.getElementById('sal-base').value) || 0) +
+                    (Number(document.getElementById('sal-allowance').value) || 0) -
+                    (Number(document.getElementById('sal-deduction').value) || 0) -
+                    (Number(document.getElementById('sal-advance').value) || 0))
+            });
+            document.getElementById('sal-paid-amount').max = netPayable;
             modal.show();
         }
 
@@ -1534,20 +1806,50 @@
             const base = Number(document.getElementById('sal-base').value) || 0;
             const allowance = Number(document.getElementById('sal-allowance').value) || 0;
             const deduction = Number(document.getElementById('sal-deduction').value) || 0;
-            const net = Math.max(0, base + allowance - deduction);
+            const advance = Number(document.getElementById('sal-advance').value) || 0;
+            const advanceDate = document.getElementById('sal-advance-date').value || document.getElementById('sal-date').value || '';
+            if (advance > 0 && !advanceDate) {
+                if (window.GUG_DB && typeof window.GUG_DB.showToast === 'function') {
+                    window.GUG_DB.showToast('Choose the date the salary advance was paid before saving.', 'warning', 'Advance date required');
+                } else {
+                    window.alert('Choose the date the salary advance was paid before saving.');
+                }
+                return;
+            }
+            const net = Math.max(0, base + allowance - deduction - advance);
+            let paymentDetails;
+            try {
+                paymentDetails = window.salaryPaymentCapture.collect();
+            } catch (error) {
+                if (window.GUG_DB && typeof window.GUG_DB.showToast === 'function') window.GUG_DB.showToast(error.message, 'error', 'Payment Details Required');
+                else window.alert(error.message);
+                return;
+            }
+            const paymentStatus = paymentDetails.paidAmount >= net && net > 0 ? 'Paid' : 'Pending';
 
             const record = {
                 id: editId || ("SAL-" + Math.floor(100 + Math.random() * 900)),
+                employeeId: document.getElementById('sal-employee-id').value || '',
                 name: document.getElementById('sal-name').value.trim(),
                 role: document.getElementById('sal-role').value.trim(),
-                month: document.getElementById('sal-month').value.trim() || 'September 2026',
+                month: document.getElementById('sal-month').value.trim() || new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
                 base,
                 allowance,
                 deduction,
+                advance,
+                advanceDate,
                 net,
-                status: document.getElementById('sal-status').value.trim() || 'Pending',
-                method: document.getElementById('sal-method').value.trim() || 'Bank Transfer',
-                date: document.getElementById('sal-date').value || '',
+                status: paymentStatus,
+                paidAmount: paymentDetails.paidAmount,
+                method: paymentDetails.paymentMethod,
+                paymentMethod: paymentDetails.paymentMethod,
+                bankNetwork: paymentDetails.bankNetwork,
+                transactionReference: paymentDetails.transactionReference || document.getElementById('sal-ref').value.trim(),
+                receiptName: paymentDetails.receiptName,
+                receiptData: paymentDetails.receiptData,
+                transactionAt: paymentDetails.transactionAt,
+                balanceAmount: paymentDetails.balanceAmount,
+                date: paymentDetails.transactionAt,
                 ref: document.getElementById('sal-ref').value.trim(),
                 notes: document.getElementById('sal-notes').value.trim()
             };
@@ -1571,19 +1873,7 @@
         function toggleSalaryStatus(salId) {
             const salaries = JSON.parse(localStorage.getItem('gug_finance_salaries') || '[]');
             const idx = salaries.findIndex(s => s.id === salId);
-            if (idx > -1) {
-                const current = salaries[idx].status;
-                if (current === 'Paid') {
-                    salaries[idx].status = 'Pending';
-                    salaries[idx].date = '';
-                } else {
-                    salaries[idx].status = 'Paid';
-                    salaries[idx].date = new Date().toISOString().split('T')[0];
-                    if (!salaries[idx].ref) salaries[idx].ref = 'PAY-' + Math.floor(1000 + Math.random() * 9000);
-                }
-                localStorage.setItem('gug_finance_salaries', JSON.stringify(salaries));
-                renderAllERPModules();
-            }
+            if (idx > -1) openSalaryModal(salaries[idx]);
         }
 
         function editSalary(salId) {
@@ -1613,7 +1903,7 @@
                 document.getElementById('txn-order-field').value = editObj.orderId;
                 document.getElementById('txn-customer-field').value = editObj.customer;
                 document.getElementById('txn-phone-field').value = editObj.phone || '';
-                document.getElementById('txn-gateway-field').value = editObj.gateway;
+                document.getElementById('txn-payment-method').value = editObj.paymentMethod || editObj.gateway || 'Bank Transfer';
                 document.getElementById('txn-amount-field').value = editObj.amount;
                 document.getElementById('txn-status-field').value = editObj.status;
                 document.getElementById('txn-date-field').value = editObj.date;
@@ -1623,12 +1913,23 @@
                 document.getElementById('txn-edit-id').value = '';
                 document.getElementById('txn-id-field').value = 'TXN-' + Math.floor(10000 + Math.random() * 90000);
                 document.getElementById('txn-order-field').value = '#GUG-' + Math.floor(1000 + Math.random() * 900);
-                document.getElementById('txn-gateway-field').value = 'Direct Bank Wire / IBFT';
+                document.getElementById('txn-payment-method').value = 'Bank';
+                document.getElementById('txn-amount-field').value = '';
                 document.getElementById('txn-status-field').value = 'Completed';
                 
                 const now = new Date();
                 document.getElementById('txn-date-field').value = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) + ', ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             }
+            window.financeTransactionCapture = window.GUG_PAYMENT_METHODS.mount({
+                form: 'txn-form',
+                prefix: 'finance-txn',
+                methodId: 'txn-payment-method',
+                amountId: 'txn-amount-field',
+                defaultMethod: 'Bank',
+                existingDetails: editObj || null,
+                amountLabel: 'Paid Amount (PKR)',
+                total: () => Number(document.getElementById('txn-amount-field').value || 0)
+            });
             modal.show();
         }
 
@@ -1636,16 +1937,32 @@
             e.preventDefault();
             const editId = document.getElementById('txn-edit-id').value;
             const txns = JSON.parse(localStorage.getItem('gug_finance_transactions') || '[]');
+            let paymentDetails;
+            try {
+                paymentDetails = window.financeTransactionCapture.collect();
+            } catch (error) {
+                window.GUG_DB.showToast(error.message, 'error', 'Payment Details Required');
+                return;
+            }
 
             const record = {
                 id: document.getElementById('txn-id-field').value.trim(),
                 orderId: document.getElementById('txn-order-field').value.trim(),
                 customer: document.getElementById('txn-customer-field').value.trim(),
                 phone: document.getElementById('txn-phone-field').value.trim(),
-                gateway: document.getElementById('txn-gateway-field').value.trim() || 'Direct Bank Wire / IBFT',
-                amount: Number(document.getElementById('txn-amount-field').value) || 0,
+                gateway: paymentDetails.bankNetwork || paymentDetails.paymentMethod,
+                paymentMethod: paymentDetails.paymentMethod,
+                bankNetwork: paymentDetails.bankNetwork,
+                transactionReference: paymentDetails.transactionReference,
+                reference: paymentDetails.transactionReference,
+                paidAmount: paymentDetails.paidAmount,
+                balanceAmount: paymentDetails.balanceAmount,
+                receiptName: paymentDetails.receiptName,
+                receiptData: paymentDetails.receiptData,
+                transactionAt: paymentDetails.transactionAt,
+                amount: paymentDetails.paidAmount,
                 status: document.getElementById('txn-status-field').value.trim() || 'Completed',
-                date: document.getElementById('txn-date-field').value.trim()
+                date: paymentDetails.transactionAt
             };
 
             if (editId) {
@@ -1672,6 +1989,41 @@
                 localStorage.setItem('gug_finance_transactions', JSON.stringify(txns));
                 renderAllERPModules();
             }
+        }
+
+        function printFinanceTransactionSlip(txnId) {
+            const transaction = JSON.parse(localStorage.getItem('gug_finance_transactions') || '[]')
+                .find(item => String(item.id) === String(txnId));
+            if (!transaction) {
+                window.GUG_DB.showToast('The selected payment receipt could not be found.', 'warning', 'Receipt Not Found');
+                return;
+            }
+            const printWindow = window.open('', '_blank', 'width=760,height=800');
+            if (!printWindow) {
+                window.GUG_DB.showToast('Allow pop-ups to print the payment receipt.', 'error', 'Print Window Blocked');
+                return;
+            }
+            const escapeReceiptText = value => String(value == null ? '' : value).replace(/[&<>"']/g, character => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            })[character]);
+            printWindow.document.open();
+            printWindow.document.write(`<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Payment Receipt ${escapeReceiptText(transaction.id)}</title>
+                <style>body{font:15px Arial,sans-serif;color:#111;margin:36px auto;max-width:680px}header{text-align:center;border-bottom:2px solid #111;padding-bottom:14px;margin-bottom:24px}h1{font-size:24px;margin:0 0 6px}.receipt{border:1px solid #555;padding:20px;line-height:1.9}.row{display:flex;justify-content:space-between;border-bottom:1px solid #ddd;padding:5px 0}@media print{body{margin:12mm auto}.receipt{break-inside:avoid}}</style>
+                </head><body><header><h1>Gear Up Gadgets</h1><div>Payment Gateway Receipt</div></header>
+                <div class="receipt">
+                    <div class="row"><strong>Transaction ID</strong><span>${escapeReceiptText(transaction.id)}</span></div>
+                    <div class="row"><strong>Order Reference</strong><span>${escapeReceiptText(transaction.orderId || '—')}</span></div>
+                    <div class="row"><strong>Customer</strong><span>${escapeReceiptText(transaction.customer || 'Customer')}</span></div>
+                    <div class="row"><strong>Payment Date &amp; Time</strong><span>${escapeReceiptText(transaction.transactionAt || transaction.date || 'Not recorded')}</span></div>
+                    <div class="row"><strong>Payment Method</strong><span>${escapeReceiptText(transaction.paymentMethod || transaction.gateway || 'Not recorded')}</span></div>
+                    ${transaction.bankNetwork ? `<div class="row"><strong>Bank / Network</strong><span>${escapeReceiptText(transaction.bankNetwork)}</span></div>` : ''}
+                    <div class="row"><strong>Reference Number</strong><span>${escapeReceiptText(transaction.transactionReference || transaction.reference || '—')}</span></div>
+                    <div class="row"><strong>Paid Amount</strong><span>Rs. ${Number(transaction.paidAmount != null ? transaction.paidAmount : transaction.amount || 0).toLocaleString()}</span></div>
+                    <div class="row"><strong>Balance Amount</strong><span>Rs. ${Number(transaction.balanceAmount || 0).toLocaleString()}</span></div>
+                </div></body></html>`);
+            printWindow.document.close();
+            printWindow.focus();
+            setTimeout(() => printWindow.print(), 250);
         }
 
         function deleteTransaction(txnId) {
@@ -1728,8 +2080,7 @@
             seedDefaultERPData(false);
         });
     </script>
+    <script src="assets/js/admin-finance-ledger.js"></script>
+    <script src="assets/js/payment-methods.js"></script>
 </body>
 </html>
-
-
-

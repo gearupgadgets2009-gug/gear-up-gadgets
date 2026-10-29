@@ -22,6 +22,7 @@
     <link rel="stylesheet" href="assets/fonts/font-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/custom.css">
+    <link rel="stylesheet" href="assets/css/payment-methods.css">
     <style>
         body { background-color: var(--gug-bg-color, #07090d) !important; background-image: var(--gug-bg-image) !important; background-attachment: var(--gug-bg-attachment, fixed) !important; background-size: var(--gug-bg-size, cover, cover, 28px 49px) !important; background-position: var(--gug-bg-position, center top) !important; background-repeat: var(--gug-bg-repeat, no-repeat, no-repeat, repeat) !important; min-height: 100vh; color: #ffffff !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .admin-sidebar { width: 260px; background: rgba(10, 10, 15, 0.6) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; height: 100vh; position: fixed; left: 0; top: 0; padding: 20px 15px; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; overflow-y: auto; z-index: 1000; }
@@ -962,14 +963,11 @@
                                 <input type="text" id="tx-reference" class="form-control form-control-sm" placeholder="e.g. INV-B2B-1088 or PAY-MEEZAN-9921" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label form-label-required small fw-bold">Payment Method / Terms</label>
+                                <label class="form-label form-label-required small fw-bold">Payment Method</label>
                                 <select id="tx-payment-method" class="form-select form-select-sm" required>
-                                    <option value="Credit Invoice">Credit Invoice (Ledger Balance)</option>
-                                    <option value="Bank Transfer (Meezan Bank)">Bank Transfer (Meezan Bank)</option>
-                                    <option value="Bank Transfer (HBL)">Bank Transfer (HBL)</option>
-                                    <option value="Bank Transfer (Bank Alfalah)">Bank Transfer (Bank Alfalah)</option>
-                                    <option value="Cash Deposit">Cash Deposit</option>
-                                    <option value="Cheque Deposit">Cheque Deposit</option>
+                                    <option value="Cash">Cash</option>
+                                    <option value="Online">Online</option>
+                                    <option value="Bank">Bank</option>
                                 </select>
                             </div>
                         </div>
@@ -1081,6 +1079,7 @@
     <script src="assets/js/firebase-config.js"></script>
     <script src="assets/js/firebase-sync.js"></script>
     <script src="assets/js/admin.js"></script>
+    <script src="assets/js/payment-methods.js"></script>
     <script>
         let dealerModalInstance = null;
         let transactionModalInstance = null;
@@ -1833,6 +1832,21 @@
             
             document.getElementById('tx-line-items-tbody').innerHTML = '';
             toggleTxTypeFields();
+            window.dealerPaymentCapture = window.GUG_PAYMENT_METHODS.mount({
+                form: 'transactionForm',
+                prefix: 'dealer',
+                methodId: 'tx-payment-method',
+                amountId: 'tx-amount',
+                defaultMethod: 'Bank',
+                total: () => {
+                    if (document.getElementById('tx-type-select').value !== 'PAYMENT_RECEIVED') {
+                        return Number(document.getElementById('tx-amount').value || 0);
+                    }
+                    const summary = window.GUG_DB.calculateDealerSummary(document.getElementById('tx-dealer-select').value);
+                    return Math.max(0, Number(summary && summary.currentBalance) || 0);
+                },
+                amountLabel: 'Paid Amount (PKR)'
+            });
             updateTxDealerBalancePreview();
             transactionModalInstance.show();
         }
@@ -1958,7 +1972,14 @@
             const type = document.getElementById('tx-type-select').value;
             const amount = Number(document.getElementById('tx-amount').value);
             const referenceNo = document.getElementById('tx-reference').value.trim();
-            const paymentMethod = document.getElementById('tx-payment-method').value;
+            let paymentDetails;
+            try {
+                paymentDetails = window.dealerPaymentCapture.collect();
+            } catch (error) {
+                window.GUG_DB.showToast(error.message, 'error', 'Payment Details Required');
+                return;
+            }
+            const paymentMethod = paymentDetails.paymentMethod;
             const description = document.getElementById('tx-description').value.trim() || `${type.replace('_', ' ')} Ref #${referenceNo}`;
 
             // Build line items if stock
@@ -1990,6 +2011,7 @@
                 amount: amount,
                 referenceNo: referenceNo,
                 paymentMethod: paymentMethod,
+                paymentDetails: paymentDetails,
                 description: description,
                 items: items
             });
@@ -2063,6 +2085,3 @@
     </script>
 </body>
 </html>
-
-
-

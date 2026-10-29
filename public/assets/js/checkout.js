@@ -4,6 +4,14 @@
 
 function initCheckoutPage() {
     renderCheckoutSummary();
+    window.checkoutPaymentCapture = window.GUG_PAYMENT_METHODS.mount({
+        form: document.querySelector('form[onsubmit="handlePlaceOrder(event)"]'),
+        prefix: 'checkout',
+        methodId: 'checkout-payment-method',
+        amountId: 'checkout-paid-amount',
+        amountLabel: 'Paid Amount (PKR)',
+        total: () => getCalculatedOrderTotals(getCart()).total
+    });
 }
 
 function getCalculatedOrderTotals(cart) {
@@ -93,6 +101,13 @@ function renderCheckoutSummary() {
 
     // Calculate totals with dynamic shipping and coupons
     const totals = getCalculatedOrderTotals(cart);
+    let paymentDetails;
+    try {
+        paymentDetails = window.checkoutPaymentCapture.collect();
+    } catch (error) {
+        showToast(error.message, 'error');
+        return;
+    }
     let discountRowHTML = '';
 
     if (totals.couponResult && totals.couponResult.valid) {
@@ -170,8 +185,21 @@ function handlePlaceOrder(event) {
 
     // Generate Order ID (Tracking ID)
     const orderId = `GUG-ORD-${Math.floor(100000 + Math.random() * 900000)}`;
-    const paymentChoice = document.querySelector('input[name="checkout-payment"]:checked') ? document.querySelector('input[name="checkout-payment"]:checked').value : 'cod';
-    const paymentMethodLabel = paymentChoice === 'cod' ? 'Cash on Delivery (COD)' : 'Direct Bank Transfer';
+    const paymentMethodLabel = paymentDetails.paymentMethod;
+    const paymentHistory = paymentDetails.paidAmount > 0 ? [{
+        id: `CRM-PAY-${Date.now()}`,
+        amount: paymentDetails.paidAmount,
+        date: paymentDetails.transactionAt,
+        timestamp: paymentDetails.transactionAt,
+        method: paymentDetails.paymentMethod,
+        paymentMethod: paymentDetails.paymentMethod,
+        bankNetwork: paymentDetails.bankNetwork,
+        reference: paymentDetails.transactionReference || orderId,
+        transactionReference: paymentDetails.transactionReference,
+        receiptName: paymentDetails.receiptName,
+        receiptData: paymentDetails.receiptData,
+        balanceAfter: paymentDetails.balanceAmount
+    }] : [];
 
     const orderDetails = {
         id: orderId,
@@ -209,7 +237,13 @@ function handlePlaceOrder(event) {
         }),
         payment: paymentMethodLabel,
         paymentMethod: paymentMethodLabel,
-        paymentStatus: paymentChoice === 'cod' ? 'Pending' : 'Paid',
+        paymentStatus: paymentDetails.balanceAmount === 0 && paymentDetails.paidAmount > 0 ? 'Paid' : 'Pending',
+        paidAmount: paymentDetails.paidAmount,
+        balanceAmount: paymentDetails.balanceAmount,
+        paymentReference: paymentDetails.transactionReference,
+        bankNetwork: paymentDetails.bankNetwork,
+        transactionAt: paymentDetails.transactionAt,
+        paymentHistory,
         orderStatus: 'New Order',
         status: 'Pending',
         archived: false,
@@ -349,5 +383,4 @@ document.addEventListener('DOMContentLoaded', () => {
         input.value = active;
     }
 });
-
 

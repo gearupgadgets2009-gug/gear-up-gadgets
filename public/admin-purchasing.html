@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="assets/fonts/font-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/custom.css">
+    <link rel="stylesheet" href="assets/css/payment-methods.css">
     <style>
         body { background-color: var(--gug-bg-color, #07090d) !important; background-image: var(--gug-bg-image) !important; background-attachment: var(--gug-bg-attachment, fixed) !important; background-size: var(--gug-bg-size, cover, cover, 28px 49px) !important; background-position: var(--gug-bg-position, center top) !important; background-repeat: var(--gug-bg-repeat, no-repeat, no-repeat, repeat) !important; min-height: 100vh; color: #ffffff !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .admin-sidebar { width: 260px; background: rgba(10, 10, 15, 0.6) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; height: 100vh; position: fixed; left: 0; top: 0; padding: 20px 15px; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; overflow-y: auto; z-index: 1000; }
@@ -35,11 +36,40 @@
         .nav-tabs-erp .nav-link:hover { color: #ffffff; }
         .nav-tabs-erp .nav-link.active { color: var(--accent-red); border-bottom-color: var(--accent-red); background: transparent; }
         .po-extra-field { border: 1px solid rgba(255,255,255,.12); border-radius: 8px; padding: 10px; }
-        #purchase-order-print { display: none; }
+        .statement-summary-box { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; }
+        #purchase-order-print, #supplierStatementModal { display: none; }
         @media print {
-            body * { visibility: hidden !important; }
-            #purchase-order-print, #purchase-order-print * { visibility: visible !important; }
-            #purchase-order-print { display: block !important; position: absolute; inset: 0; padding: 28px; background: #fff; color: #111; font: 14px Arial, sans-serif; }
+            body > *:not(#supplierStatementModal):not(#purchase-order-print) {
+                display: none !important;
+                visibility: hidden !important;
+            }
+            body { background: #ffffff !important; }
+            #supplierStatementModal, #supplierStatementModal *, #purchase-order-print, #purchase-order-print * {
+                visibility: visible !important;
+            }
+            #supplierStatementModal {
+                display: block !important;
+                position: fixed !important;
+                inset: 0 !important;
+                background: #fff !important;
+                color: #111 !important;
+                z-index: 20000 !important;
+            }
+            #purchase-order-print {
+                display: block !important;
+                position: absolute !important;
+                inset: 0 !important;
+                padding: 28px !important;
+                background: #fff !important;
+                color: #111 !important;
+                font: 14px Arial, sans-serif;
+            }
+            .modal-backdrop, .admin-sidebar, .admin-main > *:not(#supplierStatementModal):not(#purchase-order-print) { display: none !important; }
+            .modal-dialog { max-width: 100% !important; width: 100% !important; margin: 0 !important; }
+            .modal-content { border: none !important; box-shadow: none !important; border-radius: 0 !important; background: #fff !important; color: #111 !important; }
+            .modal-header, .modal-footer { border-color: #d1d5db !important; }
+            .statement-summary-box, .table, .table th, .table td, .statement-table th, .statement-table td { background: #fff !important; color: #111 !important; border-color: #d1d5db !important; }
+            #supplier-statement-print-btn { display: none !important; }
             #purchase-order-print h1, #purchase-order-print h2 { color: #111; }
             #purchase-order-print table { width: 100%; border-collapse: collapse; margin: 18px 0; }
             #purchase-order-print th, #purchase-order-print td { border: 1px solid #bbb; padding: 8px; text-align: left; }
@@ -373,6 +403,69 @@
 
     <section id="purchase-order-print" aria-label="Printable purchase order"></section>
 
+    <div class="modal fade" id="supplierStatementModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content bg-dark border-secondary shadow-lg">
+                <div class="modal-header border-secondary p-3">
+                    <div>
+                        <h5 class="modal-title text-white fw-bold"><i class="fas fa-file-invoice text-danger me-2"></i> Supplier Ledger Statement</h5>
+                        <small class="text-secondary" id="supplier-statement-subtitle">Vendor financial statement</small>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4" id="supplier-statement-body"></div>
+                <div class="modal-footer border-secondary p-3">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                    <button type="button" id="supplier-statement-print-btn" class="btn btn-danger btn-sm" onclick="printSupplierStatement()"><i class="fas fa-print me-1"></i> Print Statement</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="supplierPaymentModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark border-secondary shadow-lg">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-white fw-bold"><i class="fas fa-money-bill-transfer text-warning me-2"></i> Record Supplier Payment</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="supplier-payment-form" onsubmit="handleSupplierPayment(event)">
+                    <div class="modal-body">
+                        <input type="hidden" id="supplier-payment-po-id">
+                        <div class="mb-3"><span class="text-secondary small">Purchase order</span><strong class="text-white d-block" id="supplier-payment-po-label"></strong></div>
+                        <div class="mb-3"><span class="text-secondary small">Supplier</span><strong class="text-white d-block" id="supplier-payment-vendor-label"></strong></div>
+                        <div class="mb-3"><span class="text-secondary small">Remaining payable</span><strong class="text-warning d-block" id="supplier-payment-remaining"></strong></div>
+                        <div class="mb-3">
+                            <label for="supplier-payment-amount" class="form-label text-white small fw-bold">Payment amount (PKR)</label>
+                            <input type="number" id="supplier-payment-amount" class="form-control" min="0.01" step="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="supplier-payment-date" class="form-label text-white small fw-bold">Payment date</label>
+                            <input type="date" id="supplier-payment-date" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="supplier-payment-method" class="form-label text-white small fw-bold">Payment Method</label>
+                            <select id="supplier-payment-method" class="form-select" required>
+                                <option value="Cash">Cash</option>
+                                <option value="Online">Online</option>
+                                <option value="Bank">Bank</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="supplier-payment-reference" class="form-label text-white small fw-bold">Reference / receipt file name</label>
+                            <input type="text" id="supplier-payment-reference" class="form-control" maxlength="180" placeholder="Transaction ID or supplier-invoice.pdf">
+                        </div>
+                        <div class="small text-danger" id="supplier-payment-error" role="alert"></div>
+                    </div>
+                    <div class="modal-footer border-secondary">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-warning btn-sm fw-bold">Save Payment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/products-data.js"></script>
@@ -384,6 +477,7 @@
     <script src="assets/js/firebase-config.js"></script>
     <script src="assets/js/firebase-sync.js"></script>
     <script src="assets/js/admin.js"></script>
+    <script src="assets/js/payment-methods.js"></script>
     <script>
         function escapePOHtml(value) {
             return String(value ?? '').replace(/[&<>"']/g, character => ({
@@ -666,9 +760,10 @@
                     <td class="text-dark">${po.orderDate || 'N/A'}</td>
                     <td class="text-dark">${po.expectedDate || 'N/A'}</td>
                     <td class="fw-bold text-dark">Rs. ${(po.totalAmount || 0).toLocaleString()}</td>
-                    <td>${payBadge}</td>
+                    <td>${payBadge}<small class="d-block text-secondary">Paid: Rs. ${(Number(po.paidAmount) || 0).toLocaleString()} / Rs. ${(Number(po.totalAmount) || 0).toLocaleString()}</small></td>
                     <td>${statusBadge}</td>
                     <td>
+                        ${(Number(po.paidAmount) || 0) < (Number(po.totalAmount) || 0) ? `<button type="button" class="btn btn-outline-warning btn-sm py-1 px-2 mb-1 btn-record-po-payment" data-po-id="${escapePOHtml(po.id)}" title="Record an outgoing supplier payment"><i class="fas fa-money-bill-transfer me-1"></i> Record Payment</button>` : ''}
                         ${po.status !== 'Received' ? `<button class="btn btn-success btn-sm py-1 px-2" onclick="receiveGRN('${po.id}', '${po.targetWarehouse || 'Karachi'}')" title="Receive GRN & Add Stock"><i class="fas fa-check-double me-1"></i> Receive GRN</button>` : `<span class="text-muted small"><i class="fas fa-check text-success"></i> Stocked</span>`}
                     </td>
                 `;
@@ -690,10 +785,21 @@
                     <td><span class="badge bg-light text-dark border border-secondary">${s.paymentTerms}</span></td>
                     <td class="fw-bold text-danger">Rs ${(s.balancePayable || 0).toLocaleString()}</td>
                     <td>
-                        <button class="btn btn-outline-dark btn-sm py-1 px-2" onclick="window.GUG_DB.showToast('Statement generated for ${s.name}.', 'info', 'Statement Ready')"><i class="fas fa-receipt"></i> Statement</button>
+                        <button class="btn btn-outline-dark btn-sm py-1 px-2 statement-btn" data-supplier-id="${s.id}" data-supplier-name="${escapePOHtml(s.name)}" type="button"><i class="fas fa-receipt"></i> Statement</button>
                     </td>
                 `;
                 supTbody.appendChild(tr);
+            });
+
+            document.querySelectorAll('.statement-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    const supplierId = this.dataset.supplierId;
+                    const supplierName = this.dataset.supplierName || 'Supplier';
+                    openSupplierStatement(supplierId, supplierName);
+                });
+            });
+            document.querySelectorAll('.btn-record-po-payment').forEach(button => {
+                button.addEventListener('click', () => openSupplierPaymentModal(button.dataset.poId));
             });
         }
 
@@ -822,6 +928,14 @@
             const extraTerms = (po.additionalTerms || []).map(field => `
                 <p><strong>${escapePOHtml(field.label || 'Additional Term')}:</strong> ${escapePOHtml(field.value)}</p>
             `).join('');
+            const payments = Array.isArray(po.paymentHistory) ? po.paymentHistory : [];
+            const latestPayment = payments[payments.length - 1] || {};
+            const paidAmount = Number(po.paidAmount) || payments.reduce((sum, payment) => sum + (Number(payment.amount) || 0), 0);
+            const balanceAmount = Math.max(0, Number(po.totalAmount || 0) - paidAmount);
+            const paymentMethod = latestPayment.paymentMethod || latestPayment.method || po.paymentMethod || 'Not recorded';
+            const paymentReference = latestPayment.transactionReference || latestPayment.reference || po.paymentReference || '—';
+            const paymentNetwork = latestPayment.bankNetwork || po.bankNetwork || '';
+            const paymentTimestamp = latestPayment.timestamp || latestPayment.recordedAt || latestPayment.date || po.transactionAt || 'Not recorded';
             document.getElementById('purchase-order-print').innerHTML = `
                 <header>
                     <h1>Gear Up Gadgets</h1>
@@ -841,8 +955,269 @@
                 </table>
                 <p><strong>Procurement Notes:</strong> ${escapePOHtml(po.notes || 'None')}</p>
                 <p class="po-print-total">Grand Total: Rs. ${Number(po.totalAmount || 0).toLocaleString()}</p>
+                <section class="payment-print-summary">
+                    <strong>Payment Method:</strong> ${escapePOHtml(paymentMethod)}${paymentNetwork ? ` (${escapePOHtml(paymentNetwork)})` : ''}<br>
+                    <strong>Reference Number:</strong> ${escapePOHtml(paymentReference)}<br>
+                    <strong>Paid Amount:</strong> Rs. ${paidAmount.toLocaleString()}<br>
+                    <strong>Balance Amount:</strong> Rs. ${balanceAmount.toLocaleString()}<br>
+                    <strong>Payment Date &amp; Time:</strong> ${escapePOHtml(paymentTimestamp)}
+                </section>
                 <footer><p>Authorized Signature: ____________________________</p></footer>
             `;
+        }
+
+        function buildSupplierLedgerEntries(supplierId, supplierName) {
+            const purchaseOrders = GUG_DB.getPurchaseOrders ? GUG_DB.getPurchaseOrders() : [];
+            const supplierPos = purchaseOrders.filter(po => {
+                const sameName = po.supplierName && supplierName && po.supplierName.toLowerCase() === supplierName.toLowerCase();
+                const sameId = supplierId && po.supplierId && String(po.supplierId).toLowerCase() === String(supplierId).toLowerCase();
+                return sameName || sameId;
+            });
+
+            const entries = supplierPos.map(po => ({
+                date: po.orderDate || new Date().toISOString().slice(0, 10),
+                description: `Purchase Order ${po.id} - ${po.targetWarehouse || 'Warehouse'}`,
+                type: 'Debit',
+                amount: Number(po.totalAmount || 0),
+                status: po.status || 'Approved'
+            }));
+
+            if (!entries.length) {
+                entries.push({
+                    date: new Date().toISOString().slice(0, 10),
+                    description: 'Opening balance / initial vendor account',
+                    type: 'Opening',
+                    amount: 0,
+                    status: 'Active'
+                });
+            }
+
+            const payable = Number((GUG_DB.getSuppliers ? GUG_DB.getSuppliers().find(s => s.id === supplierId || (s.name && s.name.toLowerCase() === supplierName.toLowerCase())) : null)?.balancePayable || 0);
+            const totalDebits = entries.reduce((sum, entry) => sum + (entry.amount || 0), 0);
+            const closingBalance = Math.max(payable, totalDebits);
+
+            return { entries, closingBalance };
+        }
+
+        function openSupplierStatement(supplierId, supplierName) {
+            const suppliers = GUG_DB.getSuppliers ? GUG_DB.getSuppliers() : [];
+            const supplier = suppliers.find(item => item.id === supplierId || (item.name && item.name.toLowerCase() === String(supplierName || '').toLowerCase())) || {
+                id: supplierId || 'SUP-NEW',
+                name: supplierName || 'Supplier',
+                contactPerson: 'N/A',
+                email: 'N/A',
+                phone: 'N/A',
+                paymentTerms: 'TBD',
+                balancePayable: 0,
+                address: 'N/A'
+            };
+
+            const { entries, closingBalance } = buildSupplierLedgerEntries(supplier.id, supplier.name);
+            const statementBody = document.getElementById('supplier-statement-body');
+            const subtitle = document.getElementById('supplier-statement-subtitle');
+
+            subtitle.textContent = `${supplier.name} • ${supplier.paymentTerms || 'Payment terms not assigned'}`;
+            statementBody.innerHTML = `
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="statement-summary-box p-3">
+                            <div class="text-secondary small text-uppercase fw-bold">Supplier</div>
+                            <h4 class="text-dark fw-bold mb-1">${escapePOHtml(supplier.name)}</h4>
+                            <div class="text-dark small">Contact: ${escapePOHtml(supplier.contactPerson || 'N/A')}</div>
+                            <div class="text-dark small">Email: ${escapePOHtml(supplier.email || 'N/A')}</div>
+                            <div class="text-dark small">Phone: ${escapePOHtml(supplier.phone || 'N/A')}</div>
+                            <div class="text-dark small">Address: ${escapePOHtml(supplier.address || 'N/A')}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="statement-summary-box p-3">
+                            <div class="text-secondary small text-uppercase fw-bold">Account Summary</div>
+                            <div class="mt-2 text-dark small">Payment Terms: <strong>${escapePOHtml(supplier.paymentTerms || 'N/A')}</strong></div>
+                            <div class="mt-2 text-dark small">Current Balance Payable: <strong class="text-danger">Rs. ${Number(closingBalance || supplier.balancePayable || 0).toLocaleString()}</strong></div>
+                            <div class="mt-2 text-dark small">Transactions Logged: <strong>${entries.length}</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle statement-table bg-white text-dark">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${entries.map(entry => `
+                                <tr>
+                                    <td>${escapePOHtml(entry.date)}</td>
+                                    <td>${escapePOHtml(entry.description)}</td>
+                                    <td>${escapePOHtml(entry.type || 'Debit')}</td>
+                                    <td class="fw-bold text-dark">Rs. ${Number(entry.amount || 0).toLocaleString()}</td>
+                                    <td><span class="badge bg-${entry.status === 'Paid' ? 'success' : entry.status === 'Active' ? 'info' : 'warning'} text-dark">${escapePOHtml(entry.status || 'Pending')}</span></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('supplierStatementModal'));
+            modal.show();
+        }
+
+        function printSupplierStatement() {
+            window.print();
+        }
+
+        function openSupplierPaymentModal(poId) {
+            const po = GUG_DB.getPurchaseOrders().find(item => String(item.id) === String(poId));
+            if (!po) {
+                window.GUG_DB.showToast('The selected purchase order could not be found.', 'error', 'Payment Not Available');
+                return;
+            }
+            const total = Number(po.totalAmount) || 0;
+            const recordedHistory = Array.isArray(po.paymentHistory) ? po.paymentHistory : [];
+            const paid = Math.max(
+                Number(po.paidAmount) || 0,
+                recordedHistory.reduce((sum, payment) => sum + (Number(payment.amount) || 0), 0),
+                po.paymentStatus === 'Paid' ? total : 0
+            );
+            const remaining = Math.max(0, total - paid);
+            if (remaining <= 0) {
+                window.GUG_DB.showToast('This purchase order is already fully paid.', 'info', 'No Balance Due');
+                return;
+            }
+            document.getElementById('supplier-payment-form').reset();
+            document.getElementById('supplier-payment-error').textContent = '';
+            document.getElementById('supplier-payment-po-id').value = po.id;
+            document.getElementById('supplier-payment-po-label').textContent = `${po.id} · Rs. ${total.toLocaleString()}`;
+            document.getElementById('supplier-payment-vendor-label').textContent = po.supplierName || 'Supplier';
+            document.getElementById('supplier-payment-remaining').textContent = `Rs. ${remaining.toLocaleString()}`;
+            document.getElementById('supplier-payment-amount').max = remaining;
+            document.getElementById('supplier-payment-amount').dataset.paymentTotal = String(remaining);
+            document.getElementById('supplier-payment-date').value = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+            document.getElementById('supplier-payment-method').value = 'Bank Transfer';
+            document.getElementById('supplier-payment-remaining').dataset.amount = String(remaining);
+            window.supplierPaymentCapture = window.GUG_PAYMENT_METHODS.mount({
+                form: 'supplier-payment-form',
+                prefix: 'supplier',
+                methodId: 'supplier-payment-method',
+                amountId: 'supplier-payment-amount',
+                defaultMethod: 'Bank',
+                total: () => Number(document.getElementById('supplier-payment-remaining').dataset.amount || 0)
+            });
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('supplierPaymentModal')).show();
+        }
+
+        function handleSupplierPayment(event) {
+            event.preventDefault();
+            const errorElement = document.getElementById('supplier-payment-error');
+            const poId = document.getElementById('supplier-payment-po-id').value;
+            const paymentAmount = Number(document.getElementById('supplier-payment-amount').value);
+            const date = document.getElementById('supplier-payment-date').value;
+            let paymentDetails;
+            try {
+                paymentDetails = window.supplierPaymentCapture.collect();
+            } catch (error) {
+                errorElement.textContent = error.message;
+                return;
+            }
+            const method = paymentDetails.paymentMethod;
+            const reference = paymentDetails.transactionReference || document.getElementById('supplier-payment-reference').value.trim();
+            const purchaseOrders = GUG_DB.getPurchaseOrders();
+            const po = purchaseOrders.find(item => String(item.id) === String(poId));
+            if (!po) {
+                errorElement.textContent = 'The purchase order no longer exists. Refresh and try again.';
+                return;
+            }
+
+            const total = Number(po.totalAmount) || 0;
+            let history = Array.isArray(po.paymentHistory) ? po.paymentHistory : [];
+            const paid = Math.max(
+                Number(po.paidAmount) || 0,
+                history.reduce((sum, item) => sum + (Number(item.amount) || 0), 0),
+                po.paymentStatus === 'Paid' ? total : 0
+            );
+            const remaining = Math.max(0, total - paid);
+            if (!Number.isFinite(paymentAmount) || paymentAmount <= 0 || paymentAmount > remaining || !date || !method) {
+                errorElement.textContent = `Enter a valid payment amount up to Rs. ${remaining.toLocaleString()}, a date, and a payment method.`;
+                return;
+            }
+
+            if (!history.length && paid > 0) {
+                history = [{
+                    id: `SUP-PAY-LEGACY-${po.id}`,
+                    amount: paid,
+                    date: po.paymentDate || po.paidDate || po.updatedAt || po.orderDate || '',
+                    method: po.paymentMethod || 'Previously recorded payment',
+                    reference: po.paymentReference || 'Existing paid amount',
+                    receiptName: po.receiptName || ''
+                }];
+            }
+            const payment = {
+                id: `SUP-PAY-${Date.now()}`,
+                amount: paymentAmount,
+                date: paymentDetails.transactionAt,
+                method,
+                reference,
+                receiptName: paymentDetails.receiptName || reference,
+                paymentMethod: method,
+                bankNetwork: paymentDetails.bankNetwork,
+                transactionReference: reference,
+                paidAmount: paymentAmount,
+                balanceAmount: Math.max(0, remaining - paymentAmount),
+                receiptData: paymentDetails.receiptData,
+                timestamp: paymentDetails.transactionAt,
+                recordedAt: paymentDetails.transactionAt
+            };
+            po.paymentHistory = [...history, payment];
+            po.paidAmount = paid + paymentAmount;
+            po.paymentStatus = po.paidAmount >= total ? 'Paid' : 'Partial';
+            po.paymentDate = date;
+            po.paymentMethod = method;
+            po.paymentReference = reference;
+            po.transactionAt = paymentDetails.transactionAt;
+            po.receiptName = reference;
+            po.updatedAt = new Date().toISOString();
+
+            try {
+                localStorage.setItem('gug_erp_purchase_orders', JSON.stringify(purchaseOrders));
+                const suppliers = GUG_DB.getSuppliers();
+                const supplier = suppliers.find(item =>
+                    (po.supplierId && String(item.id) === String(po.supplierId)) ||
+                    (item.name && po.supplierName && item.name.toLowerCase() === po.supplierName.toLowerCase()));
+                if (supplier) {
+                    supplier.balancePayable = Math.max(0, (Number(supplier.balancePayable) || 0) - paymentAmount);
+                    localStorage.setItem('gug_erp_suppliers', JSON.stringify(suppliers));
+                }
+            } catch (error) {
+                console.error('[Purchasing] Unable to persist supplier payment.', error);
+                errorElement.textContent = `Payment could not be saved: ${error.message || 'storage error'}`;
+                return;
+            }
+
+            try {
+                if (typeof GUG_DB.logAudit === 'function') {
+                    GUG_DB.logAudit({
+                        action: 'SUPPLIER_PAYMENT_RECORDED',
+                        entity: 'PURCHASE_ORDER',
+                        entityId: po.id,
+                        newValue: `Rs. ${paymentAmount.toLocaleString()} paid to ${po.supplierName} on ${date}`,
+                        reason: 'Supplier payment recorded from Purchasing & Suppliers'
+                    });
+                }
+            } catch (error) {
+                console.error('[Purchasing] Payment was saved, but its audit event could not be recorded.', error);
+                window.GUG_DB.showToast('Payment saved, but the audit event could not be recorded.', 'warning', 'Audit Log Warning');
+            }
+
+            bootstrap.Modal.getInstance(document.getElementById('supplierPaymentModal')).hide();
+            window.GUG_DB.showToast(`Supplier payment of Rs. ${paymentAmount.toLocaleString()} saved. Finance ledger will include it.`, 'success', 'Payment Recorded');
+            renderPurchasingViews();
         }
 
         function receiveGRN(poId, targetWh) {

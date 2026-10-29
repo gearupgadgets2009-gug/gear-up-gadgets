@@ -5250,6 +5250,7 @@
             const isStockIssue = entryData.type === 'STOCK_ISSUED';
             const isStockReturn = entryData.type === 'STOCK_RETURNED';
             const isPayment = entryData.type === 'PAYMENT_RECEIVED' || entryData.type === 'ADVANCE_PAYMENT';
+            const paymentDetails = entryData.paymentDetails || {};
 
             const debit = Number(entryData.debit || (isStockIssue ? entryData.amount : 0) || 0);
             const credit = Number(entryData.credit || (isPayment || isStockReturn ? entryData.amount : 0) || 0);
@@ -5259,14 +5260,21 @@
                 dealerId: entryData.dealerId,
                 dealerName: dealer.name,
                 shopName: dealer.shopName,
-                date: entryData.date || new Date().toISOString(),
+                date: entryData.date || paymentDetails.transactionAt || new Date().toISOString(),
                 type: entryData.type || 'STOCK_ISSUED', // 'STOCK_ISSUED', 'STOCK_RETURNED', 'PAYMENT_RECEIVED', 'ADVANCE_PAYMENT', 'ADJUSTMENT'
                 referenceNo: entryData.referenceNo || 'REF-' + Math.floor(1000 + Math.random() * 9000),
                 description: entryData.description || (isStockIssue ? 'B2B Wholesale Stock Dispatch' : 'Payment Received'),
                 items: Array.isArray(entryData.items) ? entryData.items : [],
                 debit: debit,
                 credit: credit,
-                paymentMethod: entryData.paymentMethod || (isStockIssue ? 'Credit Invoice' : 'Bank Transfer'),
+                paymentMethod: paymentDetails.paymentMethod || entryData.paymentMethod || (isStockIssue ? 'Credit Invoice' : 'Bank Transfer'),
+                bankNetwork: paymentDetails.bankNetwork || '',
+                transactionReference: paymentDetails.transactionReference || '',
+                paidAmount: Number(paymentDetails.paidAmount || (isPayment ? credit : 0)),
+                balanceAmount: Number(paymentDetails.balanceAmount || 0),
+                receiptName: paymentDetails.receiptName || '',
+                receiptData: paymentDetails.receiptData || '',
+                transactionAt: paymentDetails.transactionAt || entryData.date || new Date().toISOString(),
                 recordedBy: entryData.recordedBy || this.getCurrentUser().name,
                 notes: entryData.notes || ''
             };
@@ -5917,6 +5925,37 @@
             const dateFormatted = now.toLocaleDateString('en-PK', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
             const timeFormatted = now.toLocaleTimeString('en-PK', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
             const refCode = 'CUST-SLIP-' + c.id + '-' + Date.now().toString().slice(-6);
+            const printText = value => String(value == null ? '' : value).replace(/[&<>"']/g, character => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            })[character]);
+            const paymentRows = orders.flatMap(order => {
+                const history = Array.isArray(order.paymentHistory) ? order.paymentHistory : [];
+                if (history.length) return history.map(payment => ({
+                    date: payment.timestamp || payment.date || order.date || '',
+                    method: payment.paymentMethod || payment.method || order.paymentMethod || 'Not recorded',
+                    network: payment.bankNetwork || '',
+                    reference: payment.transactionReference || payment.reference || payment.id || order.id,
+                    paid: Number(payment.amount || 0),
+                    balance: Number(payment.balanceAfter != null ? payment.balanceAfter : payment.balanceAmount || 0)
+                }));
+                const paid = Number(order.paidAmount || (String(order.paymentStatus).toLowerCase() === 'paid' ? order.total : 0));
+                return paid > 0 ? [{
+                    date: order.transactionAt || order.date || '',
+                    method: order.paymentMethod || order.payment || 'Not recorded',
+                    network: order.bankNetwork || '',
+                    reference: order.paymentReference || order.id,
+                    paid,
+                    balance: Number(order.balanceAmount || Math.max(0, Number(order.total || 0) - paid))
+                }] : [];
+            });
+            const paymentRowsHtml = paymentRows.map(payment => `
+                <tr>
+                    <td>${printText(payment.date)}</td>
+                    <td>${printText(payment.network ? `${payment.method} · ${payment.network}` : payment.method)}</td>
+                    <td>${printText(payment.reference)}</td>
+                    <td>Rs. ${Number(payment.paid).toLocaleString()}</td>
+                    <td>Rs. ${Number(payment.balance).toLocaleString()}</td>
+                </tr>`).join('');
 
             return `
                 <div class="gug-individual-slip ${isLast ? '' : 'gug-slip-page-break'}" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; color: #000000 !important; background: #ffffff !important; background-color: #ffffff !important; max-width: 800px; margin: 0 auto ${isLast ? '0' : '30px'}; padding: 25px; box-sizing: border-box; ${isLast ? 'page-break-after: auto !important; break-after: auto !important;' : 'page-break-after: always !important; break-after: page !important;'}">
@@ -6043,6 +6082,11 @@
                                     </div>
                                 </div>
 
+                                <div class="customer-payment-history" style="margin: 8px 0; font-size: 8.5pt; color: #000000 !important;">
+                                    <strong>Payment Receipts:</strong>
+                                    ${paymentRows.length ? `<table style="width: 100%; border-collapse: collapse; margin-top: 4px;"><thead><tr><th style="border: 1px solid #000; padding: 4px;">Date &amp; Time</th><th style="border: 1px solid #000; padding: 4px;">Payment Method</th><th style="border: 1px solid #000; padding: 4px;">Reference</th><th style="border: 1px solid #000; padding: 4px;">Paid Amount</th><th style="border: 1px solid #000; padding: 4px;">Balance</th></tr></thead><tbody>${paymentRowsHtml}</tbody></table>` : '<span> No payments recorded.</span>'}
+                                </div>
+
                                 <!-- Product Details Section: Strict Native HTML Table (Excel Spreadsheet Layout) -->
                                 <div class="order-products-fullwidth w-100" style="width: 100% !important; margin-top: 6px;">
                                     <table class="order-products-table" style="border-collapse: collapse !important; width: 100% !important; border: 1px solid #000 !important; margin: 0 !important; background: #ffffff !important; table-layout: fixed !important;">
@@ -6092,6 +6136,30 @@
             const dateFormatted = now.toLocaleDateString('en-PK', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
             const timeFormatted = now.toLocaleTimeString('en-PK', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
             const refCode = 'EMP-SLIP-' + emp.id + '-' + Date.now().toString().slice(-6);
+            const printText = value => String(value == null ? '' : value).replace(/[&<>"']/g, character => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            })[character]);
+            const payrollRecords = JSON.parse(localStorage.getItem('gug_finance_salaries') || '[]')
+                .filter(salary => salary && (
+                    String(salary.employeeId || '') === String(emp.id) ||
+                    (!salary.employeeId && String(salary.name || '').toLowerCase() === String(emp.name || '').toLowerCase())
+                ))
+                .sort((first, second) => new Date(second.transactionAt || second.date || 0) - new Date(first.transactionAt || first.date || 0));
+            const payrollRecord = payrollRecords[0] || {};
+            const payrollPaid = Number(payrollRecord.paidAmount || (payrollRecord.status === 'Paid' ? payrollRecord.net : 0)) || 0;
+            const payrollBalance = Number(payrollRecord.balanceAmount != null
+                ? payrollRecord.balanceAmount
+                : Math.max(0, Number(payrollRecord.net || 0) - payrollPaid)) || 0;
+            const payrollPaymentDetails = `
+                <div class="employee-payment-slip" style="border: 1px solid #cccccc !important; padding: 10px; margin-top: 10px; font-size: 9pt; color: #000000 !important; background: #ffffff !important;">
+                    <strong>Payroll Payment Details</strong><br>
+                    <strong>Payment Method:</strong> ${printText(payrollRecord.paymentMethod || payrollRecord.method || 'Not recorded')}<br>
+                    ${payrollRecord.bankNetwork ? `<strong>Bank / Network:</strong> ${printText(payrollRecord.bankNetwork)}<br>` : ''}
+                    <strong>Reference Number:</strong> ${printText(payrollRecord.transactionReference || payrollRecord.ref || payrollRecord.id || '—')}<br>
+                    <strong>Paid Amount:</strong> Rs. ${payrollPaid.toLocaleString()}<br>
+                    <strong>Balance Amount:</strong> Rs. ${payrollBalance.toLocaleString()}<br>
+                    <strong>Payment Date &amp; Time:</strong> ${printText(payrollRecord.transactionAt || payrollRecord.date || 'Not recorded')}
+                </div>`;
 
             const perms = Array.isArray(emp.permissions) ? emp.permissions : [];
             const baseSal = Number(emp.basicSalary || emp.salary || 0);
@@ -6184,6 +6252,7 @@
                                 </tr>
                             </tbody>
                         </table>
+                        ${payrollPaymentDetails}
                     </div>
 
                     <!-- Access & Permissions Summary -->
@@ -6220,9 +6289,22 @@
             const refCode = 'DLR-SLIP-' + d.id + '-' + Date.now().toString().slice(-6);
 
             const totalAmount = Number(d.totalAmount !== undefined ? d.totalAmount : (d.creditLimit || (summary ? summary.totalAmount : 0) || 0));
-            const payments = Array.isArray(d.paymentHistory) && d.paymentHistory.length > 0 
-                ? d.paymentHistory 
-                : (summary && Array.isArray(summary.paymentHistory) ? summary.paymentHistory : []);
+            const ledgerPayments = summary && Array.isArray(summary.ledgerEntries)
+                ? summary.ledgerEntries.filter(entry => ['PAYMENT_RECEIVED', 'ADVANCE_PAYMENT'].includes(entry.type) && Number(entry.credit || 0) > 0)
+                    .map(entry => ({
+                        ...entry,
+                        amount: Number(entry.credit || 0),
+                        paymentMethod: entry.paymentMethod,
+                        transactionReference: entry.transactionReference || entry.referenceNo,
+                        balanceAfter: entry.runningBalance,
+                        bankNetwork: entry.bankNetwork
+                    }))
+                : [];
+            const payments = ledgerPayments.length
+                ? ledgerPayments
+                : (Array.isArray(d.paymentHistory) && d.paymentHistory.length > 0
+                    ? d.paymentHistory
+                    : (summary && Array.isArray(summary.paymentHistory) ? summary.paymentHistory : []));
             const calculatedPaid = payments.reduce((acc, p) => acc + Number(p.amount || 0), 0);
             const paidAmount = Number(d.paidAmount !== undefined ? d.paidAmount : (summary && summary.paidAmount !== undefined ? summary.paidAmount : calculatedPaid));
             const calculatedBalance = Math.max(0, totalAmount - paidAmount);
@@ -6293,6 +6375,11 @@
                     runningBalance = Math.max(0, runningBalance - amt);
                     const balAfter = (p.balanceAfter !== undefined) ? Number(p.balanceAfter) : runningBalance;
                     const installmentTitle = getInstallmentTitle(idx);
+                    const paymentDate = p.date ? new Date(p.date) : now;
+                    const validPaymentDate = Number.isNaN(paymentDate.getTime()) ? now : paymentDate;
+                    const paymentDateLabel = validPaymentDate.toLocaleDateString('en-PK');
+                    const paymentDayLabel = p.day || dayNames[validPaymentDate.getDay()];
+                    const paymentTimeLabel = p.time || validPaymentDate.toLocaleTimeString('en-PK', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
 
                     return `
                         <div class="dealer-ledger-box dealer-transaction-card payment-schedule-card" style="border: 1px solid #000000 !important; border-radius: 3px; padding: 3px 5px !important; margin-bottom: 3px !important; background: #ffffff !important; background-color: #ffffff !important; box-shadow: none !important; page-break-inside: avoid !important; break-inside: avoid !important;">
@@ -6302,9 +6389,14 @@
                             </div>
                             <!-- Row 2: Date, Day, Time -->
                             <div class="card-row-2" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; border-bottom: 1px dotted #cccccc !important; padding-bottom: 2px !important; margin-bottom: 2px !important; font-size: 7.5pt; line-height: 1.2;">
-                                <div><strong class="dealer-label" style="color: #000000 !important;">DATE:</strong> <span style="color: #000000 !important;">${p.date || dateFormatted}</span></div>
-                                <div><strong class="dealer-label" style="color: #000000 !important;">DAY:</strong> <span style="color: #000000 !important;">${p.day || currentDay}</span></div>
-                                <div><strong class="dealer-label" style="color: #000000 !important;">TIME:</strong> <span style="color: #000000 !important;">${p.time || timeFormatted}</span></div>
+                                <div><strong class="dealer-label" style="color: #000000 !important;">DATE:</strong> <span style="color: #000000 !important;">${paymentDateLabel}</span></div>
+                                <div><strong class="dealer-label" style="color: #000000 !important;">DAY:</strong> <span style="color: #000000 !important;">${paymentDayLabel}</span></div>
+                                <div><strong class="dealer-label" style="color: #000000 !important;">TIME:</strong> <span style="color: #000000 !important;">${paymentTimeLabel}</span></div>
+                            </div>
+                            <div class="payment-method-reference" style="font-size: 7.5pt; line-height: 1.3; border-bottom: 1px dotted #cccccc !important; padding: 2px 0; margin-bottom: 2px;">
+                                <strong>PAYMENT METHOD:</strong> ${p.paymentMethod || p.method || 'Not recorded'}
+                                ${p.bankNetwork ? ` &bull; <strong>BANK / NETWORK:</strong> ${p.bankNetwork}` : ''}
+                                <br><strong>REFERENCE NUMBER:</strong> ${p.transactionReference || p.reference || p.id || '—'}
                             </div>
                             <!-- Row 3: Total Amount (Debit) -->
                             <div class="card-row-3" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dotted #cccccc !important; padding-bottom: 2px !important; margin-bottom: 2px !important; font-size: 7.5pt;">
@@ -7560,4 +7652,3 @@
     };
 
 })(window);
-

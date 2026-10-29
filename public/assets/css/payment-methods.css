@@ -1,0 +1,17 @@
+.payment-method-fields {
+    padding: 12px;
+    border: 1px solid rgba(148, 163, 184, .35);
+    border-radius: 10px;
+    background: rgba(15, 23, 42, .04);
+}
+.payment-method-fields [hidden] { display: none !important; }
+.payment-method-fields .form-label { margin-bottom: .35rem; }
+.payment-method-fields input[type="file"],
+.payment-method-fields select { max-width: 100%; }
+.payment-balance-output { display: flex; align-items: center; font-weight: 700; }
+.payment-timestamp { background: #f8fafc; }
+.payment-print-summary { margin: 10px 0; padding: 8px; border: 1px solid #999; color: #111; font-size: 10pt; line-height: 1.6; }
+@media print {
+    .payment-method-fields, .payment-method-fields input { display: none !important; }
+    .payment-print-summary { display: block !important; color: #000 !important; background: #fff !important; }
+}

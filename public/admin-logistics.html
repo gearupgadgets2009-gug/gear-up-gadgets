@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="assets/fonts/font-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/custom.css">
+    <link rel="stylesheet" href="assets/css/payment-methods.css">
     <style>
         body { background-color: var(--gug-bg-color, #07090d) !important; background-image: var(--gug-bg-image) !important; background-attachment: var(--gug-bg-attachment, fixed) !important; background-size: var(--gug-bg-size, cover, cover, 28px 49px) !important; background-position: var(--gug-bg-position, center top) !important; background-repeat: var(--gug-bg-repeat, no-repeat, no-repeat, repeat) !important; min-height: 100vh; color: #ffffff !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .admin-sidebar { width: 260px; background: rgba(10, 10, 15, 0.6) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; height: 100vh; position: fixed; left: 0; top: 0; padding: 20px 15px; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; overflow-y: auto; z-index: 1000; }
@@ -330,6 +331,39 @@
         </div>
     </div>
 
+    <div class="modal fade" id="codPaymentModal" tabindex="-1" aria-labelledby="cod-payment-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title" id="cod-payment-title">Record Customer / COD Payment</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="cod-payment-form" onsubmit="event.preventDefault(); reconcileSingleOrder(document.getElementById('cod-payment-order-id').value)">
+                    <div class="modal-body">
+                        <input type="hidden" id="cod-payment-order-id">
+                        <p id="cod-payment-order-total" class="fw-bold"></p>
+                        <div class="mb-3">
+                            <label for="cod-payment-method" class="form-label fw-bold">Payment Method</label>
+                            <select id="cod-payment-method" class="form-select">
+                                <option value="Cash">Cash</option>
+                                <option value="Online">Online</option>
+                                <option value="Bank">Bank</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cod-payment-amount" class="form-label fw-bold">Paid Amount (PKR)</label>
+                            <input id="cod-payment-amount" type="number" class="form-control" min="0.01" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success">Save Receipt</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/products-data.js"></script>
@@ -341,6 +375,7 @@
     <script src="assets/js/firebase-config.js"></script>
     <script src="assets/js/firebase-sync.js"></script>
     <script src="assets/js/admin.js"></script>
+    <script src="assets/js/payment-methods.js"></script>
     <script>
         function renderLogistics() {
             const orders = GUG_DB.getOrders();
@@ -354,14 +389,17 @@
             codTbody.innerHTML = '';
 
             orders.forEach(o => {
-                const isCod = (o.paymentMethod || '').includes('COD') || (o.paymentMethod || '').includes('Cash on Delivery');
+                const isCod = /cod|cash on delivery/i.test(o.paymentMethod || '') || o.paymentMethod === 'Cash';
                 const isDelivered = o.orderStatus === 'Delivered';
+                const paidAmount = Array.isArray(o.paymentHistory)
+                    ? o.paymentHistory.reduce((sum, payment) => sum + (Number(payment.amount) || 0), 0)
+                    : Number(o.paidAmount) || (o.paymentStatus === 'Paid' ? Number(o.total) || 0 : 0);
 
                 if (isCod) {
-                    if (isDelivered || o.paymentStatus === 'Paid') {
-                        reconciledCod += Number(o.total || 0);
+                    if (paidAmount > 0) {
+                        reconciledCod += paidAmount;
                     } else if (o.orderStatus !== 'Cancelled') {
-                        pendingCod += Number(o.total || 0);
+                        pendingCod += Math.max(0, Number(o.total || 0) - paidAmount);
                     }
                 }
 
@@ -385,7 +423,7 @@
                     <td><span class="badge bg-light text-dark border border-secondary">${o.courier || 'Leopard Express'}</span></td>
                     <td><code>${o.trackingNumber || 'TRK-8822019'}</code></td>
                     <td><span class="badge bg-light text-dark border border-secondary">${o.warehouse || 'WH-01'}</span></td>
-                    <td class="fw-bold text-dark">Rs ${(o.total || 0).toLocaleString()}</td>
+                    <td class="fw-bold text-dark">Rs ${(o.total || 0).toLocaleString()}<small class="d-block text-secondary">Paid: Rs ${paidAmount.toLocaleString()} · Balance: Rs ${Math.max(0, Number(o.total || 0) - paidAmount).toLocaleString()}</small></td>
                     <td>${statusBadge}</td>
                     <td>
                         <select class="form-select form-select-sm" style="width: 140px;" onchange="updateShipmentStatus('${o.id}', this.value)">
@@ -403,7 +441,7 @@
                 if (isCod) {
                     const courierFee = 250;
                     const netPayout = Math.max(0, (o.total || 0) - courierFee);
-                    const isReconciled = o.paymentStatus === 'Paid' || isDelivered;
+                    const isReconciled = o.paymentStatus === 'Paid';
 
                     const codTr = document.createElement('tr');
                     codTr.innerHTML = `
@@ -413,9 +451,10 @@
                         <td class="fw-bold text-dark">Rs ${(o.total || 0).toLocaleString()}</td>
                         <td class="text-danger">Rs ${courierFee}</td>
                         <td class="fw-bold text-success">Rs ${netPayout.toLocaleString()}</td>
-                        <td>${isReconciled ? '<span class="badge bg-success">Settled in Bank</span>' : '<span class="badge bg-warning text-dark">Pending Remittance</span>'}</td>
+                        <td>${isReconciled ? '<span class="badge bg-success">Paid in Full</span>' : '<span class="badge bg-warning text-dark">Balance Pending</span>'}</td>
                         <td>
-                            ${!isReconciled ? `<button class="btn btn-sm btn-outline-success py-0 px-2" onclick="reconcileSingleOrder('${o.id}')"><i class="fas fa-check"></i> Settle</button>` : `<span class="text-secondary small">Reconciled</span>`}
+                            ${Array.isArray(o.paymentHistory) && o.paymentHistory.length ? `<button class="btn btn-sm btn-outline-secondary py-0 px-2 me-1" onclick="printCodPaymentReceipt('${o.id}')"><i class="fas fa-print"></i> Receipt</button>` : ''}
+                            ${!isReconciled ? `<button class="btn btn-sm btn-outline-success py-0 px-2" onclick="openCodPaymentModal('${o.id}')"><i class="fas fa-check"></i> Settle</button>` : `<span class="text-secondary small">Reconciled</span>`}
                         </td>
                     `;
                     codTbody.appendChild(codTr);
@@ -432,23 +471,129 @@
             renderLogistics();
         }
 
+        function openCodPaymentModal(orderId) {
+            const order = GUG_DB.getOrders().find(item => String(item.id) === String(orderId));
+            if (!order) return;
+            const history = Array.isArray(order.paymentHistory) ? order.paymentHistory : [];
+            const priorPaid = history.reduce((sum, payment) => sum + (Number(payment.amount) || 0), 0);
+            const due = Math.max(0, Number(order.total) - priorPaid);
+            document.getElementById('cod-payment-order-id').value = order.id;
+            document.getElementById('cod-payment-order-total').textContent = `Order ${order.id} · balance ${due.toLocaleString()} PKR`;
+            document.getElementById('cod-payment-amount').value = due;
+            document.getElementById('cod-payment-amount').max = due;
+            window.codPaymentCapture = window.GUG_PAYMENT_METHODS.mount({
+                form: 'cod-payment-form',
+                prefix: 'cod',
+                methodId: 'cod-payment-method',
+                amountId: 'cod-payment-amount',
+                total: () => Math.max(0, Number(document.getElementById('cod-payment-order-total').dataset.due) || due)
+            });
+            document.getElementById('cod-payment-order-total').dataset.due = String(due);
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('codPaymentModal')).show();
+        }
+
+        function printCodPaymentReceipt(orderId) {
+            const order = GUG_DB.getOrders().find(item => String(item.id) === String(orderId));
+            const payments = order && Array.isArray(order.paymentHistory) ? order.paymentHistory : [];
+            const payment = payments[payments.length - 1];
+            if (!order || !payment) {
+                window.GUG_DB.showToast('No payment receipt is available for this order.', 'warning', 'Receipt Not Found');
+                return;
+            }
+            const printWindow = window.open('', '_blank', 'width=760,height=800');
+            if (!printWindow) {
+                window.GUG_DB.showToast('Allow pop-ups to print the payment receipt.', 'error', 'Print Window Blocked');
+                return;
+            }
+            const escapeReceiptText = value => String(value == null ? '' : value).replace(/[&<>"']/g, character => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            })[character]);
+            const method = payment.paymentMethod || payment.method || order.paymentMethod || 'Not recorded';
+            const reference = payment.transactionReference || payment.reference || payment.id || order.id;
+            const paid = Number(payment.amount || 0);
+            const balance = Number(payment.balanceAfter != null
+                ? payment.balanceAfter
+                : payment.balanceAmount != null
+                    ? payment.balanceAmount
+                    : Math.max(0, Number(order.total || 0) - Number(order.paidAmount || paid)));
+            printWindow.document.open();
+            printWindow.document.write(`<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Payment Receipt ${escapeReceiptText(order.id)}</title>
+                <style>
+                    body{font:15px Arial,sans-serif;color:#111;margin:36px auto;max-width:680px}
+                    header{text-align:center;border-bottom:2px solid #111;padding-bottom:14px;margin-bottom:24px}
+                    h1{font-size:24px;margin:0 0 6px} h2{font-size:19px;margin:0 0 18px}
+                    .receipt{border:1px solid #555;padding:20px;line-height:1.9}
+                    .row{display:flex;justify-content:space-between;border-bottom:1px solid #ddd;padding:5px 0}
+                    @media print{body{margin:12mm auto}.receipt{break-inside:avoid}}
+                </style></head><body>
+                <header><h1>Gear Up Gadgets</h1><div>Customer / COD Payment Receipt</div></header>
+                <h2>Order ${escapeReceiptText(order.id)}</h2>
+                <div class="receipt">
+                    <div class="row"><strong>Customer</strong><span>${escapeReceiptText(order.customer && order.customer.name || order.name || 'Customer')}</span></div>
+                    <div class="row"><strong>Payment Date &amp; Time</strong><span>${escapeReceiptText(payment.timestamp || payment.date || 'Not recorded')}</span></div>
+                    <div class="row"><strong>Payment Method</strong><span>${escapeReceiptText(method)}</span></div>
+                    ${payment.bankNetwork ? `<div class="row"><strong>Bank / Network</strong><span>${escapeReceiptText(payment.bankNetwork)}</span></div>` : ''}
+                    <div class="row"><strong>Reference Number</strong><span>${escapeReceiptText(reference)}</span></div>
+                    <div class="row"><strong>Paid Amount</strong><span>Rs. ${paid.toLocaleString()}</span></div>
+                    <div class="row"><strong>Balance Amount</strong><span>Rs. ${balance.toLocaleString()}</span></div>
+                </div></body></html>`);
+            printWindow.document.close();
+            printWindow.focus();
+            setTimeout(() => printWindow.print(), 250);
+        }
+
         function reconcileSingleOrder(orderId) {
             const orders = GUG_DB.getOrders();
             const ord = orders.find(o => o.id === orderId);
             if (ord) {
-                ord.paymentStatus = 'Paid';
+                let payment;
+                try {
+                    payment = window.codPaymentCapture.collect();
+                } catch (error) {
+                    window.GUG_DB.showToast(error.message, 'error', 'Payment Details Required');
+                    return;
+                }
+                const priorPaid = (Array.isArray(ord.paymentHistory) ? ord.paymentHistory : [])
+                    .reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+                if (!payment.paidAmount || payment.paidAmount > Math.max(0, Number(ord.total) - priorPaid)) {
+                    window.GUG_DB.showToast('Enter a positive amount no greater than the outstanding order balance.', 'warning', 'Invalid Payment Amount');
+                    return;
+                }
+                const history = Array.isArray(ord.paymentHistory) ? ord.paymentHistory : [];
+                ord.paymentHistory = [...history, {
+                    id: `COD-PAY-${Date.now()}`,
+                    amount: payment.paidAmount,
+                    date: payment.transactionAt,
+                    timestamp: payment.transactionAt,
+                    method: payment.paymentMethod,
+                    paymentMethod: payment.paymentMethod,
+                    bankNetwork: payment.bankNetwork,
+                    reference: payment.transactionReference || `COD-${ord.id}`,
+                    transactionReference: payment.transactionReference,
+                    receiptName: payment.receiptName,
+                    receiptData: payment.receiptData,
+                    balanceAfter: payment.balanceAmount
+                }];
+                ord.paidAmount = priorPaid + payment.paidAmount;
+                ord.balanceAmount = Math.max(0, Number(ord.total) - ord.paidAmount);
+                ord.paymentMethod = payment.paymentMethod;
+                ord.paymentReference = payment.transactionReference;
+                ord.bankNetwork = payment.bankNetwork;
+                ord.transactionAt = payment.transactionAt;
+                ord.paymentStatus = ord.balanceAmount === 0 ? 'Paid' : 'Partial';
                 ord.orderStatus = 'Delivered';
                 localStorage.setItem('admin_orders', JSON.stringify(orders));
+                bootstrap.Modal.getInstance(document.getElementById('codPaymentModal'))?.hide();
 
                 GUG_DB.logAudit({
                     action: 'COD_RECONCILIATION',
                     entity: 'ORDER',
                     entityId: orderId,
-                    newValue: `Settled Rs ${ord.total} to Bank`,
+                    newValue: `Received Rs ${payment.paidAmount} via ${payment.paymentMethod}; balance Rs ${ord.balanceAmount}`,
                     reason: 'Courier remittance matched and deposited'
                 });
 
-                window.GUG_DB.showToast(`Order #${orderId} COD payout settled and marked as Paid!`, 'success', 'COD Reconciled');
+                window.GUG_DB.showToast(`Order #${orderId} payment recorded. Outstanding balance: Rs. ${ord.balanceAmount.toLocaleString()}.`, 'success', 'COD Reconciled');
                 renderLogistics();
             }
         }
@@ -457,9 +602,30 @@
             if (confirm('Reconcile all delivered and in-transit COD orders against courier bank remittance?')) {
                 const orders = GUG_DB.getOrders();
                 orders.forEach(o => {
-                    if (o.orderStatus === 'Delivered') {
-                        o.paymentStatus = 'Paid';
-                    }
+                    if (o.orderStatus !== 'Delivered' || o.paymentStatus === 'Paid') return;
+                    const history = Array.isArray(o.paymentHistory) ? o.paymentHistory : [];
+                    const paidBefore = history.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+                    const remaining = Math.max(0, Number(o.total) - paidBefore);
+                    if (!remaining) return;
+                    const timestamp = new Date().toISOString();
+                    history.push({
+                        id: `COD-PAY-${Date.now()}-${o.id}`,
+                        amount: remaining,
+                        date: timestamp,
+                        timestamp,
+                        method: 'Bank Transfer',
+                        paymentMethod: 'Bank Transfer',
+                        bankNetwork: 'Courier COD Remittance',
+                        reference: `COD-REMIT-${o.id}`,
+                        transactionReference: `COD-REMIT-${o.id}`,
+                        balanceAfter: 0
+                    });
+                    o.paymentHistory = history;
+                    o.paidAmount = paidBefore + remaining;
+                    o.balanceAmount = 0;
+                    o.paymentStatus = 'Paid';
+                    o.paymentMethod = 'Bank Transfer';
+                    o.transactionAt = timestamp;
                 });
                 localStorage.setItem('admin_orders', JSON.stringify(orders));
 
@@ -514,6 +680,3 @@
     </script>
 </body>
 </html>
-
-
-
