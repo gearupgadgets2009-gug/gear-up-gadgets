@@ -1158,18 +1158,11 @@
                                     <i class="fas fa-info-circle text-info me-1"></i> Specify color, storage, or switch variations for this item.
                                 </div>
                                 <div id="variants-container">
-                                    <div class="row g-2 mb-2 variant-row">
-                                        <div class="col-5">
-                                            <input type="text" class="form-control form-control-sm variant-name" placeholder="Variant Name (e.g. Space Black / 16GB)" value="Standard Edition">
-                                        </div>
-                                        <div class="col-4">
-                                            <input type="text" class="form-control form-control-sm variant-sku" placeholder="Variant SKU" value="">
-                                        </div>
-                                        <div class="col-3">
-                                            <input type="number" class="form-control form-control-sm variant-price" placeholder="Price" value="">
-                                        </div>
-                                    </div>
                                 </div>
+                                <button type="button" class="btn btn-outline-danger btn-sm fw-bold mt-2" onclick="addProductVariantRow()">
+                                    <i class="fas fa-plus me-1"></i> Add Variant
+                                </button>
+                                <small class="d-block text-muted mt-2">Variant name and price are required only when a variant row contains data. Leave all rows blank to save without variants.</small>
                             </div>
 
                             <!-- Tab 6: Website & SEO -->
@@ -1813,6 +1806,48 @@
             updateTotalStockPreview();
         }
 
+        function addProductVariantRow(variant = {}) {
+            const container = document.getElementById('variants-container');
+            if (!container) return;
+
+            const row = document.createElement('div');
+            row.className = 'row g-2 mb-2 variant-row align-items-center';
+            row.dataset.variantId = variant.id || '';
+            row.dataset.variantStock = variant.stock !== undefined ? String(variant.stock) : '';
+            row.innerHTML = `
+                <div class="col-5">
+                    <input type="text" class="form-control form-control-sm variant-name" placeholder="Variant Name (e.g. Space Black / 16GB)">
+                </div>
+                <div class="col-4">
+                    <input type="text" class="form-control form-control-sm variant-sku" placeholder="Variant SKU (optional)">
+                </div>
+                <div class="col-2">
+                    <input type="number" class="form-control form-control-sm variant-price" placeholder="Price" min="0" step="0.01">
+                </div>
+                <div class="col-1">
+                    <button type="button" class="btn btn-outline-danger btn-sm w-100" title="Remove variant" aria-label="Remove variant">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            row.querySelector('.variant-name').value = variant.name || variant.storage || '';
+            row.querySelector('.variant-sku').value = variant.sku || '';
+            row.querySelector('.variant-price').value = variant.price !== undefined ? variant.price : '';
+            row.querySelector('button').addEventListener('click', () => row.remove());
+            container.appendChild(row);
+        }
+
+        function resetProductVariantRows(variants = []) {
+            const container = document.getElementById('variants-container');
+            if (!container) return;
+            container.innerHTML = '';
+            if (Array.isArray(variants) && variants.length) {
+                variants.forEach(variant => addProductVariantRow(variant));
+            } else {
+                addProductVariantRow();
+            }
+        }
+
         function updateTotalStockPreview() {
             let total = 0;
             const qtyInputs = document.querySelectorAll('#city-stock-container .city-qty-input');
@@ -1826,6 +1861,7 @@
         function openProductModal() {
             document.getElementById('productForm').reset();
             document.getElementById('prod-id').value = '';
+            resetProductVariantRows();
             document.getElementById('modalProductTitle').innerHTML = '<i class="fas fa-box-open text-danger me-2"></i> Add New Product to Catalog';
             document.getElementById('calc-margin-badge').innerText = '30%';
             
@@ -1952,6 +1988,7 @@
             document.getElementById('prod-wholesale-price').value = p.wholesalePrice || '';
             document.getElementById('prod-threshold').value = p.lowStockThreshold !== undefined ? p.lowStockThreshold : 10;
             document.getElementById('prod-status').value = p.status || 'Published';
+            resetProductVariantRows(p.variants);
             
             const isFeatured = Boolean(p.isFeatured);
             document.getElementById('badge-featured').checked = isFeatured;
@@ -2016,6 +2053,33 @@
             if (!title || !sku || !regularSellPrice) {
                 window.GUG_DB.showToast('Please fill in required fields: Product Name, SKU, and Regular Selling Price.', 'warning', 'Missing Details');
                 return;
+            }
+
+            const variants = [];
+            const variantRows = Array.from(document.querySelectorAll('#variants-container .variant-row'));
+            for (let index = 0; index < variantRows.length; index++) {
+                const row = variantRows[index];
+                const name = row.querySelector('.variant-name').value.trim();
+                const variantSku = row.querySelector('.variant-sku').value.trim().toUpperCase();
+                const rawPrice = row.querySelector('.variant-price').value.trim();
+                if (!name && !variantSku && !rawPrice) continue;
+
+                const price = Number(rawPrice);
+                if (!name || !rawPrice || !Number.isFinite(price) || price <= 0) {
+                    window.GUG_DB.showToast('Each variant needs a name and a price greater than zero.', 'warning', 'Check Variants');
+                    document.querySelector('[data-bs-target="#tab-variants"]').click();
+                    row.querySelector(!name ? '.variant-name' : '.variant-price').focus();
+                    return;
+                }
+
+                variants.push({
+                    id: row.dataset.variantId || `${sku}-V${index + 1}`,
+                    name: name,
+                    storage: name,
+                    sku: variantSku,
+                    price: price,
+                    stock: Number(row.dataset.variantStock || 0)
+                });
             }
 
             // Resolve Category (Preset or Custom)
@@ -2094,6 +2158,7 @@
                 lowStockThreshold: customThreshold,
                 status: document.getElementById('prod-status').value,
                 stock: stockObj,
+                variants: variants,
                 hasSerialTracking: document.getElementById('prod-serial-tracking').checked,
                 isFeatured: isFeaturedVal,
                 isBestSeller: document.getElementById('badge-bestseller').checked
@@ -2758,8 +2823,6 @@
     </script>
 </body>
 </html>
-
-
 
 
 

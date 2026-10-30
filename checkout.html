@@ -19,7 +19,6 @@
     <link rel="stylesheet" href="assets/css/styles.css">
     <!-- Custom styling overriding everything -->
     <link rel="stylesheet" href="assets/css/custom.css">
-    <link rel="stylesheet" href="assets/css/payment-methods.css">
 </head>
 
 <body class="counter-scroll" style="background-color: var(--bg-main);">
@@ -126,28 +125,15 @@
                                 </div>
                             </div>
 
-                            <!-- Payment options box -->
+                            <!-- Payment method -->
                             <div class="p-4 rounded-3" style="background-color: var(--bg-card); border: 1px solid var(--border-color);">
-                                <div class="d-flex justify-content-between align-items-center mb-4" style="border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
-                                    <h5 class="text-white fw-bold m-0"><i class="fas fa-money-bill-wave text-success me-2"></i> PAYMENT METHOD</h5>
-                                    <span class="badge bg-success" style="font-size: 11px;"><i class="fas fa-check-circle me-1"></i> 3 Methods Available</span>
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <label for="checkout-payment-method" class="form-label text-white fw-bold">Payment Method</label>
-                                    <select id="checkout-payment-method" class="form-select">
-                                        <option value="Cash">Cash</option>
-                                        <option value="Online">Online</option>
-                                        <option value="Bank">Bank</option>
-                                    </select>
-                                    <small class="text-secondary">Cash is collected on delivery. Transfer payments are subject to verification.</small>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="checkout-paid-amount" class="form-label text-white fw-bold">Paid Amount (PKR)</label>
-                                    <input id="checkout-paid-amount" type="number" class="form-control" min="0" step="0.01" value="0">
-                                </div>
+                                <h5 class="text-white fw-bold mb-3"><i class="fas fa-money-bill-wave text-success me-2"></i> PAYMENT METHOD</h5>
+                                <label class="form-check d-flex align-items-center gap-2 text-white mb-0" for="checkout-payment-cod">
+                                    <input class="form-check-input m-0" type="radio" id="checkout-payment-cod" name="payment-method" value="Cash on Delivery" checked>
+                                    <span class="fw-bold">Cash on Delivery</span>
+                                </label>
 
-                                <button type="submit" class="btn-checkout w-100 py-3 text-center fw-bold shadow-sm">
+                                <button type="submit" class="btn-checkout w-100 py-3 mt-4 text-center fw-bold shadow-sm">
                                     <i class="fas fa-check-circle me-2"></i> PLACE ORDER
                                 </button>
                             </div>
@@ -165,7 +151,6 @@
     <script src="assets/js/products-data.js"></script>
     <script src="assets/js/gug-erp-core.js"></script>
     <script src="assets/js/common.js"></script>
-    <script src="assets/js/payment-methods.js"></script>
     <!-- Firebase Compat SDKs & Cloud Sync -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -175,4 +160,3 @@
     <script src="assets/js/checkout.js"></script>
 </body>
 </html>
-

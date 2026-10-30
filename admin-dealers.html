@@ -45,6 +45,10 @@
         .dealer-badge-due { background-color: #fef2f2; color: #dc2626; border: 1px solid #fecaca; font-weight: 700; }
         .dealer-badge-surplus { background-color: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; font-weight: 700; }
         .dealer-badge-clear { background-color: #f8fafc; color: #475569; border: 1px solid #e2e8f0; font-weight: 600; }
+        #printable-statement-canvas,
+        #printable-statement-canvas *,
+        #gug-individual-print-container,
+        #gug-individual-print-container * { color: #000000 !important; }
 
         @media print {
             body {
@@ -639,7 +643,8 @@
                                 <option value="STOCK_RETURNED">Stock Returned</option>
                             </select>
                         </div>
-                        <div class="d-flex gap-2">
+                        <div class="d-flex flex-wrap gap-2">
+                            <button class="btn btn-outline-secondary btn-sm fw-bold no-print" type="button" onclick="printSelectedDealerLedger()"><i class="fas fa-print me-1"></i> Print Dealer Statement</button>
                             <button class="btn btn-outline-danger btn-sm fw-bold" onclick="openRecordTransactionModal('STOCK_ISSUED')"><i class="fas fa-box me-1"></i> Issue Stock</button>
                             <button class="btn btn-success btn-sm fw-bold" onclick="openRecordTransactionModal('PAYMENT_RECEIVED')"><i class="fas fa-money-bill-wave me-1"></i> Record Payment</button>
                         </div>
@@ -678,7 +683,7 @@
                             </select>
                         </div>
                         <div class="col-md-6 text-md-end pt-md-4">
-                            <button class="btn btn-danger btn-sm fw-bold px-3 no-print" onclick="printDealerSlip(document.getElementById('statement-dealer-select').value)"><i class="fas fa-print me-1"></i> Print / Save PDF Statement</button>
+                            <button class="btn btn-danger btn-sm fw-bold px-3 no-print" onclick="printSelectedDealerStatement()"><i class="fas fa-print me-1"></i> Print / Save PDF Statement</button>
                         </div>
                     </div>
                 </div>
@@ -1174,10 +1179,10 @@
 
             filtered.forEach(d => {
                 const summary = window.GUG_DB.calculateDealerSummary(d.id);
-                const totalAmt = Number(d.totalAmount !== undefined ? d.totalAmount : (d.creditLimit || 0));
-                const paidAmt = Number(d.paidAmount !== undefined ? d.paidAmount : (d.paymentHistory ? d.paymentHistory.reduce((s, p) => s + Number(p.amount || 0), 0) : 0));
-                const bal = Number(d.balanceAmount !== undefined ? d.balanceAmount : (summary ? summary.currentBalance : 0));
-                const isClear = d.isAmountClear || (totalAmt > 0 && bal <= 0);
+                const totalAmt = Number(summary ? summary.totalAmount : (d.totalAmount !== undefined ? d.totalAmount : (d.creditLimit || 0)));
+                const paidAmt = Number(summary ? summary.paidAmount : (d.paidAmount || 0));
+                const bal = Number(summary ? summary.balanceAmount : (d.balanceAmount || 0));
+                const isClear = summary ? summary.isAmountClear : Boolean(d.isAmountClear || (totalAmt > 0 && bal <= 0));
 
                 let balBadge = '';
                 if (isClear) {
@@ -1295,6 +1300,37 @@
                 `;
                 tbody.appendChild(tr);
             });
+        }
+
+        function printSelectedDealerLedger() {
+            const dealerId = document.getElementById('ledger-dealer-filter').value;
+            if (dealerId === 'ALL') {
+                if (typeof window.printBatchDealerSlips === 'function') {
+                    return window.printBatchDealerSlips();
+                }
+                window.GUG_DB.showToast('Dealer printing is unavailable right now.', 'error', 'Print Statement');
+                return;
+            }
+            if (!dealerId) {
+                window.GUG_DB.showToast('Select a dealer before printing their statement.', 'warning', 'Select Dealer');
+                return;
+            }
+            if (typeof window.printDealerSlip === 'function') {
+                return window.printDealerSlip(dealerId);
+            }
+            window.GUG_DB.showToast('Dealer printing is unavailable right now.', 'error', 'Print Statement');
+        }
+
+        function printSelectedDealerStatement() {
+            const dealerId = document.getElementById('statement-dealer-select').value;
+            if (!dealerId) {
+                window.GUG_DB.showToast('Select a dealer before printing their statement.', 'warning', 'Select Dealer');
+                return;
+            }
+            if (typeof window.printDealerSlip === 'function') {
+                return window.printDealerSlip(dealerId);
+            }
+            window.GUG_DB.showToast('Dealer printing is unavailable right now.', 'error', 'Print Statement');
         }
 
         function renderDealerStatement() {

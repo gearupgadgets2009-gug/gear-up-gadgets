@@ -969,7 +969,7 @@
                 if (Array.isArray(masterCatalog) && masterCatalog.length > 0) {
                     const productMap = new Map();
                     masterCatalog.forEach(p => {
-                        if (p && p.id) productMap.set(String(p.id), sanitizeProductObj({ ...p }));
+                        if (p && p.id) productMap.set(String(p.id), this.sanitizeProductObj({ ...p }));
                     });
                     if (Array.isArray(existing)) {
                         existing.forEach(p => {
@@ -2504,21 +2504,21 @@
                 .trim();
         }
 
+        sanitizeProductObj(product) {
+            if (!product) return product;
+            if (product.title) product.title = this.sanitizeProductText(product.title);
+            if (product.name) product.name = this.sanitizeProductText(product.name);
+            if (product.description) product.description = this.sanitizeProductText(product.description);
+            if (product.shortDescription) product.shortDescription = this.sanitizeProductText(product.shortDescription);
+            return product;
+        }
+
         getProducts() {
             const now = Date.now();
             if (this._cachedProducts && Array.isArray(this._cachedProducts) && (now - (this._cachedProductsTime || 0) < 4000)) {
                 return this._cachedProducts;
             }
-            const sanitizeProductObj = (p) => {
-                if (!p) return p;
-                if (typeof this.sanitizeProductText === 'function') {
-                    if (p.title) p.title = this.sanitizeProductText(p.title);
-                    if (p.name) p.name = this.sanitizeProductText(p.name);
-                    if (p.description) p.description = this.sanitizeProductText(p.description);
-                    if (p.shortDescription) p.shortDescription = this.sanitizeProductText(p.shortDescription);
-                }
-                return p;
-            };
+            const sanitizeProductObj = (product) => this.sanitizeProductObj(product);
 
             const master = (typeof window !== 'undefined' && window.productDatabase) ? window.productDatabase : (typeof productDatabase !== 'undefined' ? productDatabase : (window.PRODUCTS_DATA || []));
             let saved = [];
@@ -2543,7 +2543,7 @@
             if (Array.isArray(master)) {
                 master.forEach(p => {
                     if (p && p.id && !deletedIds.includes(String(p.id))) {
-                        productMap.set(String(p.id), sanitizeProductObj({ ...p }));
+                        productMap.set(String(p.id), this.sanitizeProductObj({ ...p }));
                     }
                 });
             }
@@ -2552,7 +2552,7 @@
             if (Array.isArray(saved)) {
                 saved.forEach(p => {
                     if (p && p.id && !deletedIds.includes(String(p.id))) {
-                        productMap.set(String(p.id), sanitizeProductObj({ ...p }));
+                        productMap.set(String(p.id), this.sanitizeProductObj({ ...p }));
                     }
                 });
             }
@@ -2561,7 +2561,7 @@
             if (Array.isArray(customAdded)) {
                 customAdded.forEach(p => {
                     if (p && p.id && !deletedIds.includes(String(p.id))) {
-                        productMap.set(String(p.id), sanitizeProductObj({ ...p }));
+                        productMap.set(String(p.id), this.sanitizeProductObj({ ...p }));
                     }
                 });
             }
@@ -2874,21 +2874,21 @@
             if (Array.isArray(master)) {
                 master.forEach(p => {
                     if (p && p.id && !deletedIds.includes(String(p.id))) {
-                        productMap.set(String(p.id), sanitizeProductObj({ ...p }));
+                        productMap.set(String(p.id), this.sanitizeProductObj({ ...p }));
                     }
                 });
             }
             if (Array.isArray(saved)) {
                 saved.forEach(p => {
                     if (p && p.id && !deletedIds.includes(String(p.id))) {
-                        productMap.set(String(p.id), sanitizeProductObj({ ...p }));
+                        productMap.set(String(p.id), this.sanitizeProductObj({ ...p }));
                     }
                 });
             }
             if (Array.isArray(customAdded)) {
                 customAdded.forEach(p => {
                     if (p && p.id && !deletedIds.includes(String(p.id))) {
-                        productMap.set(String(p.id), sanitizeProductObj({ ...p }));
+                        productMap.set(String(p.id), this.sanitizeProductObj({ ...p }));
                     }
                 });
             }
@@ -3664,10 +3664,15 @@
                 customer: orderData.customer,
                 items: orderData.items,
                 subtotal: orderData.subtotal || orderData.total,
+                discount: Number(orderData.discount || 0),
+                coupon: orderData.coupon || null,
                 shipping: orderData.shipping || 0,
                 total: orderData.total,
                 paymentMethod: orderData.paymentMethod || 'Cash on Delivery (COD)',
                 paymentStatus: orderData.paymentStatus || (orderData.paymentMethod && orderData.paymentMethod.includes('Online') ? 'Paid' : 'Pending'),
+                paidAmount: Number(orderData.paidAmount || 0),
+                balanceAmount: Number(orderData.balanceAmount !== undefined ? orderData.balanceAmount : orderData.total),
+                paymentHistory: Array.isArray(orderData.paymentHistory) ? orderData.paymentHistory : [],
                 orderStatus: 'New Order',
                 warehouse: 'WH-01',
                 courier: 'Leopard Express (Auto-Assigned)',
@@ -5337,9 +5342,13 @@
 
             const totalAmt = Number(dealer.totalAmount !== undefined ? dealer.totalAmount : (dealer.creditLimit || 0));
             const payments = Array.isArray(dealer.paymentHistory) ? dealer.paymentHistory : [];
-            const paidAmt = Number(dealer.paidAmount !== undefined ? dealer.paidAmount : payments.reduce((acc, p) => acc + Number(p.amount || 0), 0));
+            const paidAmt = payments.length
+                ? payments.reduce((acc, p) => acc + Number(p.amount || 0), 0)
+                : Number(dealer.paidAmount || 0);
             const calculatedBal = (Number(dealer.openingBalance || 0) + totalDebit) - totalCredit;
-            const currentBalance = dealer.balanceAmount !== undefined ? Number(dealer.balanceAmount) : calculatedBal;
+            const currentBalance = payments.length
+                ? Math.max(0, totalAmt - paidAmt)
+                : (dealer.balanceAmount !== undefined ? Number(dealer.balanceAmount) : calculatedBal);
             const isAmountClear = Boolean(dealer.isAmountClear !== undefined ? dealer.isAmountClear : ((totalAmt > 0 && currentBalance <= 0) || (totalAmt === 0 && paidAmt > 0)));
 
             // If no explicit legacy ledger entries exist in storage, map paymentHistory directly into ledgerEntries
@@ -6288,7 +6297,9 @@
             const currentDay = dayNames[now.getDay()];
             const refCode = 'DLR-SLIP-' + d.id + '-' + Date.now().toString().slice(-6);
 
-            const totalAmount = Number(d.totalAmount !== undefined ? d.totalAmount : (d.creditLimit || (summary ? summary.totalAmount : 0) || 0));
+            const totalAmount = Number(summary && summary.totalAmount !== undefined
+                ? summary.totalAmount
+                : (d.totalAmount !== undefined ? d.totalAmount : (d.creditLimit || 0)));
             const ledgerPayments = summary && Array.isArray(summary.ledgerEntries)
                 ? summary.ledgerEntries.filter(entry => ['PAYMENT_RECEIVED', 'ADVANCE_PAYMENT'].includes(entry.type) && Number(entry.credit || 0) > 0)
                     .map(entry => ({
@@ -6306,9 +6317,13 @@
                     ? d.paymentHistory
                     : (summary && Array.isArray(summary.paymentHistory) ? summary.paymentHistory : []));
             const calculatedPaid = payments.reduce((acc, p) => acc + Number(p.amount || 0), 0);
-            const paidAmount = Number(d.paidAmount !== undefined ? d.paidAmount : (summary && summary.paidAmount !== undefined ? summary.paidAmount : calculatedPaid));
+            const paidAmount = Number(summary && summary.paidAmount !== undefined
+                ? summary.paidAmount
+                : (d.paidAmount !== undefined ? d.paidAmount : calculatedPaid));
             const calculatedBalance = Math.max(0, totalAmount - paidAmount);
-            const balanceAmount = Number(d.balanceAmount !== undefined ? d.balanceAmount : (summary && summary.currentBalance !== undefined ? summary.currentBalance : calculatedBalance));
+            const balanceAmount = Number(summary && summary.balanceAmount !== undefined
+                ? summary.balanceAmount
+                : (d.balanceAmount !== undefined ? d.balanceAmount : calculatedBalance));
             const isAmountClear = Boolean(d.isAmountClear !== undefined ? d.isAmountClear : (totalAmount > 0 ? balanceAmount <= 0 : true));
 
             // Ordinal payment schedule naming helper (1 -> 1st Payment Schedule, 2 -> 2nd Payment Schedule, etc.)
@@ -6316,6 +6331,14 @@
                 const s = ['th', 'st', 'nd', 'rd'];
                 const v = (index + 1) % 100;
                 return (index + 1) + (s[(v - 20) % 10] || s[v] || s[0]) + ' Payment Schedule';
+            };
+            const parsePaymentDate = (value) => {
+                const legacyDate = String(value || '').match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+                if (legacyDate) {
+                    return new Date(Number(legacyDate[3]), Number(legacyDate[2]) - 1, Number(legacyDate[1]));
+                }
+                const parsed = new Date(value);
+                return Number.isNaN(parsed.getTime()) ? now : parsed;
             };
 
             // Strictly deduplicate payment history: ensure the final 'Amount Clear' entry is rendered only ONCE
@@ -6375,8 +6398,7 @@
                     runningBalance = Math.max(0, runningBalance - amt);
                     const balAfter = (p.balanceAfter !== undefined) ? Number(p.balanceAfter) : runningBalance;
                     const installmentTitle = getInstallmentTitle(idx);
-                    const paymentDate = p.date ? new Date(p.date) : now;
-                    const validPaymentDate = Number.isNaN(paymentDate.getTime()) ? now : paymentDate;
+                    const validPaymentDate = p.date ? parsePaymentDate(p.date) : now;
                     const paymentDateLabel = validPaymentDate.toLocaleDateString('en-PK');
                     const paymentDayLabel = p.day || dayNames[validPaymentDate.getDay()];
                     const paymentTimeLabel = p.time || validPaymentDate.toLocaleTimeString('en-PK', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
@@ -6394,7 +6416,7 @@
                                 <div><strong class="dealer-label" style="color: #000000 !important;">TIME:</strong> <span style="color: #000000 !important;">${paymentTimeLabel}</span></div>
                             </div>
                             <div class="payment-method-reference" style="font-size: 7.5pt; line-height: 1.3; border-bottom: 1px dotted #cccccc !important; padding: 2px 0; margin-bottom: 2px;">
-                                <strong>PAYMENT METHOD:</strong> ${p.paymentMethod || p.method || 'Not recorded'}
+                                <strong>PAYMENT METHOD:</strong> ${p.paymentMethod || p.method || p.notes || 'Not recorded'}
                                 ${p.bankNetwork ? ` &bull; <strong>BANK / NETWORK:</strong> ${p.bankNetwork}` : ''}
                                 <br><strong>REFERENCE NUMBER:</strong> ${p.transactionReference || p.reference || p.id || '—'}
                             </div>
@@ -6608,6 +6630,14 @@
             return { success: true, count: employees.length, mode: 'batch_employees' };
         }
 
+        applyDealerSlipTextColor(printContainer) {
+            if (!printContainer) return;
+            printContainer.style.setProperty('color', '#000000', 'important');
+            printContainer.querySelectorAll('*').forEach(element => {
+                element.style.setProperty('color', '#000000', 'important');
+            });
+        }
+
         printBatchDealerSlips() {
             const dealers = (typeof this.getDealers === 'function') ? this.getDealers() : [];
             if (!dealers || dealers.length === 0) {
@@ -6630,6 +6660,7 @@
             }).join('');
 
             printContainer.innerHTML = slipsHtml;
+            this.applyDealerSlipTextColor(printContainer);
 
             document.body.classList.add('gug-individual-print-active');
             setTimeout(() => {
@@ -6744,6 +6775,7 @@
             }
 
             printContainer.innerHTML = this.generateSingleDealerSlipHtml(d, summary, currentUser, true);
+            this.applyDealerSlipTextColor(printContainer);
 
             document.body.classList.add('gug-individual-print-active');
             setTimeout(() => {

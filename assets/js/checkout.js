@@ -2,16 +2,13 @@
    Gear Up Gadgets - Checkout Page JS (Dynamic Shipping & Coupon Support)
    ========================================================================== */
 
+let isPlacingOrder = false;
+let isCheckoutPageInitialized = false;
+
 function initCheckoutPage() {
+    if (isCheckoutPageInitialized) return;
+    isCheckoutPageInitialized = true;
     renderCheckoutSummary();
-    window.checkoutPaymentCapture = window.GUG_PAYMENT_METHODS.mount({
-        form: document.querySelector('form[onsubmit="handlePlaceOrder(event)"]'),
-        prefix: 'checkout',
-        methodId: 'checkout-payment-method',
-        amountId: 'checkout-paid-amount',
-        amountLabel: 'Paid Amount (PKR)',
-        total: () => getCalculatedOrderTotals(getCart()).total
-    });
 }
 
 function getCalculatedOrderTotals(cart) {
@@ -101,13 +98,6 @@ function renderCheckoutSummary() {
 
     // Calculate totals with dynamic shipping and coupons
     const totals = getCalculatedOrderTotals(cart);
-    let paymentDetails;
-    try {
-        paymentDetails = window.checkoutPaymentCapture.collect();
-    } catch (error) {
-        showToast(error.message, 'error');
-        return;
-    }
     let discountRowHTML = '';
 
     if (totals.couponResult && totals.couponResult.valid) {
@@ -159,6 +149,13 @@ function renderCheckoutSummary() {
 
 function handlePlaceOrder(event) {
     event.preventDefault();
+    if (isPlacingOrder) return;
+
+    const form = event.currentTarget;
+    if (form && !form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
 
     // Grab form fields
     const firstName = document.getElementById('checkout-fname').value.trim();
@@ -182,24 +179,10 @@ function handlePlaceOrder(event) {
 
     const totals = getCalculatedOrderTotals(cart);
     const activeCoupon = localStorage.getItem('active_coupon');
+    const paymentMethodLabel = 'Cash on Delivery';
 
     // Generate Order ID (Tracking ID)
     const orderId = `GUG-ORD-${Math.floor(100000 + Math.random() * 900000)}`;
-    const paymentMethodLabel = paymentDetails.paymentMethod;
-    const paymentHistory = paymentDetails.paidAmount > 0 ? [{
-        id: `CRM-PAY-${Date.now()}`,
-        amount: paymentDetails.paidAmount,
-        date: paymentDetails.transactionAt,
-        timestamp: paymentDetails.transactionAt,
-        method: paymentDetails.paymentMethod,
-        paymentMethod: paymentDetails.paymentMethod,
-        bankNetwork: paymentDetails.bankNetwork,
-        reference: paymentDetails.transactionReference || orderId,
-        transactionReference: paymentDetails.transactionReference,
-        receiptName: paymentDetails.receiptName,
-        receiptData: paymentDetails.receiptData,
-        balanceAfter: paymentDetails.balanceAmount
-    }] : [];
 
     const orderDetails = {
         id: orderId,
@@ -237,40 +220,46 @@ function handlePlaceOrder(event) {
         }),
         payment: paymentMethodLabel,
         paymentMethod: paymentMethodLabel,
-        paymentStatus: paymentDetails.balanceAmount === 0 && paymentDetails.paidAmount > 0 ? 'Paid' : 'Pending',
-        paidAmount: paymentDetails.paidAmount,
-        balanceAmount: paymentDetails.balanceAmount,
-        paymentReference: paymentDetails.transactionReference,
-        bankNetwork: paymentDetails.bankNetwork,
-        transactionAt: paymentDetails.transactionAt,
-        paymentHistory,
+        paymentStatus: 'Pending',
+        paidAmount: 0,
+        balanceAmount: totals.total,
         orderStatus: 'New Order',
         status: 'Pending',
         archived: false,
         date: new Date().toISOString()
     };
 
-    // Synchronize through Centralized GUG ERP Core Engine
-    if (window.GUG_DB && typeof window.GUG_DB.processStorefrontOrder === 'function') {
-        window.GUG_DB.processStorefrontOrder(orderDetails);
-    } else {
-        // Fallback to local admin orders store
-        let adminOrders = JSON.parse(localStorage.getItem('admin_orders')) || [];
-        adminOrders.unshift(orderDetails);
-        localStorage.setItem('admin_orders', JSON.stringify(adminOrders));
+    const submitButton = form ? form.querySelector('button[type="submit"]') : null;
+    isPlacingOrder = true;
+    if (submitButton) submitButton.disabled = true;
+
+    try {
+        // Synchronize through Centralized GUG ERP Core Engine
+        if (window.GUG_DB && typeof window.GUG_DB.processStorefrontOrder === 'function') {
+            window.GUG_DB.processStorefrontOrder(orderDetails);
+        } else {
+            let adminOrders = JSON.parse(localStorage.getItem('admin_orders') || '[]');
+            adminOrders.unshift(orderDetails);
+            localStorage.setItem('admin_orders', JSON.stringify(adminOrders));
+        }
+
+        // Direct Cloud Firestore Synchronization
+        if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.saveOrder === 'function') {
+            Promise.resolve(window.GUG_FIREBASE.saveOrder(orderDetails)).catch(error => {
+                console.error('Cloud order synchronization failed.', error);
+                showToast('Your order was saved locally, but cloud synchronization failed. Please contact support with your order ID.', 'error');
+            });
+        }
+
+        renderOrderSuccess(orderId, orderDetails);
+        clearCart();
+        localStorage.removeItem('active_coupon');
+    } catch (error) {
+        console.error('Order submission failed.', error);
+        isPlacingOrder = false;
+        if (submitButton) submitButton.disabled = false;
+        showToast('We could not submit your order. Please try again.', 'error');
     }
-
-    // Direct Cloud Firestore Synchronization
-    if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.saveOrder === 'function') {
-        window.GUG_FIREBASE.saveOrder(orderDetails);
-    }
-
-    // Show Success Panel
-    renderOrderSuccess(orderId, orderDetails);
-
-    // Clear Cart & Coupon
-    clearCart();
-    localStorage.removeItem('active_coupon');
 }
 
 function renderOrderSuccess(orderId, orderDetails) {
@@ -308,7 +297,7 @@ function renderOrderSuccess(orderId, orderDetails) {
                         <span class="text-white fw-semibold">${orderDetails.payment}</span>
                     </div>
                     <div class="d-flex justify-content-between pt-1">
-                        <span class="text-secondary">Total Amount Paid:</span>
+                        <span class="text-secondary">Order Total:</span>
                         <strong class="text-danger" style="color: var(--accent-red); font-size: 16px;">Rs. ${formatPrice(orderDetails.total)}</strong>
                     </div>
                 </div>
@@ -383,4 +372,3 @@ document.addEventListener('DOMContentLoaded', () => {
         input.value = active;
     }
 });
-
