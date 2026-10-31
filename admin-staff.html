@@ -1028,6 +1028,57 @@
         </div>
     </div>
 
+    <div class="modal fade" id="employeePaymentModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header border-bottom border-secondary border-opacity-25 p-3">
+                    <h5 class="modal-title text-white fw-bold"><i class="fas fa-money-check-dollar text-success me-2"></i> Record Payroll Payment</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="employee-payment-form" onsubmit="handleEmployeePayment(event)">
+                    <div class="modal-body p-4">
+                        <input type="hidden" id="employee-payment-id">
+                        <div class="p-3 bg-dark bg-opacity-25 rounded border border-secondary border-opacity-25 mb-3 text-white">
+                            <h6 class="fw-bold text-white mb-1" id="employee-payment-name">Employee Name</h6>
+                            <small class="text-white-50" id="employee-payment-department">EMP-001 &bull; Department</small>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-white small fw-bold" for="employee-payment-amount">Payment Amount (PKR) *</label>
+                                <input type="number" id="employee-payment-amount" class="form-control fw-bold" min="1" step="1" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-white small fw-bold" for="employee-payment-method">Payment Method *</label>
+                                <select id="employee-payment-method" class="form-select" required onchange="toggleEmployeeChequeFields()">
+                                    <option value="Cash">Cash</option>
+                                    <option value="Online">Online</option>
+                                    <option value="Bank">Bank</option>
+                                    <option value="Cheque">Cheque</option>
+                                </select>
+                            </div>
+                            <div class="col-12" id="employee-cheque-fields" hidden>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label text-white small fw-bold" for="employee-cheque-number">Cheque Number *</label>
+                                        <input type="text" id="employee-cheque-number" class="form-control" maxlength="100" autocomplete="off">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-white small fw-bold" for="employee-bank-account-number">Bank Account Number *</label>
+                                        <input type="text" id="employee-bank-account-number" class="form-control" maxlength="100" autocomplete="off">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top border-secondary border-opacity-25 p-3">
+                        <button type="button" class="btn btn-outline-secondary btn-sm text-white" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success btn-sm fw-bold px-3"><i class="fas fa-check me-1"></i> Save Payment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- ========================================================================= -->
     <!-- EMPLOYEE ACTIVITY LOG & LOGIN HISTORY MODAL                                -->
     <!-- ========================================================================= -->
@@ -1377,6 +1428,7 @@
                             ${pauseBtnHTML}
                             ${deleteBtnHTML}
                             <button class="btn btn-sm btn-outline-info text-white px-2 py-1" title="Launch Staff Workspace as this Employee" onclick="openStaffPortalAs('${emp.id}')"><i class="fas fa-desktop"></i></button>
+                            <button class="btn btn-sm btn-outline-success px-2 py-1" title="Record Payroll Payment" onclick="openEmployeePaymentModal('${emp.id}')"><i class="fas fa-money-check-dollar"></i></button>
                             <button class="btn btn-sm btn-outline-success px-2 py-1" title="Quick Edit Salary & Designation" onclick="quickEditSalary('${emp.id}')"><i class="fas fa-money-bill-wave"></i></button>
                             <button class="btn btn-sm btn-outline-secondary text-white px-2 py-1" title="View 360 Profile" onclick="viewProfile('${emp.id}')"><i class="fas fa-eye"></i></button>
                             <button class="btn btn-sm btn-outline-warning text-white px-2 py-1" title="Reset Password" onclick="openResetPasswordModal('${emp.id}')"><i class="fas fa-key"></i></button>
@@ -1511,6 +1563,104 @@
             calcQuickNet();
 
             bootstrap.Modal.getOrCreateInstance(document.getElementById('quickSalaryModal')).show();
+        }
+
+        function openEmployeePaymentModal(id) {
+            const emp = window.GUG_DB.getEmployeeById(id);
+            if (!emp) {
+                window.GUG_DB.showToast('Employee record not found.', 'error', 'Payroll Payment');
+                return;
+            }
+
+            const form = document.getElementById('employee-payment-form');
+            form.reset();
+            document.getElementById('employee-payment-id').value = emp.id;
+            document.getElementById('employee-payment-name').textContent = emp.name;
+            document.getElementById('employee-payment-department').textContent = `${emp.id} \u2022 ${emp.department || 'Operations'}`;
+            document.getElementById('employee-payment-amount').value = String(Math.max(
+                0,
+                Number(emp.basicSalary || emp.salary || 0) +
+                Number(emp.allowance || 0) -
+                Number(emp.deductions || 0)
+            ));
+            toggleEmployeeChequeFields();
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('employeePaymentModal')).show();
+        }
+
+        function toggleEmployeeChequeFields() {
+            const isCheque = document.getElementById('employee-payment-method').value === 'Cheque';
+            const fields = document.getElementById('employee-cheque-fields');
+            const chequeNumber = document.getElementById('employee-cheque-number');
+            const bankAccountNumber = document.getElementById('employee-bank-account-number');
+            fields.hidden = !isCheque;
+            chequeNumber.required = isCheque;
+            bankAccountNumber.required = isCheque;
+        }
+
+        async function handleEmployeePayment(event) {
+            event.preventDefault();
+            const id = document.getElementById('employee-payment-id').value;
+            const emp = window.GUG_DB.getEmployeeById(id);
+            if (!emp) {
+                window.GUG_DB.showToast('Employee record not found.', 'error', 'Payroll Payment');
+                return;
+            }
+
+            const amount = Number(document.getElementById('employee-payment-amount').value);
+            const paymentMethod = document.getElementById('employee-payment-method').value;
+            const chequeNumber = document.getElementById('employee-cheque-number').value.trim();
+            const bankAccountNumber = document.getElementById('employee-bank-account-number').value.trim();
+            if (!Number.isFinite(amount) || amount <= 0) {
+                window.GUG_DB.showToast('Enter a payment amount greater than zero.', 'warning', 'Amount Required');
+                return;
+            }
+            if (!['Cash', 'Online', 'Bank', 'Cheque'].includes(paymentMethod)) {
+                window.GUG_DB.showToast('Select a valid payroll payment method.', 'warning', 'Payment Method Required');
+                return;
+            }
+            if (paymentMethod === 'Cheque' && (!chequeNumber || !bankAccountNumber)) {
+                window.GUG_DB.showToast('Enter both the Cheque Number and Bank Account Number.', 'warning', 'Cheque Details Required');
+                return;
+            }
+
+            const currentUser = window.GUG_DB.getCurrentUser();
+            emp.salaryPayments = Array.isArray(emp.salaryPayments) ? emp.salaryPayments : [];
+            emp.salaryPayments.push({
+                id: `PAY-${Date.now()}`,
+                amount,
+                paymentMethod,
+                chequeNumber: paymentMethod === 'Cheque' ? chequeNumber : '',
+                bankAccountNumber: paymentMethod === 'Cheque' ? bankAccountNumber : '',
+                transactionReference: paymentMethod === 'Cheque' ? chequeNumber : '',
+                paidAt: new Date().toISOString(),
+                recordedBy: currentUser && currentUser.name ? currentUser.name : 'Admin'
+            });
+
+            const result = window.GUG_DB.saveEmployee(emp);
+            if (!result.success) {
+                window.GUG_DB.showToast(result.message || 'Could not save the payroll payment.', 'error', 'Save Failed');
+                return;
+            }
+
+            let cloudSyncFailed = false;
+            if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.saveEmployee === 'function') {
+                try {
+                    await window.GUG_FIREBASE.saveEmployee(result.employee || emp);
+                } catch (error) {
+                    console.error('[GUG Firebase] Error syncing payroll payment:', error);
+                    cloudSyncFailed = true;
+                }
+            }
+            const modal = bootstrap.Modal.getInstance(document.getElementById('employeePaymentModal'));
+            if (modal) modal.hide();
+            renderStaffTable();
+            window.GUG_DB.showToast(
+                cloudSyncFailed
+                    ? `Payment of Rs. ${amount.toLocaleString()} was saved locally, but cloud sync failed.`
+                    : `Payment of Rs. ${amount.toLocaleString()} recorded for ${emp.name}.`,
+                cloudSyncFailed ? 'warning' : 'success',
+                cloudSyncFailed ? 'Cloud Sync Warning' : 'Payroll Payment Saved'
+            );
         }
 
         function calcQuickNet() {
@@ -2460,6 +2610,9 @@
         window.deleteStaff = deleteStaff;
         window.toggleStatus = toggleStatus;
         window.quickEditSalary = quickEditSalary;
+        window.openEmployeePaymentModal = openEmployeePaymentModal;
+        window.toggleEmployeeChequeFields = toggleEmployeeChequeFields;
+        window.handleEmployeePayment = handleEmployeePayment;
         window.viewProfile = viewProfile;
         window.openResetPasswordModal = openResetPasswordModal;
         window.handleConfirmPasswordReset = handleConfirmPasswordReset;
@@ -2479,5 +2632,3 @@
     </script>
 </body>
 </html>
-
-

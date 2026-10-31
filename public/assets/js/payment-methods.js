@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    const METHODS = ['Cash', 'Online', 'Bank'];
+    const METHODS = ['Cash', 'Online', 'Bank', 'Cheque'];
     const NETWORKS = {
         Online: ['EasyPaisa', 'JazzCash', 'NayaPay', 'SadaPay'],
         Bank: [
@@ -13,6 +13,7 @@
     const MAX_RECEIPT_BYTES = 2 * 1024 * 1024;
     const normalizeMethod = value => {
         const method = String(value == null ? '' : value).trim().toLowerCase();
+        if (method === 'cheque' || method.includes('cheque')) return 'Cheque';
         if (method === 'cash' || method.includes('cash on delivery') || method.includes('direct cash')) return 'Cash';
         if (method === 'online' || method.includes('online') || method.includes('jazzcash') ||
             method.includes('easypaisa') || method.includes('nayapay') || method.includes('sadapay')) return 'Online';
@@ -73,6 +74,14 @@
                     <input type="file" class="form-control" id="${prefix}-receipt" accept="image/*">
                     <small class="payment-receipt-status text-muted">Image receipts up to 2 MB.</small>
                 </div>
+                <div class="col-md-6 payment-cheque-field" hidden>
+                    <label class="form-label small fw-bold" for="${prefix}-cheque-number">Cheque Number</label>
+                    <input type="text" class="form-control" id="${prefix}-cheque-number" maxlength="100" autocomplete="off">
+                </div>
+                <div class="col-md-6 payment-cheque-field" hidden>
+                    <label class="form-label small fw-bold" for="${prefix}-bank-account-number">Bank Account Number</label>
+                    <input type="text" class="form-control" id="${prefix}-bank-account-number" maxlength="100" autocomplete="off">
+                </div>
                 <div class="col-12">
                     <label class="form-label small fw-bold" for="${prefix}-timestamp">Transaction Date &amp; Time</label>
                     <input type="text" class="form-control payment-timestamp" id="${prefix}-timestamp" readonly>
@@ -89,8 +98,15 @@
             if (method && method.value !== selectedMethod) method.value = selectedMethod;
             if (selectedMethod !== lastMethod && network) network.dataset.selectedNetwork = '';
             const isCash = selectedMethod === 'Cash';
+            const isCheque = selectedMethod === 'Cheque';
+            const isDigital = selectedMethod === 'Online' || selectedMethod === 'Bank';
             fields.querySelectorAll('.payment-cash-balance').forEach(element => element.hidden = !isCash);
-            fields.querySelectorAll('.payment-digital-field').forEach(element => element.hidden = isCash);
+            fields.querySelectorAll('.payment-digital-field').forEach(element => element.hidden = !isDigital);
+            fields.querySelectorAll('.payment-cheque-field').forEach(element => element.hidden = !isCheque);
+            if (chequeNumber) chequeNumber.required = isCheque;
+            if (bankAccountNumber) bankAccountNumber.required = isCheque;
+            if (network) network.required = isDigital;
+            if (reference) reference.required = isDigital;
             if (network && network.dataset.networkMethod !== selectedMethod) {
                 const networks = NETWORKS[selectedMethod] || [];
                 const selectedNetwork = network.dataset.selectedNetwork || '';
@@ -104,6 +120,7 @@
             }
             const networkLabel = document.getElementById(`${prefix}-network-label`);
             if (networkLabel) networkLabel.textContent = selectedMethod === 'Bank' ? 'Bank' : 'Online Platform';
+            if (amountLabel) amountLabel.textContent = isCheque ? 'Payment Amount (PKR)' : standardAmountLabel;
             const paid = amount ? Number(amount.value || 0) : 0;
             const due = Number(total()) || 0;
             const output = document.getElementById(`${prefix}-balance`);
@@ -115,6 +132,12 @@
         const network = document.getElementById(`${prefix}-network`);
         const reference = document.getElementById(`${prefix}-reference`);
         const timestamp = document.getElementById(`${prefix}-timestamp`);
+        const chequeNumber = document.getElementById(`${prefix}-cheque-number`);
+        const bankAccountNumber = document.getElementById(`${prefix}-bank-account-number`);
+        const amountLabel = options.amountLabelId
+            ? document.getElementById(options.amountLabelId)
+            : (options.amountId ? form.querySelector(`label[for="${options.amountId}"]`) : null);
+        const standardAmountLabel = options.amountLabel || (amountLabel ? amountLabel.textContent.trim() : '');
         const initialMethod = normalizeMethod(method && method.value);
         let lastMethod = initialMethod;
         if (network) {
@@ -144,6 +167,8 @@
             amount.dataset.paymentHelperBound = 'true';
         }
         if (reference) reference.value = details.transactionReference || details.reference || '';
+        if (chequeNumber) chequeNumber.value = details.chequeNumber || '';
+        if (bankAccountNumber) bankAccountNumber.value = details.bankAccountNumber || '';
         fields.dataset.receiptData = details.receiptData || '';
         fields.dataset.receiptName = details.receiptName || '';
         fields.dataset.receiptReading = 'false';
@@ -203,17 +228,25 @@
                 if (!Number.isFinite(paidAmount) || paidAmount < 0 || paidAmount > due) {
                     throw new Error(`Paid Amount must be between Rs. 0 and ${money(due)}.`);
                 }
-                if (selectedMethod !== 'Cash' && (!network?.value.trim() || !reference?.value.trim())) {
+                if ((selectedMethod === 'Online' || selectedMethod === 'Bank') && (!network?.value.trim() || !reference?.value.trim())) {
                     throw new Error('Select the payment platform or bank and enter the Reference Number for digital payments.');
                 }
+                const enteredChequeNumber = chequeNumber ? chequeNumber.value.trim() : '';
+                const enteredBankAccountNumber = bankAccountNumber ? bankAccountNumber.value.trim() : '';
+                if (selectedMethod === 'Cheque' && (!enteredChequeNumber || !enteredBankAccountNumber)) {
+                    throw new Error('Enter the Cheque Number and Bank Account Number for cheque payments.');
+                }
+                const transactionReference = reference?.value.trim() || (selectedMethod === 'Cheque' ? enteredChequeNumber : '');
                 return {
                     paymentMethod: selectedMethod,
                     method: selectedMethod,
                     bankNetwork: network?.value.trim() || '',
                     paymentPlatform: selectedMethod === 'Online' ? network?.value.trim() || '' : '',
                     bankName: selectedMethod === 'Bank' ? network?.value.trim() || '' : '',
-                    reference: reference?.value.trim() || '',
-                    transactionReference: reference?.value.trim() || '',
+                    reference: transactionReference,
+                    transactionReference,
+                    chequeNumber: enteredChequeNumber,
+                    bankAccountNumber: enteredBankAccountNumber,
                     paidAmount,
                     balanceAmount: Math.max(0, due - paidAmount),
                     transactionAt: timestamp && timestamp.dataset.transactionAt

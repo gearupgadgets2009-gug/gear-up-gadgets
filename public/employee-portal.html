@@ -231,19 +231,18 @@
             try {
                 const urlParams = new URLSearchParams(window.location.search);
                 const requestedEmp = urlParams.get('emp') || urlParams.get('id') || urlParams.get('staff_id') || urlParams.get('user');
-                if (requestedEmp) {
+                const hasAdminSession = localStorage.getItem('admin_logged_in') === 'true' &&
+                    sessionStorage.getItem('gug_admin_auth_session') === 'authenticated';
+                const hasStaffSession = localStorage.getItem('staff_logged_in') === 'true' &&
+                    sessionStorage.getItem('gug_staff_auth_session') === 'authenticated';
+                if (!hasAdminSession && !hasStaffSession) {
+                    window.location.replace('admin.html');
+                    return;
+                }
+                if (requestedEmp && hasAdminSession) {
                     localStorage.setItem('staff_logged_in', 'true');
                     localStorage.setItem('staff_user_id', requestedEmp);
-                } else if (!localStorage.getItem('staff_logged_in') && !localStorage.getItem('admin_logged_in')) {
-                    // Safe default staff session fallback if completely unauthenticated
-                    localStorage.setItem('staff_logged_in', 'true');
-                    if (!localStorage.getItem('staff_user_id')) {
-                        localStorage.setItem('staff_user_id', 'EMP-009');
-                        localStorage.setItem('staff_username', 'umar');
-                        localStorage.setItem('staff_name', 'Umar Farooq');
-                        localStorage.setItem('staff_role', 'Catalog & Store Specialist');
-                        localStorage.setItem('staff_department', 'Marketing & Catalog');
-                    }
+                    sessionStorage.setItem('gug_staff_auth_session', 'authenticated');
                 }
             } catch(e) {}
         })();
@@ -384,9 +383,14 @@
 
             const urlParams = (typeof window !== 'undefined' && window.location) ? new URLSearchParams(window.location.search) : new URLSearchParams();
             const requestedEmp = urlParams.get('emp') || urlParams.get('id') || urlParams.get('staff_id') || urlParams.get('user');
-
+            const hasAdminSession = localStorage.getItem('admin_logged_in') === 'true' &&
+                sessionStorage.getItem('gug_admin_auth_session') === 'authenticated';
             let staffId = requestedEmp || localStorage.getItem('staff_user_id');
             let staffUsername = requestedEmp ? null : localStorage.getItem('staff_username');
+            if (!hasAdminSession && requestedEmp) {
+                staffId = localStorage.getItem('staff_user_id');
+                staffUsername = localStorage.getItem('staff_username');
+            }
             
             let employees = [];
             try {
@@ -411,11 +415,14 @@
             }
 
             if (!emp) {
-                // Default to Umar Farooq (EMP-009) or Ahsaan (EMP-010) or first staff member
-                emp = employees.find(e => e.id === 'EMP-009') || 
-                      employees.find(e => e.id === 'EMP-010') || 
-                      employees.find(e => e.role !== 'Super Admin' && e.username !== 'admin') || 
-                      employees[0];
+                emp = hasAdminSession ? employees.find(e => e.id === 'EMP-001' || e.role === 'Super Admin') : null;
+            }
+
+            if (!emp) {
+                localStorage.removeItem('staff_logged_in');
+                sessionStorage.removeItem('gug_staff_auth_session');
+                window.location.replace('admin.html');
+                return null;
             }
 
             if (emp) {
@@ -425,6 +432,7 @@
                 localStorage.setItem('staff_name', emp.name);
                 localStorage.setItem('staff_role', emp.role);
                 localStorage.setItem('staff_department', emp.department || 'Operations');
+                if (hasAdminSession) sessionStorage.setItem('gug_staff_auth_session', 'authenticated');
             }
 
             // Fresh permissions: actively query and mirror from the live database record
@@ -462,6 +470,7 @@
             if (!window.GUG_DB) return;
 
             const user = getActiveStaffUser();
+            if (!user) return;
             currentStaff = user;
 
             // Populate staff identity badge
@@ -873,6 +882,7 @@
                 if (e && (e.key === 'gug_erp_employees' || e.key === 'staff_permissions' || e.key === 'gug_active_staff_sessions')) {
                     if (window.GUG_DB) window.GUG_DB._employeesCache = null;
                     const user = getActiveStaffUser();
+                    if (!user) return;
                     currentStaff = user;
                     renderStaffSidebarRBAC(user.permissions);
                 }
@@ -884,6 +894,7 @@
                 if (window.GUG_DB) window.GUG_DB._employeesCache = null;
                 enforceStaffSuspensionCheck();
                 const user = getActiveStaffUser();
+                if (!user) return;
                 currentStaff = user;
                 renderStaffSidebarRBAC(user.permissions);
             });
@@ -891,6 +902,7 @@
             window.addEventListener('gugEmployeePermissionsUpdated', () => {
                 if (window.GUG_DB) window.GUG_DB._employeesCache = null;
                 const user = getActiveStaffUser();
+                if (!user) return;
                 currentStaff = user;
                 renderStaffSidebarRBAC(user.permissions);
             });

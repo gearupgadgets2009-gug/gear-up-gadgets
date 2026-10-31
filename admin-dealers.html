@@ -242,9 +242,10 @@
             }
 
             .gug-slip-brand-header {
-                background: #102a43 !important;
-                color: #ffffff !important;
-                border-bottom: 4px solid #dc2626 !important;
+                background: transparent !important;
+                background-color: transparent !important;
+                color: #000000 !important;
+                border: 0 !important;
             }
 
             .gug-slip-meta-bar {
@@ -1018,8 +1019,8 @@
 
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
-                                <label class="form-label form-label-required small fw-bold">Reference / Invoice #</label>
-                                <input type="text" id="tx-reference" class="form-control form-control-sm" placeholder="e.g. INV-B2B-1088 or PAY-MEEZAN-9921" required>
+                                <label class="form-label small fw-bold">Reference / Invoice #</label>
+                                <input type="text" id="tx-reference" class="form-control form-control-sm" placeholder="Invoice reference (optional for cash)">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label form-label-required small fw-bold">Payment Method</label>
@@ -1027,6 +1028,7 @@
                                     <option value="Cash">Cash</option>
                                     <option value="Online">Online</option>
                                     <option value="Bank">Bank</option>
+                                    <option value="Cheque">Cheque</option>
                                 </select>
                             </div>
                         </div>
@@ -1918,7 +1920,9 @@
         function openRecordTransactionModal(defaultType = 'STOCK_ISSUED') {
             document.getElementById('transactionForm').reset();
             document.getElementById('tx-type-select').value = defaultType;
-            document.getElementById('tx-reference').value = defaultType === 'STOCK_ISSUED' ? 'INV-B2B-' + Math.floor(1000 + Math.random() * 9000) : 'PAY-BANK-' + Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('tx-reference').value = defaultType === 'STOCK_ISSUED'
+                ? 'INV-B2B-' + Math.floor(1000 + Math.random() * 9000)
+                : (defaultType === 'STOCK_RETURNED' ? 'RET-B2B-' + Math.floor(1000 + Math.random() * 9000) : '');
             
             document.getElementById('tx-line-items-tbody').innerHTML = '';
             toggleTxTypeFields();
@@ -1927,6 +1931,7 @@
                 prefix: 'dealer',
                 methodId: 'tx-payment-method',
                 amountId: 'tx-amount',
+                amountLabelId: 'tx-amount-label',
                 defaultMethod: 'Bank',
                 total: () => {
                     if (document.getElementById('tx-type-select').value !== 'PAYMENT_RECEIVED') {
@@ -1935,7 +1940,6 @@
                     const summary = window.GUG_DB.calculateDealerSummary(document.getElementById('tx-dealer-select').value);
                     return Math.max(0, Number(summary && summary.currentBalance) || 0);
                 },
-                amountLabel: 'Paid Amount (PKR)'
             });
             updateTxDealerBalancePreview();
             transactionModalInstance.show();
@@ -1945,6 +1949,11 @@
             const type = document.getElementById('tx-type-select').value;
             const lineItemsSec = document.getElementById('tx-line-items-section');
             const amountLabel = document.getElementById('tx-amount-label');
+            const referenceInput = document.getElementById('tx-reference');
+            const referenceLabel = referenceInput.previousElementSibling;
+            const referenceRequired = type === 'STOCK_ISSUED' || type === 'STOCK_RETURNED';
+            referenceInput.required = referenceRequired;
+            if (referenceLabel) referenceLabel.classList.toggle('form-label-required', referenceRequired);
 
             if (type === 'STOCK_ISSUED') {
                 lineItemsSec.style.display = 'block';
@@ -2070,7 +2079,12 @@
                 return;
             }
             const paymentMethod = paymentDetails.paymentMethod;
-            const description = document.getElementById('tx-description').value.trim() || `${type.replace('_', ' ')} Ref #${referenceNo}`;
+            if (!paymentDetails.transactionReference && referenceNo) {
+                paymentDetails.transactionReference = referenceNo;
+                paymentDetails.reference = referenceNo;
+            }
+            const description = document.getElementById('tx-description').value.trim() ||
+                (referenceNo ? `${type.replace('_', ' ')} Ref #${referenceNo}` : type.replace('_', ' '));
 
             // Build line items if stock
             const items = [];
@@ -2112,7 +2126,7 @@
             }
 
             transactionModalInstance.hide();
-            window.GUG_DB.showToast(`Transaction #${referenceNo} successfully posted to dealer ledger!`, 'success', 'Ledger Updated');
+            window.GUG_DB.showToast(`Transaction ${referenceNo ? `#${referenceNo}` : 'successfully'} posted to dealer ledger!`, 'success', 'Ledger Updated');
             refreshAllData();
         }
 

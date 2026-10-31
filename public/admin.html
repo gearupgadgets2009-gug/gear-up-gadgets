@@ -290,7 +290,7 @@
 
         /* Login Portal Card */
         #login-container {
-            display: none;
+            display: flex;
             position: fixed;
             top: 0;
             left: 0;
@@ -953,12 +953,13 @@
             <form id="admin-login-form" onsubmit="handleAdminLogin(event)">
                 <div class="mb-3">
                     <label class="text-white small fw-bold mb-1">Username or Employee ID</label>
-                    <input type="text" id="login-input-user" class="form-control bg-dark text-white border-secondary" placeholder="admin" value="admin" required>
+                    <input type="text" id="login-input-user" class="form-control bg-dark text-white border-secondary" placeholder="Username or Employee ID" autocomplete="off" required>
                 </div>
                 <div class="mb-4">
                     <label class="text-white small fw-bold mb-1">Password</label>
-                    <input type="password" id="login-input-pass" class="form-control bg-dark text-white border-secondary" placeholder="Enter password" value="admingug" required>
+                    <input type="password" id="login-input-pass" class="form-control bg-dark text-white border-secondary" placeholder="Enter password" autocomplete="off" required>
                 </div>
+                <div id="admin-login-error" class="text-danger small mb-3" role="alert" aria-live="polite" hidden></div>
                 <button type="submit" class="btn btn-danger w-100 fw-bold py-2">
                     <i class="fas fa-sign-in-alt me-2"></i> Authenticate & Enter Portal
                 </button>
@@ -1497,15 +1498,56 @@
         // ========================================================
         function handleAdminLogin(e) {
             e.preventDefault();
-            localStorage.setItem('admin_logged_in', 'true');
-            localStorage.setItem('admin_username', 'admin');
-            localStorage.setItem('admin_role', 'Super Admin');
-            document.getElementById('login-container').style.display = 'none';
+            const username = document.getElementById('login-input-user').value.trim();
+            const password = document.getElementById('login-input-pass').value;
+            const errorElement = document.getElementById('admin-login-error');
+            const result = window.GUG_DB && window.GUG_DB.authenticateStaff(username, password);
+            if (!result || !result.success || !result.employee) {
+                errorElement.textContent = result && result.message ? result.message : 'Unable to verify credentials. Please try again.';
+                errorElement.hidden = false;
+                return;
+            }
+
+            const employee = result.employee;
+            const isAdmin = String(employee.role || '').toLowerCase() === 'super admin';
+            localStorage.setItem('gug_has_logged_out', 'false');
+            localStorage.setItem('admin_username', employee.username || username);
+            localStorage.setItem('admin_role', employee.role || 'Staff');
+            if (isAdmin) {
+                localStorage.setItem('admin_logged_in', 'true');
+                ['staff_logged_in', 'staff_user_id', 'staff_username', 'staff_name', 'staff_role',
+                    'staff_department', 'staff_permissions'].forEach(key => localStorage.removeItem(key));
+                sessionStorage.setItem('gug_admin_auth_session', 'authenticated');
+                sessionStorage.removeItem('gug_staff_auth_session');
+                document.getElementById('login-input-user').value = '';
+                document.getElementById('login-input-pass').value = '';
+                document.body.classList.add('admin-authenticated');
+                document.getElementById('login-container').style.display = 'none';
+                return;
+            }
+
+            localStorage.removeItem('admin_logged_in');
+            localStorage.setItem('staff_logged_in', 'true');
+            localStorage.setItem('staff_user_id', employee.id);
+            localStorage.setItem('staff_username', employee.username || username);
+            localStorage.setItem('staff_name', employee.name || employee.username || username);
+            localStorage.setItem('staff_role', employee.role || 'Warehouse Staff');
+            localStorage.setItem('staff_department', employee.department || 'Operations');
+            localStorage.setItem('staff_permissions', JSON.stringify(employee.permissions || []));
+            sessionStorage.setItem('gug_staff_auth_session', 'authenticated');
+            sessionStorage.removeItem('gug_admin_auth_session');
+            window.location.replace('employee-portal.html');
         }
 
         function promptAdminSignOut() {
             if (!confirm('Sign out from GearUp ERP Master Portal?')) return;
-            localStorage.removeItem('admin_logged_in');
+            ['admin_logged_in', 'staff_logged_in', 'staff_user_id', 'staff_username', 'staff_name',
+                'staff_role', 'staff_department', 'staff_permissions', 'admin_role', 'admin_username']
+                .forEach(key => localStorage.removeItem(key));
+            sessionStorage.removeItem('gug_admin_auth_session');
+            sessionStorage.removeItem('gug_staff_auth_session');
+            localStorage.setItem('gug_has_logged_out', 'true');
+            document.body.classList.remove('admin-authenticated');
             document.getElementById('login-container').style.display = 'flex';
         }
 
@@ -1513,11 +1555,18 @@
         // INITIALIZATION DISPATCHER
         // ========================================================
         document.addEventListener('DOMContentLoaded', () => {
-            // Default active demo session
-            if (localStorage.getItem('admin_logged_in') !== 'true') {
-                localStorage.setItem('admin_logged_in', 'true');
-                localStorage.setItem('admin_username', 'admin');
-                localStorage.setItem('admin_role', 'Super Admin');
+            const isAuthenticated = localStorage.getItem('admin_logged_in') === 'true' &&
+                sessionStorage.getItem('gug_admin_auth_session') === 'authenticated';
+            const loginContainer = document.getElementById('login-container');
+            loginContainer.style.display = isAuthenticated ? 'none' : 'flex';
+            document.body.classList.toggle('admin-authenticated', isAuthenticated);
+            if (!isAuthenticated) {
+                localStorage.removeItem('admin_logged_in');
+                localStorage.removeItem('admin_role');
+                localStorage.removeItem('admin_username');
+                sessionStorage.removeItem('gug_admin_auth_session');
+                document.getElementById('login-input-user').value = '';
+                document.getElementById('login-input-pass').value = '';
             }
 
             if (window.GUG_DB) {

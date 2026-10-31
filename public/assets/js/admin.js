@@ -3,8 +3,15 @@
     const page = (window.location.pathname.split('/').pop() || 'dashboard.html').split('?')[0].split('#')[0];
     if (page === 'admin.html' || page === 'staff-login.html' || page === 'dealer-login.html') return;
     
-    const isAdmin = localStorage.getItem('admin_logged_in') === 'true';
-    const isStaff = localStorage.getItem('staff_logged_in') === 'true';
+    const hasValidSession = () =>
+        (localStorage.getItem('admin_logged_in') === 'true' &&
+            sessionStorage.getItem('gug_admin_auth_session') === 'authenticated') ||
+        (localStorage.getItem('staff_logged_in') === 'true' &&
+            sessionStorage.getItem('gug_staff_auth_session') === 'authenticated');
+    const isAdmin = localStorage.getItem('admin_logged_in') === 'true' &&
+        sessionStorage.getItem('gug_admin_auth_session') === 'authenticated';
+    const isStaff = localStorage.getItem('staff_logged_in') === 'true' &&
+        sessionStorage.getItem('gug_staff_auth_session') === 'authenticated';
     const isDealer = localStorage.getItem('dealer_logged_in') === 'true';
     
     if (isDealer && !isAdmin) {
@@ -13,16 +20,31 @@
     }
     
     if (!isAdmin && !isStaff) {
-        if (!localStorage.getItem('gug_has_logged_out')) {
-            // Safe initial demo state
-            localStorage.setItem('admin_logged_in', 'true');
-            localStorage.setItem('admin_role', 'Super Admin');
-            localStorage.setItem('admin_username', 'admin');
-        } else {
-            window.location.href = 'admin.html';
-        }
+        document.documentElement.style.visibility = 'hidden';
+        window.location.replace('admin.html');
+        return;
     }
+    window.addEventListener('pageshow', () => {
+        if (!hasValidSession()) {
+            document.documentElement.style.visibility = 'hidden';
+            window.location.replace('admin.html');
+        }
+    });
 })();
+
+document.addEventListener('click', event => {
+    const target = event.target instanceof Element ? event.target.closest('a') : null;
+    if (!target) return;
+    const label = (target.textContent || '').trim().toLowerCase();
+    if (!label.includes('sign out') && target.getAttribute('title') !== 'Logout') return;
+
+    ['admin_logged_in', 'staff_logged_in', 'dealer_logged_in', 'staff_user_id', 'staff_username',
+        'staff_name', 'staff_role', 'staff_department', 'staff_permissions', 'admin_role', 'admin_username']
+        .forEach(key => localStorage.removeItem(key));
+    sessionStorage.removeItem('gug_admin_auth_session');
+    sessionStorage.removeItem('gug_staff_auth_session');
+    localStorage.setItem('gug_has_logged_out', 'true');
+}, true);
 
 // Initialize Data
 let lsRepairs = JSON.parse(localStorage.getItem('admin_repair_requests')) || [];
@@ -2916,8 +2938,5 @@ document.addEventListener('DOMContentLoaded', () => {
         window.renderSalesBanners();
     }
 });
-
-
-
 
 

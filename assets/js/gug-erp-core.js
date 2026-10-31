@@ -1523,9 +1523,10 @@
             localStorage.removeItem('staff_role');
             localStorage.removeItem('staff_permissions');
             localStorage.removeItem('staff_department');
+            sessionStorage.removeItem('gug_staff_auth_session');
             // Retain admin session if present so Super Admin testing remains seamless
 
-            window.location.href = 'staff-login.html';
+            window.location.href = 'admin.html';
         }
 
         normalizePhoneNumber(raw) {
@@ -4224,6 +4225,9 @@
                 basicSalary: Number(empData.basicSalary || empData.salary || 65000),
                 allowance: Number(empData.allowance !== undefined ? empData.allowance : (previous ? previous.allowance : 0)),
                 deductions: Number(empData.deductions !== undefined ? empData.deductions : (previous ? previous.deductions : 0)),
+                salaryPayments: Array.isArray(empData.salaryPayments)
+                    ? empData.salaryPayments
+                    : (previous && Array.isArray(previous.salaryPayments) ? previous.salaryPayments : []),
                 status: empData.status || (previous ? previous.status : 'Active'),
                 username: cleanUser,
                 password: plainPassword,
@@ -5267,13 +5271,15 @@
                 shopName: dealer.shopName,
                 date: entryData.date || paymentDetails.transactionAt || new Date().toISOString(),
                 type: entryData.type || 'STOCK_ISSUED', // 'STOCK_ISSUED', 'STOCK_RETURNED', 'PAYMENT_RECEIVED', 'ADVANCE_PAYMENT', 'ADJUSTMENT'
-                referenceNo: entryData.referenceNo || 'REF-' + Math.floor(1000 + Math.random() * 9000),
+                referenceNo: entryData.referenceNo || (isPayment ? '' : 'REF-' + Math.floor(1000 + Math.random() * 9000)),
                 description: entryData.description || (isStockIssue ? 'B2B Wholesale Stock Dispatch' : 'Payment Received'),
                 items: Array.isArray(entryData.items) ? entryData.items : [],
                 debit: debit,
                 credit: credit,
                 paymentMethod: paymentDetails.paymentMethod || entryData.paymentMethod || (isStockIssue ? 'Credit Invoice' : 'Bank Transfer'),
                 bankNetwork: paymentDetails.bankNetwork || '',
+                chequeNumber: paymentDetails.chequeNumber || '',
+                bankAccountNumber: paymentDetails.bankAccountNumber || '',
                 transactionReference: paymentDetails.transactionReference || '',
                 paidAmount: Number(paymentDetails.paidAmount || (isPayment ? credit : 0)),
                 balanceAmount: Number(paymentDetails.balanceAmount || 0),
@@ -5668,6 +5674,16 @@
             `;
         }
 
+        signOut() {
+            ['admin_logged_in', 'staff_logged_in', 'dealer_logged_in', 'staff_user_id', 'staff_username',
+                'staff_name', 'staff_role', 'staff_department', 'staff_permissions', 'admin_role', 'admin_username']
+                .forEach(key => localStorage.removeItem(key));
+            sessionStorage.removeItem('gug_admin_auth_session');
+            sessionStorage.removeItem('gug_staff_auth_session');
+            localStorage.setItem('gug_has_logged_out', 'true');
+            window.location.href = 'admin.html';
+        }
+
         renderGlobalHeader(containerId, activeTitle = 'Enterprise ERP', extraBadgeHtml = '') {
             const el = document.getElementById(containerId);
             if (!el) return;
@@ -5688,7 +5704,7 @@
                             <i class="fas fa-print"></i>
                         </button>
                         <a href="index.html" target="_blank" class="btn btn-outline-secondary btn-sm py-1 px-2" title="Storefront"><i class="fas fa-store"></i></a>
-                        <a href="admin.html" class="btn btn-outline-danger btn-sm py-1 px-2" title="Logout" onclick="localStorage.removeItem('admin_logged_in');"><i class="fas fa-sign-out-alt"></i></a>
+                        <a href="admin.html" class="btn btn-outline-danger btn-sm py-1 px-2" title="Logout" onclick="window.GUG_DB.signOut(); return false;"><i class="fas fa-sign-out-alt"></i></a>
                     </div>
                 </div>
 
@@ -5733,7 +5749,7 @@
                         </div>
 
                         <!-- User Profile / Logout -->
-                        <a href="admin.html" class="btn btn-outline-danger btn-sm" onclick="localStorage.removeItem('admin_logged_in');"><i class="fas fa-sign-out-alt"></i></a>
+                        <a href="admin.html" class="btn btn-outline-danger btn-sm" onclick="window.GUG_DB.signOut(); return false;"><i class="fas fa-sign-out-alt"></i></a>
                     </div>
                 </div>
             `;
@@ -6306,9 +6322,11 @@
                         ...entry,
                         amount: Number(entry.credit || 0),
                         paymentMethod: entry.paymentMethod,
-                        transactionReference: entry.transactionReference || entry.referenceNo,
+                        transactionReference: entry.transactionReference || '',
                         balanceAfter: entry.runningBalance,
-                        bankNetwork: entry.bankNetwork
+                        bankNetwork: entry.bankNetwork,
+                        chequeNumber: entry.chequeNumber,
+                        bankAccountNumber: entry.bankAccountNumber
                     }))
                 : [];
             const payments = ledgerPayments.length
@@ -6402,6 +6420,7 @@
                     const paymentDateLabel = validPaymentDate.toLocaleDateString('en-PK');
                     const paymentDayLabel = p.day || dayNames[validPaymentDate.getDay()];
                     const paymentTimeLabel = p.time || validPaymentDate.toLocaleTimeString('en-PK', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+                    const paymentReference = p.transactionReference || p.reference || p.paymentReference || '';
 
                     return `
                         <div class="dealer-ledger-box dealer-transaction-card payment-schedule-card" style="border: 1px solid #000000 !important; border-radius: 3px; padding: 3px 5px !important; margin-bottom: 3px !important; background: #ffffff !important; background-color: #ffffff !important; box-shadow: none !important; page-break-inside: avoid !important; break-inside: avoid !important;">
@@ -6418,7 +6437,7 @@
                             <div class="payment-method-reference" style="font-size: 7.5pt; line-height: 1.3; border-bottom: 1px dotted #cccccc !important; padding: 2px 0; margin-bottom: 2px;">
                                 <strong>PAYMENT METHOD:</strong> ${p.paymentMethod || p.method || p.notes || 'Not recorded'}
                                 ${p.bankNetwork ? ` &bull; <strong>BANK / NETWORK:</strong> ${p.bankNetwork}` : ''}
-                                <br><strong>REFERENCE NUMBER:</strong> ${p.transactionReference || p.reference || p.id || '—'}
+                                ${paymentReference ? `<br><strong>REFERENCE NUMBER:</strong> ${paymentReference}` : ''}
                             </div>
                             <!-- Row 3: Total Amount (Debit) -->
                             <div class="card-row-3" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dotted #cccccc !important; padding-bottom: 2px !important; margin-bottom: 2px !important; font-size: 7.5pt;">
@@ -6654,13 +6673,20 @@
 
                 const header = slip.querySelector('.gug-slip-brand-header');
                 if (header) {
-                    header.style.setProperty('background', '#102a43', 'important');
-                    header.style.setProperty('color', '#ffffff', 'important');
-                    header.style.setProperty('border-bottom', '4px solid #dc2626', 'important');
-                    header.style.setProperty('padding', '8px 10px', 'important');
+                    header.style.setProperty('background', 'transparent', 'important');
+                    header.style.setProperty('background-color', 'transparent', 'important');
+                    header.style.setProperty('color', '#000000', 'important');
+                    header.style.setProperty('border', '0', 'important');
+                    header.style.setProperty('padding', '0 0 3px', 'important');
                     header.querySelectorAll('*').forEach(element => {
-                        element.style.setProperty('color', '#ffffff', 'important');
+                        element.style.setProperty('color', '#000000', 'important');
                     });
+                    const logo = header.querySelector('.gug-print-logo-img');
+                    if (logo) {
+                        logo.style.setProperty('background', 'transparent', 'important');
+                        logo.style.setProperty('border', '0', 'important');
+                        logo.style.setProperty('box-shadow', 'none', 'important');
+                    }
                 }
 
                 applyPanel('.gug-slip-meta-bar', '#eaf2ff', '#93c5fd');
