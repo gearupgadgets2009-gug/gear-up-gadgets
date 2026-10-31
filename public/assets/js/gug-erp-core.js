@@ -6465,7 +6465,7 @@
                     </div>
 
                     <!-- Slip Meta Bar -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; background: #ffffff !important; background-color: #ffffff !important; padding: 2px 6px !important; border-top: 1px solid #000000 !important; border-bottom: 1px solid #000000 !important; margin-bottom: 4px !important; font-size: 7.5pt; line-height: 1.15; color: #000000 !important;">
+                    <div class="gug-slip-meta-bar" style="display: flex; justify-content: space-between; align-items: center; background: #ffffff !important; background-color: #ffffff !important; padding: 2px 6px !important; border-top: 1px solid #000000 !important; border-bottom: 1px solid #000000 !important; margin-bottom: 4px !important; font-size: 7.5pt; line-height: 1.15; color: #000000 !important;">
                         <div><strong style="color: #000000 !important;">DOCUMENT:</strong> <span style="font-weight: 800 !important; color: #dc2626 !important; text-transform: uppercase;">DEALER SLIP</span></div>
                         <div><strong style="color: #000000 !important;">REF #:</strong> <code class="order-id" style="color: #dc2626 !important; font-weight: 700 !important; background: #ffffff !important; border: 1px solid #000000 !important; padding: 0 3px; border-radius: 2px; font-size: 7.5pt;">${refCode}</code></div>
                         <div><strong style="color: #000000 !important;">DATE:</strong> <span style="color: #000000 !important;">${dateFormatted} ${timeFormatted}</span></div>
@@ -6630,11 +6630,63 @@
             return { success: true, count: employees.length, mode: 'batch_employees' };
         }
 
-        applyDealerSlipTextColor(printContainer) {
+        applyDealerSlipTheme(printContainer) {
             if (!printContainer) return;
-            printContainer.style.setProperty('color', '#000000', 'important');
-            printContainer.querySelectorAll('*').forEach(element => {
-                element.style.setProperty('color', '#000000', 'important');
+            printContainer.querySelectorAll('.gug-individual-slip').forEach(slip => {
+                slip.style.setProperty('color', '#000000', 'important');
+                slip.style.setProperty('background', '#ffffff', 'important');
+                slip.style.setProperty('border', '1px solid #cbd5e1', 'important');
+                slip.style.setProperty('padding', '12px 16px', 'important');
+                slip.style.setProperty('page-break-inside', 'auto', 'important');
+                slip.style.setProperty('break-inside', 'auto', 'important');
+
+                slip.querySelectorAll('*').forEach(element => {
+                    element.style.setProperty('color', '#000000', 'important');
+                });
+
+                const applyPanel = (selector, background, border) => {
+                    slip.querySelectorAll(selector).forEach(element => {
+                        element.style.setProperty('background', background, 'important');
+                        element.style.setProperty('color', '#000000', 'important');
+                        if (border) element.style.setProperty('border-color', border, 'important');
+                    });
+                };
+
+                const header = slip.querySelector('.gug-slip-brand-header');
+                if (header) {
+                    header.style.setProperty('background', '#102a43', 'important');
+                    header.style.setProperty('color', '#ffffff', 'important');
+                    header.style.setProperty('border-bottom', '4px solid #dc2626', 'important');
+                    header.style.setProperty('padding', '8px 10px', 'important');
+                    header.querySelectorAll('*').forEach(element => {
+                        element.style.setProperty('color', '#ffffff', 'important');
+                    });
+                }
+
+                applyPanel('.gug-slip-meta-bar', '#eaf2ff', '#93c5fd');
+                applyPanel('.dealer-overview-section', '#f1f5f9', '#cbd5e1');
+                applyPanel('.dealer-ledger-section', '#fff7ed', '#fdba74');
+                applyPanel('.payment-schedule-card', '#f8fafc', '#94a3b8');
+                applyPanel('.payment-schedule-card .card-row-1', '#dbeafe');
+                applyPanel('.payment-schedule-card .card-row-4 > div:first-child', '#dcfce7', '#86efac');
+                applyPanel('.payment-schedule-card .card-row-4 > div:last-child', '#fef3c7', '#fcd34d');
+                applyPanel('.dealer-ledger-summary-bar', '#e0f2fe', '#7dd3fc');
+                slip.querySelectorAll('.dealer-overview-section .badge').forEach(badge => {
+                    const isClear = badge.textContent.toLowerCase().includes('clear');
+                    badge.style.setProperty('background', isClear ? '#dcfce7' : '#fee2e2', 'important');
+                    badge.style.setProperty('border-color', isClear ? '#86efac' : '#fca5a5', 'important');
+                    badge.style.setProperty('color', '#000000', 'important');
+                });
+                slip.querySelectorAll('.dealer-ledger-section').forEach(section => {
+                    section.style.setProperty('page-break-inside', 'auto', 'important');
+                    section.style.setProperty('break-inside', 'auto', 'important');
+                });
+
+                slip.querySelectorAll('.payment-schedule-card').forEach(card => {
+                    card.style.setProperty('border-left', '3px solid #dc2626', 'important');
+                    card.style.setProperty('padding', '6px 8px', 'important');
+                    card.style.setProperty('margin-bottom', '6px', 'important');
+                });
             });
         }
 
@@ -6660,7 +6712,7 @@
             }).join('');
 
             printContainer.innerHTML = slipsHtml;
-            this.applyDealerSlipTextColor(printContainer);
+            this.applyDealerSlipTheme(printContainer);
 
             document.body.classList.add('gug-individual-print-active');
             setTimeout(() => {
@@ -6775,7 +6827,7 @@
             }
 
             printContainer.innerHTML = this.generateSingleDealerSlipHtml(d, summary, currentUser, true);
-            this.applyDealerSlipTextColor(printContainer);
+            this.applyDealerSlipTheme(printContainer);
 
             document.body.classList.add('gug-individual-print-active');
             setTimeout(() => {

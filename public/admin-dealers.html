@@ -45,11 +45,6 @@
         .dealer-badge-due { background-color: #fef2f2; color: #dc2626; border: 1px solid #fecaca; font-weight: 700; }
         .dealer-badge-surplus { background-color: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; font-weight: 700; }
         .dealer-badge-clear { background-color: #f8fafc; color: #475569; border: 1px solid #e2e8f0; font-weight: 600; }
-        #printable-statement-canvas,
-        #printable-statement-canvas *,
-        #gug-individual-print-container,
-        #gug-individual-print-container * { color: #000000 !important; }
-
         @media print {
             body {
                 background: #ffffff !important;
@@ -232,6 +227,65 @@
 
             .card-row-5 {
                 display: none !important;
+            }
+
+            #gug-individual-print-container,
+            #gug-individual-print-container * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .gug-individual-slip {
+                color: #000000 !important;
+                background: #ffffff !important;
+                border: 1px solid #cbd5e1 !important;
+            }
+
+            .gug-slip-brand-header {
+                background: #102a43 !important;
+                color: #ffffff !important;
+                border-bottom: 4px solid #dc2626 !important;
+            }
+
+            .gug-slip-meta-bar {
+                background: #eaf2ff !important;
+                color: #000000 !important;
+            }
+
+            .dealer-overview-section {
+                background: #f1f5f9 !important;
+                color: #000000 !important;
+            }
+
+            .dealer-ledger-section {
+                background: #fff7ed !important;
+                color: #000000 !important;
+            }
+
+            .payment-schedule-card {
+                background: #f8fafc !important;
+                color: #000000 !important;
+                border-color: #94a3b8 !important;
+            }
+
+            .payment-schedule-card .card-row-1 {
+                background: #dbeafe !important;
+                color: #000000 !important;
+            }
+
+            .payment-schedule-card .card-row-4 > div:first-child {
+                background: #dcfce7 !important;
+                color: #000000 !important;
+            }
+
+            .payment-schedule-card .card-row-4 > div:last-child {
+                background: #fef3c7 !important;
+                color: #000000 !important;
+            }
+
+            .dealer-ledger-summary-bar {
+                background: #e0f2fe !important;
+                color: #000000 !important;
             }
         }
 
