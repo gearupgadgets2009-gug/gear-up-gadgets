@@ -229,22 +229,38 @@
     <script>
         (function() {
             try {
+                document.documentElement.style.visibility = 'hidden';
                 const urlParams = new URLSearchParams(window.location.search);
                 const requestedEmp = urlParams.get('emp') || urlParams.get('id') || urlParams.get('staff_id') || urlParams.get('user');
-                const hasAdminSession = localStorage.getItem('admin_logged_in') === 'true' &&
+                const hasAdminSession = () => localStorage.getItem('admin_logged_in') === 'true' &&
                     sessionStorage.getItem('gug_admin_auth_session') === 'authenticated';
-                const hasStaffSession = localStorage.getItem('staff_logged_in') === 'true' &&
+                const hasStaffSession = () => localStorage.getItem('staff_logged_in') === 'true' &&
                     sessionStorage.getItem('gug_staff_auth_session') === 'authenticated';
-                if (!hasAdminSession && !hasStaffSession) {
-                    window.location.replace('admin.html');
+                const redirectToLogin = () => {
+                    document.documentElement.style.visibility = 'hidden';
+                    window.location.replace('staff-login.html');
+                };
+                if (!hasAdminSession() && !hasStaffSession()) {
+                    window.location.replace('staff-login.html');
                     return;
                 }
-                if (requestedEmp && hasAdminSession) {
+                if (requestedEmp && hasAdminSession()) {
                     localStorage.setItem('staff_logged_in', 'true');
                     localStorage.setItem('staff_user_id', requestedEmp);
                     sessionStorage.setItem('gug_staff_auth_session', 'authenticated');
                 }
-            } catch(e) {}
+                document.documentElement.style.visibility = '';
+                window.addEventListener('pageshow', () => {
+                    if (!hasAdminSession() && !hasStaffSession()) redirectToLogin();
+                });
+                window.addEventListener('storage', (event) => {
+                    if (event.key === 'staff_logged_in' || event.key === 'admin_logged_in') {
+                        if (!hasAdminSession() && !hasStaffSession()) redirectToLogin();
+                    }
+                });
+            } catch(e) {
+                window.location.replace('staff-login.html');
+            }
         })();
     </script>
 
@@ -421,7 +437,7 @@
             if (!emp) {
                 localStorage.removeItem('staff_logged_in');
                 sessionStorage.removeItem('gug_staff_auth_session');
-                window.location.replace('admin.html');
+                window.location.replace('staff-login.html');
                 return null;
             }
 

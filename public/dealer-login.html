@@ -140,8 +140,9 @@
         }
 
     document.addEventListener('DOMContentLoaded', () => {
-        // Auto-redirect if already logged in as dealer
-        if (localStorage.getItem('dealer_logged_in') === 'true') {
+        // Only reuse a dealer session established in this tab.
+        if (localStorage.getItem('dealer_logged_in') === 'true' &&
+            sessionStorage.getItem('gug_dealer_auth_session') === 'authenticated') {
             window.location.href = 'dealer-portal.html';
             return;
         }
@@ -165,6 +166,7 @@
                 localStorage.setItem('dealer_username', dealer.username);
                 localStorage.setItem('dealer_name', dealer.name);
                 localStorage.setItem('dealer_shop', dealer.shopName);
+                sessionStorage.setItem('gug_dealer_auth_session', 'authenticated');
 
                 // Isolate: Remove admin session to prevent crossover
                 localStorage.removeItem('admin_logged_in');
@@ -172,6 +174,8 @@
                 localStorage.removeItem('admin_role');
                 localStorage.removeItem('admin_permissions');
                 localStorage.removeItem('staff_logged_in');
+                sessionStorage.removeItem('gug_admin_auth_session');
+                sessionStorage.removeItem('gug_staff_auth_session');
 
                 window.GUG_DB.logAudit({
                     action: 'DEALER_PORTAL_LOGIN_SUCCESS',
@@ -203,6 +207,5 @@
 </script>
 </body>
 </html>
-
 
 

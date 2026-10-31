@@ -299,10 +299,28 @@
         (function() {
             const urlParams = new URLSearchParams(window.location.search);
             const queryDealerId = urlParams.get('dealerId') || urlParams.get('id');
-            const isDealer = localStorage.getItem('dealer_logged_in') === 'true';
-            if (!isDealer && !queryDealerId) {
-                window.location.href = 'dealer-login.html';
+            const sessionDealerId = localStorage.getItem('dealer_id');
+            const hasDealerSession = () => localStorage.getItem('dealer_logged_in') === 'true' &&
+                sessionStorage.getItem('gug_dealer_auth_session') === 'authenticated' &&
+                Boolean(sessionDealerId) &&
+                localStorage.getItem('dealer_id') === sessionDealerId;
+            const redirectToLogin = () => {
+                document.documentElement.style.visibility = 'hidden';
+                window.location.replace('dealer-login.html');
+            };
+            if (!hasDealerSession() || (queryDealerId && queryDealerId !== sessionDealerId)) {
+                redirectToLogin();
+                return;
             }
+            document.documentElement.style.visibility = '';
+            window.addEventListener('pageshow', () => {
+                if (!hasDealerSession()) redirectToLogin();
+            });
+            window.addEventListener('storage', (event) => {
+                if (event.key === 'dealer_logged_in' || event.key === 'dealer_id') {
+                    if (!hasDealerSession()) redirectToLogin();
+                }
+            });
         })();
     </script>
 
@@ -733,10 +751,14 @@
                 ? window.GUG_DB.getDealerSession() 
                 : null;
             
-            const targetDealerId = queryDealerId || (sessionDealer ? sessionDealer.id : (localStorage.getItem('dealer_id') || localStorage.getItem('dealer_username')));
+            const targetDealerId = localStorage.getItem('dealer_id');
 
-            if (!targetDealerId) {
-                window.location.href = 'dealer-login.html';
+            if (!targetDealerId ||
+                localStorage.getItem('dealer_logged_in') !== 'true' ||
+                sessionStorage.getItem('gug_dealer_auth_session') !== 'authenticated' ||
+                (queryDealerId && queryDealerId !== targetDealerId)) {
+                document.documentElement.style.visibility = 'hidden';
+                window.location.replace('dealer-login.html');
                 return;
             }
 
@@ -1344,6 +1366,3 @@
     </script>
 </body>
 </html>
-
-
-

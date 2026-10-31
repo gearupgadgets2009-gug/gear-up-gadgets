@@ -1526,7 +1526,7 @@
             sessionStorage.removeItem('gug_staff_auth_session');
             // Retain admin session if present so Super Admin testing remains seamless
 
-            window.location.href = 'admin.html';
+            window.location.replace('staff-login.html');
         }
 
         normalizePhoneNumber(raw) {
@@ -2076,14 +2076,17 @@
 
             // Allow login pages and employee portal to manage their own view
             if (path === 'admin.html' || path === 'staff-login.html' || path === 'employee-portal.html' || path === 'dealer-login.html' || path === 'dealer-portal.html') {
-                if (path === 'dealer-portal.html' && localStorage.getItem('dealer_logged_in') !== 'true') {
-                    window.location.href = 'dealer-login.html';
+                if (path === 'dealer-portal.html' &&
+                    (localStorage.getItem('dealer_logged_in') !== 'true' ||
+                    sessionStorage.getItem('gug_dealer_auth_session') !== 'authenticated')) {
+                    window.location.replace('dealer-login.html');
                 }
                 return;
             }
 
             // 0. Strict Dealer Isolation Check: Dealer sessions cannot access Master Admin Panel or Staff routes
-            const isDealerSession = localStorage.getItem('dealer_logged_in') === 'true';
+            const isDealerSession = localStorage.getItem('dealer_logged_in') === 'true' &&
+                sessionStorage.getItem('gug_dealer_auth_session') === 'authenticated';
             if (isDealerSession && localStorage.getItem('admin_logged_in') !== 'true' && localStorage.getItem('staff_logged_in') !== 'true') {
                 window.location.href = 'dealer-portal.html';
                 return;
@@ -5210,7 +5213,8 @@
         }
 
         getDealerSession() {
-            const isDealer = localStorage.getItem('dealer_logged_in') === 'true';
+            const isDealer = localStorage.getItem('dealer_logged_in') === 'true' &&
+                sessionStorage.getItem('gug_dealer_auth_session') === 'authenticated';
             if (!isDealer) return null;
 
             const dealerId = localStorage.getItem('dealer_id');
@@ -5238,8 +5242,9 @@
             localStorage.removeItem('dealer_username');
             localStorage.removeItem('dealer_name');
             localStorage.removeItem('dealer_shop');
+            sessionStorage.removeItem('gug_dealer_auth_session');
 
-            window.location.href = 'dealer-login.html';
+            window.location.replace('dealer-login.html');
         }
 
         // --- Dealer Ledger Operations ---
@@ -5675,11 +5680,13 @@
         }
 
         signOut() {
-            ['admin_logged_in', 'staff_logged_in', 'dealer_logged_in', 'staff_user_id', 'staff_username',
+            ['admin_logged_in', 'staff_logged_in', 'dealer_logged_in', 'dealer_id', 'dealer_username',
+                'dealer_name', 'dealer_shop', 'staff_user_id', 'staff_username',
                 'staff_name', 'staff_role', 'staff_department', 'staff_permissions', 'admin_role', 'admin_username']
                 .forEach(key => localStorage.removeItem(key));
             sessionStorage.removeItem('gug_admin_auth_session');
             sessionStorage.removeItem('gug_staff_auth_session');
+            sessionStorage.removeItem('gug_dealer_auth_session');
             localStorage.setItem('gug_has_logged_out', 'true');
             window.location.href = 'admin.html';
         }

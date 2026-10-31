@@ -149,12 +149,14 @@
             }
         }
 
-        // Auto-redirect if already logged in as staff
-        if (localStorage.getItem('staff_logged_in') === 'true') {
+        // Only reuse a staff session established in this tab.
+        if (localStorage.getItem('staff_logged_in') === 'true' &&
+            sessionStorage.getItem('gug_staff_auth_session') === 'authenticated') {
             const currentStaffId = localStorage.getItem('staff_user_id');
             if (window.GUG_DB && window.GUG_DB.isEmployeeSuspended && window.GUG_DB.isEmployeeSuspended(currentStaffId)) {
                 localStorage.removeItem('staff_logged_in');
                 localStorage.removeItem('staff_user_id');
+                sessionStorage.removeItem('gug_staff_auth_session');
                 if (errorBox) {
                     errorBox.innerHTML = '<i class="fas fa-ban me-1"></i> <strong>ACCOUNT SUSPENDED:</strong> Your employee ID is currently paused by Administrator.';
                     errorBox.style.display = 'block';
@@ -186,6 +188,8 @@
                 localStorage.setItem('staff_role', emp.role);
                 localStorage.setItem('staff_department', emp.department || 'Operations');
                 localStorage.setItem('staff_permissions', JSON.stringify(permissions));
+                sessionStorage.setItem('gug_staff_auth_session', 'authenticated');
+                sessionStorage.removeItem('gug_dealer_auth_session');
 
                 // Record real-time login activity in HR module
                 if (window.GUG_DB && typeof window.GUG_DB.recordEmployeeLogin === 'function') {
@@ -229,6 +233,4 @@
 </script>
 </body>
 </html>
-
-
 

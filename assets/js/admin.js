@@ -12,7 +12,8 @@
         sessionStorage.getItem('gug_admin_auth_session') === 'authenticated';
     const isStaff = localStorage.getItem('staff_logged_in') === 'true' &&
         sessionStorage.getItem('gug_staff_auth_session') === 'authenticated';
-    const isDealer = localStorage.getItem('dealer_logged_in') === 'true';
+    const isDealer = localStorage.getItem('dealer_logged_in') === 'true' &&
+        sessionStorage.getItem('gug_dealer_auth_session') === 'authenticated';
     
     if (isDealer && !isAdmin) {
         window.location.href = 'dealer-portal.html';
@@ -38,11 +39,13 @@ document.addEventListener('click', event => {
     const label = (target.textContent || '').trim().toLowerCase();
     if (!label.includes('sign out') && target.getAttribute('title') !== 'Logout') return;
 
-    ['admin_logged_in', 'staff_logged_in', 'dealer_logged_in', 'staff_user_id', 'staff_username',
+    ['admin_logged_in', 'staff_logged_in', 'dealer_logged_in', 'dealer_id', 'dealer_username',
+        'dealer_name', 'dealer_shop', 'staff_user_id', 'staff_username',
         'staff_name', 'staff_role', 'staff_department', 'staff_permissions', 'admin_role', 'admin_username']
         .forEach(key => localStorage.removeItem(key));
     sessionStorage.removeItem('gug_admin_auth_session');
     sessionStorage.removeItem('gug_staff_auth_session');
+    sessionStorage.removeItem('gug_dealer_auth_session');
     localStorage.setItem('gug_has_logged_out', 'true');
 }, true);
 
@@ -2938,5 +2941,4 @@ document.addEventListener('DOMContentLoaded', () => {
         window.renderSalesBanners();
     }
 });
-
 

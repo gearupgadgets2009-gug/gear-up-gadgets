@@ -1510,6 +1510,9 @@
 
             const employee = result.employee;
             const isAdmin = String(employee.role || '').toLowerCase() === 'super admin';
+            ['dealer_logged_in', 'dealer_id', 'dealer_username', 'dealer_name', 'dealer_shop']
+                .forEach(key => localStorage.removeItem(key));
+            sessionStorage.removeItem('gug_dealer_auth_session');
             localStorage.setItem('gug_has_logged_out', 'false');
             localStorage.setItem('admin_username', employee.username || username);
             localStorage.setItem('admin_role', employee.role || 'Staff');
@@ -1542,10 +1545,12 @@
         function promptAdminSignOut() {
             if (!confirm('Sign out from GearUp ERP Master Portal?')) return;
             ['admin_logged_in', 'staff_logged_in', 'staff_user_id', 'staff_username', 'staff_name',
-                'staff_role', 'staff_department', 'staff_permissions', 'admin_role', 'admin_username']
+                'staff_role', 'staff_department', 'staff_permissions', 'admin_role', 'admin_username',
+                'dealer_logged_in', 'dealer_id', 'dealer_username', 'dealer_name', 'dealer_shop']
                 .forEach(key => localStorage.removeItem(key));
             sessionStorage.removeItem('gug_admin_auth_session');
             sessionStorage.removeItem('gug_staff_auth_session');
+            sessionStorage.removeItem('gug_dealer_auth_session');
             localStorage.setItem('gug_has_logged_out', 'true');
             document.body.classList.remove('admin-authenticated');
             document.getElementById('login-container').style.display = 'flex';
