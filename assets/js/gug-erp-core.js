@@ -1178,7 +1178,7 @@
                                     day: 'Thursday',
                                     time: '10:15:00 AM',
                                     balanceAfter: 1000000,
-                                    notes: '1st Installment Bank PayOrder'
+                                    notes: '1st Payment Bank PayOrder'
                                 },
                                 {
                                     id: 'PAY-102-2',
@@ -5057,17 +5057,17 @@
             }
 
             const balanceAfter = Math.max(0, prevBalance - amount);
-            const installmentNo = dealer.paymentHistory.length + 1;
+            const paymentNo = dealer.paymentHistory.length + 1;
 
             const paymentEntry = {
                 id: paymentData.id || ('PAY-' + dealer.id + '-' + Date.now().toString().slice(-4)),
-                installmentNo: installmentNo,
+                installmentNo: paymentNo,
                 amount: amount,
                 date: paymentData.date || currentDate,
                 day: paymentData.day || currentDay,
                 time: paymentData.time || currentTime,
                 balanceAfter: balanceAfter,
-                notes: paymentData.notes || `Installment #${installmentNo}`
+                notes: paymentData.notes || `${paymentNo}${paymentNo % 100 >= 11 && paymentNo % 100 <= 13 ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' }[paymentNo % 10] || 'th')} Payment`
             };
 
             dealer.paymentHistory.push(paymentEntry);
@@ -5085,7 +5085,7 @@
                 entityId: dealer.id,
                 previousValue: `Balance: Rs. ${prevBalance.toLocaleString()}`,
                 newValue: `Paid: Rs. ${amount.toLocaleString()} &bull; Balance After: Rs. ${balanceAfter.toLocaleString()} &bull; Status: ${dealer.isAmountClear ? 'AMOUNT CLEAR' : 'PENDING'}`,
-                reason: `Installment #${installmentNo} logged for dealer ${dealer.name}`
+                reason: `Payment ${paymentNo} logged for dealer ${dealer.name}`
             });
 
             return { success: true, payment: paymentEntry, dealer: dealer };
@@ -6352,7 +6352,7 @@
             const isAmountClear = Boolean(d.isAmountClear !== undefined ? d.isAmountClear : (totalAmount > 0 ? balanceAmount <= 0 : true));
 
             // Ordinal payment schedule naming helper (1 -> 1st Payment Schedule, 2 -> 2nd Payment Schedule, etc.)
-            const getInstallmentTitle = (index) => {
+            const getPaymentScheduleTitle = (index) => {
                 const s = ['th', 'st', 'nd', 'rd'];
                 const v = (index + 1) % 100;
                 return (index + 1) + (s[(v - 20) % 10] || s[v] || s[0]) + ' Payment Schedule';
@@ -6422,18 +6422,29 @@
                     const amt = Number(p.amount || 0);
                     runningBalance = Math.max(0, runningBalance - amt);
                     const balAfter = (p.balanceAfter !== undefined) ? Number(p.balanceAfter) : runningBalance;
-                    const installmentTitle = getInstallmentTitle(idx);
+                    const paymentScheduleTitle = getPaymentScheduleTitle(idx);
                     const validPaymentDate = p.date ? parsePaymentDate(p.date) : now;
                     const paymentDateLabel = validPaymentDate.toLocaleDateString('en-PK');
                     const paymentDayLabel = p.day || dayNames[validPaymentDate.getDay()];
                     const paymentTimeLabel = p.time || validPaymentDate.toLocaleTimeString('en-PK', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
                     const paymentReference = p.transactionReference || p.reference || p.paymentReference || '';
+                    const paymentNote = String(p.notes || '')
+                        .replace(/\bInstallment\s*#?\s*(\d+)\b/gi, (_, number) =>
+                            getPaymentScheduleTitle(Number(number) - 1).replace(' Payment Schedule', ' Payment'))
+                        .replace(/\b(\d+)(st|nd|rd|th)\s+Installment\b/gi, (_, number, suffix) => `${number}${suffix} Payment`)
+                        .replace(/\bFinal\s+Installment\b/gi, getPaymentScheduleTitle(idx).replace(' Payment Schedule', ' Payment'))
+                        .replace(/\bInstallments?\b/gi, 'Payment')
+                        .replace(/^\d+(st|nd|rd|th)\s+Payment(?:\s*[-:]\s*|\s*)/i, '')
+                        .trim();
+                    const paymentMode = p.paymentMethod || p.method ||
+                        (/^\d+(st|nd|rd|th) Payment$/i.test(paymentNote) ? '' : paymentNote) ||
+                        'Not recorded';
 
                     return `
                         <div class="dealer-ledger-box dealer-transaction-card payment-schedule-card" style="border: 1px solid #000000 !important; border-radius: 3px; padding: 3px 5px !important; margin-bottom: 3px !important; background: #ffffff !important; background-color: #ffffff !important; box-shadow: none !important; page-break-inside: avoid !important; break-inside: avoid !important;">
                             <!-- Row 1: Payment Schedule Title (Single, Full-Width, Left-Aligned Ordinal Header) -->
                             <div class="card-row-1" style="display: block; width: 100%; text-align: left; border-bottom: 1px solid #000000 !important; padding-bottom: 2px !important; margin-bottom: 2px !important;">
-                                <strong class="dealer-label payment-schedule-title" style="font-size: 8pt; font-weight: 800 !important; color: #000000 !important; text-transform: uppercase; display: block; text-align: left;">${installmentTitle}</strong>
+                                <strong class="dealer-label payment-schedule-title" style="font-size: 8pt; font-weight: 800 !important; color: #000000 !important; text-transform: uppercase; display: block; text-align: left;">${paymentScheduleTitle}</strong>
                             </div>
                             <!-- Row 2: Date, Day, Time -->
                             <div class="card-row-2" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; border-bottom: 1px dotted #cccccc !important; padding-bottom: 2px !important; margin-bottom: 2px !important; font-size: 7.5pt; line-height: 1.2;">
@@ -6442,7 +6453,7 @@
                                 <div><strong class="dealer-label" style="color: #000000 !important;">TIME:</strong> <span style="color: #000000 !important;">${paymentTimeLabel}</span></div>
                             </div>
                             <div class="payment-method-reference" style="font-size: 7.5pt; line-height: 1.3; border-bottom: 1px dotted #cccccc !important; padding: 2px 0; margin-bottom: 2px;">
-                                <strong>PAYMENT METHOD:</strong> ${p.paymentMethod || p.method || p.notes || 'Not recorded'}
+                                <strong>PAYMENT METHOD:</strong> ${paymentMode}
                                 ${p.bankNetwork ? ` &bull; <strong>BANK / NETWORK:</strong> ${p.bankNetwork}` : ''}
                                 ${paymentReference ? `<br><strong>REFERENCE NUMBER:</strong> ${paymentReference}` : ''}
                             </div>

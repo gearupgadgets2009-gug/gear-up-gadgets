@@ -432,8 +432,8 @@
                 }
                 log(`[TEST 17 PASSED] Print Slip Layout verified: Row-wise order boxes, formal invoice tabular grid with exact headers (S.No., Product Details, Product Price, Qty, Total), 'Cash on Delivery' payment status, and natural page flow.`);
 
-                // 18. B2B Dealer Multi-Installment Payment Tracking System & Structured Dealer Slip
-                log("=== [TEST 18] Verifying B2B Dealer Multi-Installment Ledger & Print Slip ===");
+                // 18. B2B Dealer Multi-Payment Tracking System & Structured Dealer Slip
+                log("=== [TEST 18] Verifying B2B Dealer Multi-Payment Ledger & Print Slip ===");
                 // A. Verify Seed Dealer 102 has Amount Clear status
                 const dealersList = gugDb.getDealers();
                 const d102 = dealersList.find(d => d.id === 'DLR-102');
@@ -442,12 +442,12 @@
                     throw new Error("DLR-102 expected to have balance 0 and isAmountClear=true");
                 }
 
-                // B. Onboard new test dealer & test multi-installment addition
-                const testDlrId = 'DLR-TEST-INSTALLMENT';
+                // B. Onboard new test dealer & test multiple payment entries
+                const testDlrId = 'DLR-TEST-PAYMENTS';
                 const initDealAmt = 500000;
                 const newDlrRes = gugDb.saveDealer({
                     id: testDlrId,
-                    name: 'Test Installment Dealer',
+                    name: 'Test Payment Schedule Dealer',
                     shopName: 'Test Gadget Hub',
                     username: 'testinstall',
                     phone: '0300-9998877',
@@ -459,17 +459,17 @@
                 });
                 if (!newDlrRes || !newDlrRes.success) throw new Error("Failed to save test dealer");
 
-                // C. Record 1st Installment of 200,000
-                const pay1Res = gugDb.recordDealerPayment(testDlrId, { amount: 200000, notes: '1st Installment Bank Transfer' });
-                if (!pay1Res.success) throw new Error("Failed to record 1st installment payment");
+                // C. Record first payment of 200,000
+                const pay1Res = gugDb.recordDealerPayment(testDlrId, { amount: 200000, notes: '1st Payment Bank Transfer' });
+                if (!pay1Res.success) throw new Error("Failed to record first payment");
                 const pay1 = pay1Res.payment;
                 if (!pay1.date || !pay1.day || !pay1.time) throw new Error("Payment missing auto Date, Day, or Time");
                 if (pay1.balanceAfter !== 300000) throw new Error(`Expected balanceAfter 300000, got ${pay1.balanceAfter}`);
                 if (pay1Res.dealer.isAmountClear) throw new Error("Dealer should not be clear with 300000 remaining balance");
 
-                // D. Record 2nd Installment of 300,000 (clearing balance)
-                const pay2Res = gugDb.recordDealerPayment(testDlrId, { amount: 300000, notes: 'Final Installment Cheque' });
-                if (!pay2Res.success) throw new Error("Failed to record 2nd installment payment");
+                // D. Record second payment of 300,000 (clearing balance)
+                const pay2Res = gugDb.recordDealerPayment(testDlrId, { amount: 300000, notes: 'Final Payment Cheque' });
+                if (!pay2Res.success) throw new Error("Failed to record second payment");
                 const pay2 = pay2Res.payment;
                 if (pay2.balanceAfter !== 0) throw new Error(`Expected balanceAfter 0, got ${pay2.balanceAfter}`);
                 if (!pay2Res.dealer.isAmountClear) throw new Error("Dealer should have isAmountClear=true after paying in full");
@@ -576,9 +576,9 @@
                     }
                 });
 
-                // Check no occurrence of 'Installment' in card text
-                if (card1Text.includes('Installment') || card2Text.includes('Installment')) {
-                    throw new Error("Payment schedule card still contains the word 'Installment'; should be 'Payment Schedule'");
+                // Check no legacy payment-plan wording appears in rendered cards.
+                if (/installments?/i.test(card1Text) || /installments?/i.test(card2Text)) {
+                    throw new Error("Legacy payment-plan wording appeared in the rendered payment schedule.");
                 }
 
                 // Clean up test dealer
@@ -620,7 +620,7 @@
                     throw new Error("Zero payment card must not have .card-row-5");
                 }
 
-                log(`[TEST 18 PASSED] B2B Dealer Multi-Installment Payment Tracking System verified: Auto Date/Day/Time calculation, progressive balance calculation, 'Amount Clear' status trigger, and structured 'Dealer Slip' print layout with solid black borders.`);
+                log(`[TEST 18 PASSED] B2B Dealer Multi-Payment Tracking System verified: Auto Date/Day/Time calculation, progressive balance calculation, 'Amount Clear' status trigger, and structured 'Dealer Slip' print layout with solid black borders.`);
 
                 // === TEST 19: FRONTEND DEALER DASHBOARD & ADMIN LEDGER DATA SYNCHRONIZATION ===
                 log("=== [TEST 19] Verifying Frontend Dealer Dashboard & Admin Ledger Data Synchronization (ID: DLR-105) ===");
@@ -871,16 +871,16 @@
                     balanceAmount: 0,
                     isAmountClear: true,
                     paymentHistory: [
-                        { id: 'PAY-D1', amount: 300000, balanceAfter: 700000, notes: '1st Installment' },
-                        { id: 'PAY-D2', amount: 200000, balanceAfter: 500000, notes: '2nd Installment' },
+                        { id: 'PAY-D1', amount: 300000, balanceAfter: 700000, notes: '1st Payment' },
+                        { id: 'PAY-D2', amount: 200000, balanceAfter: 500000, notes: '2nd Payment' },
                         { id: 'PAY-D3', amount: 500000, balanceAfter: 0, notes: 'Final Payment (Clearing Account)' },
                         { id: 'PAY-D4', amount: 500000, balanceAfter: 0, notes: 'Duplicate Final Payment' } // Accidental duplicate
                     ]
                 };
 
                 // A. Verify gugDb.saveDealer cleanses duplicate zero balance payments
-                const saveRes = gugDb.saveDealer(testDlrDupe);
-                if (!saveRes.success) throw new Error("Failed to save testDlrDupe in DB");
+                const dealerSaveRes = gugDb.saveDealer(testDlrDupe);
+                if (!dealerSaveRes.success) throw new Error("Failed to save testDlrDupe in DB");
                 const savedDlr = gugDb.getDealerById('DLR-DUPE-TEST');
                 if (savedDlr.paymentHistory.length !== 3) {
                     throw new Error(`Expected exactly 3 payments in saved dealer (deduplicating 4th zero balance entry), but got ${savedDlr.paymentHistory.length}`);

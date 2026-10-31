@@ -1212,7 +1212,7 @@
                 return;
             }
 
-            // Case B: Map each payment/installment row with DATE, TRANSACTION DETAILS, TOTAL AMOUNT, PAID AMOUNT & BALANCE
+            // Case B: Map each payment row with DATE, TRANSACTION DETAILS, TOTAL AMOUNT, PAID AMOUNT & BALANCE
             let runningBalance = totalDealAmount;
             rowsTbody.innerHTML = cleanPayments.map((p, idx) => {
                 const schedTitle = getOrdinalScheduleTitle(idx);
@@ -1226,7 +1226,7 @@
                 const dayBadge = p.day ? `<span class="badge bg-light text-dark border ms-1" style="font-size: 10px;">${p.day}</span>` : '';
                 const timeBadge = p.time ? `<small class="text-muted ms-1">${p.time}</small>` : '';
 
-                // Total Amount: Total Deal Amount on 1st installment, '-' on subsequent rows
+                // Total Amount: Total Deal Amount on the first payment, '-' on subsequent rows
                 const debitDisplay = (idx === 0 && totalDealAmount > 0)
                     ? `<strong class="text-danger font-monospace">Rs.  ${totalDealAmount.toLocaleString()}</strong>`
                     : '<span class="text-muted">-</span>';
@@ -1238,13 +1238,7 @@
                 const balColor = balAfter <= 0 ? 'text-success' : 'text-danger';
                 const balDisplay = `<strong class="${balColor} font-monospace">Rs.  ${balAfter.toLocaleString()}</strong>`;
 
-                const detailsDisplay = `
-                    <div>
-                        <strong class="text-dark">${schedTitle}</strong>
-                        ${dayBadge} ${timeBadge}
-                        ${p.notes ? `<div class="text-secondary small mt-0">${p.notes}</div>` : ''}
-                    </div>
-                `;
+                const detailsDisplay = `<div><strong class="text-dark">${schedTitle}</strong> ${dayBadge} ${timeBadge}</div>`;
 
                 return `
                     <tr>

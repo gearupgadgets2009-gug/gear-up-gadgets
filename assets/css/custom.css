@@ -8934,7 +8934,7 @@ div:has(> canvas) {
         vertical-align: middle !important;
     }
 
-    /* B2B Dealer Multi-Installment Payment Timeline Table - Solid Black Borders & Single A4 Page Constraints */
+    /* B2B Dealer Multi-Payment Timeline Table - Solid Black Borders & Single A4 Page Constraints */
     table.dealer-ledger-table,
     .dealer-ledger-table {
         width: 100% !important;
@@ -9166,7 +9166,6 @@ div:has(> canvas) {
         display: none !important;
     }
 }
-
 
 
 

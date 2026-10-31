@@ -1496,6 +1496,25 @@
         // --- Multi-Installment Payment System (Ledger) ---
         let activeEditDealerPayments = [];
 
+        function ordinalPaymentLabel(number) {
+            const suffixes = ['th', 'st', 'nd', 'rd'];
+            const remainder = number % 100;
+            const suffix = suffixes[(remainder - 20) % 10] || suffixes[remainder] || suffixes[0];
+            return `${number}${suffix} Payment`;
+        }
+
+        function formatPaymentNote(note, index) {
+            const fallback = ordinalPaymentLabel(index + 1);
+            const value = String(note || '').trim();
+            if (!value) return fallback;
+
+            return value
+                .replace(/\bInstallment\s*#?\s*(\d+)\b/gi, (_, number) => ordinalPaymentLabel(Number(number)))
+                .replace(/\b(\d+)(st|nd|rd|th)\s+Installment\b/gi, (_, number) => ordinalPaymentLabel(Number(number)))
+                .replace(/\bFinal\s+Installment\b/gi, fallback)
+                .replace(/\bInstallments?\b/gi, 'Payment');
+        }
+
         function toggleAddPaymentInlineForm(show) {
             const form = document.getElementById('dealer-add-payment-form');
             if (!form) return;
@@ -1565,13 +1584,13 @@
             const currentDate = String(now.getDate()).padStart(2, '0') + '/' + String(now.getMonth() + 1).padStart(2, '0') + '/' + now.getFullYear();
             const currentTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
 
-            const installmentNo = activeEditDealerPayments.length + 1;
+            const paymentNo = activeEditDealerPayments.length + 1;
             const notesInput = document.getElementById('new-payment-notes');
-            const notes = (notesInput ? notesInput.value.trim() : '') || `Payment Schedule #${installmentNo}`;
+            const notes = (notesInput ? notesInput.value.trim() : '') || ordinalPaymentLabel(paymentNo);
 
             const newPayment = {
                 id: 'PAY-' + Date.now().toString().slice(-6) + '-' + Math.floor(Math.random() * 1000),
-                installmentNo: installmentNo,
+                installmentNo: paymentNo,
                 amount: newAmount,
                 date: currentDate,
                 day: currentDay,
@@ -1594,7 +1613,7 @@
                 autoPersistModalDealer(existingId);
             }
 
-            window.GUG_DB.showToast(`Payment Schedule #${installmentNo} of Rs. ${newAmount.toLocaleString()} recorded.`, 'success', 'Payment Added');
+            window.GUG_DB.showToast(`${ordinalPaymentLabel(paymentNo)} of Rs. ${newAmount.toLocaleString()} recorded.`, 'success', 'Payment Added');
             return true;
         }
 
@@ -1630,7 +1649,7 @@
                     <td style="white-space: nowrap;"><code class="text-dark bg-light px-1 rounded">${p.time || '-'}</code></td>
                     <td class="text-end fw-bold text-success">+ Rs. ${Number(p.amount || 0).toLocaleString()}</td>
                     <td class="text-end fw-bold text-dark">Rs. ${Number(p.balanceAfter || 0).toLocaleString()}</td>
-                    <td class="text-secondary small">${p.notes || '-'}</td>
+                    <td class="text-secondary small">${formatPaymentNote(p.notes, idx)}</td>
                     <td class="text-center">
                         <button type="button" class="btn btn-outline-danger btn-sm p-0 px-1" onclick="removePaymentInstallment(${idx})" title="Remove payment schedule">
                             <i class="fas fa-times"></i>
