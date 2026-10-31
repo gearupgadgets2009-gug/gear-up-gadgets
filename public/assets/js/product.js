@@ -253,21 +253,17 @@ function renderProductDetails() {
         }
         storageList.innerHTML = currentProduct.variants.map(v => {
             const isSelected = (currentProduct.selectedVariant && String(currentProduct.selectedVariant.id) === String(v.id));
-            const variantId = String(v.id || '');
-            const variantName = String(v.name || v.storage || '');
             return `
                 <button type="button" class="storage-option-pill ${isSelected ? 'active' : ''}" 
-                        data-variant-id="${window.escapeHtml(variantId)}"
-                        data-storage="${window.escapeHtml(v.storage || variantName)}">
+                        data-variant-id="${v.id}" 
+                        data-storage="${v.storage}"
+                        onclick="selectProductStorage('${v.id}')">
                     <i class="fa-solid fa-hard-drive" style="font-size: 11px;"></i>
-                    <span>${window.escapeHtml(variantName)}</span>
+                    <span>${v.name || v.storage}</span>
                     <span class="pill-price-sub">Rs. ${formatPrice(v.price)}</span>
                 </button>
             `;
         }).join('');
-        storageList.querySelectorAll('.storage-option-pill').forEach(button => {
-            button.addEventListener('click', () => selectProductStorage(button.dataset.variantId));
-        });
     } else if (storageWrap) {
         storageWrap.style.display = 'none';
     }
@@ -455,4 +451,6 @@ if (document.readyState === 'loading') {
 }
 window.addEventListener('productsReady', initProductPage);
 window.addEventListener('gugCatalogUpdated', initProductPage);
+
+
 

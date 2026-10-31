@@ -22,7 +22,6 @@
     <link rel="stylesheet" href="assets/fonts/font-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/custom.css">
-    <link rel="stylesheet" href="assets/css/payment-methods.css">
     <style>
         body { background-color: var(--gug-bg-color, #07090d) !important; background-image: var(--gug-bg-image) !important; background-attachment: var(--gug-bg-attachment, fixed) !important; background-size: var(--gug-bg-size, cover, cover, 28px 49px) !important; background-position: var(--gug-bg-position, center top) !important; background-repeat: var(--gug-bg-repeat, no-repeat, no-repeat, repeat) !important; min-height: 100vh; color: #ffffff !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .admin-sidebar { width: 260px; background: rgba(10, 10, 15, 0.6) !important; backdrop-filter: blur(24px) saturate(200%) !important; -webkit-backdrop-filter: blur(24px) saturate(200%) !important; height: 100vh; position: fixed; left: 0; top: 0; padding: 20px 15px; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; overflow-y: auto; z-index: 1000; }
@@ -45,6 +44,7 @@
         .dealer-badge-due { background-color: #fef2f2; color: #dc2626; border: 1px solid #fecaca; font-weight: 700; }
         .dealer-badge-surplus { background-color: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; font-weight: 700; }
         .dealer-badge-clear { background-color: #f8fafc; color: #475569; border: 1px solid #e2e8f0; font-weight: 600; }
+
         @media print {
             body {
                 background: #ffffff !important;
@@ -227,66 +227,6 @@
 
             .card-row-5 {
                 display: none !important;
-            }
-
-            #gug-individual-print-container,
-            #gug-individual-print-container * {
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-
-            .gug-individual-slip {
-                color: #000000 !important;
-                background: #ffffff !important;
-                border: 1px solid #cbd5e1 !important;
-            }
-
-            .gug-slip-brand-header {
-                background: transparent !important;
-                background-color: transparent !important;
-                color: #000000 !important;
-                border: 0 !important;
-            }
-
-            .gug-slip-meta-bar {
-                background: #eaf2ff !important;
-                color: #000000 !important;
-            }
-
-            .dealer-overview-section {
-                background: #f1f5f9 !important;
-                color: #000000 !important;
-            }
-
-            .dealer-ledger-section {
-                background: #fff7ed !important;
-                color: #000000 !important;
-            }
-
-            .payment-schedule-card {
-                background: #f8fafc !important;
-                color: #000000 !important;
-                border-color: #94a3b8 !important;
-            }
-
-            .payment-schedule-card .card-row-1 {
-                background: #dbeafe !important;
-                color: #000000 !important;
-            }
-
-            .payment-schedule-card .card-row-4 > div:first-child {
-                background: #dcfce7 !important;
-                color: #000000 !important;
-            }
-
-            .payment-schedule-card .card-row-4 > div:last-child {
-                background: #fef3c7 !important;
-                color: #000000 !important;
-            }
-
-            .dealer-ledger-summary-bar {
-                background: #e0f2fe !important;
-                color: #000000 !important;
             }
         }
 
@@ -698,8 +638,7 @@
                                 <option value="STOCK_RETURNED">Stock Returned</option>
                             </select>
                         </div>
-                        <div class="d-flex flex-wrap gap-2">
-                            <button class="btn btn-outline-secondary btn-sm fw-bold no-print" type="button" onclick="printSelectedDealerLedger()"><i class="fas fa-print me-1"></i> Print Dealer Statement</button>
+                        <div class="d-flex gap-2">
                             <button class="btn btn-outline-danger btn-sm fw-bold" onclick="openRecordTransactionModal('STOCK_ISSUED')"><i class="fas fa-box me-1"></i> Issue Stock</button>
                             <button class="btn btn-success btn-sm fw-bold" onclick="openRecordTransactionModal('PAYMENT_RECEIVED')"><i class="fas fa-money-bill-wave me-1"></i> Record Payment</button>
                         </div>
@@ -738,7 +677,7 @@
                             </select>
                         </div>
                         <div class="col-md-6 text-md-end pt-md-4">
-                            <button class="btn btn-danger btn-sm fw-bold px-3 no-print" onclick="printSelectedDealerStatement()"><i class="fas fa-print me-1"></i> Print / Save PDF Statement</button>
+                            <button class="btn btn-danger btn-sm fw-bold px-3 no-print" onclick="printDealerSlip(document.getElementById('statement-dealer-select').value)"><i class="fas fa-print me-1"></i> Print / Save PDF Statement</button>
                         </div>
                     </div>
                 </div>
@@ -1019,16 +958,18 @@
 
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
-                                <label class="form-label small fw-bold">Reference / Invoice #</label>
-                                <input type="text" id="tx-reference" class="form-control form-control-sm" placeholder="Invoice reference (optional for cash)">
+                                <label class="form-label form-label-required small fw-bold">Reference / Invoice #</label>
+                                <input type="text" id="tx-reference" class="form-control form-control-sm" placeholder="e.g. INV-B2B-1088 or PAY-MEEZAN-9921" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label form-label-required small fw-bold">Payment Method</label>
+                                <label class="form-label form-label-required small fw-bold">Payment Method / Terms</label>
                                 <select id="tx-payment-method" class="form-select form-select-sm" required>
-                                    <option value="Cash">Cash</option>
-                                    <option value="Online">Online</option>
-                                    <option value="Bank">Bank</option>
-                                    <option value="Cheque">Cheque</option>
+                                    <option value="Credit Invoice">Credit Invoice (Ledger Balance)</option>
+                                    <option value="Bank Transfer (Meezan Bank)">Bank Transfer (Meezan Bank)</option>
+                                    <option value="Bank Transfer (HBL)">Bank Transfer (HBL)</option>
+                                    <option value="Bank Transfer (Bank Alfalah)">Bank Transfer (Bank Alfalah)</option>
+                                    <option value="Cash Deposit">Cash Deposit</option>
+                                    <option value="Cheque Deposit">Cheque Deposit</option>
                                 </select>
                             </div>
                         </div>
@@ -1140,7 +1081,6 @@
     <script src="assets/js/firebase-config.js"></script>
     <script src="assets/js/firebase-sync.js"></script>
     <script src="assets/js/admin.js"></script>
-    <script src="assets/js/payment-methods.js"></script>
     <script>
         let dealerModalInstance = null;
         let transactionModalInstance = null;
@@ -1235,10 +1175,10 @@
 
             filtered.forEach(d => {
                 const summary = window.GUG_DB.calculateDealerSummary(d.id);
-                const totalAmt = Number(summary ? summary.totalAmount : (d.totalAmount !== undefined ? d.totalAmount : (d.creditLimit || 0)));
-                const paidAmt = Number(summary ? summary.paidAmount : (d.paidAmount || 0));
-                const bal = Number(summary ? summary.balanceAmount : (d.balanceAmount || 0));
-                const isClear = summary ? summary.isAmountClear : Boolean(d.isAmountClear || (totalAmt > 0 && bal <= 0));
+                const totalAmt = Number(d.totalAmount !== undefined ? d.totalAmount : (d.creditLimit || 0));
+                const paidAmt = Number(d.paidAmount !== undefined ? d.paidAmount : (d.paymentHistory ? d.paymentHistory.reduce((s, p) => s + Number(p.amount || 0), 0) : 0));
+                const bal = Number(d.balanceAmount !== undefined ? d.balanceAmount : (summary ? summary.currentBalance : 0));
+                const isClear = d.isAmountClear || (totalAmt > 0 && bal <= 0);
 
                 let balBadge = '';
                 if (isClear) {
@@ -1358,37 +1298,6 @@
             });
         }
 
-        function printSelectedDealerLedger() {
-            const dealerId = document.getElementById('ledger-dealer-filter').value;
-            if (dealerId === 'ALL') {
-                if (typeof window.printBatchDealerSlips === 'function') {
-                    return window.printBatchDealerSlips();
-                }
-                window.GUG_DB.showToast('Dealer printing is unavailable right now.', 'error', 'Print Statement');
-                return;
-            }
-            if (!dealerId) {
-                window.GUG_DB.showToast('Select a dealer before printing their statement.', 'warning', 'Select Dealer');
-                return;
-            }
-            if (typeof window.printDealerSlip === 'function') {
-                return window.printDealerSlip(dealerId);
-            }
-            window.GUG_DB.showToast('Dealer printing is unavailable right now.', 'error', 'Print Statement');
-        }
-
-        function printSelectedDealerStatement() {
-            const dealerId = document.getElementById('statement-dealer-select').value;
-            if (!dealerId) {
-                window.GUG_DB.showToast('Select a dealer before printing their statement.', 'warning', 'Select Dealer');
-                return;
-            }
-            if (typeof window.printDealerSlip === 'function') {
-                return window.printDealerSlip(dealerId);
-            }
-            window.GUG_DB.showToast('Dealer printing is unavailable right now.', 'error', 'Print Statement');
-        }
-
         function renderDealerStatement() {
             const dealerId = document.getElementById('statement-dealer-select').value;
             const container = document.getElementById('printable-statement-canvas');
@@ -1496,25 +1405,6 @@
         // --- Multi-Installment Payment System (Ledger) ---
         let activeEditDealerPayments = [];
 
-        function ordinalPaymentLabel(number) {
-            const suffixes = ['th', 'st', 'nd', 'rd'];
-            const remainder = number % 100;
-            const suffix = suffixes[(remainder - 20) % 10] || suffixes[remainder] || suffixes[0];
-            return `${number}${suffix} Payment`;
-        }
-
-        function formatPaymentNote(note, index) {
-            const fallback = ordinalPaymentLabel(index + 1);
-            const value = String(note || '').trim();
-            if (!value) return fallback;
-
-            return value
-                .replace(/\bInstallment\s*#?\s*(\d+)\b/gi, (_, number) => ordinalPaymentLabel(Number(number)))
-                .replace(/\b(\d+)(st|nd|rd|th)\s+Installment\b/gi, (_, number) => ordinalPaymentLabel(Number(number)))
-                .replace(/\bFinal\s+Installment\b/gi, fallback)
-                .replace(/\bInstallments?\b/gi, 'Payment');
-        }
-
         function toggleAddPaymentInlineForm(show) {
             const form = document.getElementById('dealer-add-payment-form');
             if (!form) return;
@@ -1584,13 +1474,13 @@
             const currentDate = String(now.getDate()).padStart(2, '0') + '/' + String(now.getMonth() + 1).padStart(2, '0') + '/' + now.getFullYear();
             const currentTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
 
-            const paymentNo = activeEditDealerPayments.length + 1;
+            const installmentNo = activeEditDealerPayments.length + 1;
             const notesInput = document.getElementById('new-payment-notes');
-            const notes = (notesInput ? notesInput.value.trim() : '') || ordinalPaymentLabel(paymentNo);
+            const notes = (notesInput ? notesInput.value.trim() : '') || `Payment Schedule #${installmentNo}`;
 
             const newPayment = {
                 id: 'PAY-' + Date.now().toString().slice(-6) + '-' + Math.floor(Math.random() * 1000),
-                installmentNo: paymentNo,
+                installmentNo: installmentNo,
                 amount: newAmount,
                 date: currentDate,
                 day: currentDay,
@@ -1613,7 +1503,7 @@
                 autoPersistModalDealer(existingId);
             }
 
-            window.GUG_DB.showToast(`${ordinalPaymentLabel(paymentNo)} of Rs. ${newAmount.toLocaleString()} recorded.`, 'success', 'Payment Added');
+            window.GUG_DB.showToast(`Payment Schedule #${installmentNo} of Rs. ${newAmount.toLocaleString()} recorded.`, 'success', 'Payment Added');
             return true;
         }
 
@@ -1649,7 +1539,7 @@
                     <td style="white-space: nowrap;"><code class="text-dark bg-light px-1 rounded">${p.time || '-'}</code></td>
                     <td class="text-end fw-bold text-success">+ Rs. ${Number(p.amount || 0).toLocaleString()}</td>
                     <td class="text-end fw-bold text-dark">Rs. ${Number(p.balanceAfter || 0).toLocaleString()}</td>
-                    <td class="text-secondary small">${formatPaymentNote(p.notes, idx)}</td>
+                    <td class="text-secondary small">${p.notes || '-'}</td>
                     <td class="text-center">
                         <button type="button" class="btn btn-outline-danger btn-sm p-0 px-1" onclick="removePaymentInstallment(${idx})" title="Remove payment schedule">
                             <i class="fas fa-times"></i>
@@ -1939,27 +1829,10 @@
         function openRecordTransactionModal(defaultType = 'STOCK_ISSUED') {
             document.getElementById('transactionForm').reset();
             document.getElementById('tx-type-select').value = defaultType;
-            document.getElementById('tx-reference').value = defaultType === 'STOCK_ISSUED'
-                ? 'INV-B2B-' + Math.floor(1000 + Math.random() * 9000)
-                : (defaultType === 'STOCK_RETURNED' ? 'RET-B2B-' + Math.floor(1000 + Math.random() * 9000) : '');
+            document.getElementById('tx-reference').value = defaultType === 'STOCK_ISSUED' ? 'INV-B2B-' + Math.floor(1000 + Math.random() * 9000) : 'PAY-BANK-' + Math.floor(1000 + Math.random() * 9000);
             
             document.getElementById('tx-line-items-tbody').innerHTML = '';
             toggleTxTypeFields();
-            window.dealerPaymentCapture = window.GUG_PAYMENT_METHODS.mount({
-                form: 'transactionForm',
-                prefix: 'dealer',
-                methodId: 'tx-payment-method',
-                amountId: 'tx-amount',
-                amountLabelId: 'tx-amount-label',
-                defaultMethod: 'Bank',
-                total: () => {
-                    if (document.getElementById('tx-type-select').value !== 'PAYMENT_RECEIVED') {
-                        return Number(document.getElementById('tx-amount').value || 0);
-                    }
-                    const summary = window.GUG_DB.calculateDealerSummary(document.getElementById('tx-dealer-select').value);
-                    return Math.max(0, Number(summary && summary.currentBalance) || 0);
-                },
-            });
             updateTxDealerBalancePreview();
             transactionModalInstance.show();
         }
@@ -1968,11 +1841,6 @@
             const type = document.getElementById('tx-type-select').value;
             const lineItemsSec = document.getElementById('tx-line-items-section');
             const amountLabel = document.getElementById('tx-amount-label');
-            const referenceInput = document.getElementById('tx-reference');
-            const referenceLabel = referenceInput.previousElementSibling;
-            const referenceRequired = type === 'STOCK_ISSUED' || type === 'STOCK_RETURNED';
-            referenceInput.required = referenceRequired;
-            if (referenceLabel) referenceLabel.classList.toggle('form-label-required', referenceRequired);
 
             if (type === 'STOCK_ISSUED') {
                 lineItemsSec.style.display = 'block';
@@ -2090,20 +1958,8 @@
             const type = document.getElementById('tx-type-select').value;
             const amount = Number(document.getElementById('tx-amount').value);
             const referenceNo = document.getElementById('tx-reference').value.trim();
-            let paymentDetails;
-            try {
-                paymentDetails = window.dealerPaymentCapture.collect();
-            } catch (error) {
-                window.GUG_DB.showToast(error.message, 'error', 'Payment Details Required');
-                return;
-            }
-            const paymentMethod = paymentDetails.paymentMethod;
-            if (!paymentDetails.transactionReference && referenceNo) {
-                paymentDetails.transactionReference = referenceNo;
-                paymentDetails.reference = referenceNo;
-            }
-            const description = document.getElementById('tx-description').value.trim() ||
-                (referenceNo ? `${type.replace('_', ' ')} Ref #${referenceNo}` : type.replace('_', ' '));
+            const paymentMethod = document.getElementById('tx-payment-method').value;
+            const description = document.getElementById('tx-description').value.trim() || `${type.replace('_', ' ')} Ref #${referenceNo}`;
 
             // Build line items if stock
             const items = [];
@@ -2134,7 +1990,6 @@
                 amount: amount,
                 referenceNo: referenceNo,
                 paymentMethod: paymentMethod,
-                paymentDetails: paymentDetails,
                 description: description,
                 items: items
             });
@@ -2145,7 +2000,7 @@
             }
 
             transactionModalInstance.hide();
-            window.GUG_DB.showToast(`Transaction ${referenceNo ? `#${referenceNo}` : 'successfully'} posted to dealer ledger!`, 'success', 'Ledger Updated');
+            window.GUG_DB.showToast(`Transaction #${referenceNo} successfully posted to dealer ledger!`, 'success', 'Ledger Updated');
             refreshAllData();
         }
 
@@ -2208,3 +2063,6 @@
     </script>
 </body>
 </html>
+
+
+

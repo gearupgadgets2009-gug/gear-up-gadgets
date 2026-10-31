@@ -299,28 +299,10 @@
         (function() {
             const urlParams = new URLSearchParams(window.location.search);
             const queryDealerId = urlParams.get('dealerId') || urlParams.get('id');
-            const sessionDealerId = localStorage.getItem('dealer_id');
-            const hasDealerSession = () => localStorage.getItem('dealer_logged_in') === 'true' &&
-                sessionStorage.getItem('gug_dealer_auth_session') === 'authenticated' &&
-                Boolean(sessionDealerId) &&
-                localStorage.getItem('dealer_id') === sessionDealerId;
-            const redirectToLogin = () => {
-                document.documentElement.style.visibility = 'hidden';
-                window.location.replace('dealer-login.html');
-            };
-            if (!hasDealerSession() || (queryDealerId && queryDealerId !== sessionDealerId)) {
-                redirectToLogin();
-                return;
+            const isDealer = localStorage.getItem('dealer_logged_in') === 'true';
+            if (!isDealer && !queryDealerId) {
+                window.location.href = 'dealer-login.html';
             }
-            document.documentElement.style.visibility = '';
-            window.addEventListener('pageshow', () => {
-                if (!hasDealerSession()) redirectToLogin();
-            });
-            window.addEventListener('storage', (event) => {
-                if (event.key === 'dealer_logged_in' || event.key === 'dealer_id') {
-                    if (!hasDealerSession()) redirectToLogin();
-                }
-            });
         })();
     </script>
 
@@ -751,14 +733,10 @@
                 ? window.GUG_DB.getDealerSession() 
                 : null;
             
-            const targetDealerId = localStorage.getItem('dealer_id');
+            const targetDealerId = queryDealerId || (sessionDealer ? sessionDealer.id : (localStorage.getItem('dealer_id') || localStorage.getItem('dealer_username')));
 
-            if (!targetDealerId ||
-                localStorage.getItem('dealer_logged_in') !== 'true' ||
-                sessionStorage.getItem('gug_dealer_auth_session') !== 'authenticated' ||
-                (queryDealerId && queryDealerId !== targetDealerId)) {
-                document.documentElement.style.visibility = 'hidden';
-                window.location.replace('dealer-login.html');
+            if (!targetDealerId) {
+                window.location.href = 'dealer-login.html';
                 return;
             }
 
@@ -1212,7 +1190,7 @@
                 return;
             }
 
-            // Case B: Map each payment row with DATE, TRANSACTION DETAILS, TOTAL AMOUNT, PAID AMOUNT & BALANCE
+            // Case B: Map each payment/installment row with DATE, TRANSACTION DETAILS, TOTAL AMOUNT, PAID AMOUNT & BALANCE
             let runningBalance = totalDealAmount;
             rowsTbody.innerHTML = cleanPayments.map((p, idx) => {
                 const schedTitle = getOrdinalScheduleTitle(idx);
@@ -1226,7 +1204,7 @@
                 const dayBadge = p.day ? `<span class="badge bg-light text-dark border ms-1" style="font-size: 10px;">${p.day}</span>` : '';
                 const timeBadge = p.time ? `<small class="text-muted ms-1">${p.time}</small>` : '';
 
-                // Total Amount: Total Deal Amount on the first payment, '-' on subsequent rows
+                // Total Amount: Total Deal Amount on 1st installment, '-' on subsequent rows
                 const debitDisplay = (idx === 0 && totalDealAmount > 0)
                     ? `<strong class="text-danger font-monospace">Rs.  ${totalDealAmount.toLocaleString()}</strong>`
                     : '<span class="text-muted">-</span>';
@@ -1238,7 +1216,13 @@
                 const balColor = balAfter <= 0 ? 'text-success' : 'text-danger';
                 const balDisplay = `<strong class="${balColor} font-monospace">Rs.  ${balAfter.toLocaleString()}</strong>`;
 
-                const detailsDisplay = `<div><strong class="text-dark">${schedTitle}</strong> ${dayBadge} ${timeBadge}</div>`;
+                const detailsDisplay = `
+                    <div>
+                        <strong class="text-dark">${schedTitle}</strong>
+                        ${dayBadge} ${timeBadge}
+                        ${p.notes ? `<div class="text-secondary small mt-0">${p.notes}</div>` : ''}
+                    </div>
+                `;
 
                 return `
                     <tr>
@@ -1360,3 +1344,6 @@
     </script>
 </body>
 </html>
+
+
+

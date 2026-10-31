@@ -969,7 +969,7 @@
                 if (Array.isArray(masterCatalog) && masterCatalog.length > 0) {
                     const productMap = new Map();
                     masterCatalog.forEach(p => {
-                        if (p && p.id) productMap.set(String(p.id), this.sanitizeProductObj({ ...p }));
+                        if (p && p.id) productMap.set(String(p.id), sanitizeProductObj({ ...p }));
                     });
                     if (Array.isArray(existing)) {
                         existing.forEach(p => {
@@ -1178,7 +1178,7 @@
                                     day: 'Thursday',
                                     time: '10:15:00 AM',
                                     balanceAfter: 1000000,
-                                    notes: '1st Payment Bank PayOrder'
+                                    notes: '1st Installment Bank PayOrder'
                                 },
                                 {
                                     id: 'PAY-102-2',
@@ -1523,10 +1523,9 @@
             localStorage.removeItem('staff_role');
             localStorage.removeItem('staff_permissions');
             localStorage.removeItem('staff_department');
-            sessionStorage.removeItem('gug_staff_auth_session');
             // Retain admin session if present so Super Admin testing remains seamless
 
-            window.location.replace('staff-login.html');
+            window.location.href = 'staff-login.html';
         }
 
         normalizePhoneNumber(raw) {
@@ -2076,17 +2075,14 @@
 
             // Allow login pages and employee portal to manage their own view
             if (path === 'admin.html' || path === 'staff-login.html' || path === 'employee-portal.html' || path === 'dealer-login.html' || path === 'dealer-portal.html') {
-                if (path === 'dealer-portal.html' &&
-                    (localStorage.getItem('dealer_logged_in') !== 'true' ||
-                    sessionStorage.getItem('gug_dealer_auth_session') !== 'authenticated')) {
-                    window.location.replace('dealer-login.html');
+                if (path === 'dealer-portal.html' && localStorage.getItem('dealer_logged_in') !== 'true') {
+                    window.location.href = 'dealer-login.html';
                 }
                 return;
             }
 
             // 0. Strict Dealer Isolation Check: Dealer sessions cannot access Master Admin Panel or Staff routes
-            const isDealerSession = localStorage.getItem('dealer_logged_in') === 'true' &&
-                sessionStorage.getItem('gug_dealer_auth_session') === 'authenticated';
+            const isDealerSession = localStorage.getItem('dealer_logged_in') === 'true';
             if (isDealerSession && localStorage.getItem('admin_logged_in') !== 'true' && localStorage.getItem('staff_logged_in') !== 'true') {
                 window.location.href = 'dealer-portal.html';
                 return;
@@ -2508,21 +2504,21 @@
                 .trim();
         }
 
-        sanitizeProductObj(product) {
-            if (!product) return product;
-            if (product.title) product.title = this.sanitizeProductText(product.title);
-            if (product.name) product.name = this.sanitizeProductText(product.name);
-            if (product.description) product.description = this.sanitizeProductText(product.description);
-            if (product.shortDescription) product.shortDescription = this.sanitizeProductText(product.shortDescription);
-            return product;
-        }
-
         getProducts() {
             const now = Date.now();
             if (this._cachedProducts && Array.isArray(this._cachedProducts) && (now - (this._cachedProductsTime || 0) < 4000)) {
                 return this._cachedProducts;
             }
-            const sanitizeProductObj = (product) => this.sanitizeProductObj(product);
+            const sanitizeProductObj = (p) => {
+                if (!p) return p;
+                if (typeof this.sanitizeProductText === 'function') {
+                    if (p.title) p.title = this.sanitizeProductText(p.title);
+                    if (p.name) p.name = this.sanitizeProductText(p.name);
+                    if (p.description) p.description = this.sanitizeProductText(p.description);
+                    if (p.shortDescription) p.shortDescription = this.sanitizeProductText(p.shortDescription);
+                }
+                return p;
+            };
 
             const master = (typeof window !== 'undefined' && window.productDatabase) ? window.productDatabase : (typeof productDatabase !== 'undefined' ? productDatabase : (window.PRODUCTS_DATA || []));
             let saved = [];
@@ -2547,7 +2543,7 @@
             if (Array.isArray(master)) {
                 master.forEach(p => {
                     if (p && p.id && !deletedIds.includes(String(p.id))) {
-                        productMap.set(String(p.id), this.sanitizeProductObj({ ...p }));
+                        productMap.set(String(p.id), sanitizeProductObj({ ...p }));
                     }
                 });
             }
@@ -2556,7 +2552,7 @@
             if (Array.isArray(saved)) {
                 saved.forEach(p => {
                     if (p && p.id && !deletedIds.includes(String(p.id))) {
-                        productMap.set(String(p.id), this.sanitizeProductObj({ ...p }));
+                        productMap.set(String(p.id), sanitizeProductObj({ ...p }));
                     }
                 });
             }
@@ -2565,7 +2561,7 @@
             if (Array.isArray(customAdded)) {
                 customAdded.forEach(p => {
                     if (p && p.id && !deletedIds.includes(String(p.id))) {
-                        productMap.set(String(p.id), this.sanitizeProductObj({ ...p }));
+                        productMap.set(String(p.id), sanitizeProductObj({ ...p }));
                     }
                 });
             }
@@ -2878,21 +2874,21 @@
             if (Array.isArray(master)) {
                 master.forEach(p => {
                     if (p && p.id && !deletedIds.includes(String(p.id))) {
-                        productMap.set(String(p.id), this.sanitizeProductObj({ ...p }));
+                        productMap.set(String(p.id), sanitizeProductObj({ ...p }));
                     }
                 });
             }
             if (Array.isArray(saved)) {
                 saved.forEach(p => {
                     if (p && p.id && !deletedIds.includes(String(p.id))) {
-                        productMap.set(String(p.id), this.sanitizeProductObj({ ...p }));
+                        productMap.set(String(p.id), sanitizeProductObj({ ...p }));
                     }
                 });
             }
             if (Array.isArray(customAdded)) {
                 customAdded.forEach(p => {
                     if (p && p.id && !deletedIds.includes(String(p.id))) {
-                        productMap.set(String(p.id), this.sanitizeProductObj({ ...p }));
+                        productMap.set(String(p.id), sanitizeProductObj({ ...p }));
                     }
                 });
             }
@@ -3668,15 +3664,10 @@
                 customer: orderData.customer,
                 items: orderData.items,
                 subtotal: orderData.subtotal || orderData.total,
-                discount: Number(orderData.discount || 0),
-                coupon: orderData.coupon || null,
                 shipping: orderData.shipping || 0,
                 total: orderData.total,
                 paymentMethod: orderData.paymentMethod || 'Cash on Delivery (COD)',
                 paymentStatus: orderData.paymentStatus || (orderData.paymentMethod && orderData.paymentMethod.includes('Online') ? 'Paid' : 'Pending'),
-                paidAmount: Number(orderData.paidAmount || 0),
-                balanceAmount: Number(orderData.balanceAmount !== undefined ? orderData.balanceAmount : orderData.total),
-                paymentHistory: Array.isArray(orderData.paymentHistory) ? orderData.paymentHistory : [],
                 orderStatus: 'New Order',
                 warehouse: 'WH-01',
                 courier: 'Leopard Express (Auto-Assigned)',
@@ -3930,7 +3921,7 @@
                 return { valid: false, message: `Coupon code "${cleanCode}" is not recognized.` };
             }
 
-            if (coupon.active === false || ['inactive', 'paused', 'expired'].includes(String(coupon.status || '').toLowerCase())) {
+            if (coupon.active === false || coupon.status === 'Inactive') {
                 return { valid: false, message: `Coupon code "${cleanCode}" is deactivated or expired.` };
             }
 
@@ -3939,26 +3930,27 @@
                 return { valid: false, message: `Minimum order amount of Rs. ${minSpend.toLocaleString()} is required for coupon ${coupon.code}.` };
             }
 
-            const rawType = String(coupon.type || '').trim().toLowerCase().replace(/[\s-]+/g, '_');
-            const isFreeShipping = ['free_shipping', 'freeship', 'freeshipping'].includes(rawType) ||
-                (!rawType && ['FREESHIP', 'FREESHIPPING'].includes(cleanCode));
-            const discountType = isFreeShipping ? 'free_shipping' :
-                (rawType.includes('fixed') || rawType.includes('amount') ? 'fixed' : 'percentage');
-            const discountValue = Number(coupon.value || 0);
-            const calcDiscount = discountType === 'free_shipping' ? 0 :
-                (discountType === 'fixed' ? discountValue : subtotal * (discountValue / 100));
-            const discountAmount = discountType === 'percentage' ? Math.round(calcDiscount) : calcDiscount;
+            const rawType = (coupon.type || '').toLowerCase().replace(/\s+/g, '_');
+            const isFreeShipping = rawType === 'free_shipping' || rawType === 'freeship' || rawType === 'freeshipping' || cleanCode === 'FREESHIP' || cleanCode === 'FREESHIPPING';
+
+            let calcDiscount = 0;
+            if (isFreeShipping) {
+                calcDiscount = 0; // Handled by setting shipping fee to 0
+            } else if (rawType === 'fixed' || rawType.includes('fixed')) {
+                calcDiscount = Number(coupon.value || 0);
+            } else {
+                calcDiscount = subtotal * (Number(coupon.value || 0) / 100);
+            }
 
             return {
                 valid: true,
                 coupon: coupon,
                 code: coupon.code,
-                type: discountType,
-                value: discountType === 'free_shipping' ? 0 : discountValue,
-                discountAmount: discountAmount,
+                type: isFreeShipping ? 'free_shipping' : (rawType.includes('fixed') ? 'fixed' : 'percentage'),
+                value: Number(coupon.value || 0),
+                discountAmount: Math.round(calcDiscount),
                 isFreeShipping: isFreeShipping,
-                description: coupon.description || (isFreeShipping ? 'Free Shipping Nationwide' :
-                    (discountType === 'fixed' ? `Rs. ${discountValue.toLocaleString()} Off` : `${discountValue}% Off`))
+                description: coupon.description || (isFreeShipping ? 'Free Shipping Nationwide' : `${coupon.value}% Off`)
             };
         }
 
@@ -4228,9 +4220,6 @@
                 basicSalary: Number(empData.basicSalary || empData.salary || 65000),
                 allowance: Number(empData.allowance !== undefined ? empData.allowance : (previous ? previous.allowance : 0)),
                 deductions: Number(empData.deductions !== undefined ? empData.deductions : (previous ? previous.deductions : 0)),
-                salaryPayments: Array.isArray(empData.salaryPayments)
-                    ? empData.salaryPayments
-                    : (previous && Array.isArray(previous.salaryPayments) ? previous.salaryPayments : []),
                 status: empData.status || (previous ? previous.status : 'Active'),
                 username: cleanUser,
                 password: plainPassword,
@@ -5057,17 +5046,17 @@
             }
 
             const balanceAfter = Math.max(0, prevBalance - amount);
-            const paymentNo = dealer.paymentHistory.length + 1;
+            const installmentNo = dealer.paymentHistory.length + 1;
 
             const paymentEntry = {
                 id: paymentData.id || ('PAY-' + dealer.id + '-' + Date.now().toString().slice(-4)),
-                installmentNo: paymentNo,
+                installmentNo: installmentNo,
                 amount: amount,
                 date: paymentData.date || currentDate,
                 day: paymentData.day || currentDay,
                 time: paymentData.time || currentTime,
                 balanceAfter: balanceAfter,
-                notes: paymentData.notes || `${paymentNo}${paymentNo % 100 >= 11 && paymentNo % 100 <= 13 ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' }[paymentNo % 10] || 'th')} Payment`
+                notes: paymentData.notes || `Installment #${installmentNo}`
             };
 
             dealer.paymentHistory.push(paymentEntry);
@@ -5085,7 +5074,7 @@
                 entityId: dealer.id,
                 previousValue: `Balance: Rs. ${prevBalance.toLocaleString()}`,
                 newValue: `Paid: Rs. ${amount.toLocaleString()} &bull; Balance After: Rs. ${balanceAfter.toLocaleString()} &bull; Status: ${dealer.isAmountClear ? 'AMOUNT CLEAR' : 'PENDING'}`,
-                reason: `Payment ${paymentNo} logged for dealer ${dealer.name}`
+                reason: `Installment #${installmentNo} logged for dealer ${dealer.name}`
             });
 
             return { success: true, payment: paymentEntry, dealer: dealer };
@@ -5213,8 +5202,7 @@
         }
 
         getDealerSession() {
-            const isDealer = localStorage.getItem('dealer_logged_in') === 'true' &&
-                sessionStorage.getItem('gug_dealer_auth_session') === 'authenticated';
+            const isDealer = localStorage.getItem('dealer_logged_in') === 'true';
             if (!isDealer) return null;
 
             const dealerId = localStorage.getItem('dealer_id');
@@ -5242,9 +5230,8 @@
             localStorage.removeItem('dealer_username');
             localStorage.removeItem('dealer_name');
             localStorage.removeItem('dealer_shop');
-            sessionStorage.removeItem('gug_dealer_auth_session');
 
-            window.location.replace('dealer-login.html');
+            window.location.href = 'dealer-login.html';
         }
 
         // --- Dealer Ledger Operations ---
@@ -5264,7 +5251,6 @@
             const isStockIssue = entryData.type === 'STOCK_ISSUED';
             const isStockReturn = entryData.type === 'STOCK_RETURNED';
             const isPayment = entryData.type === 'PAYMENT_RECEIVED' || entryData.type === 'ADVANCE_PAYMENT';
-            const paymentDetails = entryData.paymentDetails || {};
 
             const debit = Number(entryData.debit || (isStockIssue ? entryData.amount : 0) || 0);
             const credit = Number(entryData.credit || (isPayment || isStockReturn ? entryData.amount : 0) || 0);
@@ -5274,23 +5260,14 @@
                 dealerId: entryData.dealerId,
                 dealerName: dealer.name,
                 shopName: dealer.shopName,
-                date: entryData.date || paymentDetails.transactionAt || new Date().toISOString(),
+                date: entryData.date || new Date().toISOString(),
                 type: entryData.type || 'STOCK_ISSUED', // 'STOCK_ISSUED', 'STOCK_RETURNED', 'PAYMENT_RECEIVED', 'ADVANCE_PAYMENT', 'ADJUSTMENT'
-                referenceNo: entryData.referenceNo || (isPayment ? '' : 'REF-' + Math.floor(1000 + Math.random() * 9000)),
+                referenceNo: entryData.referenceNo || 'REF-' + Math.floor(1000 + Math.random() * 9000),
                 description: entryData.description || (isStockIssue ? 'B2B Wholesale Stock Dispatch' : 'Payment Received'),
                 items: Array.isArray(entryData.items) ? entryData.items : [],
                 debit: debit,
                 credit: credit,
-                paymentMethod: paymentDetails.paymentMethod || entryData.paymentMethod || (isStockIssue ? 'Credit Invoice' : 'Bank Transfer'),
-                bankNetwork: paymentDetails.bankNetwork || '',
-                chequeNumber: paymentDetails.chequeNumber || '',
-                bankAccountNumber: paymentDetails.bankAccountNumber || '',
-                transactionReference: paymentDetails.transactionReference || '',
-                paidAmount: Number(paymentDetails.paidAmount || (isPayment ? credit : 0)),
-                balanceAmount: Number(paymentDetails.balanceAmount || 0),
-                receiptName: paymentDetails.receiptName || '',
-                receiptData: paymentDetails.receiptData || '',
-                transactionAt: paymentDetails.transactionAt || entryData.date || new Date().toISOString(),
+                paymentMethod: entryData.paymentMethod || (isStockIssue ? 'Credit Invoice' : 'Bank Transfer'),
                 recordedBy: entryData.recordedBy || this.getCurrentUser().name,
                 notes: entryData.notes || ''
             };
@@ -5353,13 +5330,9 @@
 
             const totalAmt = Number(dealer.totalAmount !== undefined ? dealer.totalAmount : (dealer.creditLimit || 0));
             const payments = Array.isArray(dealer.paymentHistory) ? dealer.paymentHistory : [];
-            const paidAmt = payments.length
-                ? payments.reduce((acc, p) => acc + Number(p.amount || 0), 0)
-                : Number(dealer.paidAmount || 0);
+            const paidAmt = Number(dealer.paidAmount !== undefined ? dealer.paidAmount : payments.reduce((acc, p) => acc + Number(p.amount || 0), 0));
             const calculatedBal = (Number(dealer.openingBalance || 0) + totalDebit) - totalCredit;
-            const currentBalance = payments.length
-                ? Math.max(0, totalAmt - paidAmt)
-                : (dealer.balanceAmount !== undefined ? Number(dealer.balanceAmount) : calculatedBal);
+            const currentBalance = dealer.balanceAmount !== undefined ? Number(dealer.balanceAmount) : calculatedBal;
             const isAmountClear = Boolean(dealer.isAmountClear !== undefined ? dealer.isAmountClear : ((totalAmt > 0 && currentBalance <= 0) || (totalAmt === 0 && paidAmt > 0)));
 
             // If no explicit legacy ledger entries exist in storage, map paymentHistory directly into ledgerEntries
@@ -5679,18 +5652,6 @@
             `;
         }
 
-        signOut() {
-            ['admin_logged_in', 'staff_logged_in', 'dealer_logged_in', 'dealer_id', 'dealer_username',
-                'dealer_name', 'dealer_shop', 'staff_user_id', 'staff_username',
-                'staff_name', 'staff_role', 'staff_department', 'staff_permissions', 'admin_role', 'admin_username']
-                .forEach(key => localStorage.removeItem(key));
-            sessionStorage.removeItem('gug_admin_auth_session');
-            sessionStorage.removeItem('gug_staff_auth_session');
-            sessionStorage.removeItem('gug_dealer_auth_session');
-            localStorage.setItem('gug_has_logged_out', 'true');
-            window.location.href = 'admin.html';
-        }
-
         renderGlobalHeader(containerId, activeTitle = 'Enterprise ERP', extraBadgeHtml = '') {
             const el = document.getElementById(containerId);
             if (!el) return;
@@ -5711,7 +5672,7 @@
                             <i class="fas fa-print"></i>
                         </button>
                         <a href="index.html" target="_blank" class="btn btn-outline-secondary btn-sm py-1 px-2" title="Storefront"><i class="fas fa-store"></i></a>
-                        <a href="admin.html" class="btn btn-outline-danger btn-sm py-1 px-2" title="Logout" onclick="window.GUG_DB.signOut(); return false;"><i class="fas fa-sign-out-alt"></i></a>
+                        <a href="admin.html" class="btn btn-outline-danger btn-sm py-1 px-2" title="Logout" onclick="localStorage.removeItem('admin_logged_in');"><i class="fas fa-sign-out-alt"></i></a>
                     </div>
                 </div>
 
@@ -5756,7 +5717,7 @@
                         </div>
 
                         <!-- User Profile / Logout -->
-                        <a href="admin.html" class="btn btn-outline-danger btn-sm" onclick="window.GUG_DB.signOut(); return false;"><i class="fas fa-sign-out-alt"></i></a>
+                        <a href="admin.html" class="btn btn-outline-danger btn-sm" onclick="localStorage.removeItem('admin_logged_in');"><i class="fas fa-sign-out-alt"></i></a>
                     </div>
                 </div>
             `;
@@ -5957,37 +5918,6 @@
             const dateFormatted = now.toLocaleDateString('en-PK', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
             const timeFormatted = now.toLocaleTimeString('en-PK', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
             const refCode = 'CUST-SLIP-' + c.id + '-' + Date.now().toString().slice(-6);
-            const printText = value => String(value == null ? '' : value).replace(/[&<>"']/g, character => ({
-                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-            })[character]);
-            const paymentRows = orders.flatMap(order => {
-                const history = Array.isArray(order.paymentHistory) ? order.paymentHistory : [];
-                if (history.length) return history.map(payment => ({
-                    date: payment.timestamp || payment.date || order.date || '',
-                    method: payment.paymentMethod || payment.method || order.paymentMethod || 'Not recorded',
-                    network: payment.bankNetwork || '',
-                    reference: payment.transactionReference || payment.reference || payment.id || order.id,
-                    paid: Number(payment.amount || 0),
-                    balance: Number(payment.balanceAfter != null ? payment.balanceAfter : payment.balanceAmount || 0)
-                }));
-                const paid = Number(order.paidAmount || (String(order.paymentStatus).toLowerCase() === 'paid' ? order.total : 0));
-                return paid > 0 ? [{
-                    date: order.transactionAt || order.date || '',
-                    method: order.paymentMethod || order.payment || 'Not recorded',
-                    network: order.bankNetwork || '',
-                    reference: order.paymentReference || order.id,
-                    paid,
-                    balance: Number(order.balanceAmount || Math.max(0, Number(order.total || 0) - paid))
-                }] : [];
-            });
-            const paymentRowsHtml = paymentRows.map(payment => `
-                <tr>
-                    <td>${printText(payment.date)}</td>
-                    <td>${printText(payment.network ? `${payment.method} · ${payment.network}` : payment.method)}</td>
-                    <td>${printText(payment.reference)}</td>
-                    <td>Rs. ${Number(payment.paid).toLocaleString()}</td>
-                    <td>Rs. ${Number(payment.balance).toLocaleString()}</td>
-                </tr>`).join('');
 
             return `
                 <div class="gug-individual-slip ${isLast ? '' : 'gug-slip-page-break'}" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; color: #000000 !important; background: #ffffff !important; background-color: #ffffff !important; max-width: 800px; margin: 0 auto ${isLast ? '0' : '30px'}; padding: 25px; box-sizing: border-box; ${isLast ? 'page-break-after: auto !important; break-after: auto !important;' : 'page-break-after: always !important; break-after: page !important;'}">
@@ -6114,11 +6044,6 @@
                                     </div>
                                 </div>
 
-                                <div class="customer-payment-history" style="margin: 8px 0; font-size: 8.5pt; color: #000000 !important;">
-                                    <strong>Payment Receipts:</strong>
-                                    ${paymentRows.length ? `<table style="width: 100%; border-collapse: collapse; margin-top: 4px;"><thead><tr><th style="border: 1px solid #000; padding: 4px;">Date &amp; Time</th><th style="border: 1px solid #000; padding: 4px;">Payment Method</th><th style="border: 1px solid #000; padding: 4px;">Reference</th><th style="border: 1px solid #000; padding: 4px;">Paid Amount</th><th style="border: 1px solid #000; padding: 4px;">Balance</th></tr></thead><tbody>${paymentRowsHtml}</tbody></table>` : '<span> No payments recorded.</span>'}
-                                </div>
-
                                 <!-- Product Details Section: Strict Native HTML Table (Excel Spreadsheet Layout) -->
                                 <div class="order-products-fullwidth w-100" style="width: 100% !important; margin-top: 6px;">
                                     <table class="order-products-table" style="border-collapse: collapse !important; width: 100% !important; border: 1px solid #000 !important; margin: 0 !important; background: #ffffff !important; table-layout: fixed !important;">
@@ -6168,30 +6093,6 @@
             const dateFormatted = now.toLocaleDateString('en-PK', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
             const timeFormatted = now.toLocaleTimeString('en-PK', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
             const refCode = 'EMP-SLIP-' + emp.id + '-' + Date.now().toString().slice(-6);
-            const printText = value => String(value == null ? '' : value).replace(/[&<>"']/g, character => ({
-                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-            })[character]);
-            const payrollRecords = JSON.parse(localStorage.getItem('gug_finance_salaries') || '[]')
-                .filter(salary => salary && (
-                    String(salary.employeeId || '') === String(emp.id) ||
-                    (!salary.employeeId && String(salary.name || '').toLowerCase() === String(emp.name || '').toLowerCase())
-                ))
-                .sort((first, second) => new Date(second.transactionAt || second.date || 0) - new Date(first.transactionAt || first.date || 0));
-            const payrollRecord = payrollRecords[0] || {};
-            const payrollPaid = Number(payrollRecord.paidAmount || (payrollRecord.status === 'Paid' ? payrollRecord.net : 0)) || 0;
-            const payrollBalance = Number(payrollRecord.balanceAmount != null
-                ? payrollRecord.balanceAmount
-                : Math.max(0, Number(payrollRecord.net || 0) - payrollPaid)) || 0;
-            const payrollPaymentDetails = `
-                <div class="employee-payment-slip" style="border: 1px solid #cccccc !important; padding: 10px; margin-top: 10px; font-size: 9pt; color: #000000 !important; background: #ffffff !important;">
-                    <strong>Payroll Payment Details</strong><br>
-                    <strong>Payment Method:</strong> ${printText(payrollRecord.paymentMethod || payrollRecord.method || 'Not recorded')}<br>
-                    ${payrollRecord.bankNetwork ? `<strong>Bank / Network:</strong> ${printText(payrollRecord.bankNetwork)}<br>` : ''}
-                    <strong>Reference Number:</strong> ${printText(payrollRecord.transactionReference || payrollRecord.ref || payrollRecord.id || '—')}<br>
-                    <strong>Paid Amount:</strong> Rs. ${payrollPaid.toLocaleString()}<br>
-                    <strong>Balance Amount:</strong> Rs. ${payrollBalance.toLocaleString()}<br>
-                    <strong>Payment Date &amp; Time:</strong> ${printText(payrollRecord.transactionAt || payrollRecord.date || 'Not recorded')}
-                </div>`;
 
             const perms = Array.isArray(emp.permissions) ? emp.permissions : [];
             const baseSal = Number(emp.basicSalary || emp.salary || 0);
@@ -6284,7 +6185,6 @@
                                 </tr>
                             </tbody>
                         </table>
-                        ${payrollPaymentDetails}
                     </div>
 
                     <!-- Access & Permissions Summary -->
@@ -6320,50 +6220,21 @@
             const currentDay = dayNames[now.getDay()];
             const refCode = 'DLR-SLIP-' + d.id + '-' + Date.now().toString().slice(-6);
 
-            const totalAmount = Number(summary && summary.totalAmount !== undefined
-                ? summary.totalAmount
-                : (d.totalAmount !== undefined ? d.totalAmount : (d.creditLimit || 0)));
-            const ledgerPayments = summary && Array.isArray(summary.ledgerEntries)
-                ? summary.ledgerEntries.filter(entry => ['PAYMENT_RECEIVED', 'ADVANCE_PAYMENT'].includes(entry.type) && Number(entry.credit || 0) > 0)
-                    .map(entry => ({
-                        ...entry,
-                        amount: Number(entry.credit || 0),
-                        paymentMethod: entry.paymentMethod,
-                        transactionReference: entry.transactionReference || '',
-                        balanceAfter: entry.runningBalance,
-                        bankNetwork: entry.bankNetwork,
-                        chequeNumber: entry.chequeNumber,
-                        bankAccountNumber: entry.bankAccountNumber
-                    }))
-                : [];
-            const payments = ledgerPayments.length
-                ? ledgerPayments
-                : (Array.isArray(d.paymentHistory) && d.paymentHistory.length > 0
-                    ? d.paymentHistory
-                    : (summary && Array.isArray(summary.paymentHistory) ? summary.paymentHistory : []));
+            const totalAmount = Number(d.totalAmount !== undefined ? d.totalAmount : (d.creditLimit || (summary ? summary.totalAmount : 0) || 0));
+            const payments = Array.isArray(d.paymentHistory) && d.paymentHistory.length > 0 
+                ? d.paymentHistory 
+                : (summary && Array.isArray(summary.paymentHistory) ? summary.paymentHistory : []);
             const calculatedPaid = payments.reduce((acc, p) => acc + Number(p.amount || 0), 0);
-            const paidAmount = Number(summary && summary.paidAmount !== undefined
-                ? summary.paidAmount
-                : (d.paidAmount !== undefined ? d.paidAmount : calculatedPaid));
+            const paidAmount = Number(d.paidAmount !== undefined ? d.paidAmount : (summary && summary.paidAmount !== undefined ? summary.paidAmount : calculatedPaid));
             const calculatedBalance = Math.max(0, totalAmount - paidAmount);
-            const balanceAmount = Number(summary && summary.balanceAmount !== undefined
-                ? summary.balanceAmount
-                : (d.balanceAmount !== undefined ? d.balanceAmount : calculatedBalance));
+            const balanceAmount = Number(d.balanceAmount !== undefined ? d.balanceAmount : (summary && summary.currentBalance !== undefined ? summary.currentBalance : calculatedBalance));
             const isAmountClear = Boolean(d.isAmountClear !== undefined ? d.isAmountClear : (totalAmount > 0 ? balanceAmount <= 0 : true));
 
             // Ordinal payment schedule naming helper (1 -> 1st Payment Schedule, 2 -> 2nd Payment Schedule, etc.)
-            const getPaymentScheduleTitle = (index) => {
+            const getInstallmentTitle = (index) => {
                 const s = ['th', 'st', 'nd', 'rd'];
                 const v = (index + 1) % 100;
                 return (index + 1) + (s[(v - 20) % 10] || s[v] || s[0]) + ' Payment Schedule';
-            };
-            const parsePaymentDate = (value) => {
-                const legacyDate = String(value || '').match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-                if (legacyDate) {
-                    return new Date(Number(legacyDate[3]), Number(legacyDate[2]) - 1, Number(legacyDate[1]));
-                }
-                const parsed = new Date(value);
-                return Number.isNaN(parsed.getTime()) ? now : parsed;
             };
 
             // Strictly deduplicate payment history: ensure the final 'Amount Clear' entry is rendered only ONCE
@@ -6422,40 +6293,19 @@
                     const amt = Number(p.amount || 0);
                     runningBalance = Math.max(0, runningBalance - amt);
                     const balAfter = (p.balanceAfter !== undefined) ? Number(p.balanceAfter) : runningBalance;
-                    const paymentScheduleTitle = getPaymentScheduleTitle(idx);
-                    const validPaymentDate = p.date ? parsePaymentDate(p.date) : now;
-                    const paymentDateLabel = validPaymentDate.toLocaleDateString('en-PK');
-                    const paymentDayLabel = p.day || dayNames[validPaymentDate.getDay()];
-                    const paymentTimeLabel = p.time || validPaymentDate.toLocaleTimeString('en-PK', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
-                    const paymentReference = p.transactionReference || p.reference || p.paymentReference || '';
-                    const paymentNote = String(p.notes || '')
-                        .replace(/\bInstallment\s*#?\s*(\d+)\b/gi, (_, number) =>
-                            getPaymentScheduleTitle(Number(number) - 1).replace(' Payment Schedule', ' Payment'))
-                        .replace(/\b(\d+)(st|nd|rd|th)\s+Installment\b/gi, (_, number, suffix) => `${number}${suffix} Payment`)
-                        .replace(/\bFinal\s+Installment\b/gi, getPaymentScheduleTitle(idx).replace(' Payment Schedule', ' Payment'))
-                        .replace(/\bInstallments?\b/gi, 'Payment')
-                        .replace(/^\d+(st|nd|rd|th)\s+Payment(?:\s*[-:]\s*|\s*)/i, '')
-                        .trim();
-                    const paymentMode = p.paymentMethod || p.method ||
-                        (/^\d+(st|nd|rd|th) Payment$/i.test(paymentNote) ? '' : paymentNote) ||
-                        'Not recorded';
+                    const installmentTitle = getInstallmentTitle(idx);
 
                     return `
                         <div class="dealer-ledger-box dealer-transaction-card payment-schedule-card" style="border: 1px solid #000000 !important; border-radius: 3px; padding: 3px 5px !important; margin-bottom: 3px !important; background: #ffffff !important; background-color: #ffffff !important; box-shadow: none !important; page-break-inside: avoid !important; break-inside: avoid !important;">
                             <!-- Row 1: Payment Schedule Title (Single, Full-Width, Left-Aligned Ordinal Header) -->
                             <div class="card-row-1" style="display: block; width: 100%; text-align: left; border-bottom: 1px solid #000000 !important; padding-bottom: 2px !important; margin-bottom: 2px !important;">
-                                <strong class="dealer-label payment-schedule-title" style="font-size: 8pt; font-weight: 800 !important; color: #000000 !important; text-transform: uppercase; display: block; text-align: left;">${paymentScheduleTitle}</strong>
+                                <strong class="dealer-label payment-schedule-title" style="font-size: 8pt; font-weight: 800 !important; color: #000000 !important; text-transform: uppercase; display: block; text-align: left;">${installmentTitle}</strong>
                             </div>
                             <!-- Row 2: Date, Day, Time -->
                             <div class="card-row-2" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; border-bottom: 1px dotted #cccccc !important; padding-bottom: 2px !important; margin-bottom: 2px !important; font-size: 7.5pt; line-height: 1.2;">
-                                <div><strong class="dealer-label" style="color: #000000 !important;">DATE:</strong> <span style="color: #000000 !important;">${paymentDateLabel}</span></div>
-                                <div><strong class="dealer-label" style="color: #000000 !important;">DAY:</strong> <span style="color: #000000 !important;">${paymentDayLabel}</span></div>
-                                <div><strong class="dealer-label" style="color: #000000 !important;">TIME:</strong> <span style="color: #000000 !important;">${paymentTimeLabel}</span></div>
-                            </div>
-                            <div class="payment-method-reference" style="font-size: 7.5pt; line-height: 1.3; border-bottom: 1px dotted #cccccc !important; padding: 2px 0; margin-bottom: 2px;">
-                                <strong>PAYMENT METHOD:</strong> ${paymentMode}
-                                ${p.bankNetwork ? ` &bull; <strong>BANK / NETWORK:</strong> ${p.bankNetwork}` : ''}
-                                ${paymentReference ? `<br><strong>REFERENCE NUMBER:</strong> ${paymentReference}` : ''}
+                                <div><strong class="dealer-label" style="color: #000000 !important;">DATE:</strong> <span style="color: #000000 !important;">${p.date || dateFormatted}</span></div>
+                                <div><strong class="dealer-label" style="color: #000000 !important;">DAY:</strong> <span style="color: #000000 !important;">${p.day || currentDay}</span></div>
+                                <div><strong class="dealer-label" style="color: #000000 !important;">TIME:</strong> <span style="color: #000000 !important;">${p.time || timeFormatted}</span></div>
                             </div>
                             <!-- Row 3: Total Amount (Debit) -->
                             <div class="card-row-3" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dotted #cccccc !important; padding-bottom: 2px !important; margin-bottom: 2px !important; font-size: 7.5pt;">
@@ -6502,7 +6352,7 @@
                     </div>
 
                     <!-- Slip Meta Bar -->
-                    <div class="gug-slip-meta-bar" style="display: flex; justify-content: space-between; align-items: center; background: #ffffff !important; background-color: #ffffff !important; padding: 2px 6px !important; border-top: 1px solid #000000 !important; border-bottom: 1px solid #000000 !important; margin-bottom: 4px !important; font-size: 7.5pt; line-height: 1.15; color: #000000 !important;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: #ffffff !important; background-color: #ffffff !important; padding: 2px 6px !important; border-top: 1px solid #000000 !important; border-bottom: 1px solid #000000 !important; margin-bottom: 4px !important; font-size: 7.5pt; line-height: 1.15; color: #000000 !important;">
                         <div><strong style="color: #000000 !important;">DOCUMENT:</strong> <span style="font-weight: 800 !important; color: #dc2626 !important; text-transform: uppercase;">DEALER SLIP</span></div>
                         <div><strong style="color: #000000 !important;">REF #:</strong> <code class="order-id" style="color: #dc2626 !important; font-weight: 700 !important; background: #ffffff !important; border: 1px solid #000000 !important; padding: 0 3px; border-radius: 2px; font-size: 7.5pt;">${refCode}</code></div>
                         <div><strong style="color: #000000 !important;">DATE:</strong> <span style="color: #000000 !important;">${dateFormatted} ${timeFormatted}</span></div>
@@ -6667,73 +6517,6 @@
             return { success: true, count: employees.length, mode: 'batch_employees' };
         }
 
-        applyDealerSlipTheme(printContainer) {
-            if (!printContainer) return;
-            printContainer.querySelectorAll('.gug-individual-slip').forEach(slip => {
-                slip.style.setProperty('color', '#000000', 'important');
-                slip.style.setProperty('background', '#ffffff', 'important');
-                slip.style.setProperty('border', '1px solid #cbd5e1', 'important');
-                slip.style.setProperty('padding', '12px 16px', 'important');
-                slip.style.setProperty('page-break-inside', 'auto', 'important');
-                slip.style.setProperty('break-inside', 'auto', 'important');
-
-                slip.querySelectorAll('*').forEach(element => {
-                    element.style.setProperty('color', '#000000', 'important');
-                });
-
-                const applyPanel = (selector, background, border) => {
-                    slip.querySelectorAll(selector).forEach(element => {
-                        element.style.setProperty('background', background, 'important');
-                        element.style.setProperty('color', '#000000', 'important');
-                        if (border) element.style.setProperty('border-color', border, 'important');
-                    });
-                };
-
-                const header = slip.querySelector('.gug-slip-brand-header');
-                if (header) {
-                    header.style.setProperty('background', 'transparent', 'important');
-                    header.style.setProperty('background-color', 'transparent', 'important');
-                    header.style.setProperty('color', '#000000', 'important');
-                    header.style.setProperty('border', '0', 'important');
-                    header.style.setProperty('padding', '0 0 3px', 'important');
-                    header.querySelectorAll('*').forEach(element => {
-                        element.style.setProperty('color', '#000000', 'important');
-                    });
-                    const logo = header.querySelector('.gug-print-logo-img');
-                    if (logo) {
-                        logo.style.setProperty('background', 'transparent', 'important');
-                        logo.style.setProperty('border', '0', 'important');
-                        logo.style.setProperty('box-shadow', 'none', 'important');
-                    }
-                }
-
-                applyPanel('.gug-slip-meta-bar', '#eaf2ff', '#93c5fd');
-                applyPanel('.dealer-overview-section', '#f1f5f9', '#cbd5e1');
-                applyPanel('.dealer-ledger-section', '#fff7ed', '#fdba74');
-                applyPanel('.payment-schedule-card', '#f8fafc', '#94a3b8');
-                applyPanel('.payment-schedule-card .card-row-1', '#dbeafe');
-                applyPanel('.payment-schedule-card .card-row-4 > div:first-child', '#dcfce7', '#86efac');
-                applyPanel('.payment-schedule-card .card-row-4 > div:last-child', '#fef3c7', '#fcd34d');
-                applyPanel('.dealer-ledger-summary-bar', '#e0f2fe', '#7dd3fc');
-                slip.querySelectorAll('.dealer-overview-section .badge').forEach(badge => {
-                    const isClear = badge.textContent.toLowerCase().includes('clear');
-                    badge.style.setProperty('background', isClear ? '#dcfce7' : '#fee2e2', 'important');
-                    badge.style.setProperty('border-color', isClear ? '#86efac' : '#fca5a5', 'important');
-                    badge.style.setProperty('color', '#000000', 'important');
-                });
-                slip.querySelectorAll('.dealer-ledger-section').forEach(section => {
-                    section.style.setProperty('page-break-inside', 'auto', 'important');
-                    section.style.setProperty('break-inside', 'auto', 'important');
-                });
-
-                slip.querySelectorAll('.payment-schedule-card').forEach(card => {
-                    card.style.setProperty('border-left', '3px solid #dc2626', 'important');
-                    card.style.setProperty('padding', '6px 8px', 'important');
-                    card.style.setProperty('margin-bottom', '6px', 'important');
-                });
-            });
-        }
-
         printBatchDealerSlips() {
             const dealers = (typeof this.getDealers === 'function') ? this.getDealers() : [];
             if (!dealers || dealers.length === 0) {
@@ -6756,7 +6539,6 @@
             }).join('');
 
             printContainer.innerHTML = slipsHtml;
-            this.applyDealerSlipTheme(printContainer);
 
             document.body.classList.add('gug-individual-print-active');
             setTimeout(() => {
@@ -6871,7 +6653,6 @@
             }
 
             printContainer.innerHTML = this.generateSingleDealerSlipHtml(d, summary, currentUser, true);
-            this.applyDealerSlipTheme(printContainer);
 
             document.body.classList.add('gug-individual-print-active');
             setTimeout(() => {
@@ -7780,3 +7561,5 @@
     };
 
 })(window);
+
+

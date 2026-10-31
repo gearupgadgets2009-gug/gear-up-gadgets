@@ -442,13 +442,6 @@
                             </select>
                         </div>
                         <div class="col-lg-3 col-md-6 d-flex justify-content-end gap-2 flex-wrap">
-                            <input type="file" id="catalog-import-file" accept=".json,application/json" class="d-none" onchange="importCatalogJson(this)">
-                            <button type="button" class="btn btn-outline-success d-flex align-items-center gap-1" onclick="document.getElementById('catalog-import-file').click()" title="Import and merge a catalog JSON backup">
-                                <i class="fas fa-file-import"></i> <span>Import</span>
-                            </button>
-                            <button type="button" class="btn btn-outline-success d-flex align-items-center gap-1" onclick="exportCatalogJson()" title="Export the complete catalog as a JSON backup">
-                                <i class="fas fa-file-export"></i> <span>Export</span>
-                            </button>
                             <button class="btn btn-outline-primary d-flex align-items-center gap-1" onclick="if(window.GUG_FIREBASE) window.GUG_FIREBASE.uploadLocalCatalogToFirebase(); else alert('Connecting to Firebase, please try again in a few seconds...');" title="Upload & sync all local products to Firebase Cloud Firestore">
                                 <i class="fas fa-cloud-arrow-up text-primary"></i> <span>Firebase Sync</span>
                             </button>
@@ -894,7 +887,7 @@
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label">SKU (Stock Keeping Unit) <span class="text-danger">*</span></label>
-                                        <input type="text" id="prod-sku" class="form-control text-uppercase" placeholder="Generated automatically" readonly required>
+                                        <input type="text" id="prod-sku" class="form-control text-uppercase" placeholder="GUG-SW-PRO-01" required>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="d-flex justify-content-between align-items-center mb-1">
@@ -918,7 +911,7 @@
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label">Barcode (EAN / UPC)</label>
-                                        <input type="text" id="prod-barcode" class="form-control" placeholder="Generated automatically" readonly>
+                                        <input type="text" id="prod-barcode" class="form-control" placeholder="896400112201">
                                     </div>
                                     <div class="col-12">
                                         <div class="p-3 bg-light rounded border d-flex justify-content-between align-items-center">
@@ -933,7 +926,11 @@
                                         </div>
                                     </div>
                                     <div class="col-12">
-                                        <label class="form-label">Full Technical Description (Optional)</label>
+                                        <label class="form-label">Short Description / Key Specs</label>
+                                        <input type="text" id="prod-short-desc" class="form-control" placeholder="1.96-inch AMOLED Display, Titanium Casing, 7-day battery life">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Full Technical Description</label>
                                         <textarea id="prod-desc" class="form-control" rows="3" placeholder="Detailed product specifications, box contents, compatibility notes..."></textarea>
                                     </div>
                                 </div>
@@ -1008,9 +1005,21 @@
                             <!-- Tab 3: Pricing & Profit -->
                             <div class="tab-pane fade" id="tab-pricing">
                                 <div class="row g-3">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
+                                        <label class="form-label">Purchase Price (PKR) <span class="text-danger">*</span></label>
+                                        <input type="number" id="prod-purchase-price" class="form-control" placeholder="16500" oninput="calculateMargin(); calculateModalSalePreview();" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Cost Price / Landing Cost (PKR)</label>
+                                        <input type="number" id="prod-cost-price" class="form-control" placeholder="17200" oninput="calculateMargin()">
+                                    </div>
+                                    <div class="col-md-4">
                                         <label class="form-label">Regular Retail Selling Price (PKR) <span class="text-danger">*</span></label>
-                                        <input type="number" id="prod-selling-price" class="form-control" placeholder="24999" min="0.01" step="any" oninput="calculateModalSalePreview();" required>
+                                        <input type="number" id="prod-selling-price" class="form-control" placeholder="24999" oninput="calculateMargin(); calculateModalSalePreview();" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Wholesale / Corporate Price (PKR)</label>
+                                        <input type="number" id="prod-wholesale-price" class="form-control" placeholder="21000">
                                     </div>
                                     <div class="col-md-4">
                                         <div class="d-flex justify-content-between align-items-center mb-1">
@@ -1028,6 +1037,13 @@
                                          </select>
                                          <input type="text" id="prod-warranty-custom" class="form-control mt-2" placeholder="e.g. 3 Years Onsite Replacement" style="display: none;">
                                     </div>
+                                    <div class="col-md-4">
+                                        <div class="p-3 bg-light rounded border text-center">
+                                            <span class="text-secondary small fw-bold text-uppercase d-block">Estimated Profit Margin</span>
+                                            <span class="fs-4 fw-bold text-success" id="calc-margin-badge">31%</span>
+                                        </div>
+                                    </div>
+
                                     <!-- Dynamic Percentage Sale / Discount System Section -->
                                     <div class="col-12 mt-3">
                                         <div class="card border border-danger border-opacity-25 bg-danger bg-opacity-10 p-3 rounded-3">
@@ -1046,9 +1062,9 @@
                                             <div id="sale-details-area" style="display: none;" class="mt-3 pt-3 border-top border-danger border-opacity-25">
                                                 <div class="row g-3 align-items-center">
                                                     <div class="col-md-5">
-                                                        <label class="form-label fw-bold small text-dark">Discount Percentage (%) <span class="text-secondary">(Optional)</span></label>
+                                                        <label class="form-label fw-bold small text-dark">Discount Percentage (%) <span class="text-danger">*</span></label>
                                                         <div class="input-group">
-                                                            <input type="number" id="prod-sale-percent" class="form-control fw-bold" placeholder="Enter discount" min="0" max="99" step="any" oninput="calculateModalSalePreview()">
+                                                            <input type="number" id="prod-sale-percent" class="form-control fw-bold" placeholder="20" min="0.1" max="99" step="any" oninput="calculateModalSalePreview()">
                                                             <span class="input-group-text bg-white fw-bold text-danger">% OFF</span>
                                                         </div>
                                                         <!-- Quick Presets -->
@@ -1073,7 +1089,7 @@
                                                                 <span class="text-danger fw-bold" id="modal-sale-prev-savings">- Rs. 0</span>
                                                             </div>
                                                             <div class="d-flex justify-content-between align-items-center border-top pt-2 mt-1">
-                                                                <span class="fw-bold text-dark">After Discount Price:</span>
+                                                                <span class="fw-bold text-dark">Live Discounted Selling Price:</span>
                                                                 <span class="fw-bold text-danger fs-5" id="modal-sale-prev-final">Rs. 0</span>
                                                             </div>
                                                         </div>
@@ -1087,10 +1103,10 @@
 
                             <!-- Tab 4: Inventory & Hubs (Dynamic City Input & Multi-City Stock Grouping) -->
                             <div class="tab-pane fade" id="tab-inventory">
-                                <div class="alert border small text-white mb-3 d-flex flex-wrap align-items-center justify-content-between gap-2" style="background: rgba(10, 10, 15, 0.45) !important; background-color: rgba(10, 10, 15, 0.45) !important; border-color: rgba(255, 255, 255, 0.12) !important;">
+                                <div class="alert alert-light border small text-secondary mb-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
                                     <div>
                                         <i class="fas fa-map-marker-alt text-danger me-2"></i>
-                                        <strong class="text-white">Multi-City Inventory Allocation:</strong> <span class="text-white">Add stock across any city. Type any custom city name or choose from suggestions.</span>
+                                        <strong>Multi-City Inventory Allocation:</strong> Add stock across any city. Type any custom city name or choose from suggestions.
                                     </div>
                                     <button type="button" class="btn btn-sm btn-outline-danger" onclick="addCityStockRow()">
                                         <i class="fas fa-plus-circle me-1"></i> Add City Stock Location
@@ -1109,21 +1125,6 @@
                                         <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addCityStockRow()">
                                             <i class="fas fa-plus me-1"></i> + Add Another City
                                         </button>
-                                    </div>
-                                </div>
-
-                                <div class="row g-3 mb-3">
-                                    <div class="col-md-4">
-                                        <label class="form-label fw-bold text-dark">Total Unit Price (PKR)</label>
-                                        <input type="number" id="prod-total-unit-price" class="form-control" min="0" step="any" placeholder="Optional">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label fw-bold text-dark">Per Unit Price (PKR)</label>
-                                        <input type="number" id="prod-per-unit-price" class="form-control" min="0" step="any" placeholder="Optional">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label fw-bold text-dark">Purchasing Price (PKR)</label>
-                                        <input type="number" id="prod-purchasing-price" class="form-control" min="0" step="any" placeholder="Optional">
                                     </div>
                                 </div>
 
@@ -1157,11 +1158,18 @@
                                     <i class="fas fa-info-circle text-info me-1"></i> Specify color, storage, or switch variations for this item.
                                 </div>
                                 <div id="variants-container">
+                                    <div class="row g-2 mb-2 variant-row">
+                                        <div class="col-5">
+                                            <input type="text" class="form-control form-control-sm variant-name" placeholder="Variant Name (e.g. Space Black / 16GB)" value="Standard Edition">
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="text" class="form-control form-control-sm variant-sku" placeholder="Variant SKU" value="">
+                                        </div>
+                                        <div class="col-3">
+                                            <input type="number" class="form-control form-control-sm variant-price" placeholder="Price" value="">
+                                        </div>
+                                    </div>
                                 </div>
-                                <button type="button" class="btn btn-outline-danger btn-sm fw-bold mt-2" onclick="addProductVariantRow()">
-                                    <i class="fas fa-plus me-1"></i> Add Variant
-                                </button>
-                                <small class="d-block text-muted mt-2">Variant name and price are required only when a variant row contains data. Leave all rows blank to save without variants.</small>
                             </div>
 
                             <!-- Tab 6: Website & SEO -->
@@ -1609,9 +1617,7 @@
                         ${cityLocationSummary}
                     </td>
                     <td>
-                        <button type="button" class="btn btn-sm ${p.status === 'Draft' ? 'btn-outline-secondary' : 'btn-outline-success'}" onclick="toggleProductPublishStatus('${p.id}')" title="Click to ${p.status === 'Draft' ? 'publish' : 'move to draft'} this product">
-                            <i class="fas ${p.status === 'Draft' ? 'fa-eye-slash' : 'fa-eye'} me-1"></i>${p.status === 'Draft' ? 'Draft' : 'Published'}
-                        </button>
+                        <span class="badge ${p.status === 'Draft' ? 'bg-secondary' : 'bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25'}">${p.status || 'Published'}</span>
                     </td>
                     <td class="text-end pe-4">
                         <div class="d-inline-flex align-items-center gap-1">
@@ -1635,7 +1641,7 @@
                             </button>
 
                             <!-- Edit Button (Glowing White) -->
-                            <button class="btn btn-sm btn-edit-glowing" onclick="editProduct('${p.id}')" title="Edit Full Product Details"><i class="fas fa-edit me-1"></i><span>Edit</span></button>
+                            <button class="btn btn-sm btn-edit-glowing" onclick="editProduct('${p.id}')" title="Edit Full Product Details"><i class="fas fa-edit"></i></button>
 
                             <!-- Delete Button -->
                             <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct('${p.id}')" title="Delete Product"><i class="fas fa-trash"></i></button>
@@ -1645,115 +1651,6 @@
                 tbody.appendChild(tr);
             });
         }
-
-        function exportCatalogJson() {
-            const products = GUG_DB.getProducts();
-            const blob = new Blob([JSON.stringify(products, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `gearup-product-catalog-${new Date().toISOString().slice(0, 10)}.json`;
-            link.click();
-            setTimeout(() => URL.revokeObjectURL(url), 0);
-            GUG_DB.showToast(`${products.length} catalog products exported.`, 'success', 'Catalog Exported');
-        }
-        window.exportCatalogJson = exportCatalogJson;
-
-        function importCatalogJson(input) {
-            const file = input.files && input.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = async () => {
-                try {
-                    const imported = JSON.parse(String(reader.result || ''));
-                    if (!Array.isArray(imported) || imported.some(product =>
-                        !product || typeof product !== 'object' || Array.isArray(product) ||
-                        !(String(product.title || product.name || '').trim())
-                    )) {
-                        throw new Error('The file must contain a JSON array of products with a title or name.');
-                    }
-
-                    const normalizedProducts = imported.map(product => {
-                        const normalized = { ...product };
-                        normalized.title = String(product.title || product.name).trim();
-                        normalized.name = String(product.name || normalized.title).trim();
-                        const sellingPrice = Number(product.sellingPrice !== undefined ? product.sellingPrice : product.price);
-                        if (!Number.isFinite(sellingPrice) || sellingPrice < 0) {
-                            throw new Error(`Product "${normalized.title}" has an invalid selling price.`);
-                        }
-                        normalized.sellingPrice = sellingPrice;
-                        return normalized;
-                    });
-
-                    normalizedProducts.forEach(normalized => {
-                        GUG_DB.saveProduct(normalized);
-                    });
-
-                    let failedCloudSyncs = 0;
-                    if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.saveProduct === 'function') {
-                        const syncResults = await Promise.all(normalizedProducts.map(product =>
-                            Promise.resolve(window.GUG_FIREBASE.saveProduct(product)).then(
-                                () => true,
-                                error => {
-                                    console.error(`Cloud sync failed for imported product "${product.title}".`, error);
-                                    return false;
-                                }
-                            )
-                        ));
-                        failedCloudSyncs = syncResults.filter(success => !success).length;
-                    }
-
-                    populateDropdowns();
-                    renderProductsTable();
-                    updateStats();
-                    renderSaleCampaignProducts();
-                    if (failedCloudSyncs) {
-                        GUG_DB.showToast(`${normalizedProducts.length} products imported locally; cloud sync failed for ${failedCloudSyncs}.`, 'warning', 'Catalog Sync Incomplete');
-                    } else {
-                        GUG_DB.showToast(`${normalizedProducts.length} products imported and merged with the catalog.`, 'success', 'Catalog Imported');
-                    }
-                } catch (error) {
-                    console.error('Catalog import failed:', error);
-                    GUG_DB.showToast(error.message || 'The catalog file could not be imported.', 'error', 'Import Failed');
-                } finally {
-                    input.value = '';
-                }
-            };
-            reader.onerror = () => {
-                console.error('Could not read the selected catalog file.');
-                GUG_DB.showToast('The selected catalog file could not be read.', 'error', 'Import Failed');
-                input.value = '';
-            };
-            reader.readAsText(file);
-        }
-        window.importCatalogJson = importCatalogJson;
-
-        async function toggleProductPublishStatus(id) {
-            const product = GUG_DB.getProducts().find(item => String(item.id) === String(id));
-            if (!product) {
-                GUG_DB.showToast('The selected product could not be found.', 'error', 'Status Not Updated');
-                return;
-            }
-
-            product.status = product.status === 'Draft' ? 'Published' : 'Draft';
-            GUG_DB.saveProduct(product);
-            if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.saveProduct === 'function') {
-                try {
-                    await window.GUG_FIREBASE.saveProduct(product);
-                } catch (error) {
-                    console.error(`Cloud sync failed for product "${product.title || product.name}".`, error);
-                    renderProductsTable();
-                    updateStats();
-                    GUG_DB.showToast(`The status was saved locally, but cloud sync failed for "${product.title || product.name}".`, 'warning', 'Status Sync Incomplete');
-                    return;
-                }
-            }
-            renderProductsTable();
-            updateStats();
-            GUG_DB.showToast(`"${product.title || product.name}" is now ${product.status}.`, 'success', 'Product Status Updated');
-        }
-        window.toggleProductPublishStatus = toggleProductPublishStatus;
 
         function filterProducts() {
             const query = document.getElementById('product-search').value.toLowerCase().trim();
@@ -1808,6 +1705,9 @@
             const area = document.getElementById('sale-details-area');
             if (isOn) {
                 area.style.display = 'block';
+                if (!document.getElementById('prod-sale-percent').value) {
+                    document.getElementById('prod-sale-percent').value = 20;
+                }
                 calculateModalSalePreview();
             } else {
                 area.style.display = 'none';
@@ -1822,19 +1722,19 @@
         function calculateModalSalePreview() {
             const sellInput = document.getElementById('prod-selling-price');
             const basePrice = Number(sellInput.value || 0);
-            const rawPercent = document.getElementById('prod-sale-percent').value.trim();
-            const percent = rawPercent ? Number(rawPercent) : 0;
-            const savings = Number((basePrice * (percent / 100)).toFixed(2));
-            const finalSalePrice = Number(Math.max(0, basePrice - savings).toFixed(2));
-            const formatPrice = value => value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+            const rawVal = Number(document.getElementById('prod-sale-percent').value) || 0;
+            const percent = Math.min(99, Math.max(0.1, rawVal));
+            
+            const savings = Math.round(basePrice * (percent / 100));
+            const finalSalePrice = Math.max(0, basePrice - savings);
 
             const origEl = document.getElementById('modal-sale-prev-orig');
             const saveEl = document.getElementById('modal-sale-prev-savings');
             const finalEl = document.getElementById('modal-sale-prev-final');
 
-            if (origEl) origEl.innerText = 'Rs. ' + formatPrice(basePrice);
-            if (saveEl) saveEl.innerText = `- Rs. ${formatPrice(savings)}${percent > 0 ? ` (${percent}% OFF)` : ''}`;
-            if (finalEl) finalEl.innerText = 'Rs. ' + formatPrice(finalSalePrice);
+            if (origEl) origEl.innerText = 'Rs.  ' + basePrice.toLocaleString();
+            if (saveEl) saveEl.innerText = `- Rs. ${savings.toLocaleString()} (${percent}% OFF)`;
+            if (finalEl) finalEl.innerText = 'Rs.  ' + finalSalePrice.toLocaleString();
         }
 
         function toggleCustomField(type) {
@@ -1913,48 +1813,6 @@
             updateTotalStockPreview();
         }
 
-        function addProductVariantRow(variant = {}) {
-            const container = document.getElementById('variants-container');
-            if (!container) return;
-
-            const row = document.createElement('div');
-            row.className = 'row g-2 mb-2 variant-row align-items-center';
-            row.dataset.variantId = variant.id || '';
-            row.dataset.variantStock = variant.stock !== undefined ? String(variant.stock) : '';
-            row.innerHTML = `
-                <div class="col-5">
-                    <input type="text" class="form-control form-control-sm variant-name" placeholder="Variant Name (e.g. Space Black / 16GB)">
-                </div>
-                <div class="col-4">
-                    <input type="text" class="form-control form-control-sm variant-sku" placeholder="Variant SKU (optional)">
-                </div>
-                <div class="col-2">
-                    <input type="number" class="form-control form-control-sm variant-price" placeholder="Price" min="0" step="0.01">
-                </div>
-                <div class="col-1">
-                    <button type="button" class="btn btn-outline-danger btn-sm w-100" title="Remove variant" aria-label="Remove variant">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            `;
-            row.querySelector('.variant-name').value = variant.name || variant.storage || '';
-            row.querySelector('.variant-sku').value = variant.sku || '';
-            row.querySelector('.variant-price').value = variant.price !== undefined ? variant.price : '';
-            row.querySelector('button').addEventListener('click', () => row.remove());
-            container.appendChild(row);
-        }
-
-        function resetProductVariantRows(variants = []) {
-            const container = document.getElementById('variants-container');
-            if (!container) return;
-            container.innerHTML = '';
-            if (Array.isArray(variants) && variants.length) {
-                variants.forEach(variant => addProductVariantRow(variant));
-            } else {
-                addProductVariantRow();
-            }
-        }
-
         function updateTotalStockPreview() {
             let total = 0;
             const qtyInputs = document.querySelectorAll('#city-stock-container .city-qty-input');
@@ -1965,45 +1823,11 @@
             if (badge) badge.innerText = `${total.toLocaleString()} Units`;
         }
 
-        function generateUniqueProductIdentifiers(excludeProductId = '') {
-            const products = GUG_DB.getProducts();
-            const usedSkus = new Set(products
-                .filter(product => String(product.id) !== String(excludeProductId))
-                .map(product => String(product.sku || '').trim().toUpperCase())
-                .filter(Boolean));
-            const usedBarcodes = new Set(products
-                .filter(product => String(product.id) !== String(excludeProductId))
-                .map(product => String(product.barcode || '').trim())
-                .filter(Boolean));
-
-            let sku = '';
-            for (let attempt = 0; attempt < 100; attempt++) {
-                sku = `GUG-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
-                if (!usedSkus.has(sku)) break;
-                sku = '';
-            }
-
-            let barcode = '';
-            for (let attempt = 0; attempt < 1000; attempt++) {
-                barcode = `200${String(Date.now()).slice(-7)}${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`;
-                if (!usedBarcodes.has(barcode)) break;
-                barcode = '';
-            }
-
-            if (!sku || !barcode) {
-                throw new Error('Could not generate unique product identifiers. Please reopen the product form.');
-            }
-            return { sku, barcode };
-        }
-
         function openProductModal() {
             document.getElementById('productForm').reset();
             document.getElementById('prod-id').value = '';
-            const identifiers = generateUniqueProductIdentifiers();
-            document.getElementById('prod-sku').value = identifiers.sku;
-            document.getElementById('prod-barcode').value = identifiers.barcode;
-            resetProductVariantRows();
             document.getElementById('modalProductTitle').innerHTML = '<i class="fas fa-box-open text-danger me-2"></i> Add New Product to Catalog';
+            document.getElementById('calc-margin-badge').innerText = '30%';
             
             // Reset custom input fields
             document.getElementById('prod-category-custom').style.display = 'none';
@@ -2017,7 +1841,7 @@
             document.getElementById('badge-featured').checked = false;
             document.getElementById('badge-bestseller').checked = false;
             document.getElementById('prod-on-sale').checked = false;
-            document.getElementById('prod-sale-percent').value = '';
+            document.getElementById('prod-sale-percent').value = '20';
             document.getElementById('sale-details-area').style.display = 'none';
             document.getElementById('prod-image-preview').src = 'assets/images/logo.png';
             document.getElementById('prod-threshold').value = '10';
@@ -2043,10 +1867,9 @@
             const p = products.find(item => item.id === id);
             if (!p) return;
 
-            const identifiers = generateUniqueProductIdentifiers(p.id);
             document.getElementById('prod-id').value = p.id;
             document.getElementById('prod-title').value = p.title || '';
-            document.getElementById('prod-sku').value = p.sku || identifiers.sku;
+            document.getElementById('prod-sku').value = p.sku || '';
 
             // Handle Category (Preset or Custom)
             const catSelect = document.getElementById('prod-category');
@@ -2115,20 +1938,20 @@
                 }
             }
 
-            document.getElementById('prod-barcode').value = p.barcode || identifiers.barcode;
+            document.getElementById('prod-barcode').value = p.barcode || '';
+            document.getElementById('prod-short-desc').value = p.shortDescription || '';
             document.getElementById('prod-desc').value = p.description || '';
             document.getElementById('prod-image').value = p.image || '';
             document.getElementById('prod-image-preview').src = p.image || 'assets/images/logo.png';
+            document.getElementById('prod-purchase-price').value = p.purchasePrice || '';
+            document.getElementById('prod-cost-price').value = p.costPrice || '';
             
             // For editing, if it's on sale, base regular price is originalPrice
             const regularPrice = (p.onSale && p.originalPrice) ? p.originalPrice : (p.originalPrice || p.sellingPrice || '');
             document.getElementById('prod-selling-price').value = regularPrice;
-            document.getElementById('prod-total-unit-price').value = p.totalUnitPrice ?? '';
-            document.getElementById('prod-per-unit-price').value = p.perUnitPrice ?? '';
-            document.getElementById('prod-purchasing-price').value = p.purchasingPrice ?? p.purchasePrice ?? '';
+            document.getElementById('prod-wholesale-price').value = p.wholesalePrice || '';
             document.getElementById('prod-threshold').value = p.lowStockThreshold !== undefined ? p.lowStockThreshold : 10;
             document.getElementById('prod-status').value = p.status || 'Published';
-            resetProductVariantRows(p.variants);
             
             const isFeatured = Boolean(p.isFeatured);
             document.getElementById('badge-featured').checked = isFeatured;
@@ -2142,7 +1965,7 @@
             if (!salePct && isOnSale && p.originalPrice && p.sellingPrice && p.originalPrice > p.sellingPrice) {
                 salePct = Math.round(((p.originalPrice - p.sellingPrice) / p.originalPrice) * 100);
             }
-            document.getElementById('prod-sale-percent').value = salePct || '';
+            document.getElementById('prod-sale-percent').value = salePct || 20;
             
             if (isOnSale) {
                 document.getElementById('sale-details-area').style.display = 'block';
@@ -2168,7 +1991,7 @@
             }
             updateTotalStockPreview();
 
-            calculateModalSalePreview();
+            calculateMargin();
             document.getElementById('modalProductTitle').innerHTML = '<i class="fas fa-edit text-danger me-2"></i> Edit Product &mdash; ' + p.title;
 
             const modalEl = document.getElementById('productModal');
@@ -2176,42 +1999,23 @@
             modalInstance.show();
         }
 
+        function calculateMargin() {
+            const cost = Number(document.getElementById('prod-cost-price').value || document.getElementById('prod-purchase-price').value || 0);
+            const sell = Number(document.getElementById('prod-selling-price').value || 0);
+            if (sell > 0 && cost > 0) {
+                const margin = Math.round(((sell - cost) / sell) * 100);
+                document.getElementById('calc-margin-badge').innerText = margin + '%';
+            }
+        }
+
         function saveProductForm() {
             const title = document.getElementById('prod-title').value.trim();
             const sku = document.getElementById('prod-sku').value.trim().toUpperCase();
             const regularSellPrice = Number(document.getElementById('prod-selling-price').value);
 
-            if (!title || !sku || !document.getElementById('prod-barcode').value.trim() ||
-                !Number.isFinite(regularSellPrice) || regularSellPrice <= 0) {
-                window.GUG_DB.showToast('Please provide a product name and a valid regular retail selling price.', 'warning', 'Missing Details');
+            if (!title || !sku || !regularSellPrice) {
+                window.GUG_DB.showToast('Please fill in required fields: Product Name, SKU, and Regular Selling Price.', 'warning', 'Missing Details');
                 return;
-            }
-
-            const variants = [];
-            const variantRows = Array.from(document.querySelectorAll('#variants-container .variant-row'));
-            for (let index = 0; index < variantRows.length; index++) {
-                const row = variantRows[index];
-                const name = row.querySelector('.variant-name').value.trim();
-                const variantSku = row.querySelector('.variant-sku').value.trim().toUpperCase();
-                const rawPrice = row.querySelector('.variant-price').value.trim();
-                if (!name && !variantSku && !rawPrice) continue;
-
-                const price = Number(rawPrice);
-                if (!name || !rawPrice || !Number.isFinite(price) || price <= 0) {
-                    window.GUG_DB.showToast('Each variant needs a name and a price greater than zero.', 'warning', 'Check Variants');
-                    document.querySelector('[data-bs-target="#tab-variants"]').click();
-                    row.querySelector(!name ? '.variant-name' : '.variant-price').focus();
-                    return;
-                }
-
-                variants.push({
-                    id: row.dataset.variantId || `${sku}-V${index + 1}`,
-                    name: name,
-                    storage: name,
-                    sku: variantSku,
-                    price: price,
-                    stock: Number(row.dataset.variantStock || 0)
-                });
             }
 
             // Resolve Category (Preset or Custom)
@@ -2236,20 +2040,17 @@
             }
 
             const prodId = document.getElementById('prod-id').value;
+            const existing = prodId ? GUG_DB.getProducts().find(p => p.id === prodId) : null;
 
             const isOnSale = document.getElementById('prod-on-sale').checked;
-            const salePercentInput = document.getElementById('prod-sale-percent').value.trim();
-            const salePercent = isOnSale && salePercentInput ? Number(salePercentInput) : 0;
-            if (isOnSale && salePercentInput && (!Number.isFinite(salePercent) || salePercent < 0 || salePercent > 99)) {
-                window.GUG_DB.showToast('Discount percentage must be between 0 and 99.', 'warning', 'Invalid Discount');
-                return;
-            }
+            const salePercent = isOnSale ? Math.min(99, Math.max(1, Number(document.getElementById('prod-sale-percent').value) || 0)) : 0;
             
             let finalSellingPrice = regularSellPrice;
             let originalPrice = regularSellPrice;
 
             if (isOnSale && salePercent > 0) {
-                finalSellingPrice = Number((regularSellPrice - (regularSellPrice * (salePercent / 100))).toFixed(2));
+                const savings = Math.round(regularSellPrice * (salePercent / 100));
+                finalSellingPrice = Math.max(0, regularSellPrice - savings);
                 originalPrice = regularSellPrice;
             }
 
@@ -2269,27 +2070,6 @@
                 stockObj['Karachi'] = 0;
             }
 
-            const inventoryPriceFields = [
-                ['prod-total-unit-price', 'Total Unit Price'],
-                ['prod-per-unit-price', 'Per Unit Price'],
-                ['prod-purchasing-price', 'Purchasing Price']
-            ];
-            for (const [fieldId, label] of inventoryPriceFields) {
-                const rawValue = document.getElementById(fieldId).value.trim();
-                if (rawValue && (!Number.isFinite(Number(rawValue)) || Number(rawValue) < 0)) {
-                    window.GUG_DB.showToast(`${label} must be a non-negative number.`, 'warning', 'Invalid Inventory Price');
-                    document.querySelector('[data-bs-target="#tab-inventory"]').click();
-                    document.getElementById(fieldId).focus();
-                    return;
-                }
-            }
-
-            const totalUnitPriceInput = document.getElementById('prod-total-unit-price').value.trim();
-            const perUnitPriceInput = document.getElementById('prod-per-unit-price').value.trim();
-            const purchasingPriceInput = document.getElementById('prod-purchasing-price').value.trim();
-            const totalUnitPrice = totalUnitPriceInput ? Number(totalUnitPriceInput) : null;
-            const perUnitPrice = perUnitPriceInput ? Number(perUnitPriceInput) : null;
-            const purchasingPrice = purchasingPriceInput ? Number(purchasingPriceInput) : null;
             const customThreshold = Number(document.getElementById('prod-threshold').value || 10);
 
             const productData = {
@@ -2302,19 +2082,18 @@
                 barcode: document.getElementById('prod-barcode').value,
                 image: document.getElementById('prod-image').value || 'assets/images/logo.png',
                 description: document.getElementById('prod-desc').value,
-                totalUnitPrice: totalUnitPrice,
-                perUnitPrice: perUnitPrice,
-                purchasingPrice: purchasingPrice,
-                purchasePrice: purchasingPrice,
+                shortDescription: document.getElementById('prod-short-desc').value,
+                purchasePrice: Number(document.getElementById('prod-purchase-price').value || regularSellPrice * 0.65),
+                costPrice: Number(document.getElementById('prod-cost-price').value || regularSellPrice * 0.7),
                 sellingPrice: finalSellingPrice,
                 price: finalSellingPrice,
                 originalPrice: originalPrice,
                 onSale: isOnSale && salePercent > 0,
                 saleDiscountPercent: isOnSale ? salePercent : 0,
+                wholesalePrice: Number(document.getElementById('prod-wholesale-price').value || regularSellPrice * 0.85),
                 lowStockThreshold: customThreshold,
                 status: document.getElementById('prod-status').value,
                 stock: stockObj,
-                variants: variants,
                 hasSerialTracking: document.getElementById('prod-serial-tracking').checked,
                 isFeatured: isFeaturedVal,
                 isBestSeller: document.getElementById('badge-bestseller').checked
@@ -2979,3 +2758,15 @@
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
