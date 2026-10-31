@@ -442,6 +442,13 @@
                             </select>
                         </div>
                         <div class="col-lg-3 col-md-6 d-flex justify-content-end gap-2 flex-wrap">
+                            <input type="file" id="catalog-import-file" accept=".json,application/json" class="d-none" onchange="importCatalogJson(this)">
+                            <button type="button" class="btn btn-outline-success d-flex align-items-center gap-1" onclick="document.getElementById('catalog-import-file').click()" title="Import and merge a catalog JSON backup">
+                                <i class="fas fa-file-import"></i> <span>Import</span>
+                            </button>
+                            <button type="button" class="btn btn-outline-success d-flex align-items-center gap-1" onclick="exportCatalogJson()" title="Export the complete catalog as a JSON backup">
+                                <i class="fas fa-file-export"></i> <span>Export</span>
+                            </button>
                             <button class="btn btn-outline-primary d-flex align-items-center gap-1" onclick="if(window.GUG_FIREBASE) window.GUG_FIREBASE.uploadLocalCatalogToFirebase(); else alert('Connecting to Firebase, please try again in a few seconds...');" title="Upload & sync all local products to Firebase Cloud Firestore">
                                 <i class="fas fa-cloud-arrow-up text-primary"></i> <span>Firebase Sync</span>
                             </button>
@@ -1610,7 +1617,9 @@
                         ${cityLocationSummary}
                     </td>
                     <td>
-                        <span class="badge ${p.status === 'Draft' ? 'bg-secondary' : 'bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25'}">${p.status || 'Published'}</span>
+                        <button type="button" class="btn btn-sm ${p.status === 'Draft' ? 'btn-outline-secondary' : 'btn-outline-success'}" onclick="toggleProductPublishStatus('${p.id}')" title="Click to ${p.status === 'Draft' ? 'publish' : 'move to draft'} this product">
+                            <i class="fas ${p.status === 'Draft' ? 'fa-eye-slash' : 'fa-eye'} me-1"></i>${p.status === 'Draft' ? 'Draft' : 'Published'}
+                        </button>
                     </td>
                     <td class="text-end pe-4">
                         <div class="d-inline-flex align-items-center gap-1">
@@ -1634,7 +1643,7 @@
                             </button>
 
                             <!-- Edit Button (Glowing White) -->
-                            <button class="btn btn-sm btn-edit-glowing" onclick="editProduct('${p.id}')" title="Edit Full Product Details"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-edit-glowing" onclick="editProduct('${p.id}')" title="Edit Full Product Details"><i class="fas fa-edit me-1"></i><span>Edit</span></button>
 
                             <!-- Delete Button -->
                             <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct('${p.id}')" title="Delete Product"><i class="fas fa-trash"></i></button>
@@ -1644,6 +1653,115 @@
                 tbody.appendChild(tr);
             });
         }
+
+        function exportCatalogJson() {
+            const products = GUG_DB.getProducts();
+            const blob = new Blob([JSON.stringify(products, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `gearup-product-catalog-${new Date().toISOString().slice(0, 10)}.json`;
+            link.click();
+            setTimeout(() => URL.revokeObjectURL(url), 0);
+            GUG_DB.showToast(`${products.length} catalog products exported.`, 'success', 'Catalog Exported');
+        }
+        window.exportCatalogJson = exportCatalogJson;
+
+        function importCatalogJson(input) {
+            const file = input.files && input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async () => {
+                try {
+                    const imported = JSON.parse(String(reader.result || ''));
+                    if (!Array.isArray(imported) || imported.some(product =>
+                        !product || typeof product !== 'object' || Array.isArray(product) ||
+                        !(String(product.title || product.name || '').trim())
+                    )) {
+                        throw new Error('The file must contain a JSON array of products with a title or name.');
+                    }
+
+                    const normalizedProducts = imported.map(product => {
+                        const normalized = { ...product };
+                        normalized.title = String(product.title || product.name).trim();
+                        normalized.name = String(product.name || normalized.title).trim();
+                        const sellingPrice = Number(product.sellingPrice !== undefined ? product.sellingPrice : product.price);
+                        if (!Number.isFinite(sellingPrice) || sellingPrice < 0) {
+                            throw new Error(`Product "${normalized.title}" has an invalid selling price.`);
+                        }
+                        normalized.sellingPrice = sellingPrice;
+                        return normalized;
+                    });
+
+                    normalizedProducts.forEach(normalized => {
+                        GUG_DB.saveProduct(normalized);
+                    });
+
+                    let failedCloudSyncs = 0;
+                    if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.saveProduct === 'function') {
+                        const syncResults = await Promise.all(normalizedProducts.map(product =>
+                            Promise.resolve(window.GUG_FIREBASE.saveProduct(product)).then(
+                                () => true,
+                                error => {
+                                    console.error(`Cloud sync failed for imported product "${product.title}".`, error);
+                                    return false;
+                                }
+                            )
+                        ));
+                        failedCloudSyncs = syncResults.filter(success => !success).length;
+                    }
+
+                    populateDropdowns();
+                    renderProductsTable();
+                    updateStats();
+                    renderSaleCampaignProducts();
+                    if (failedCloudSyncs) {
+                        GUG_DB.showToast(`${normalizedProducts.length} products imported locally; cloud sync failed for ${failedCloudSyncs}.`, 'warning', 'Catalog Sync Incomplete');
+                    } else {
+                        GUG_DB.showToast(`${normalizedProducts.length} products imported and merged with the catalog.`, 'success', 'Catalog Imported');
+                    }
+                } catch (error) {
+                    console.error('Catalog import failed:', error);
+                    GUG_DB.showToast(error.message || 'The catalog file could not be imported.', 'error', 'Import Failed');
+                } finally {
+                    input.value = '';
+                }
+            };
+            reader.onerror = () => {
+                console.error('Could not read the selected catalog file.');
+                GUG_DB.showToast('The selected catalog file could not be read.', 'error', 'Import Failed');
+                input.value = '';
+            };
+            reader.readAsText(file);
+        }
+        window.importCatalogJson = importCatalogJson;
+
+        async function toggleProductPublishStatus(id) {
+            const product = GUG_DB.getProducts().find(item => String(item.id) === String(id));
+            if (!product) {
+                GUG_DB.showToast('The selected product could not be found.', 'error', 'Status Not Updated');
+                return;
+            }
+
+            product.status = product.status === 'Draft' ? 'Published' : 'Draft';
+            GUG_DB.saveProduct(product);
+            if (window.GUG_FIREBASE && typeof window.GUG_FIREBASE.saveProduct === 'function') {
+                try {
+                    await window.GUG_FIREBASE.saveProduct(product);
+                } catch (error) {
+                    console.error(`Cloud sync failed for product "${product.title || product.name}".`, error);
+                    renderProductsTable();
+                    updateStats();
+                    GUG_DB.showToast(`The status was saved locally, but cloud sync failed for "${product.title || product.name}".`, 'warning', 'Status Sync Incomplete');
+                    return;
+                }
+            }
+            renderProductsTable();
+            updateStats();
+            GUG_DB.showToast(`"${product.title || product.name}" is now ${product.status}.`, 'success', 'Product Status Updated');
+        }
+        window.toggleProductPublishStatus = toggleProductPublishStatus;
 
         function filterProducts() {
             const query = document.getElementById('product-search').value.toLowerCase().trim();
@@ -2823,12 +2941,6 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
 
 
 

@@ -1239,6 +1239,8 @@ function addToCart(productOrId, qty = 1) {
         cart.push({
             id: product.id,
             name: product.name || product.title,
+            sku: product.sku || '',
+            variant: product.variant || product.storage || '',
             price: cleanPrice,
             onSale: !!product.onSale,
             originalPrice: cleanOrigPrice,

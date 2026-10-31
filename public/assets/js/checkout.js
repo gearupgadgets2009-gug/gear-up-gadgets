@@ -214,6 +214,7 @@ function handlePlaceOrder(event) {
                 costPrice: Math.round(cleanPrice * 0.65),
                 quantity: item.qty,
                 sku: item.sku || 'GUG-SKU',
+                variant: item.variant || item.storage || '',
                 image: item.image || '',
                 category: item.category || ''
             };

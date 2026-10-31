@@ -2,5 +2,40 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/zivahshippingpk/public_html/
-    - /bin/mkdir -p $DEPLOYPATH
-    - /bin/cp -r . $DEPLOYPATH
+    - /bin/mkdir -p "$DEPLOYPATH"
+    - >-
+      /bin/bash -o pipefail -c '/bin/tar
+      --exclude=.git
+      --exclude="*/.git"
+      --exclude=.vscode
+      --exclude="*/.vscode"
+      --exclude=node_modules
+      --exclude="*/node_modules"
+      --exclude=uploads
+      --exclude="uploads/*"
+      --exclude="*/uploads"
+      --exclude="*/uploads/*"
+      --exclude=assets/images/dynamic
+      --exclude="assets/images/dynamic/*"
+      --exclude="*/assets/images/dynamic"
+      --exclude="*/assets/images/dynamic/*"
+      --exclude=public/uploads
+      --exclude="public/uploads/*"
+      --exclude=public/assets/images/dynamic
+      --exclude="public/assets/images/dynamic/*"
+      --exclude=runtime-data
+      --exclude="runtime-data/*"
+      --exclude="*/runtime-data"
+      --exclude="*/runtime-data/*"
+      --exclude=data/runtime
+      --exclude="data/runtime/*"
+      --exclude="*/data/runtime"
+      --exclude="*/data/runtime/*"
+      --exclude="*.db"
+      --exclude="*.sqlite"
+      --exclude="*.sqlite3"
+      --exclude="*.db-journal"
+      --exclude="*.sqlite-journal"
+      --exclude="*.runtime.json"
+      --exclude="*.runtime.csv"
+      -cf - . | /bin/tar -xf - -C "$DEPLOYPATH"'

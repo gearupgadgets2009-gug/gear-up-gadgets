@@ -4,6 +4,25 @@ firebase-debug.log
 firestore-debug.log
 ui-debug.log
 
+# Local databases and generated runtime data
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.sqlite-journal
+*.runtime.json
+*.runtime.csv
+/runtime-data/
+/data/runtime/
+**/runtime-data/
+
+# User-uploaded media (keep source assets and product catalog images tracked)
+/uploads/
+/public/uploads/
+/assets/images/dynamic/
+/public/assets/images/dynamic/
+**/uploads/
+
 # Operating System files
 .DS_Store
 Thumbs.db
