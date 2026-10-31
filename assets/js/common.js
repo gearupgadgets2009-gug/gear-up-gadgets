@@ -363,7 +363,6 @@ function applyGlobalTheme() {
     const footerTextColor = cfg.footerTextColor || '#8b949e';
     const accentRed = cfg.accentRed || '#E50303';
     const cardBorderColor = cfg.cardBorderColor || '#1f262e';
-    const stickyNavbar = cfg.stickyNavbar !== false;
     const footerPartners = cfg.footerPartnersEnabled !== false;
 
     // Derived glass tints matching the theme palette while preserving translucency
@@ -506,7 +505,9 @@ function applyGlobalTheme() {
             -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
             box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4) !important;
-            ${stickyNavbar ? '' : 'position: relative !important;'}
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 9999 !important;
         }
         .tf-header .header-inner {
             background: ${glassHeaderBg} !important;

@@ -153,12 +153,20 @@
             text-shadow: none !important;
         }
         .theme-live-preview-sticky {
-            position: sticky;
-            top: 20px;
+            position: sticky !important;
+            top: 20px !important;
+        }
+        body.banner-theme-page {
+            overflow-x: clip !important;
+            overflow-y: visible !important;
+        }
+        body.banner-theme-page .admin-main {
+            overflow-x: clip !important;
+            overflow-y: visible !important;
         }
     </style>
 </head>
-<body>
+<body class="banner-theme-page">
     <!-- Enterprise Sidebar Navigation -->
     <div class="admin-sidebar">
         <div class="d-flex align-items-center mb-3 px-2">
