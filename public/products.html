@@ -894,7 +894,7 @@
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label">SKU (Stock Keeping Unit) <span class="text-danger">*</span></label>
-                                        <input type="text" id="prod-sku" class="form-control text-uppercase" placeholder="GUG-SW-PRO-01" required>
+                                        <input type="text" id="prod-sku" class="form-control text-uppercase" placeholder="Generated automatically" readonly required>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="d-flex justify-content-between align-items-center mb-1">
@@ -918,7 +918,7 @@
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label">Barcode (EAN / UPC)</label>
-                                        <input type="text" id="prod-barcode" class="form-control" placeholder="896400112201">
+                                        <input type="text" id="prod-barcode" class="form-control" placeholder="Generated automatically" readonly>
                                     </div>
                                     <div class="col-12">
                                         <div class="p-3 bg-light rounded border d-flex justify-content-between align-items-center">
@@ -933,11 +933,7 @@
                                         </div>
                                     </div>
                                     <div class="col-12">
-                                        <label class="form-label">Short Description / Key Specs</label>
-                                        <input type="text" id="prod-short-desc" class="form-control" placeholder="1.96-inch AMOLED Display, Titanium Casing, 7-day battery life">
-                                    </div>
-                                    <div class="col-12">
-                                        <label class="form-label">Full Technical Description</label>
+                                        <label class="form-label">Full Technical Description (Optional)</label>
                                         <textarea id="prod-desc" class="form-control" rows="3" placeholder="Detailed product specifications, box contents, compatibility notes..."></textarea>
                                     </div>
                                 </div>
@@ -1012,21 +1008,9 @@
                             <!-- Tab 3: Pricing & Profit -->
                             <div class="tab-pane fade" id="tab-pricing">
                                 <div class="row g-3">
-                                    <div class="col-md-4">
-                                        <label class="form-label">Purchase Price (PKR) <span class="text-danger">*</span></label>
-                                        <input type="number" id="prod-purchase-price" class="form-control" placeholder="16500" oninput="calculateMargin(); calculateModalSalePreview();" required>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">Cost Price / Landing Cost (PKR)</label>
-                                        <input type="number" id="prod-cost-price" class="form-control" placeholder="17200" oninput="calculateMargin()">
-                                    </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-6">
                                         <label class="form-label">Regular Retail Selling Price (PKR) <span class="text-danger">*</span></label>
-                                        <input type="number" id="prod-selling-price" class="form-control" placeholder="24999" oninput="calculateMargin(); calculateModalSalePreview();" required>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">Wholesale / Corporate Price (PKR)</label>
-                                        <input type="number" id="prod-wholesale-price" class="form-control" placeholder="21000">
+                                        <input type="number" id="prod-selling-price" class="form-control" placeholder="24999" min="0.01" step="any" oninput="calculateModalSalePreview();" required>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="d-flex justify-content-between align-items-center mb-1">
@@ -1044,13 +1028,6 @@
                                          </select>
                                          <input type="text" id="prod-warranty-custom" class="form-control mt-2" placeholder="e.g. 3 Years Onsite Replacement" style="display: none;">
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="p-3 bg-light rounded border text-center">
-                                            <span class="text-secondary small fw-bold text-uppercase d-block">Estimated Profit Margin</span>
-                                            <span class="fs-4 fw-bold text-success" id="calc-margin-badge">31%</span>
-                                        </div>
-                                    </div>
-
                                     <!-- Dynamic Percentage Sale / Discount System Section -->
                                     <div class="col-12 mt-3">
                                         <div class="card border border-danger border-opacity-25 bg-danger bg-opacity-10 p-3 rounded-3">
@@ -1069,9 +1046,9 @@
                                             <div id="sale-details-area" style="display: none;" class="mt-3 pt-3 border-top border-danger border-opacity-25">
                                                 <div class="row g-3 align-items-center">
                                                     <div class="col-md-5">
-                                                        <label class="form-label fw-bold small text-dark">Discount Percentage (%) <span class="text-danger">*</span></label>
+                                                        <label class="form-label fw-bold small text-dark">Discount Percentage (%) <span class="text-secondary">(Optional)</span></label>
                                                         <div class="input-group">
-                                                            <input type="number" id="prod-sale-percent" class="form-control fw-bold" placeholder="20" min="0.1" max="99" step="any" oninput="calculateModalSalePreview()">
+                                                            <input type="number" id="prod-sale-percent" class="form-control fw-bold" placeholder="Enter discount" min="0" max="99" step="any" oninput="calculateModalSalePreview()">
                                                             <span class="input-group-text bg-white fw-bold text-danger">% OFF</span>
                                                         </div>
                                                         <!-- Quick Presets -->
@@ -1096,7 +1073,7 @@
                                                                 <span class="text-danger fw-bold" id="modal-sale-prev-savings">- Rs. 0</span>
                                                             </div>
                                                             <div class="d-flex justify-content-between align-items-center border-top pt-2 mt-1">
-                                                                <span class="fw-bold text-dark">Live Discounted Selling Price:</span>
+                                                                <span class="fw-bold text-dark">After Discount Price:</span>
                                                                 <span class="fw-bold text-danger fs-5" id="modal-sale-prev-final">Rs. 0</span>
                                                             </div>
                                                         </div>
@@ -1110,10 +1087,10 @@
 
                             <!-- Tab 4: Inventory & Hubs (Dynamic City Input & Multi-City Stock Grouping) -->
                             <div class="tab-pane fade" id="tab-inventory">
-                                <div class="alert alert-light border small text-secondary mb-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
+                                <div class="alert border small text-white mb-3 d-flex flex-wrap align-items-center justify-content-between gap-2" style="background: rgba(10, 10, 15, 0.45) !important; background-color: rgba(10, 10, 15, 0.45) !important; border-color: rgba(255, 255, 255, 0.12) !important;">
                                     <div>
                                         <i class="fas fa-map-marker-alt text-danger me-2"></i>
-                                        <strong>Multi-City Inventory Allocation:</strong> Add stock across any city. Type any custom city name or choose from suggestions.
+                                        <strong class="text-white">Multi-City Inventory Allocation:</strong> <span class="text-white">Add stock across any city. Type any custom city name or choose from suggestions.</span>
                                     </div>
                                     <button type="button" class="btn btn-sm btn-outline-danger" onclick="addCityStockRow()">
                                         <i class="fas fa-plus-circle me-1"></i> Add City Stock Location
@@ -1132,6 +1109,21 @@
                                         <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addCityStockRow()">
                                             <i class="fas fa-plus me-1"></i> + Add Another City
                                         </button>
+                                    </div>
+                                </div>
+
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-bold text-dark">Total Unit Price (PKR)</label>
+                                        <input type="number" id="prod-total-unit-price" class="form-control" min="0" step="any" placeholder="Optional">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-bold text-dark">Per Unit Price (PKR)</label>
+                                        <input type="number" id="prod-per-unit-price" class="form-control" min="0" step="any" placeholder="Optional">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-bold text-dark">Purchasing Price (PKR)</label>
+                                        <input type="number" id="prod-purchasing-price" class="form-control" min="0" step="any" placeholder="Optional">
                                     </div>
                                 </div>
 
@@ -1816,9 +1808,6 @@
             const area = document.getElementById('sale-details-area');
             if (isOn) {
                 area.style.display = 'block';
-                if (!document.getElementById('prod-sale-percent').value) {
-                    document.getElementById('prod-sale-percent').value = 20;
-                }
                 calculateModalSalePreview();
             } else {
                 area.style.display = 'none';
@@ -1833,19 +1822,19 @@
         function calculateModalSalePreview() {
             const sellInput = document.getElementById('prod-selling-price');
             const basePrice = Number(sellInput.value || 0);
-            const rawVal = Number(document.getElementById('prod-sale-percent').value) || 0;
-            const percent = Math.min(99, Math.max(0.1, rawVal));
-            
-            const savings = Math.round(basePrice * (percent / 100));
-            const finalSalePrice = Math.max(0, basePrice - savings);
+            const rawPercent = document.getElementById('prod-sale-percent').value.trim();
+            const percent = rawPercent ? Number(rawPercent) : 0;
+            const savings = Number((basePrice * (percent / 100)).toFixed(2));
+            const finalSalePrice = Number(Math.max(0, basePrice - savings).toFixed(2));
+            const formatPrice = value => value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 
             const origEl = document.getElementById('modal-sale-prev-orig');
             const saveEl = document.getElementById('modal-sale-prev-savings');
             const finalEl = document.getElementById('modal-sale-prev-final');
 
-            if (origEl) origEl.innerText = 'Rs.  ' + basePrice.toLocaleString();
-            if (saveEl) saveEl.innerText = `- Rs. ${savings.toLocaleString()} (${percent}% OFF)`;
-            if (finalEl) finalEl.innerText = 'Rs.  ' + finalSalePrice.toLocaleString();
+            if (origEl) origEl.innerText = 'Rs. ' + formatPrice(basePrice);
+            if (saveEl) saveEl.innerText = `- Rs. ${formatPrice(savings)}${percent > 0 ? ` (${percent}% OFF)` : ''}`;
+            if (finalEl) finalEl.innerText = 'Rs. ' + formatPrice(finalSalePrice);
         }
 
         function toggleCustomField(type) {
@@ -1976,12 +1965,45 @@
             if (badge) badge.innerText = `${total.toLocaleString()} Units`;
         }
 
+        function generateUniqueProductIdentifiers(excludeProductId = '') {
+            const products = GUG_DB.getProducts();
+            const usedSkus = new Set(products
+                .filter(product => String(product.id) !== String(excludeProductId))
+                .map(product => String(product.sku || '').trim().toUpperCase())
+                .filter(Boolean));
+            const usedBarcodes = new Set(products
+                .filter(product => String(product.id) !== String(excludeProductId))
+                .map(product => String(product.barcode || '').trim())
+                .filter(Boolean));
+
+            let sku = '';
+            for (let attempt = 0; attempt < 100; attempt++) {
+                sku = `GUG-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+                if (!usedSkus.has(sku)) break;
+                sku = '';
+            }
+
+            let barcode = '';
+            for (let attempt = 0; attempt < 1000; attempt++) {
+                barcode = `200${String(Date.now()).slice(-7)}${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`;
+                if (!usedBarcodes.has(barcode)) break;
+                barcode = '';
+            }
+
+            if (!sku || !barcode) {
+                throw new Error('Could not generate unique product identifiers. Please reopen the product form.');
+            }
+            return { sku, barcode };
+        }
+
         function openProductModal() {
             document.getElementById('productForm').reset();
             document.getElementById('prod-id').value = '';
+            const identifiers = generateUniqueProductIdentifiers();
+            document.getElementById('prod-sku').value = identifiers.sku;
+            document.getElementById('prod-barcode').value = identifiers.barcode;
             resetProductVariantRows();
             document.getElementById('modalProductTitle').innerHTML = '<i class="fas fa-box-open text-danger me-2"></i> Add New Product to Catalog';
-            document.getElementById('calc-margin-badge').innerText = '30%';
             
             // Reset custom input fields
             document.getElementById('prod-category-custom').style.display = 'none';
@@ -1995,7 +2017,7 @@
             document.getElementById('badge-featured').checked = false;
             document.getElementById('badge-bestseller').checked = false;
             document.getElementById('prod-on-sale').checked = false;
-            document.getElementById('prod-sale-percent').value = '20';
+            document.getElementById('prod-sale-percent').value = '';
             document.getElementById('sale-details-area').style.display = 'none';
             document.getElementById('prod-image-preview').src = 'assets/images/logo.png';
             document.getElementById('prod-threshold').value = '10';
@@ -2021,9 +2043,10 @@
             const p = products.find(item => item.id === id);
             if (!p) return;
 
+            const identifiers = generateUniqueProductIdentifiers(p.id);
             document.getElementById('prod-id').value = p.id;
             document.getElementById('prod-title').value = p.title || '';
-            document.getElementById('prod-sku').value = p.sku || '';
+            document.getElementById('prod-sku').value = p.sku || identifiers.sku;
 
             // Handle Category (Preset or Custom)
             const catSelect = document.getElementById('prod-category');
@@ -2092,18 +2115,17 @@
                 }
             }
 
-            document.getElementById('prod-barcode').value = p.barcode || '';
-            document.getElementById('prod-short-desc').value = p.shortDescription || '';
+            document.getElementById('prod-barcode').value = p.barcode || identifiers.barcode;
             document.getElementById('prod-desc').value = p.description || '';
             document.getElementById('prod-image').value = p.image || '';
             document.getElementById('prod-image-preview').src = p.image || 'assets/images/logo.png';
-            document.getElementById('prod-purchase-price').value = p.purchasePrice || '';
-            document.getElementById('prod-cost-price').value = p.costPrice || '';
             
             // For editing, if it's on sale, base regular price is originalPrice
             const regularPrice = (p.onSale && p.originalPrice) ? p.originalPrice : (p.originalPrice || p.sellingPrice || '');
             document.getElementById('prod-selling-price').value = regularPrice;
-            document.getElementById('prod-wholesale-price').value = p.wholesalePrice || '';
+            document.getElementById('prod-total-unit-price').value = p.totalUnitPrice ?? '';
+            document.getElementById('prod-per-unit-price').value = p.perUnitPrice ?? '';
+            document.getElementById('prod-purchasing-price').value = p.purchasingPrice ?? p.purchasePrice ?? '';
             document.getElementById('prod-threshold').value = p.lowStockThreshold !== undefined ? p.lowStockThreshold : 10;
             document.getElementById('prod-status').value = p.status || 'Published';
             resetProductVariantRows(p.variants);
@@ -2120,7 +2142,7 @@
             if (!salePct && isOnSale && p.originalPrice && p.sellingPrice && p.originalPrice > p.sellingPrice) {
                 salePct = Math.round(((p.originalPrice - p.sellingPrice) / p.originalPrice) * 100);
             }
-            document.getElementById('prod-sale-percent').value = salePct || 20;
+            document.getElementById('prod-sale-percent').value = salePct || '';
             
             if (isOnSale) {
                 document.getElementById('sale-details-area').style.display = 'block';
@@ -2146,7 +2168,7 @@
             }
             updateTotalStockPreview();
 
-            calculateMargin();
+            calculateModalSalePreview();
             document.getElementById('modalProductTitle').innerHTML = '<i class="fas fa-edit text-danger me-2"></i> Edit Product &mdash; ' + p.title;
 
             const modalEl = document.getElementById('productModal');
@@ -2154,22 +2176,14 @@
             modalInstance.show();
         }
 
-        function calculateMargin() {
-            const cost = Number(document.getElementById('prod-cost-price').value || document.getElementById('prod-purchase-price').value || 0);
-            const sell = Number(document.getElementById('prod-selling-price').value || 0);
-            if (sell > 0 && cost > 0) {
-                const margin = Math.round(((sell - cost) / sell) * 100);
-                document.getElementById('calc-margin-badge').innerText = margin + '%';
-            }
-        }
-
         function saveProductForm() {
             const title = document.getElementById('prod-title').value.trim();
             const sku = document.getElementById('prod-sku').value.trim().toUpperCase();
             const regularSellPrice = Number(document.getElementById('prod-selling-price').value);
 
-            if (!title || !sku || !regularSellPrice) {
-                window.GUG_DB.showToast('Please fill in required fields: Product Name, SKU, and Regular Selling Price.', 'warning', 'Missing Details');
+            if (!title || !sku || !document.getElementById('prod-barcode').value.trim() ||
+                !Number.isFinite(regularSellPrice) || regularSellPrice <= 0) {
+                window.GUG_DB.showToast('Please provide a product name and a valid regular retail selling price.', 'warning', 'Missing Details');
                 return;
             }
 
@@ -2222,17 +2236,20 @@
             }
 
             const prodId = document.getElementById('prod-id').value;
-            const existing = prodId ? GUG_DB.getProducts().find(p => p.id === prodId) : null;
 
             const isOnSale = document.getElementById('prod-on-sale').checked;
-            const salePercent = isOnSale ? Math.min(99, Math.max(1, Number(document.getElementById('prod-sale-percent').value) || 0)) : 0;
+            const salePercentInput = document.getElementById('prod-sale-percent').value.trim();
+            const salePercent = isOnSale && salePercentInput ? Number(salePercentInput) : 0;
+            if (isOnSale && salePercentInput && (!Number.isFinite(salePercent) || salePercent < 0 || salePercent > 99)) {
+                window.GUG_DB.showToast('Discount percentage must be between 0 and 99.', 'warning', 'Invalid Discount');
+                return;
+            }
             
             let finalSellingPrice = regularSellPrice;
             let originalPrice = regularSellPrice;
 
             if (isOnSale && salePercent > 0) {
-                const savings = Math.round(regularSellPrice * (salePercent / 100));
-                finalSellingPrice = Math.max(0, regularSellPrice - savings);
+                finalSellingPrice = Number((regularSellPrice - (regularSellPrice * (salePercent / 100))).toFixed(2));
                 originalPrice = regularSellPrice;
             }
 
@@ -2252,6 +2269,27 @@
                 stockObj['Karachi'] = 0;
             }
 
+            const inventoryPriceFields = [
+                ['prod-total-unit-price', 'Total Unit Price'],
+                ['prod-per-unit-price', 'Per Unit Price'],
+                ['prod-purchasing-price', 'Purchasing Price']
+            ];
+            for (const [fieldId, label] of inventoryPriceFields) {
+                const rawValue = document.getElementById(fieldId).value.trim();
+                if (rawValue && (!Number.isFinite(Number(rawValue)) || Number(rawValue) < 0)) {
+                    window.GUG_DB.showToast(`${label} must be a non-negative number.`, 'warning', 'Invalid Inventory Price');
+                    document.querySelector('[data-bs-target="#tab-inventory"]').click();
+                    document.getElementById(fieldId).focus();
+                    return;
+                }
+            }
+
+            const totalUnitPriceInput = document.getElementById('prod-total-unit-price').value.trim();
+            const perUnitPriceInput = document.getElementById('prod-per-unit-price').value.trim();
+            const purchasingPriceInput = document.getElementById('prod-purchasing-price').value.trim();
+            const totalUnitPrice = totalUnitPriceInput ? Number(totalUnitPriceInput) : null;
+            const perUnitPrice = perUnitPriceInput ? Number(perUnitPriceInput) : null;
+            const purchasingPrice = purchasingPriceInput ? Number(purchasingPriceInput) : null;
             const customThreshold = Number(document.getElementById('prod-threshold').value || 10);
 
             const productData = {
@@ -2264,15 +2302,15 @@
                 barcode: document.getElementById('prod-barcode').value,
                 image: document.getElementById('prod-image').value || 'assets/images/logo.png',
                 description: document.getElementById('prod-desc').value,
-                shortDescription: document.getElementById('prod-short-desc').value,
-                purchasePrice: Number(document.getElementById('prod-purchase-price').value || regularSellPrice * 0.65),
-                costPrice: Number(document.getElementById('prod-cost-price').value || regularSellPrice * 0.7),
+                totalUnitPrice: totalUnitPrice,
+                perUnitPrice: perUnitPrice,
+                purchasingPrice: purchasingPrice,
+                purchasePrice: purchasingPrice,
                 sellingPrice: finalSellingPrice,
                 price: finalSellingPrice,
                 originalPrice: originalPrice,
                 onSale: isOnSale && salePercent > 0,
                 saleDiscountPercent: isOnSale ? salePercent : 0,
-                wholesalePrice: Number(document.getElementById('prod-wholesale-price').value || regularSellPrice * 0.85),
                 lowStockThreshold: customThreshold,
                 status: document.getElementById('prod-status').value,
                 stock: stockObj,
@@ -2941,7 +2979,3 @@
     </script>
 </body>
 </html>
-
-
-
-
