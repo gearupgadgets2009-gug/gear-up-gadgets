@@ -744,18 +744,32 @@ const DEFAULT_THEME = {
     // Contact Numbers (Legacy Single String Compatibility)
     footerPhone: '021 34832214',
     footerPhoneLabel: 'Queries:',
+    footerPhoneLabels: ['Queries:'],
     footerWhatsapp: '',
     footerEmail: 'sales@gearupgadget.com',
     topbarPhone: '021 34832214',
     topbarEmail: 'sales@gearupgadget.com',
     topbarAddress: 'F6 Technocity Mall',
+    topbarAddresses: ['F6 Technocity Mall'],
 
     // Store Hours & Locations
+    weeklySchedule: [
+        { day: 'Monday', closed: false, open: '12:00', close: '20:00' },
+        { day: 'Tuesday', closed: false, open: '12:00', close: '20:00' },
+        { day: 'Wednesday', closed: false, open: '12:00', close: '20:00' },
+        { day: 'Thursday', closed: false, open: '12:00', close: '20:00' },
+        { day: 'Friday', closed: false, open: '12:00', close: '20:00' },
+        { day: 'Saturday', closed: false, open: '12:00', close: '20:00' },
+        { day: 'Sunday', closed: true, open: '12:00', close: '20:00' }
+    ],
     footerStoreHours: '12:00 PM - 8:00 PM',
     footerStoreDays: 'Monday - Saturday (Sunday Closed)',
     footerShopAddress: 'FA-06, 1st floor, Techno City Mall, Karachi.',
+    footerShopAddresses: ['FA-06, 1st floor, Techno City Mall, Karachi.'],
     footerHeadOffice: 'D-5, 4th floor, Osif Center, Block 13 A, University Road Gulshan-e-Iqbal, Karachi-Pakistan.',
+    footerOfficeAddresses: ['D-5, 4th floor, Osif Center, Block 13 A, University Road Gulshan-e-Iqbal, Karachi-Pakistan.'],
     footerAbout: "Pakistan's premier high-end computer store. Servicing tech enthusiasts, gaming communities, and rendering professionals since 2012 with premium hardware, graphics cards, custom PC assembly, and unmatched support.",
+    footerAboutTexts: ["Pakistan's premier high-end computer store. Servicing tech enthusiasts, gaming communities, and rendering professionals since 2012 with premium hardware, graphics cards, custom PC assembly, and unmatched support."],
     footerCopyright: 'Copyright 2021 to 2026 Gear Up Gadgets All rights reserved. [POWERED BY PHOENIX TECHNOLOGY]',
 
     bgAttachment: 'fixed',
@@ -764,6 +778,218 @@ const DEFAULT_THEME = {
     bgImage: 'assets/images/custom-bg.jpg',
     themePreset: 'gear_dark'
 };
+
+const THEME_LIST_FIELDS = {
+    phoneLabels: {
+        containerId: 'theme-phone-labels-list',
+        configKey: 'footerPhoneLabels',
+        legacyKey: 'footerPhoneLabel',
+        label: 'Phone display label',
+        defaultValue: 'Queries:',
+        multiline: false
+    },
+    topbarAddresses: {
+        containerId: 'theme-topbar-addresses-list',
+        configKey: 'topbarAddresses',
+        legacyKey: 'topbarAddress',
+        label: 'Mall tag or address',
+        defaultValue: 'F6 Technocity Mall',
+        multiline: false
+    },
+    shopAddresses: {
+        containerId: 'theme-shop-addresses-list',
+        configKey: 'footerShopAddresses',
+        legacyKey: 'footerShopAddress',
+        label: 'Retail outlet address',
+        defaultValue: DEFAULT_THEME.footerShopAddress,
+        multiline: false
+    },
+    officeAddresses: {
+        containerId: 'theme-office-addresses-list',
+        configKey: 'footerOfficeAddresses',
+        legacyKey: 'footerHeadOffice',
+        label: 'Corporate address',
+        defaultValue: DEFAULT_THEME.footerHeadOffice,
+        multiline: false
+    },
+    aboutTexts: {
+        containerId: 'theme-about-texts-list',
+        configKey: 'footerAboutTexts',
+        legacyKey: 'footerAbout',
+        label: 'Company introduction',
+        defaultValue: DEFAULT_THEME.footerAbout,
+        multiline: true
+    }
+};
+
+const THEME_SCHEDULE_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+function getThemeListValues(fieldName) {
+    const field = THEME_LIST_FIELDS[fieldName];
+    const container = field && document.getElementById(field.containerId);
+    if (!container) return [];
+    return Array.from(container.querySelectorAll('[data-theme-list-value]'))
+        .map(input => input.value.trim())
+        .filter(Boolean);
+}
+
+function renderThemeListFields(fieldName, values) {
+    const field = THEME_LIST_FIELDS[fieldName];
+    const container = field && document.getElementById(field.containerId);
+    if (!container) return;
+
+    container.replaceChildren();
+    const entries = Array.isArray(values) && values.some(value => String(value || '').trim())
+        ? values
+        : [field.defaultValue];
+    entries.forEach(value => {
+        const row = document.createElement('div');
+        row.className = 'input-group input-group-sm';
+        const input = document.createElement(field.multiline ? 'textarea' : 'input');
+        input.className = 'form-control';
+        input.dataset.themeListValue = fieldName;
+        input.setAttribute('aria-label', field.label);
+        input.value = typeof value === 'string' ? value : '';
+        if (field.multiline) input.rows = 2;
+        else input.type = 'text';
+        input.addEventListener('input', window.updateLiveThemePreview);
+
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'btn btn-outline-danger';
+        remove.title = `Remove ${field.label.toLowerCase()}`;
+        remove.setAttribute('aria-label', remove.title);
+        remove.innerHTML = '<i class="fas fa-trash"></i>';
+        remove.addEventListener('click', () => {
+            if (container.querySelectorAll('[data-theme-list-value]').length > 1) {
+                row.remove();
+            } else {
+                input.value = '';
+            }
+            window.updateLiveThemePreview();
+        });
+        row.append(input, remove);
+        container.appendChild(row);
+    });
+}
+
+window.addThemeListField = function(fieldName) {
+    const field = THEME_LIST_FIELDS[fieldName];
+    if (!field) return;
+    const container = document.getElementById(field.containerId);
+    const currentValues = container
+        ? Array.from(container.querySelectorAll('[data-theme-list-value]'), input => input.value)
+        : [];
+    renderThemeListFields(fieldName, [...currentValues, '']);
+    const inputs = container && container.querySelectorAll('[data-theme-list-value]');
+    if (inputs && inputs.length) inputs[inputs.length - 1].focus();
+};
+
+function getThemeWeeklySchedule() {
+    const container = document.getElementById('theme-weekly-schedule');
+    if (!container) return [];
+    return THEME_SCHEDULE_DAYS.map(day => {
+        const row = container.querySelector(`[data-schedule-day="${day}"]`);
+        return {
+            day,
+            closed: !!row?.querySelector('[data-schedule-closed]')?.checked,
+            open: row?.querySelector('[data-schedule-open]')?.value || '12:00',
+            close: row?.querySelector('[data-schedule-close]')?.value || '20:00'
+        };
+    });
+}
+
+function formatScheduleTime(value) {
+    const [hourText, minute] = String(value || '12:00').split(':');
+    const hour = Number(hourText);
+    if (!Number.isInteger(hour) || hour < 0 || hour > 23 || !/^\d{2}$/.test(minute || '')) return value;
+    return `${hour % 12 || 12}:${minute} ${hour >= 12 ? 'PM' : 'AM'}`;
+}
+
+function formatThemeWeeklySchedule(schedule) {
+    if (!Array.isArray(schedule) || !schedule.length) return 'Hours not set';
+    const groups = [];
+    schedule.forEach((entry, index) => {
+        const value = entry.closed ? 'Closed' : `${formatScheduleTime(entry.open)} - ${formatScheduleTime(entry.close)}`;
+        const previous = groups[groups.length - 1];
+        if (previous && previous.value === value) {
+            previous.end = index;
+        } else {
+            groups.push({ start: index, end: index, value });
+        }
+    });
+    const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    return groups.map(group => {
+        const dayRange = group.start === group.end
+            ? dayNames[group.start]
+            : `${dayNames[group.start]}-${dayNames[group.end]}`;
+        return `${dayRange}: ${group.value}`;
+    }).join(' · ');
+}
+
+function renderThemeWeeklySchedule(schedule) {
+    const container = document.getElementById('theme-weekly-schedule');
+    if (!container) return;
+    const scheduleByDay = new Map((Array.isArray(schedule) ? schedule : [])
+        .filter(entry => entry && THEME_SCHEDULE_DAYS.includes(entry.day))
+        .map(entry => [entry.day, entry]));
+    container.replaceChildren();
+
+    THEME_SCHEDULE_DAYS.forEach(day => {
+        const entry = scheduleByDay.get(day) || { closed: day === 'Sunday', open: '12:00', close: '20:00' };
+        const row = document.createElement('div');
+        row.className = 'row g-2 align-items-center p-2 rounded-2';
+        row.dataset.scheduleDay = day;
+        row.style.background = 'rgba(255,255,255,0.03)';
+        row.innerHTML = `
+            <div class="col-sm-2"><strong class="small text-white">${day}</strong></div>
+            <div class="col-sm-4"><input type="time" class="form-control form-control-sm" data-schedule-open aria-label="${day} opening time"></div>
+            <div class="col-sm-4"><input type="time" class="form-control form-control-sm" data-schedule-close aria-label="${day} closing time"></div>
+            <div class="col-sm-2"><label class="form-check-label small text-white d-flex align-items-center gap-1"><input class="form-check-input m-0" type="checkbox" data-schedule-closed> Closed</label></div>`;
+        const closedToggle = row.querySelector('[data-schedule-closed]');
+        const timeInputs = row.querySelectorAll('[data-schedule-open], [data-schedule-close]');
+        const validTime = value => /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(value || '');
+        row.querySelector('[data-schedule-open]').value = validTime(entry.open) ? entry.open : '12:00';
+        row.querySelector('[data-schedule-close]').value = validTime(entry.close) ? entry.close : '20:00';
+        closedToggle.checked = !!entry.closed;
+        const syncClosedState = () => {
+            timeInputs.forEach(input => {
+                input.disabled = closedToggle.checked;
+            });
+            window.updateLiveThemePreview();
+        };
+        closedToggle.addEventListener('change', syncClosedState);
+        row.querySelectorAll('input[type="time"]').forEach(input => input.addEventListener('input', window.updateLiveThemePreview));
+        syncClosedState();
+        container.appendChild(row);
+    });
+}
+
+function getSavedThemeSchedule(config) {
+    if (Array.isArray(config.weeklySchedule) && config.weeklySchedule.length) {
+        return THEME_SCHEDULE_DAYS.map(day => {
+            const entry = config.weeklySchedule.find(item => item && item.day === day);
+            return entry ? { day, closed: !!entry.closed, open: entry.open || '12:00', close: entry.close || '20:00' }
+                : { day, closed: day === 'Sunday', open: '12:00', close: '20:00' };
+        });
+    }
+
+    const timeMatch = String(config.footerStoreHours || '').match(/(\d{1,2}):(\d{2})\s*(AM|PM)\s*-\s*(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+    const to24Hour = (hour, minute, meridiem) => {
+        let value = Number(hour) % 12;
+        if (meridiem.toUpperCase() === 'PM') value += 12;
+        return `${String(value).padStart(2, '0')}:${minute}`;
+    };
+    const open = timeMatch ? to24Hour(timeMatch[1], timeMatch[2], timeMatch[3]) : '12:00';
+    const close = timeMatch ? to24Hour(timeMatch[4], timeMatch[5], timeMatch[6]) : '20:00';
+    const sundayClosed = /sunday\s+closed/i.test(config.footerStoreDays || '');
+    return THEME_SCHEDULE_DAYS.map(day => ({
+        day,
+        closed: day === 'Sunday' && sundayClosed,
+        open,
+        close
+    }));
+}
 
 const THEME_PRESETS = {
     gear_dark: {
@@ -978,15 +1204,26 @@ window.updateLiveThemePreview = function() {
         : [(document.getElementById('theme-footer-phone')?.value || '021 34832214').trim()];
     const phone = queriesPhones[0] || '021 34832214';
     const phoneDisplay = queriesPhones.length > 1 ? queriesPhones.slice(0, 2).join(' / ') : phone;
-    const phoneLabel = document.getElementById('theme-footer-phone-label')?.value || 'Queries:';
-    const hours = document.getElementById('theme-footer-hours')?.value || '12:00 PM - 8:00 PM';
+    const phoneLabels = getThemeListValues('phoneLabels');
+    const phoneLabel = phoneLabels[0] || 'Queries:';
+    const topbarAddress = getThemeListValues('topbarAddresses').join(' · ') || DEFAULT_THEME.topbarAddress;
+    const weeklySchedule = getThemeWeeklySchedule();
+    const hours = formatThemeWeeklySchedule(weeklySchedule);
     const topbarTitle = document.getElementById('theme-footer-topbar-title')?.value || 'Our Official Partners';
     const topbarShow = document.getElementById('theme-footer-topbar-toggle')?.checked ?? true;
-    const shopAddr = document.getElementById('theme-footer-shop-addr')?.value || 'FA-06, 1st floor, Techno City Mall, Karachi.';
+    const shopAddr = getThemeListValues('shopAddresses').join(' / ') || DEFAULT_THEME.footerShopAddress;
     const copyText = 'Copyright 2021 to 2026 Gear Up Gadgets All rights reserved. [POWERED BY PHOENIX TECHNOLOGY]';
 
     const prevTopPhone = document.getElementById('prev-topbar-phone');
-    if (prevTopPhone) prevTopPhone.innerHTML = `<i class="fas fa-phone text-danger me-1"></i> ${phoneLabel} ${phone}`;
+    if (prevTopPhone) {
+        prevTopPhone.replaceChildren();
+        const icon = document.createElement('i');
+        icon.className = 'fas fa-phone text-danger me-1';
+        prevTopPhone.append(icon, document.createTextNode(`${phoneLabel} ${phone}`));
+    }
+
+    const prevTopAddress = document.getElementById('prev-topbar-address');
+    if (prevTopAddress) prevTopAddress.textContent = topbarAddress;
 
     const prevTopHours = document.getElementById('prev-topbar-hours');
     if (prevTopHours) prevTopHours.textContent = hours;
@@ -1237,19 +1474,26 @@ window.saveGlobalThemeConfig = async () => {
 
     // Contact Numbers (Legacy Single String Compatibility Fallback)
     const footerPhone = queriesPhones[0] || '021 34832214';
-    const footerPhoneLabel = (document.getElementById('theme-footer-phone-label')?.value || 'Queries:').trim();
+    const footerPhoneLabels = getThemeListValues('phoneLabels');
+    const footerPhoneLabel = footerPhoneLabels[0] || 'Queries:';
     const footerWhatsapp = whatsappNumbers[0] || '';
     const footerEmail = supportEmails[0] || 'sales@gearupgadget.com';
     const topbarPhone = footerPhone;
     const topbarEmail = footerEmail;
-    const topbarAddress = (document.getElementById('theme-footer-topbar-address')?.value || document.getElementById('theme-topbar-address')?.value || 'F6 Technocity Mall').trim();
+    const topbarAddresses = getThemeListValues('topbarAddresses');
+    const topbarAddress = topbarAddresses[0] || 'F6 Technocity Mall';
 
     // Store Hours & Locations
-    const footerStoreHours = (document.getElementById('theme-footer-hours')?.value || '12:00 PM - 8:00 PM').trim();
-    const footerStoreDays = (document.getElementById('theme-footer-days')?.value || 'Monday - Saturday (Sunday Closed)').trim();
-    const footerShopAddress = (document.getElementById('theme-footer-shop-addr')?.value || 'FA-06, 1st floor, Techno City Mall, Karachi.').trim();
-    const footerHeadOffice = (document.getElementById('theme-footer-office-addr')?.value || 'D-5, 4th floor, Osif Center, Block 13 A, University Road Gulshan-e-Iqbal, Karachi-Pakistan.').trim();
-    const footerAbout = (document.getElementById('theme-footer-about')?.value || '').trim();
+    const weeklySchedule = getThemeWeeklySchedule();
+    const scheduleSummary = formatThemeWeeklySchedule(weeklySchedule);
+    const footerStoreHours = scheduleSummary;
+    const footerStoreDays = '';
+    const footerShopAddresses = getThemeListValues('shopAddresses');
+    const footerShopAddress = footerShopAddresses[0] || DEFAULT_THEME.footerShopAddress;
+    const footerOfficeAddresses = getThemeListValues('officeAddresses');
+    const footerHeadOffice = footerOfficeAddresses[0] || DEFAULT_THEME.footerHeadOffice;
+    const footerAboutTexts = getThemeListValues('aboutTexts');
+    const footerAbout = footerAboutTexts[0] || DEFAULT_THEME.footerAbout;
     const footerCopyright = 'Copyright 2021 to 2026 Gear Up Gadgets All rights reserved. [POWERED BY PHOENIX TECHNOLOGY]';
 
     const bgAttachment = document.getElementById('theme-bg-attachment')?.value || 'fixed';
@@ -1305,16 +1549,22 @@ window.saveGlobalThemeConfig = async () => {
         generalPhones: generalPhones.length ? generalPhones : ['021 34832214'],
         footerPhone,
         footerPhoneLabel,
+        footerPhoneLabels: footerPhoneLabels.length ? footerPhoneLabels : ['Queries:'],
         footerWhatsapp,
         footerEmail,
         topbarPhone,
         topbarEmail,
         topbarAddress,
+        topbarAddresses: topbarAddresses.length ? topbarAddresses : ['F6 Technocity Mall'],
+        weeklySchedule,
         footerStoreHours,
         footerStoreDays,
         footerShopAddress,
+        footerShopAddresses: footerShopAddresses.length ? footerShopAddresses : [DEFAULT_THEME.footerShopAddress],
         footerHeadOffice,
+        footerOfficeAddresses: footerOfficeAddresses.length ? footerOfficeAddresses : [DEFAULT_THEME.footerHeadOffice],
         footerAbout,
+        footerAboutTexts: footerAboutTexts.length ? footerAboutTexts : [DEFAULT_THEME.footerAbout],
         footerCopyright,
         bgAttachment,
         bgOpacity,
@@ -2806,39 +3056,22 @@ document.addEventListener('DOMContentLoaded', () => {
             window.populateDynamicContacts(cfg);
         }
 
+        Object.entries(THEME_LIST_FIELDS).forEach(([fieldName, field]) => {
+            const savedValues = Array.isArray(cfg[field.configKey])
+                ? cfg[field.configKey]
+                : [cfg[field.legacyKey] || field.defaultValue];
+            renderThemeListFields(fieldName, savedValues);
+        });
+        renderThemeWeeklySchedule(getSavedThemeSchedule(cfg));
+
         const footPhoneEl = document.getElementById('theme-footer-phone');
         if (footPhoneEl && (cfg.footerPhone || cfg.topbarPhone)) footPhoneEl.value = cfg.footerPhone || cfg.topbarPhone;
-
-        const footPhoneLblEl = document.getElementById('theme-footer-phone-label');
-        if (footPhoneLblEl && cfg.footerPhoneLabel) footPhoneLblEl.value = cfg.footerPhoneLabel;
 
         const footWaEl = document.getElementById('theme-footer-whatsapp');
         if (footWaEl && cfg.footerWhatsapp !== undefined) footWaEl.value = cfg.footerWhatsapp;
 
         const footEmailEl = document.getElementById('theme-footer-email');
         if (footEmailEl && (cfg.footerEmail || cfg.topbarEmail)) footEmailEl.value = cfg.footerEmail || cfg.topbarEmail;
-
-        const topAddrEl = document.getElementById('theme-topbar-address');
-        const footTopAddrEl = document.getElementById('theme-footer-topbar-address');
-        const resolvedTopAddr = (cfg.topbarAddress && !cfg.topbarAddress.includes('Osif') && !cfg.topbarAddress.includes('FA-06') && !cfg.topbarAddress.includes('Pace')) ? cfg.topbarAddress : 'F6 Technocity Mall';
-        if (topAddrEl) topAddrEl.value = resolvedTopAddr;
-        if (footTopAddrEl) footTopAddrEl.value = resolvedTopAddr;
-
-        // Restore Operating Hours & Addresses
-        const footHoursEl = document.getElementById('theme-footer-hours');
-        if (footHoursEl && cfg.footerStoreHours) footHoursEl.value = cfg.footerStoreHours;
-
-        const footDaysEl = document.getElementById('theme-footer-days');
-        if (footDaysEl && cfg.footerStoreDays) footDaysEl.value = cfg.footerStoreDays;
-
-        const footShopEl = document.getElementById('theme-footer-shop-addr');
-        if (footShopEl && cfg.footerShopAddress) footShopEl.value = cfg.footerShopAddress;
-
-        const footOfficeEl = document.getElementById('theme-footer-office-addr');
-        if (footOfficeEl && cfg.footerHeadOffice) footOfficeEl.value = cfg.footerHeadOffice;
-
-        const footAboutEl = document.getElementById('theme-footer-about');
-        if (footAboutEl && cfg.footerAbout) footAboutEl.value = cfg.footerAbout;
 
         const footCopyEl = document.getElementById('theme-footer-copyright');
         if (footCopyEl) footCopyEl.value = 'Copyright 2021 to 2026 Gear Up Gadgets All rights reserved. [POWERED BY PHOENIX TECHNOLOGY]';
@@ -2941,4 +3174,3 @@ document.addEventListener('DOMContentLoaded', () => {
         window.renderSalesBanners();
     }
 });
-

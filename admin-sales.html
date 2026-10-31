@@ -152,6 +152,10 @@
             color: #ffffff !important;
             text-shadow: none !important;
         }
+        .theme-live-preview-sticky {
+            position: sticky;
+            top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -920,14 +924,13 @@
                                             <!-- Additional Meta Controls -->
                                             <div class="col-md-6">
                                                 <label class="small fw-bold text-white mb-1">Phone Display Label</label>
-                                                <input type="text" id="theme-footer-phone-label" class="form-control form-control-sm" value="Queries:" placeholder="e.g. Queries:" oninput="updateLiveThemePreview()">
+                                                <div id="theme-phone-labels-list" class="d-grid gap-2"></div>
+                                                <button type="button" class="btn btn-outline-light btn-sm mt-2" onclick="addThemeListField('phoneLabels')"><i class="fas fa-plus me-1"></i>Add Another</button>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="small fw-bold text-white mb-1">Topbar Header Mall Tag / Address</label>
-                                                <div class="input-group input-group-sm">
-                                                    <span class="input-group-text"><i class="fas fa-location-dot text-danger"></i></span>
-                                                    <input type="text" id="theme-footer-topbar-address" class="form-control" value="F6 Technocity Mall" placeholder="F6 Technocity Mall">
-                                                </div>
+                                                <div id="theme-topbar-addresses-list" class="d-grid gap-2"></div>
+                                                <button type="button" class="btn btn-outline-light btn-sm mt-2" onclick="addThemeListField('topbarAddresses')"><i class="fas fa-plus me-1"></i>Add Another</button>
                                             </div>
                                         </div>
                                     </div>
@@ -939,16 +942,9 @@
                                             <p class="text-secondary small m-0" style="font-size: 11px;">Displayed in header top bar, mobile menu, and under 'Contact Us' in the footer.</p>
                                         </div>
                                         <div class="row g-2">
-                                            <div class="col-md-6">
-                                                <label class="small fw-bold text-white mb-1">Operating Hours</label>
-                                                <div class="input-group input-group-sm">
-                                                    <span class="input-group-text"><i class="fas fa-business-time text-warning"></i></span>
-                                                    <input type="text" id="theme-footer-hours" class="form-control" value="12:00 PM - 8:00 PM" placeholder="12:00 PM - 8:00 PM" oninput="updateLiveThemePreview()">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class="small fw-bold text-white mb-1">Operating Days / Schedule Note</label>
-                                                <input type="text" id="theme-footer-days" class="form-control form-control-sm" value="Monday - Saturday (Sunday Closed)" placeholder="e.g. Monday - Saturday (Sunday Closed)">
+                                            <div class="col-12">
+                                                <label class="small fw-bold text-white mb-2">Weekly Opening Schedule</label>
+                                                <div id="theme-weekly-schedule" class="d-grid gap-2"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -962,15 +958,18 @@
                                         <div class="row g-2 mb-2">
                                             <div class="col-md-6">
                                                 <label class="small fw-bold text-white mb-1">Shop Address (Retail Outlet)</label>
-                                                <input type="text" id="theme-footer-shop-addr" class="form-control form-control-sm" value="FA-06, 1st floor, Techno City Mall, Karachi." oninput="updateLiveThemePreview()">
+                                                <div id="theme-shop-addresses-list" class="d-grid gap-2"></div>
+                                                <button type="button" class="btn btn-outline-light btn-sm mt-2" onclick="addThemeListField('shopAddresses')"><i class="fas fa-plus me-1"></i>Add Another</button>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="small fw-bold text-white mb-1">Head Office Address (Corporate)</label>
-                                                <input type="text" id="theme-footer-office-addr" class="form-control form-control-sm" value="D-5, 4th floor, Osif Center, Block 13 A, University Road Gulshan-e-Iqbal, Karachi-Pakistan.">
+                                                <div id="theme-office-addresses-list" class="d-grid gap-2"></div>
+                                                <button type="button" class="btn btn-outline-light btn-sm mt-2" onclick="addThemeListField('officeAddresses')"><i class="fas fa-plus me-1"></i>Add Another</button>
                                             </div>
                                             <div class="col-12 mt-2">
                                                 <label class="small fw-bold text-white mb-1">Footer About / Company Introduction</label>
-                                                <textarea id="theme-footer-about" class="form-control form-control-sm" rows="2" placeholder="Brief company summary displayed under the footer logo...">Pakistan's premier high-end computer store. Servicing tech enthusiasts, gaming communities, and rendering professionals since 2012 with premium hardware, graphics cards, custom PC assembly, and unmatched support.</textarea>
+                                                <div id="theme-about-texts-list" class="d-grid gap-2"></div>
+                                                <button type="button" class="btn btn-outline-light btn-sm mt-2" onclick="addThemeListField('aboutTexts')"><i class="fas fa-plus me-1"></i>Add Another</button>
                                             </div>
                                             <div class="col-12 mt-2">
                                                 <label class="small fw-bold text-white mb-1">Copyright Line</label>
@@ -1017,7 +1016,7 @@
 
                         <!-- RIGHT COLUMN: LIVE REALTIME THEME MINI-PREVIEW -->
                         <div class="col-lg-4">
-                            <div class="sticky-top" style="top: 20px;">
+                            <div class="theme-live-preview-sticky">
                                 <div class="card admin-dark-card border shadow-sm mb-3">
                                     <div class="card-header py-2 d-flex justify-content-between align-items-center">
                                         <span class="small fw-bold text-white"><i class="fas fa-eye text-danger me-1"></i> Live Realtime Preview</span>
@@ -1027,6 +1026,7 @@
                                         <div id="live-theme-preview-box" class="p-3" style="background:#0b0f13; min-height:380px; transition:all 0.3s ease;">
                                             <!-- Mini Topbar -->
                                             <div id="prev-topbar" style="background:#050709; padding:4px 8px; font-size:10px; color:#8b949e; border-radius:4px 4px 0 0;" class="d-flex justify-content-between align-items-center">
+                                                <span id="prev-topbar-address">F6 Technocity Mall</span>
                                                 <span id="prev-topbar-phone"><i class="fas fa-phone text-danger me-1"></i> Queries: 021 34832214</span>
                                                 <span id="prev-topbar-hours">12:00 PM - 8:00 PM</span>
                                             </div>

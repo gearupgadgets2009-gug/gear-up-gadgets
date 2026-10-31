@@ -556,6 +556,43 @@ function applyGlobalTheme() {
 window.applyGlobalTheme = applyGlobalTheme;
 try { applyGlobalTheme(); } catch(e) {}
 
+function escapeThemeText(value) {
+    return String(value ?? '').replace(/[&<>"']/g, character => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    })[character]);
+}
+
+function themeConfigValues(config, arrayKey, legacyKey, fallback) {
+    const values = Array.isArray(config[arrayKey]) ? config[arrayKey] : [config[legacyKey] || fallback];
+    return values.map(value => String(value || '').trim()).filter(Boolean);
+}
+
+function formatStoreWeeklySchedule(schedule) {
+    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const formatTime = value => {
+        const [hourText, minute] = String(value || '12:00').split(':');
+        const hour = Number(hourText);
+        if (!Number.isInteger(hour) || hour < 0 || hour > 23 || !/^\d{2}$/.test(minute || '')) return value || '';
+        return `${hour % 12 || 12}:${minute} ${hour >= 12 ? 'PM' : 'AM'}`;
+    };
+    const groups = [];
+    schedule.slice(0, 7).forEach((entry, index) => {
+        entry = entry || {};
+        const label = entry.closed ? 'Closed' : `${formatTime(entry.open)} - ${formatTime(entry.close)}`;
+        const previous = groups[groups.length - 1];
+        if (previous && previous.label === label) previous.end = index;
+        else groups.push({ start: index, end: index, label });
+    });
+    return groups.map(group => {
+        const range = group.start === group.end ? days[group.start] : `${days[group.start]}-${days[group.end]}`;
+        return `${range}: ${group.label}`;
+    }).join(' · ');
+}
+
 function injectHeader() {
     const placeholder = document.getElementById('header-placeholder');
     if (!placeholder) return;
@@ -565,20 +602,26 @@ function injectHeader() {
         cfg = JSON.parse(localStorage.getItem('gug_event_theme_config') || '{}');
     } catch(e) {}
 
-    const queryPhone = cfg.footerPhone || cfg.topbarPhone || '021 34832214';
-    const phoneClean = queryPhone.replace(/\s+/g, '');
-    const phoneLabel = cfg.footerPhoneLabel || 'Queries:';
+    const queriesPhones = Array.isArray(cfg.queriesPhones) && cfg.queriesPhones.length
+        ? cfg.queriesPhones
+        : [cfg.footerPhone || cfg.topbarPhone || '021 34832214'];
+    const phoneLabels = themeConfigValues(cfg, 'footerPhoneLabels', 'footerPhoneLabel', 'Queries:');
+    const topbarPhoneContent = queriesPhones.map((phone, index) => {
+        const label = phoneLabels[index] || phoneLabels[0] || 'Queries:';
+        const safePhone = escapeThemeText(phone);
+        const hrefPhone = encodeURIComponent(String(phone).replace(/[^\d+]/g, ''));
+        return `<span class="d-inline-flex align-items-center"><i class="icon icon-phone-alt-solid text-danger me-1"></i> <strong class="text-white">${escapeThemeText(label)}</strong>&nbsp;<a href="tel:${hrefPhone}" class="text-white fw-bold text-decoration-none" style="letter-spacing: 0.3px;">${safePhone}</a></span>`;
+    }).join('');
     let topbarEmail = cfg.footerEmail || cfg.topbarEmail || 'sales@gearupgadget.com';
-    let topbarAddress = cfg.topbarAddress || 'F6 Technocity Mall';
-    const storeHours = cfg.footerStoreHours || '12:00 PM - 8:00 PM';
-    const storeDays = cfg.footerStoreDays || 'Mon-Sat';
+    let topbarAddresses = themeConfigValues(cfg, 'topbarAddresses', 'topbarAddress', 'F6 Technocity Mall');
+    topbarAddresses = topbarAddresses.filter(address => !address.includes('Osif') && !address.includes('Pace') && !address.includes('FA-06'));
+    if (!topbarAddresses.length) topbarAddresses = ['F6 Technocity Mall'];
+    const topbarAddress = topbarAddresses.map(escapeThemeText).join(' · ');
+    const hasWeeklySchedule = Array.isArray(cfg.weeklySchedule) && cfg.weeklySchedule.length > 0;
+    const storeHours = hasWeeklySchedule ? formatStoreWeeklySchedule(cfg.weeklySchedule) : cfg.footerStoreHours || '12:00 PM - 8:00 PM';
+    const storeDays = hasWeeklySchedule ? '' : cfg.footerStoreDays || 'Mon-Sat';
 
     // Upgrade any legacy address or email in stored config to ensure global consistency
-    if (!topbarAddress || topbarAddress.includes('Osif') || topbarAddress.includes('Pace') || topbarAddress.includes('FA-06')) {
-        topbarAddress = 'F6 Technocity Mall';
-        cfg.topbarAddress = topbarAddress;
-        try { localStorage.setItem('gug_event_theme_config', JSON.stringify(cfg)); } catch(e) {}
-    }
     if (!topbarEmail || topbarEmail.includes('gearupgadget.pk') || topbarEmail.includes('gearupgadgets.pk')) {
         topbarEmail = 'sales@gearupgadget.com';
         cfg.topbarEmail = topbarEmail;
@@ -594,11 +637,11 @@ function injectHeader() {
                 <div class="topbar-inner w-100 d-flex justify-content-between align-items-center flex-wrap gap-2">
                     <div class="d-flex align-items-center flex-wrap gap-3">
                         <span><i class="icon icon-map-marker-alt-solid text-danger me-1"></i> ${topbarAddress}</span>
-                        <span><i class="icon icon-envelope-solid text-danger me-1"></i> ${topbarEmail}</span>
+                        <span><i class="icon icon-envelope-solid text-danger me-1"></i> ${escapeThemeText(topbarEmail)}</span>
                     </div>
                     <div class="d-flex align-items-center gap-3 flex-wrap">
-                        <span class="d-inline-flex align-items-center"><i class="icon icon-phone-alt-solid text-danger me-1"></i> <strong class="text-white">${phoneLabel}</strong>&nbsp;<a href="tel:${phoneClean}" class="text-white fw-bold text-decoration-none" style="letter-spacing: 0.3px;">${queryPhone}</a></span>
-                        <span class="d-none d-lg-inline-flex align-items-center"><i class="icon icon-clock-solid text-danger me-1"></i> ${storeDays}: ${storeHours}</span>
+                        ${topbarPhoneContent}
+                        <span class="d-none d-lg-inline-flex align-items-center"><i class="icon icon-clock-solid text-danger me-1"></i> ${storeDays ? `${escapeThemeText(storeDays)}: ` : ''}${escapeThemeText(storeHours)}</span>
                     </div>
                 </div>
             </div>
@@ -788,9 +831,9 @@ function injectHeader() {
 
                 <!-- Contact & Timings -->
                 <div class="pt-2 border-top" style="border-color: var(--border-color, #1a222d) !important; font-size: 12px; color: var(--text-secondary);">
-                    <div class="mb-1"><i class="fas fa-phone text-danger me-2"></i> <strong class="text-white">${phoneLabel}</strong> <a href="tel:${phoneClean}" class="text-white text-decoration-none fw-bold">${queryPhone}</a></div>
-                    <div class="mb-1"><i class="fas fa-envelope text-danger me-2"></i> ${topbarEmail}</div>
-                    <div><i class="fas fa-clock text-danger me-2"></i> ${storeDays}: ${storeHours}</div>
+                    <div class="mb-1">${topbarPhoneContent}</div>
+                    <div class="mb-1"><i class="fas fa-envelope text-danger me-2"></i> ${escapeThemeText(topbarEmail)}</div>
+                    <div><i class="fas fa-clock text-danger me-2"></i> ${storeDays ? `${escapeThemeText(storeDays)}: ` : ''}${escapeThemeText(storeHours)}</div>
                 </div>
             </div>
         </div>
@@ -855,18 +898,19 @@ function injectFooter() {
         cfg = JSON.parse(localStorage.getItem('gug_event_theme_config') || '{}');
     } catch(e) {}
 
-    const shopAddr = cfg.footerShopAddress || 'FA-06, 1st floor, Techno City Mall, Karachi.';
-    const officeAddr = cfg.footerHeadOffice || 'D-5, 4th floor, Osif Center, Block 13 A, University Road Gulshan-e-Iqbal, Karachi-Pakistan.';
-    const aboutText = cfg.footerAbout || "Pakistan's premier high-end computer store. Servicing tech enthusiasts, gaming communities, and rendering professionals since 2012 with premium hardware, graphics cards, custom PC assembly, and unmatched support.";
+    const shopAddresses = themeConfigValues(cfg, 'footerShopAddresses', 'footerShopAddress', 'FA-06, 1st floor, Techno City Mall, Karachi.');
+    const officeAddresses = themeConfigValues(cfg, 'footerOfficeAddresses', 'footerHeadOffice', 'D-5, 4th floor, Osif Center, Block 13 A, University Road Gulshan-e-Iqbal, Karachi-Pakistan.');
+    const aboutTexts = themeConfigValues(cfg, 'footerAboutTexts', 'footerAbout', "Pakistan's premier high-end computer store. Servicing tech enthusiasts, gaming communities, and rendering professionals since 2012 with premium hardware, graphics cards, custom PC assembly, and unmatched support.");
+    const shopAddr = shopAddresses.map(escapeThemeText).join('<br>');
+    const officeAddr = officeAddresses.map(escapeThemeText).join('<br>');
+    const aboutText = aboutTexts.map(escapeThemeText).join('<br>');
     const copyright = 'Copyright 2021 to 2026 Gear Up Gadgets All rights reserved. [POWERED BY PHOENIX TECHNOLOGY]';
     
     // Contact Info - Support Multiple Arrays & Fallback Single Strings
     const queriesPhones = (Array.isArray(cfg.queriesPhones) && cfg.queriesPhones.length > 0)
         ? cfg.queriesPhones
         : [(cfg.footerPhone || cfg.topbarPhone || '021 34832214')];
-    const queryPhone = queriesPhones[0];
-    const phoneClean = queryPhone.replace(/\s+/g, '');
-    const phoneLabel = cfg.footerPhoneLabel || 'Queries:';
+    const phoneLabels = themeConfigValues(cfg, 'footerPhoneLabels', 'footerPhoneLabel', 'Queries:');
 
     const whatsappNumbers = (Array.isArray(cfg.whatsappNumbers) && cfg.whatsappNumbers.length > 0)
         ? cfg.whatsappNumbers
@@ -883,8 +927,9 @@ function injectFooter() {
         ? cfg.generalPhones
         : [];
 
-    const storeHours = cfg.footerStoreHours || '12:00 PM - 8:00 PM';
-    const storeDays = cfg.footerStoreDays || 'Monday - Saturday (Sunday Closed)';
+    const hasWeeklySchedule = Array.isArray(cfg.weeklySchedule) && cfg.weeklySchedule.length > 0;
+    const storeHours = hasWeeklySchedule ? formatStoreWeeklySchedule(cfg.weeklySchedule) : cfg.footerStoreHours || '12:00 PM - 8:00 PM';
+    const storeDays = hasWeeklySchedule ? '' : cfg.footerStoreDays || 'Monday - Saturday (Sunday Closed)';
 
     // Pre-Footer Top Bar
     const topBarEnabled = cfg.footerTopBarEnabled !== false;
@@ -1051,7 +1096,7 @@ function injectFooter() {
                         <h5 class="text-white mb-4" style="font-weight: 700; font-size: 16px;">CONTACT US</h5>
                         <ul class="list-unstyled p-0 m-0" style="line-height: 1.8;">
                             ${queriesPhones.map((ph, idx) => `
-                                <li class="mb-2"><strong>${idx === 0 ? phoneLabel : 'Queries ' + (idx + 1) + ':'}</strong> <a href="tel:${ph.replace(/\s+/g, '')}" class="text-white fw-bold text-decoration-none" style="letter-spacing: 0.3px; transition: color 0.2s;" onmouseover="this.style.color='var(--accent-red)'" onmouseout="this.style.color='#ffffff'">${ph}</a></li>
+                                <li class="mb-2"><strong>${escapeThemeText(phoneLabels[idx] || phoneLabels[0] || `Queries ${idx + 1}:`)}</strong> <a href="tel:${encodeURIComponent(ph.replace(/[^\d+]/g, ''))}" class="text-white fw-bold text-decoration-none" style="letter-spacing: 0.3px; transition: color 0.2s;" onmouseover="this.style.color='var(--accent-red)'" onmouseout="this.style.color='#ffffff'">${escapeThemeText(ph)}</a></li>
                             `).join('')}
                             ${generalPhones.map((gph, idx) => `
                                 <li class="mb-2"><strong>Landline ${generalPhones.length > 1 ? (idx + 1) + ':' : ':'}</strong> <a href="tel:${gph.replace(/\s+/g, '')}" class="text-white fw-bold text-decoration-none" style="letter-spacing: 0.3px; transition: color 0.2s;" onmouseover="this.style.color='var(--accent-red)'" onmouseout="this.style.color='#ffffff'">${gph}</a></li>
@@ -1059,7 +1104,7 @@ function injectFooter() {
                             ${whatsappNumbers.map((wa, idx) => `
                                 <li class="mb-2"><strong>WhatsApp ${whatsappNumbers.length > 1 ? (idx + 1) + ':' : ':'}</strong> <a href="https://wa.me/${wa.replace(/[^0-9]/g, '')}" target="_blank" rel="noopener" class="text-white fw-bold text-decoration-none" style="letter-spacing: 0.3px; transition: color 0.2s;" onmouseover="this.style.color='var(--accent-red)'" onmouseout="this.style.color='#ffffff'">${wa}</a></li>
                             `).join('')}
-                            <li class="mb-2"><strong>Store Hours:</strong> <span class="text-white">${storeHours}</span>${storeDays ? `<br><span class="small text-secondary">${storeDays}</span>` : ''}</li>
+                            <li class="mb-2"><strong>Store Hours:</strong> <span class="text-white">${escapeThemeText(storeHours)}</span>${storeDays ? `<br><span class="small text-secondary">${escapeThemeText(storeDays)}</span>` : ''}</li>
                             ${supportEmails.map((em, idx) => `
                                 <li class="mb-2"><strong>${idx === 0 ? 'Support Email:' : 'Email ' + (idx + 1) + ':'}</strong> <a href="mailto:${em}" class="text-secondary text-decoration-none hover-danger d-block">${em}</a></li>
                             `).join('')}
@@ -1093,16 +1138,18 @@ function hydrateContactPageElements(cfg) {
         phoneEl.href = `tel:${ph.replace(/\s+/g, '')}`;
     }
     const hoursEl = document.getElementById('contact-page-store-hours');
-    if (hoursEl && cfg.footerStoreHours) {
-        hoursEl.textContent = `${cfg.footerStoreDays || 'Monday to Saturday'}: ${cfg.footerStoreHours}`;
+    if (hoursEl && (cfg.footerStoreHours || cfg.weeklySchedule)) {
+        hoursEl.textContent = Array.isArray(cfg.weeklySchedule) && cfg.weeklySchedule.length
+            ? formatStoreWeeklySchedule(cfg.weeklySchedule)
+            : `${cfg.footerStoreDays || 'Monday to Saturday'}: ${cfg.footerStoreHours}`;
     }
     const shopAddrEl = document.getElementById('contact-page-shop-addr');
-    if (shopAddrEl && cfg.footerShopAddress) {
-        shopAddrEl.textContent = cfg.footerShopAddress;
+    if (shopAddrEl && (cfg.footerShopAddress || cfg.footerShopAddresses)) {
+        shopAddrEl.textContent = themeConfigValues(cfg, 'footerShopAddresses', 'footerShopAddress', '').join('\n');
     }
     const officeAddrEl = document.getElementById('contact-page-office-addr');
-    if (officeAddrEl && cfg.footerHeadOffice) {
-        officeAddrEl.textContent = cfg.footerHeadOffice;
+    if (officeAddrEl && (cfg.footerHeadOffice || cfg.footerOfficeAddresses)) {
+        officeAddrEl.textContent = themeConfigValues(cfg, 'footerOfficeAddresses', 'footerHeadOffice', '').join('\n');
     }
     const emailEl = document.getElementById('contact-page-support-email');
     const em = (Array.isArray(cfg.supportEmails) && cfg.supportEmails[0]) || cfg.footerEmail || cfg.topbarEmail;
@@ -1986,5 +2033,3 @@ function initStorefrontResponsiveTableCards() {
     }
 }
 document.addEventListener('DOMContentLoaded', initStorefrontResponsiveTableCards);
-
-
